@@ -2327,6 +2327,78 @@ func TestCLI076_FenceInfozeileVerdecktLinkNicht(t *testing.T) {
 	}
 }
 
+// slice-232 Negative: eine Zieladresse hinter einem Zeilenumbruch nach `](`
+// wird von der gemeinsamen Extraktion erkannt (ADR-0091) — ein totes Ziel
+// meldet target-missing wie bei der Inline-Form, gemeldet auf der ÖFFNENDEN
+// Zeile des Links (Zeile 1, nicht Zeile 2).
+func TestCLI232_ZeilenumbruchHinterKlammer_TotesZiel(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "[kaputt](\nfehlt.md)\n")
+	code, stdout, _ := run(t, "--disable", "anchors", root)
+	if code != 1 {
+		t.Fatalf("Exit = %d, want 1", code)
+	}
+	if !strings.Contains(stdout, "docs/a.md:1\tfehlt.md\ttarget-missing") {
+		t.Fatalf("Befund fehlt oder falsche Zeile (erwartet Zeile 1, die oeffnende): %q", stdout)
+	}
+}
+
+// slice-232 Happy: dieselbe Form mit lebendem Ziel bleibt befundfrei.
+func TestCLI232_ZeilenumbruchHinterKlammer_LebendesZiel(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/ziel.md", "# x\n")
+	write(t, root, "docs/a.md", "[gut](\nziel.md)\n")
+	code, _, stderr := run(t, "--disable", "anchors", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+}
+
+// slice-232 Boundary: Bilder teilen denselben Parser und ziehen mit
+// (ADR-0091, unpromised, aber gemessen).
+func TestCLI232_ZeilenumbruchHinterKlammer_Bild(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "![alt](\nfehlt.png)\n")
+	code, stdout, _ := run(t, "--disable", "anchors", root)
+	if code != 1 {
+		t.Fatalf("Exit = %d, want 1 (Bild-Form zieht mit)", code)
+	}
+	if !strings.Contains(stdout, "docs/a.md:1\tfehlt.png\ttarget-missing") {
+		t.Fatalf("Befund fehlt: %q", stdout)
+	}
+}
+
+// slice-232 Kontrolle: Inline-, Titel-, Spitzklammer- und Klammer-im-Ziel-Form
+// bleiben unveraendert in ihrer bisherigen Zeile — keine Regression durch die
+// absatzweise Faltung, auch wenn diese Formen im selben Absatz wie ein
+// Zeilenumbruch-Link stehen.
+func TestCLI232_UnveraenderteKontrollformen(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", strings.Join([]string{
+		"[inline](fehlt-inline.md)",
+		"[titel](fehlt-titel.md \"Titel\")",
+		"[spitz](<fehlt spitz.md>)",
+		"[mit-klammer](fehlt(mit)klammer.md)", // <!-- d-check:ignore (Fixture-Pfad, kein Verweis) -->
+		"[umbruch](",
+		"fehlt-umbruch.md)",
+	}, "\n")+"\n")
+	code, stdout, _ := run(t, "--disable", "anchors", root)
+	if code != 1 {
+		t.Fatalf("Exit = %d, want 1", code)
+	}
+	for _, want := range []string{
+		"docs/a.md:1\tfehlt-inline.md\ttarget-missing",
+		"docs/a.md:2\tfehlt-titel.md\ttarget-missing",
+		"docs/a.md:3\tfehlt spitz.md\ttarget-missing",
+		"docs/a.md:4\tfehlt(mit)klammer.md\ttarget-missing", // <!-- d-check:ignore (Fixture-Pfad, kein Verweis) -->
+		"docs/a.md:5\tfehlt-umbruch.md\ttarget-missing",
+	} {
+		if !strings.Contains(stdout, want) {
+			t.Fatalf("erwartete Befund-Zeile fehlt: %q\nstdout:\n%s", want, stdout)
+		}
+	}
+}
+
 // slice-076 (DC-FA-LINK-001.a Schritt 1, Tabellen-Reader/`markdownTableLines`):
 // dieselbe Infozeilen-Regel muss auch im Tabellen-Automaten gelten, sonst sieht
 // `trace` das Dokument anders als `links`. Eine ```-Infozeile mit Backtick ÜBER

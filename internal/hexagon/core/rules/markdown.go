@@ -504,17 +504,64 @@ func forEachLink(text string, fn func(LinkRef, LinkSpan)) {
 	}
 }
 
-// ExtractLinks findet Inline-Links [text](ziel) und Bilder
-// ![alt](ziel); mehrere pro Zeile werden alle erfasst
-// (spec/spezifikation.md §DC-FA-LINK-001.a Schritt 3).
+// linkParagraphs gruppiert vorverarbeitete Zeilen zu Absätzen — Leerzeile
+// oder Fenced-Block-Lücke trennt, dieselbe Grenzziehung wie proseParagraphs
+// für die absatzweise Inline-Code-Erkennung (spec/spezifikation.md
+// §DC-FA-LINK-001.a Schritt 2). Grundlage der absatzweisen Link-Extraktion
+// (ADR-0091): ein Zeilenumbruch unmittelbar hinter `](` liegt innerhalb
+// eines Absatzes, nie über eine Leerzeile oder einen Fence hinweg.
+func linkParagraphs(lines []Line) [][]Line {
+	var groups [][]Line
+	var cur []Line
+	prevNo := 0
+	for _, ln := range lines {
+		blank := strings.TrimSpace(ln.Text) == ""
+		if len(cur) > 0 && (blank || fencedBlockBetween(prevNo, ln.No)) {
+			groups = append(groups, cur)
+			cur = nil
+		}
+		if !blank {
+			cur = append(cur, ln)
+		}
+		prevNo = ln.No
+	}
+	if len(cur) > 0 {
+		groups = append(groups, cur)
+	}
+	return groups
+}
+
+// ExtractLinks findet Inline-Links [text](ziel) und Bilder ![alt](ziel);
+// mehrere pro Zeile werden alle erfasst (spec/spezifikation.md
+// §DC-FA-LINK-001.a Schritt 3). Absatzweise wie stripInlineCodeByLine/
+// inlineSpansByLine (ADR-0091): eine Zieladresse, die unmittelbar hinter
+// `](` einen einzigen Zeilenumbruch trägt, wird dadurch erkannt. Ein Fund
+// wird der Zeile zugeschrieben, auf der er ÖFFNET (`[`/`![`) — für einen
+// einzeiligen Treffer unverändert die bisherige Zeile.
 func ExtractLinks(lines []Line) []LinkRef {
 	var refs []LinkRef
-	for _, ln := range lines {
-		no := ln.No
-		text := ln.Text
-		forEachLink(text, func(ref LinkRef, span LinkSpan) {
-			ref.Line = no
-			ref.Text = text[span.TextStart:span.TextEnd]
+	for _, grp := range linkParagraphs(lines) {
+		raws := make([]string, len(grp))
+		for i, ln := range grp {
+			raws[i] = ln.Text
+		}
+		joined := strings.Join(raws, "\n")
+		starts := make([]int, len(grp))
+		off := 0
+		for i, r := range raws {
+			starts[i] = off
+			off += len(r) + 1
+		}
+		forEachLink(joined, func(ref LinkRef, span LinkSpan) {
+			for i := range grp {
+				lineStart := starts[i]
+				lineEnd := lineStart + len(raws[i])
+				if span.Start >= lineStart && span.Start <= lineEnd {
+					ref.Line = grp[i].No
+					break
+				}
+			}
+			ref.Text = joined[span.TextStart:span.TextEnd]
 			refs = append(refs, ref)
 		})
 	}
