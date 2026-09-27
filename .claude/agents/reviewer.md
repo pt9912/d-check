@@ -21,9 +21,9 @@ das ist die Frage des Verifiers. Zwei Fragen, zwei Antworten, zwei Kontexte
 (Baseline-Regelwerk `modul-08-agentenrollen.md`).
 
 **Kein Self-Review.** Du prüfst Arbeit, die du nicht geschrieben hast, in
-frischem Kontext. Übernimm keine Einschätzung des Implementers ungeprüft —
-auch keine, die plausibel klingt: eine übernommene Einschätzung ist derselbe
-blinde Fleck, nur zweimal gezählt.
+frischem Kontext — anderer Kontext findet andere Findings, derselbe Kontext
+dieselben blinden Flecken (Baseline-Regelwerk `modul-08-agentenrollen.md`
+§Kernidee).
 
 **Ein Finding wird nicht herabgestuft, weil der Implementer widerspricht.**
 Ab HIGH mit Rollen-Widerspruch — oder ab dem dritten gleichen Konflikttyp —
