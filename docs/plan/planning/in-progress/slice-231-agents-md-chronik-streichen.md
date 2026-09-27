@@ -21,7 +21,7 @@ und [MR-050](../../../../harness/conventions/MR-050-herkunfts-anker-ist-kein-ver
 **Berührte Spec-Stellen:** — (`AGENTS.md` ist Rang 8 der Source Precedence,
 kein Spec-Stratum).
 
-**Verantwortlich:** —
+**Verantwortlich:** claude-sonnet-5.
 
 **Autor:** claude-sonnet-5. **Datum:** 2026-09-27.
 
@@ -229,8 +229,12 @@ Sub-Areas GF.
   keine neue Diskrepanz ein. Das Risiko liegt in der verschränkten Grenze (§6).
 - **Reconciliation-Aufwand:** Keiner — kein Brownfield-Bestand.
 
-**Benannt, gelesen, nicht Gegenstand:** `make nightly-state` meldet
-`upstream-drift.yml` **ROT** (Lauf 2026-09-26; rot sind `freshness-golangci`,
-`freshness-semgrep`, `freshness-a-check`, `go-base-digest`), `image-scan.yml`
-grün. Das ist Fremd-Pin-Drift und berührt `AGENTS.md` nicht. Der offizielle
-dritte Block wird bei der Beanspruchung neu gelesen.
+**Vorgelagert — Nachtlauf-Stand lesen** (bei der Beanspruchung, 2026-09-27):
+`make nightly-state` meldet `upstream-drift.yml` **ROT** (Lauf
+2026-09-26T05:44Z) und `image-scan.yml` **grün**. Die Ausgabe der vier roten
+Achsen, lokal nachgefahren: `golangci-lint` VERALTET (Pin 2.13.2, upstream
+2.14.0), `semgrep` VERALTET (Pin 1.177.0, upstream 1.178.0), `a-check`
+VERALTET (Pin 0.19.0, upstream 0.20.0), `golang:1.27.1` ABWEICHEND
+(Digest unter demselben Tag neu gebaut). Das sind **planmäßige**
+Fremd-Release-Meldungen, keine unerwarteten; sie berühren `AGENTS.md` nicht und
+sind nicht Gegenstand dieses Slice.
