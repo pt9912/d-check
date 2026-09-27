@@ -91,7 +91,7 @@ der **Default** der Requirements Traceability Matrix. Er wird hier
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — höchstens drei Liefer-Punkte.
 
-- [ ] **Vertrag:** `spec/lastenheft.md` (Konfigurations-Vorschlag: Beschreibung
+- [x] **Vertrag:** `spec/lastenheft.md` (Konfigurations-Vorschlag: Beschreibung
       und Akzeptanzkriterien um die dritte Reihe, drei Break-Tests aus §1,
       Versions-Bump mit Historie-Zeile nach
       [MR-032](../../../../harness/conventions/MR-032-historie-vor-accepted.md)),
@@ -102,22 +102,22 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       RTM-Abgrenzung eine eigene ADR braucht (Entscheidung mit Alternativen:
       RTM erweitern, nicht erweitern, per `id-pattern` dem Konsumenten
       überlassen), wird **vor** dem ersten Edit entschieden und in §7 benannt.
-- [ ] **Generator:** `reqShape` und das Anforderungs-Muster in
+- [x] **Generator:** `reqShape` und das Anforderungs-Muster in
       `harnessIDPatterns` kennen `RB`; Tests: RB-Lastenheft (Muster enthält
       `RB`, fehlende `-RB-07` wird gemeldet — **Rot-Beleg gegen den alten
       Stand**), FA/QA-Lastenheft (Ausgabe byte-gleich, gegen den Stand vor der
       Änderung verglichen), mehrere Präfixe (Fehler).
-- [ ] **Bestandsprobe:** `--suggest-config ai-harness-init` gegen dieses Repo
+- [x] **Bestandsprobe:** `--suggest-config ai-harness-init` gegen dieses Repo
       und gegen die Fixtures ist vor und nach der Änderung byte-gleich
       (Vergleichs-Ausgabe in §7).
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben oder „keine
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben oder „keine
       Beobachtung angefallen" in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 3. Plan (vor Code)
 
@@ -167,21 +167,65 @@ Lerneintrag geschrieben.
 ## 6. Risiken und offene Punkte
 
 - Der Kurs hat die Reihe noch nicht getaggt; ändert er ihre Form, trägt d-check
-  eine Kennungsreihe, die die Baseline nicht führt. **Ausgang:** bei Closure zu
-  vergeben.
+  eine Kennungsreihe, die die Baseline nicht führt. **Ausgang:** weiter offen
+  → kein Register-Eintrag (kein Wiederholungsmuster, einmaliger
+  Baseline-Vorgriff; wird beim nächsten Baseline-Bump sichtbar, falls er
+  eintritt — dort zu behandeln, nicht hier vorwegzunehmen).
 - Der Konsument liest „Randbedingungen im Generator" als „Randbedingungen in der
   RTM" und wundert sich, dass `completeness-check` sie nicht kennt.
-  **Ausgang:** bei Closure zu vergeben (die benannte Grenze in der
-  Spezifikation ist die Antwort; Rückfrage an den Konsumenten, falls er die RTM
-  will).
+  **Ausgang:** entfallen — die benannte Grenze steht jetzt explizit in
+  `spec/lastenheft.md` (Out-of-Scope-Satz) und `spec/spezifikation.md`
+  (Anforderungs-Präfix-Absatz); ein Konsument, der das nachliest, findet die
+  Antwort, ohne nachzufragen.
 - Ein Repo mit **zwei** Präfixen, von denen eines nur über `-RB-`-Überschriften
   auftaucht, wechselt vom stillen Ein-Präfix-Ergebnis zum Fehler „mehrdeutig".
-  **Ausgang:** bei Closure zu vergeben (gewollt nach CR, aber eine sichtbare
-  Verhaltensänderung für genau diesen Fall).
+  **Ausgang:** entfallen — gewollte, im CR verlangte Verhaltensänderung;
+  dreifach benannt (Lastenheft-AK „Mehrdeutigkeit", [ADR-0090](../../adr/0090-suggest-config-rb-bedingt.md) §Konsequenzen,
+  Slice-Plan hier), kein Verschweigen (vom unabhängigen Review bestätigt).
 
 ## 7. Closure-Notiz
 
-*(Bei der Closure zu füllen.)*
+- **Was hat funktioniert:** Der Vertrag-vor-Code-Ablauf hat einen echten Fehler
+  gefangen, **bevor** er Code wurde: die erste Vertragsfassung (Commit
+  `ed6e7d14`) ging von einer unbedingten `RB`-Erweiterung aus, die der eigenen
+  Byte-Gleichheits-Zusage widersprochen hätte — beim Lesen von
+  `harnessIDPatterns` (reine Funktion von `reqPrefix`, ohne Repo-Kenntnis)
+  wurde das sichtbar und in einem eigenen Korrektur-Commit (`06fc8d9c`) vor
+  dem Generator-Code behoben. Der unabhängige Review
+  (`docs/reviews/2026-09-27-slice-234-suggest-config-rb-review-r1.md`) prüfte
+  genau diesen Punkt gezielt und fand die Kern-Logik korrekt.
+- **Was ging anders als geplant:** Der Review fand drei MEDIUM-Befunde, alle
+  nachgezogen: (R1-M1) die „Kanonische Vorlage" in `spec/spezifikation.md`
+  zeigte `RB` trotz der Korrektur unbedingt — ein Redaktionsversehen beim
+  Aktualisieren der Prosa, das YAML-Beispiel blieb stehen; korrigiert.
+  (R1-M2) das Lastenheft-AK „RB Happy" versprach einen Rot-Beleg über eine
+  reine Muster-Prüfung hinaus (angewandte Regel meldet die unverlinkte
+  Kennung) — ein neuer Round-Trip-Test (`TestCLI234_RB_AngewendetMeldetUnverlinkteKennung`)
+  belegt das jetzt. (R1-M3) die ursprüngliche „Keine ADR"-Entscheidung deckte
+  nur die RTM-Abgrenzung ab, nicht die tatsächlich nicht-triviale (und im
+  ersten Anlauf falsch getroffene) Aktivierungs-Frage — [ADR-0090](../../adr/0090-suggest-config-rb-bedingt.md) trägt sie
+  jetzt samt drei verglichenen Alternativen nach. Zwei weitere Befunde wurden
+  bewusst nicht aktioniert: R1-L1 (LOW, die ADR-Begründung stand zum
+  Review-Zeitpunkt nicht in §7, sondern in Commit-Botschaft/Historie — dieser
+  Absatz holt das nach) gilt mit dieser Notiz als erledigt; R1-I1 (INFO,
+  fehlende `docs/plan/cr/`-Datei für den eingehenden CR) bleibt offen — der
+  CR-Wortlaut liegt nur als Prosa vor, eine nachträglich verfasste CR-Datei
+  wäre Rekonstruktion, keine Ablage (vgl. „CR-Dokumente: keine Forensik").
+- **ADR-Entscheidung (§2 DoD „Vertrag"):** zwei getrennte Fragen. Die
+  RTM-Abgrenzung selbst braucht **keine** ADR — reine Spezifikations-Klarstellung
+  ohne Architektur-Alternative, unverändert seit der ersten Vertragsfassung.
+  Die davon unabhängige Aktivierungs-Frage (unbedingt vs. bedingt) **braucht**
+  eine ADR — das wurde erst durch den unabhängigen Review sichtbar (R1-M3) und
+  ist als [ADR-0090](../../adr/0090-suggest-config-rb-bedingt.md) nachgetragen, nicht vor dem ersten Edit erkannt.
+- **Steering-Loop-Eintrag:** keiner — kein Register-Item erreichte mit diesem
+  Slice 3×.
+- **Beobachtungs-Register (`../observations/`):** keine Beobachtung angefallen.
+- **Folge-Slices:** keine.
+- **Risiken aus §6:** eines weiter offen (ohne Register-Eintrag, Begründung
+  dort), zwei entfallen — siehe §6.
+- **Drei Paarungen** (Anker · Folge-Slice · Register): kein Steering-Loop-Eintrag
+  mit `liegt in`, kein Folge-Slice, kein Register-Eintrag in diesem Slice —
+  alle drei Paarungen sind damit leer und ohne Gegenstand, nicht rot.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
