@@ -147,7 +147,7 @@ die „FA/QA" aufzählen — Handbuch im Release-Prep.
 
 **Start** (`next` → `in-progress`): keine Abhängigkeit zu
 [slice-232](slice-232-links-ziel-hinter-zeilenumbruch.md) und
-[slice-233](../open/slice-233-links-referenz-definitionen.md); alle drei
+[slice-233](../in-progress/slice-233-links-referenz-definitionen.md); alle drei
 bumpen das Lastenheft, laufen aber nacheinander (WIP-Limit 1). Bei der
 Beanspruchung entsteht der dritte Vorprüfungs-Block (Nachtlauf-Stand).
 
