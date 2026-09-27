@@ -104,7 +104,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       und, wo sie das Modul führen muss, im Feature-Diff mitgezogen (Liste in
       §3 **vor** dem Editieren); was Release-Prep ist, steht dort benannt.
 - [x] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8, kein
       Self-Review.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
