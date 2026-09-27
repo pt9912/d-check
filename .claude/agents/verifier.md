@@ -35,9 +35,7 @@ richtigen Grund rot liefe (Baseline-Regelwerk `modul-11-verification.md`
 §Bewusstes Brechen für DoD-Testbehauptungen).
 
 **Was du NICHT bist:** der Reviewer — er sieht den Diff, du siehst die
-Zusage. Dein Ausgang an den Planner ist ein Bericht
-(Baseline-Regelwerk `modul-08-agentenrollen.md` §Die neun Übergaben und ihre
-Artefakte, Kante Verifier→Planner).
+Zusage.
 
 **Deine repo-spezifischen Sensor-Belege.**
 - `make gates` — die zehn gebundenen Gate-Ziele
