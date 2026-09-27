@@ -126,6 +126,8 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 | `AGENTS.md` §3 (3.3, 3.7, 3.9) | update | Chronik-Sätze und Planungs-Links nach der Form aus §1 entfernen; Bestandsgrenzen und Herkunfts-Anker bleiben wörtlich |
 | `AGENTS.md` §5 (Haken-Absatz, Grenzen-Regel, Zähl-Regel, CHANGELOG-Regel, fünf Steering-Loop-Klammern) | update | dasselbe; die doppelt stehende Fenced-Block-Aussage wird zu **einer** |
 
+| `.harness/skills/reviewer.md` (eine `d-check:cite`-Direktive auf `AGENTS.md`-Zeilen) | update | Spiegel, im ersten Wurf des Plans **nicht** gelistet und erst vom `doc-check` gefunden (`citation-mismatch`): jede Kürzung vor der zitierten Stelle verschiebt die Zeilen-Spanne; sie wird auf den neuen Stand nachgezogen, der zitierte Wortlaut bleibt unverändert |
+
 Kein Test, keine Code-Datei. Belege sind `make gates` (doc-check prüft Links
 und Anker, `citations`, `gate-consistency`) und der Vorher/Nachher-Vergleich
 der Anker-Zahl.
