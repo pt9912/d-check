@@ -167,7 +167,7 @@ Lerneintrag geschrieben.
   F-2/F-3/F-4), behoben im Fix-Commit. Die verwandte Beobachtung
   [`BEO-ALL/modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
   erreicht damit 3× — Ausgang `geplant`,
-  [slice-238](../open/slice-238-modul-registrierungs-spiegel-checkliste.md).
+  [slice-238](../in-progress/slice-238-modul-registrierungs-spiegel-checkliste.md).
 - Die Datei-Menge kommt aus dem Glob und nicht aus dem Scan-Bereich; eine
   Datei außerhalb der Scan-Wurzeln wird geprüft, eine gelöschte nicht.
   **Ausgang:** entfallen — das ist die bewusst gewählte, in der Spezifikation
@@ -215,13 +215,13 @@ Lerneintrag geschrieben.
   `evidence/slice-236.md` in
   [`BEO-ALL/modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
   ergänzt — Zähler steht damit bei 3×, Ausgang `geplant`
-  ([slice-238](../open/slice-238-modul-registrierungs-spiegel-checkliste.md));
+  ([slice-238](../in-progress/slice-238-modul-registrierungs-spiegel-checkliste.md));
   `evidence/slice-236.md` in
   [`BEO-ALL/briefing-datei-ueberschreitet-lade-budget`](../observations/BEO-ALL/briefing-datei-ueberschreitet-lade-budget/observation.md)
   ergänzt — Zähler steht bei 2×, weiter offen;
   [`BEO-ALL/plan-abgrenzung-im-selben-lauf-verletzt`](../observations/BEO-ALL/plan-abgrenzung-im-selben-lauf-verletzt/observation.md)
   neu angelegt, Beleg `evidence/slice-236.md` (1×).
-- **Folge-Slices:** [slice-238](../open/slice-238-modul-registrierungs-spiegel-checkliste.md)
+- **Folge-Slices:** [slice-238](../in-progress/slice-238-modul-registrierungs-spiegel-checkliste.md)
   (Sensor oder Checkliste für die Modul-Registrierungs-Spiegel) — ist eine
   Datei in `open/`.
 - **Risiken aus §6:** eines eingetreten (Folge-Slice slice-238), eines
