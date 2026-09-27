@@ -71,29 +71,29 @@ Quelle?* Nein ⇒ sie gehört nicht in die Datei.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — höchstens drei Liefer-Punkte.
 
-- [ ] **Reviewer-Agent** unter `.claude/agents/`: Rolle, Eingang, Ausgang,
+- [x] **Reviewer-Agent** unter `.claude/agents/`: Rolle, Eingang, Ausgang,
       Zeiger auf `.harness/skills/reviewer.md`, Kontext-Trennung; Größe in Bytes
       in §7.
-- [ ] **Verifier-Agent** unter `.claude/agents/`: dieselbe Form. **Vor dem Anlegen
+- [x] **Verifier-Agent** unter `.claude/agents/`: dieselbe Form. **Vor dem Anlegen
       entschieden:** wo der Verifikations-Bericht liegt, ohne dass die
       Review-Deckung (`make review-coverage`) ihn als Report eines Slice
       missdeutet oder den Report-Zähler verschiebt — belegt an einer Probe, nicht
       vermutet.
-- [ ] **`implement-slice`:** Schritt 11 gleicht `AGENTS.md` §5 an; die Übergaben
+- [x] **`implement-slice`:** Schritt 11 gleicht `AGENTS.md` §5 an; die Übergaben
       an Reviewer und Verifier stehen als Zeiger auf `AGENTS.md` §6 und die
       beiden Typen, ohne neue Regel.
-- [ ] Jede Datei besteht die Prüffrage aus §1; der unabhängige Review geht sie
+- [x] Jede Datei besteht die Prüffrage aus §1; der unabhängige Review geht sie
       **Satz für Satz** durch und führt sie in seinem Report.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8, kein
       Self-Review. Löst der neue Agent-Typ in der laufenden Sitzung nicht auf,
       steht in §7, unter welchem Typ der Review lief.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder „keine
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder „keine
       Beobachtung angefallen" in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen —
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen —
       wellenlos hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -131,16 +131,76 @@ Lerneintrag geschrieben.
 ## 6. Risiken und offene Punkte
 
 - Ein neu angelegter Agent-Typ löst in der laufenden Sitzung nicht auf.
-  **Ausgang:** bei Closure zu vergeben.
+  **Ausgang: eingetreten, weiter offen** →
+  [`BEO-ALL/agent-typ-loest-nicht-in-derselben-sitzung-auf`](../observations/BEO-ALL/agent-typ-loest-nicht-in-derselben-sitzung-auf/observation.md).
+  Genau eingetreten (R1-Aufruf mit `subagent_type: "reviewer"` scheiterte),
+  löste sich aber innerhalb derselben Sitzung ohne Repo-Änderung von selbst
+  (R2-Aufruf erfolgreich) — kein Folge-Slice, da nichts im Repo zu ändern
+  ist; als Beobachtung für künftige Implementer festgehalten.
 - Die Dateien wachsen beim nächsten Anfassen wieder (Herleitungen, Zahlen,
   Kandidatenläufe) — die Klasse, die in den Schwester-Repos zu 17 und 28 KB
-  geführt hat. **Ausgang:** bei Closure zu vergeben.
+  geführt hat. **Ausgang: weiter offen** →
+  [`BEO-ALL/duennes-werkzeug-artefakt-waechst-beim-naechsten-anfassen`](../observations/BEO-ALL/duennes-werkzeug-artefakt-waechst-beim-naechsten-anfassen/observation.md).
 - Ein Verifikations-Bericht in `docs/reviews/` verschiebt die Review-Deckung.
-  **Ausgang:** bei Closure zu vergeben.
+  **Ausgang: entfallen.** Zweifach unabhängig am Code verifiziert
+  (`hasMatchingReview` in `internal/hexagon/core/rules/reviews.go` prüft nur
+  Dateinamens-Substring, nicht Inhalt/Anzahl/Suffix) und durch einen neuen,
+  dauerhaften Test (`TestReviewsVerifierNamedReportSatisfiesCoverage`)
+  belegt.
 
 ## 7. Closure-Notiz
 
-*(Bei der Closure zu füllen.)*
+**Geliefert:** zwei dünne Claude-Code-Agent-Träger unter `.claude/agents/`
+(`reviewer.md` 2257 Byte, `verifier.md` 2627 Byte, nach den Nachzügen aus R2)
+für die Kontext-Trennung von Reviewer und Verifier — beide verweisen auf
+ihren Anweisungssatz (`.harness/skills/reviewer.md` bzw. das Baseline-
+Regelwerk) statt Inhalt zu duplizieren. `.claude/commands/implement-slice.md`
+Schritt 11 nennt CHANGELOG nicht mehr im Feature-Commit (`AGENTS.md` §5);
+ein neuer Schritt 13 zeigt auf den Reviewer-/Verifier-Handoff.
+
+**Agent-Typ-Auflösung (DoD-Pflicht):** Der erste Review-Aufruf mit
+`subagent_type: "reviewer"` schlug fehl — der Typ löste in der laufenden
+Sitzung noch nicht auf, der Review lief unter einem generischen Typ (R1). Ein
+späterer Aufruf in **derselben** Sitzung (R2) löste denselben Typ bereits
+erfolgreich auf, ohne dass sich am Repo etwas geändert hätte. Beide Reviews
+liegen unter `docs/reviews/` vor.
+
+**Zwei Review-Runden, je ein echter Fund.** R1 fand F-1 (HIGH,
+merge-blockierend): zwei Sätze — wortgleich aus dem Referenz-Repo
+`pg-change-feed` übernommen — bestanden die vom DoD verlangte Satz-für-
+Satz-Prüfung nicht (keine Verankerung in einer gerankten Quelle dieses
+Repos), sowie F-2 (MEDIUM): ein falscher Abschnitts-Anker in `verifier.md`.
+Beide behoben. R2 verifizierte die Korrektur mit einer vollständigen
+Neu-Prüfung **beider** Dateien (nicht nur der beiden benannten Stellen) und
+fand zwei kleine Nachzüge (F-3 LOW: ein präziserer Anker war verfügbar; F-4
+INFO: ein redundanter Satz) — beide sofort behoben, nicht mehr blockierend.
+
+**Bestätigt, unabhängig verifiziert:** die Verifier-Ablage-Entscheidung
+(Dateiname mit `-verify`-Suffix im selben `docs/reviews/`-Verzeichnis)
+verfälscht `make review-coverage` nicht — `hasMatchingReview` prüft nur, ob
+irgendein Dateiname die `slice-<NNN>`-Kennung trägt, nicht Inhalt, Anzahl
+oder Suffix; ein neuer, dauerhafter Test belegt es. Die
+[MR-025](../../../../harness/conventions/MR-025-spiegel-vor-dem-editieren.md)-
+Spiegel-Prüfung (`AGENTS.md` §6, `harness/README.md` §Guides) bestätigt: kein
+Nachzug nötig — beide Dokumente nennen auch `.claude/commands/
+implement-slice.md` selbst nicht, Claude-Code-spezifische Werkzeug-Dateien
+werden dort grundsätzlich nicht gespiegelt.
+
+**Steering-Loop-Einträge:** zwei neue Beobachtungen —
+[`BEO-ALL/agent-typ-loest-nicht-in-derselben-sitzung-auf`](../observations/BEO-ALL/agent-typ-loest-nicht-in-derselben-sitzung-auf/observation.md)
+(1×, `offen`) und
+[`BEO-ALL/duennes-werkzeug-artefakt-waechst-beim-naechsten-anfassen`](../observations/BEO-ALL/duennes-werkzeug-artefakt-waechst-beim-naechsten-anfassen/observation.md)
+(1×, `offen`).
+
+**Risiko-Ausgänge:** ein Risiko *entfallen* (Review-Deckung), eines
+*eingetreten* mit Register-Verweis, eines *weiter offen* mit
+Register-Verweis — siehe §6.
+
+**Register-Sichtung bei Planung:** §8 nannte zwei Treffer
+(`zustellkanal-haengt-an-werkzeugweg`,
+`kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`); keiner davon trat in
+diesem Slice als neue Instanz auf (thematisch verwandt, aber kein neuer
+Beleg fällig).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
