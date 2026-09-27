@@ -266,6 +266,9 @@ func TestDecode_StructureFehler(t *testing.T) {
 		"exempt-expect-count ohne Muster": "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    exempt-expect-count: 3\n",
 		"exempt-expect-count negativ":     "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    exempt-section-pattern: '^## A'\n    exempt-expect-count: -1\n",
 		"max-open-tasks negativ":          "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-open-tasks: -1\n",
+		// Untergrenze 1, nicht 0 (ADR-0089): beide Ränder sind ungueltig.
+		"max-lines 0":       "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-lines: 0\n",
+		"max-lines negativ": "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-lines: -1\n",
 		// Die Marken-Kopplung (ADR-0085): dieselbe halbe Aktivierung wie
 		// tasks-ignore-pattern ohne max-tasks.
 		"open-tasks-require-marker ohne max-open-tasks": "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    open-tasks-require-marker: 'Gegenstand'\n",
