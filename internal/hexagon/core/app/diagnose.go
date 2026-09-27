@@ -106,6 +106,7 @@ func AllReasons() []string {
 		rules.ReasonUsesLocalPermsNarrow, rules.ReasonWorkflowUnparsable,
 		rules.ReasonReviewMissing,
 		rules.ReasonArtifactUnmentioned,
+		rules.ReasonFileNoMatch, rules.ReasonFileLinesExceeded, rules.ReasonFileBytesExceeded,
 	}
 }
 
@@ -183,6 +184,9 @@ func reasonTexts() map[string]string {
 		rules.ReasonWorkflowUnparsable:    "Workflow-Datei oder Referenz-Ziel ist kein gültiges YAML — Befund statt Übersprung, eine unlesbare Datei ist kein geprüfter Zustand",
 		rules.ReasonReviewMissing:         "Review-Zusage ohne passenden Report unter dem konfigurierten Verzeichnis (oder leere Kandidatenmenge — fail-closed)",
 		rules.ReasonArtifactUnmentioned:   "Artefakt der Soll-Menge kommt in keinem Dokument der Ist-Menge vor (die Zeile 1 ist ein Vertrags-Platzhalter, keine Fundstelle)",
+		rules.ReasonFileNoMatch:           "Regel trifft keine Datei (auch nach Abzug von exempt-paths) — oder der Dateibaum ist nicht lesbar (fail-closed)",
+		rules.ReasonFileLinesExceeded:     "Datei hat mehr Zeilen als max-lines erlaubt",
+		rules.ReasonFileBytesExceeded:     "Datei ist größer als max-bytes erlaubt",
 	}
 }
 

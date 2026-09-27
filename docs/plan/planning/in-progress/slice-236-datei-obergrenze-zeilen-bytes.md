@@ -93,17 +93,17 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Abschnitt; die ADR trägt `Schärft:` aufwärts, mindestens drei verglichene
       Alternativen (unter anderem: `structure` erweitern · eigenes Modul ·
       Muster-Umweg), eine Fitness Function und einen `Re-Evaluierungs-Trigger`.
-- [ ] **Umsetzung:** die Fähigkeit samt Konfigurations-Parser. Tests: Grenzwert
+- [x] **Umsetzung:** die Fähigkeit samt Konfigurations-Parser. Tests: Grenzwert
       **N und N+1** je Schlüssel (Rot-Beleg gegen den Stand davor), Datei ohne
       Schlusszeilenumbruch, leere Datei, Umlaute (Bytes ≠ Zeichen), Datei mit
       Fenced-Blöcken (roh gezählt — die Abweichung aus §1 tritt **nicht** auf),
       Nicht-Markdown-Datei, Glob ohne Treffer (Befund statt Stille), ohne
       Konfigurationsblock Befundsatz byte-identisch
       ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
-- [ ] **Spiegel:** jede Aufzählung der Module und Schlüssel im Repo ist gelesen
+- [x] **Spiegel:** jede Aufzählung der Module und Schlüssel im Repo ist gelesen
       und, wo sie das Modul führen muss, im Feature-Diff mitgezogen (Liste in
       §3 **vor** dem Editieren); was Release-Prep ist, steht dort benannt.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8, kein
       Self-Review.

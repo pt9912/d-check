@@ -191,6 +191,9 @@ func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, wp driven.WorkflowPar
 		}
 		out = append(out, tf...)
 	}
+	if active["file"] {
+		out = append(out, CheckFile(fsys, cfg.File)...)
+	}
 	return out, notes, nil
 }
 

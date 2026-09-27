@@ -22,7 +22,7 @@ type ResolveFromGroup struct {
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure", "workflows", "reviews", "mentions"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure", "workflows", "reviews", "mentions", "file"}
 }
 
 // ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
@@ -87,6 +87,9 @@ type Config struct {
 	// Reviews: Parameter des Moduls reviews (DC-FA-RVW-001).
 	Reviews ReviewsConfig
 	Mentions MentionsConfig
+	// File: Regeln des Moduls file (DC-FA-FILE-001) — Zeilen-/Byte-
+	// Obergrenzen ganzer Dateien.
+	File []FileRule
 	// ConfigFile: der Wurzel-relative Pfad der TATSÄCHLICH geladenen
 	// Konfigurationsdatei — konventionell `.d-check.yml`, mit `--config`
 	// (DC-FA-CLI-012) die dort genannte. Befunde, die die Konfiguration als
@@ -714,6 +717,41 @@ func (r StructureRule) EffectiveSections() string {
 		return "one"
 	}
 	return r.Sections
+}
+
+// FileRule ist eine Regel des Moduls file (DC-FA-FILE-001): eine
+// Obergrenze für Zeilen und/oder Bytes einer GANZEN Datei — anders als
+// structure ohne Abschnitts-Selektor und ohne Beschränkung auf Markdown
+// (eine Zeilen-/Byte-Zahl gibt es für jede Dateiart). Wie structure
+// benennt die Regel ihre Dateien selbst über Files (Glob über den
+// gesamten Baum, unabhängig von scan.roots/scan.ignore) und kennt daher
+// kein <modul>.scope. MaxLines/MaxBytes sind Zeiger, damit eine
+// ABWESENDE Schwelle (Bedingung aus) von einem explizit gesetzten Wert
+// unterscheidbar bleibt.
+type FileRule struct {
+	Files       string
+	MaxLines    *int
+	MaxBytes    *int
+	ExemptPaths []string
+	Hint        string
+}
+
+// Identity ist die Regel-Identität für die Duplikat-Prüfung am
+// Config-Rand (wie StructureRule.Identity) — der Glob selbst: eine Regel
+// trägt genau EINE Zusage über ihre Dateimenge (beide Schwellen
+// zusammen, nicht als zwei Regeln über denselben Glob).
+func (r FileRule) Identity() string { return r.Files }
+
+// MessageFor wählt die Erläuterung eines Schwellen-Befunds dieser Regel:
+// den verfassten Hint, sonst die modul-eigene Meldung (wie
+// StructureRule.MessageFor). GRENZE: die beiden Befunde, die keine
+// Schwelle verletzen — unlesbarer Dateibaum und leer laufende Regel —
+// gehen NICHT hier durch; dort hat die Regel nicht gemessen.
+func (r FileRule) MessageFor(moduleMsg string) string {
+	if r.Hint != "" {
+		return r.Hint
+	}
+	return moduleMsg
 }
 
 // ClosureConfig sind die Parameter der zweiten planning-Fähigkeit

@@ -763,6 +763,7 @@ type raw struct {
 	Workflows *rawWorkflows `yaml:"workflows"`
 	Reviews   *rawReviews   `yaml:"reviews"`
 	Mentions  *rawMentions  `yaml:"mentions"`
+	File      []rawFile     `yaml:"file"`
 	// Sources ist eine bare Liste `sources[]` (spec/spezifikation.md §2;
 	// KEIN Map mit scope — das Modul nutzt den globalen Scan-Scope).
 	Sources []rawSource `yaml:"sources"`
@@ -908,6 +909,11 @@ func applyRemainingModules(r *raw, cfg *model.Config) error {
 		return mnerr
 	}
 	cfg.Mentions = mn
+	fl, flerr := applyFile(r.File)
+	if flerr != nil {
+		return flerr
+	}
+	cfg.File = fl
 	if err := applySources(r, cfg); err != nil {
 		return err
 	}
@@ -2361,6 +2367,76 @@ func applyReviews(r *rawReviews) (model.ReviewsConfig, error) {
 		}
 	}
 	return model.ReviewsConfig{DoneDir: r.DoneDir, ReviewsDir: r.ReviewsDir, ExemptPaths: r.ExemptPaths}, nil
+}
+
+// rawFile ist eine Regel des Moduls file (DC-FA-FILE-001). MaxLines/
+// MaxBytes sind Zeiger, damit eine ABWESENDE Schwelle (Bedingung aus)
+// von einem explizit gesetzten Wert unterscheidbar bleibt — wie bei
+// structures min-sentences/max-tasks.
+type rawFile struct {
+	Files       string   `yaml:"files"`
+	MaxLines    *int     `yaml:"max-lines"`
+	MaxBytes    *int     `yaml:"max-bytes"`
+	ExemptPaths []string `yaml:"exempt-paths"`
+	// Hint ist ZEIGER aus demselben Grund wie bei structure: allein die
+	// ANWESENHEIT eines leeren Wertes ist ein Konfigurations-Fehler.
+	Hint *string `yaml:"hint"`
+}
+
+// applyFile validiert die Regel-Liste am Config-Rand (wie applyStructure):
+// eine doppelte Regel-Identität ist Exit 2 — sonst fielen zwei leer
+// laufende Regeln unter der Befund-Deduplikation zusammen.
+func applyFile(rs []rawFile) ([]model.FileRule, error) {
+	out := make([]model.FileRule, 0, len(rs))
+	seen := map[string]bool{}
+	for i, r := range rs {
+		rule, err := applyFileRule(i, r)
+		if err != nil {
+			return nil, err
+		}
+		if seen[rule.Identity()] {
+			return nil, fmt.Errorf("%s: file[%d]: Regel-Identität %q kommt doppelt vor", FileName, i, rule.Identity())
+		}
+		seen[rule.Identity()] = true
+		out = append(out, rule)
+	}
+	return out, nil
+}
+
+func applyFileRule(i int, r rawFile) (model.FileRule, error) {
+	fail := func(f string, a ...any) (model.FileRule, error) {
+		return model.FileRule{}, fmt.Errorf("%s: file[%d]: "+f, append([]any{FileName, i}, a...)...)
+	}
+	if r.Files == "" {
+		return fail("files ist Pflicht")
+	}
+	if _, err := path.Match(r.Files, "probe"); err != nil {
+		return fail("files %q ist kein gültiges Glob: %v", r.Files, err)
+	}
+	for _, g := range r.ExemptPaths {
+		if _, err := path.Match(g, "probe"); err != nil {
+			return fail("exempt-paths %q ist kein gültiges Glob: %v", g, err)
+		}
+	}
+	if r.MaxLines == nil && r.MaxBytes == nil {
+		return fail("mindestens eines von max-lines/max-bytes ist Pflicht — sonst prüft die Regel nichts")
+	}
+	if r.MaxLines != nil && *r.MaxLines < 0 {
+		return fail("max-lines %d muss >= 0 sein", *r.MaxLines)
+	}
+	if r.MaxBytes != nil && *r.MaxBytes < 0 {
+		return fail("max-bytes %d muss >= 0 sein", *r.MaxBytes)
+	}
+	if r.Hint != nil && strings.TrimSpace(*r.Hint) == "" {
+		return fail("hint ist gesetzt, aber leer — ein leerer Hinweis sagt nichts zu")
+	}
+	if r.Hint != nil && strings.ContainsAny(*r.Hint, "\t\r\n") {
+		return fail("hint enthält Tab oder Zeilenumbruch — die Befund-Zeile ist tab-getrennt und einzeilig")
+	}
+	return model.FileRule{
+		Files: r.Files, MaxLines: r.MaxLines, MaxBytes: r.MaxBytes,
+		ExemptPaths: r.ExemptPaths, Hint: derefString(r.Hint),
+	}, nil
 }
 
 // applyObservations validiert die Register-Deckungs-Parameter. Dieselbe
