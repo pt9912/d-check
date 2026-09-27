@@ -2425,6 +2425,17 @@ func TestCLI233_ReferenzDefinition_LebendesZiel(t *testing.T) {
 	}
 }
 
+// Boundary: eine Definition mit externem Schema bleibt befundfrei — das
+// Modul `links` ignoriert externe Ziele wie bei einem Inline-Link.
+func TestCLI233_ReferenzDefinition_ExternesSchema(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "[label]: https://example.invalid/pfad\n")
+	code, _, stderr := run(t, "--disable", "anchors", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+}
+
 // Boundary: eine Definition innerhalb eines Fenced-Code-Blocks bleibt
 // befundfrei — dieselbe Vorverarbeitung wie bei Inline-Links.
 func TestCLI233_ReferenzDefinition_ImFence(t *testing.T) {
