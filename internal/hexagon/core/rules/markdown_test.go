@@ -151,7 +151,7 @@ func TestExtractLinks_Kanten(t *testing.T) {
 	}
 }
 
-// ADR-0091 (Review R1-H1): ein unbalanciertes `[` in gewöhnlicher Prosa
+// ADR-0092: ein unbalanciertes `[` in gewöhnlicher Prosa
 // (keine schließende `]` auf seiner Zeile) darf NICHT mit einer späteren,
 // unabhängigen `](…)`-Sequenz im selben Absatz zu einem erfundenen Link
 // verschmelzen — die Linktext-Klammer bleibt strikt zeilenlokal, nur die
@@ -167,7 +167,7 @@ func TestExtractLinks_UnbalancierteKlammerVerschmilztNicht(t *testing.T) {
 	}
 }
 
-// ADR-0091: eine Zieladresse hinter `](` mit genau einem Zeilenumbruch wird
+// ADR-0092: eine Zieladresse hinter `](` mit genau einem Zeilenumbruch wird
 // erkannt (Grenzwert: der Lookahead reicht exakt eine Zeile weit), der Fund
 // wird der öffnenden Zeile zugeschrieben.
 func TestExtractLinks_ZeilenumbruchHinterKlammer(t *testing.T) {
@@ -182,7 +182,7 @@ func TestExtractLinks_ZeilenumbruchHinterKlammer(t *testing.T) {
 	}
 }
 
-// ADR-0091: zwei vollständige, einzeilige Links auf unmittelbar
+// ADR-0092: zwei vollständige, einzeilige Links auf unmittelbar
 // aufeinanderfolgenden Zeilen desselben Absatzes bleiben unabhängig — der
 // Ein-Zeilen-Lookahead greift nur, wenn die Adress-Klammer auf der
 // aktuellen Zeile NICHT schließt.

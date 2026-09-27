@@ -495,7 +495,7 @@ type LinkSpan struct {
 // gemeinsamer Iterator von ExtractLinks und ExtractLinkSpans. next ist die
 // Folgezeile IM SELBEN ABSATZ (sonst ""): reißt eine Zieladresse unmittelbar
 // hinter `](` mit einem einzigen Zeilenumbruch ab, wird next herangezogen, um
-// sie zu vervollständigen (ADR-0091) — die Linktext-Klammer `[…]` bleibt dabei
+// sie zu vervollständigen (ADR-0092) — die Linktext-Klammer `[…]` bleibt dabei
 // strikt auf `text` beschränkt (s. parseLinkAt). spillover (Rückgabe) ist die
 // Zahl der aus next verbrauchten Bytes (0, wenn kein Link hineinreichte); der
 // Aufrufer zieht sie von next ab, bevor er next als nächste "aktuelle" Zeile
@@ -519,7 +519,7 @@ func forEachLink(text, next string, fn func(LinkRef, LinkSpan)) (spillover int) 
 // ExtractLinks findet Inline-Links [text](ziel) und Bilder ![alt](ziel);
 // mehrere pro Zeile werden alle erfasst (spec/spezifikation.md
 // §DC-FA-LINK-001.a Schritt 3). Eine Zieladresse, die unmittelbar hinter `](`
-// einen einzigen Zeilenumbruch trägt, wird zusätzlich erkannt (ADR-0091) —
+// einen einzigen Zeilenumbruch trägt, wird zusätzlich erkannt (ADR-0092) —
 // begrenzt auf EINEN Zeilen-Lookahead, nie einen ganzen Absatz: die
 // Linktext-Klammer bleibt zeilenlokal (s. parseLinkAt), nur die
 // Adress-Klammer darf in die unmittelbare Folgezeile reichen. Ein Fund wird
@@ -559,8 +559,8 @@ func ExtractLinks(lines []Line) []LinkRef {
 
 // ExtractLinkSpans liefert die Link-Spannen einer vorverarbeiteten Zeile in
 // Vorkommens-Reihenfolge — strikt zeilenbasiert (kein Zeilen-Lookahead): die
-// String-Signatur bekommt strukturell nie mehr als eine Zeile, kann die
-// absatzweise Erweiterung aus ExtractLinks/ADR-0091 also nicht sehen
+// String-Signatur bekommt strukturell nie mehr als eine Zeile, kann den
+// Ein-Zeilen-Lookahead aus ExtractLinks/ADR-0092 also nicht sehen
 // (benannte Grenze, spec/spezifikation.md §DC-FA-LINK-001.a Schritt 3).
 func ExtractLinkSpans(text string) []LinkSpan {
 	var spans []LinkSpan
@@ -574,10 +574,9 @@ func ExtractLinkSpans(text string) []LinkSpan {
 // `[…]` bleibt STRIKT auf s (die aktuelle Zeile) beschränkt — sonst
 // verschmölze ein unbalanciertes `[` in gewöhnlicher Prosa mit einer
 // späteren, unabhängigen `](…)`-Sequenz im selben Absatz zu einem erfundenen
-// Link (Review-Befund R1-H1, ADR-0091). Schließt die Adress-Klammer `(…)`
-// nicht innerhalb von s, wird next (falls nicht leer) genau einmal
-// angehängt, um eine Zieladresse zu erkennen, die hinter `](` einen
-// einzigen Zeilenumbruch trägt.
+// Link (ADR-0092). Schließt die Adress-Klammer `(…)` nicht innerhalb von s,
+// wird next (falls nicht leer) genau einmal angehängt, um eine Zieladresse
+// zu erkennen, die hinter `](` einen einzigen Zeilenumbruch trägt.
 func parseLinkAt(s, next string, i int) (LinkRef, LinkSpan, bool) {
 	isImage := false
 	start := i

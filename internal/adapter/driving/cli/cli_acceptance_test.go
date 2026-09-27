@@ -2328,7 +2328,7 @@ func TestCLI076_FenceInfozeileVerdecktLinkNicht(t *testing.T) {
 }
 
 // Negative: eine Zieladresse hinter einem Zeilenumbruch nach `](`
-// wird von der gemeinsamen Extraktion erkannt (ADR-0091) — ein totes Ziel
+// wird von der gemeinsamen Extraktion erkannt (ADR-0092) — ein totes Ziel
 // meldet target-missing wie bei der Inline-Form, gemeldet auf der ÖFFNENDEN
 // Zeile des Links (Zeile 1, nicht Zeile 2).
 func TestCLI232_ZeilenumbruchHinterKlammer_TotesZiel(t *testing.T) {
@@ -2355,7 +2355,7 @@ func TestCLI232_ZeilenumbruchHinterKlammer_LebendesZiel(t *testing.T) {
 }
 
 // Boundary: Bilder teilen denselben Parser und ziehen mit
-// (ADR-0091, unpromised, aber gemessen).
+// (ADR-0092, unpromised, aber gemessen).
 func TestCLI232_ZeilenumbruchHinterKlammer_Bild(t *testing.T) {
 	root := t.TempDir()
 	write(t, root, "docs/a.md", "![alt](\nfehlt.png)\n")
@@ -2370,7 +2370,7 @@ func TestCLI232_ZeilenumbruchHinterKlammer_Bild(t *testing.T) {
 
 // Kontrolle: Inline-, Titel-, Spitzklammer- und Klammer-im-Ziel-Form
 // bleiben unveraendert in ihrer bisherigen Zeile — keine Regression durch
-// den begrenzten Ein-Zeilen-Lookahead (ADR-0091), auch wenn diese Formen im
+// den begrenzten Ein-Zeilen-Lookahead (ADR-0092), auch wenn diese Formen im
 // selben Absatz wie ein Zeilenumbruch-Link stehen.
 func TestCLI232_UnveraenderteKontrollformen(t *testing.T) {
 	root := t.TempDir()
