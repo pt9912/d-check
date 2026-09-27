@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.92.0
+**Version:** 0.92.1
 
 **Status:** Draft
 
@@ -1110,14 +1110,18 @@ bestehenden Prüfung. Ohne den Block ist der Befundsatz byte-identisch
 
 **Ziel hinter dem Zeilenumbruch.** Trägt die Zieladresse unmittelbar hinter
 `](` einen **einzigen** Zeilenumbruch (optionaler Whitespace davor/danach),
-wird sie von der gemeinsamen Extraktion **absatzweise** erkannt — wie ein
-Inline-Link, dessen Syntax vollständig in einer Zeile steht. Der Fund wird
-der **öffnenden** Zeile des Links (`[`/`![`) zugeschrieben. Diese Erweiterung
-gilt für die sechs Module, die die gemeinsame `[]Line`-Extraktion nutzen
-(`links`, `links.resolve-from`, `anchors`, `matrix`, `external`, `tracked`;
-Bilder teilen denselben Parser und werden mitgezogen). **Zwei Grenzen bleiben
+wird sie von der gemeinsamen Extraktion erkannt: **nur** die Adress-Klammer
+darf um die unmittelbare Folgezeile im selben Absatz verlängert werden, die
+Linktext-Klammer bleibt **strikt zeilenlokal** — ein unbalanciertes `[` in
+gewöhnlicher Prosa verschmilzt dadurch nicht mit einer späteren, unabhängigen
+`](…)`-Sequenz zu einem erfundenen Link. Der Fund wird der **öffnenden**
+Zeile des Links (`[`/`![`) zugeschrieben. Diese Erweiterung gilt für die
+sechs Module, die die gemeinsame `[]Line`-Extraktion nutzen (`links`,
+`links.resolve-from`, `anchors`, `matrix`, `external`, `tracked`; Bilder
+teilen denselben Parser und werden mitgezogen). **Zwei Grenzen bleiben
 bestehen:** ein Zeilenumbruch im Linktext oder zwischen Adresse und Titel
-wird nicht erkannt; und die string-basierte Extraktion (Module `ids`, `pins`,
+wird nicht erkannt — durch die zeilenlokale Linktext-Klammer strukturell
+ausgeschlossen; und die string-basierte Extraktion (Module `ids`, `pins`,
 `--repair`, die Zitat-Prüfung des Moduls `planning`) bleibt zeilenbasiert —
 sie erhält strukturell nie mehr als eine Zeile. `--repair` erzeugt für die
 neue Form deshalb keinen Fix-Kandidaten. Begründung in begleitender ADR.
@@ -3914,6 +3918,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.92.1 | 2026-09-27 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf (0.92.0) sagte eine **absatzweise** Erkennung zu (ganzer Absatz als ein String). Der Review fand: die zugrunde liegende Klammer-Zählung kennt keine Zeilengrenzen — ein unbalanciertes `[` in gewöhnlicher Prosa konnte dadurch mit einer späteren, unabhängigen `](…)`-Sequenz zu einem **erfundenen Link** verschmelzen, empirisch nachgewiesen. Die Zusage ist jetzt enger: **nur** die Adress-Klammer darf um die unmittelbare Folgezeile verlängert werden, die Linktext-Klammer bleibt **strikt zeilenlokal** — dieselbe Fehlerklasse ist damit strukturell ausgeschlossen. Die zugesagte Form (Zeilenumbruch hinter `](`, Fundzeile = öffnende Zeile, zwei Akzeptanzkriterien) ändert sich nicht |
 | 0.92.0 | 2026-09-27 | [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) um die Erkennung eines Zeilenumbruchs unmittelbar hinter `](` erweitert (additiv, standardmäßig an; Erweiterung statt neues Kürzel — dieselbe Prüfung, verengte Extraktions-Grenze): die gemeinsame `[]Line`-Extraktion (`ExtractLinks`, sechs Konsumenten `links`/`links.resolve-from`/`anchors`/`matrix`/`external`/`tracked`) erkennt eine Zieladresse jetzt **absatzweise**, wenn sie einen einzigen Zeilenumbruch hinter `](` trägt — wie die bestehende absatzweise Inline-Code-Erkennung. Der Fund wird der öffnenden Zeile des Links zugeschrieben; Bilder teilen den Parser und werden mitgezogen. Zwei Grenzen bleiben benannt: Zeilenumbruch im Linktext bzw. vor einem Titel-Suffix bleibt unerkannt, und die string-basierte Extraktion (`ids`, `pins`, `--repair`, `planning`-Zitate) bleibt strikt zeilenbasiert — `--repair` erzeugt für die neue Form keinen Fix-Kandidaten. Zwei neue Akzeptanzkriterien (Happy, Negative). Begründung in begleitender ADR. **Anlass ist ein Change Request** eines Konsumenten | — |
 | 0.91.0 | 2026-09-27 | [`DC-FA-CLI-006`](#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) um die Randbedingungs-Reihe `RB` erweitert (additiv; Erweiterung statt neues Kürzel — dieselbe Präfix-Ableitung wie `FA`/`QA`): der `ai-harness`-Ableitungs-Durchlauf (repo-bewusst, ohne `--id-prefix`) erkennt `<PREFIX>-RB-<NN>`-Kennungen jetzt sowohl bei der Präfix-Ableitung als auch im erzeugten Anforderungs-`ids`-Muster — Letzteres nur, wenn derselbe Durchlauf mindestens eine `-RB-`-Überschrift sah, sonst bleibt die Ausgabe **byte-gleich** (dieselbe Bedingung gilt nicht für `--id-prefix` oder `ai-harness-init`, die das Lastenheft für diesen Zweck nicht lesen — benannte Grenze). Drei neue Akzeptanzkriterien (Happy, Abwesend, Mehrdeutigkeit — Letztere verschärft das bestehende Verhalten bei mehreren Präfixen auf den Fall, dass das zweite Präfix nur über `-RB-` auftritt). Ein neuer Out-of-Scope-Satz benennt die Grenze zur Requirements Traceability Matrix ([`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)): die Erweiterung wirkt nur auf die Prüfungs-Musterableitung, nicht auf die RTM-Anforderungsmenge. **Anlass ist ein Change Request** des Konsumenten `ai-harness-course` (2026-09-27) — die Randbedingungs-Reihe selbst ist dort noch in einer ungetaggten Welle, die hier gepinnte Baseline kennt sie nicht; d-check trägt die Form als Konsument dieses CR, nicht als adoptierte Baseline-Regel. Begründung (Alternativen, benannte Grenzen) in begleitender ADR | — |
 | 0.90.0 | 2026-09-27 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um `max-lines` erweitert (**zwölfte** Bedingung, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): Obergrenze der Zeilen des **bereinigten** Abschnittstexts (dieselbe Grundmenge wie `min-sentences` — Fenced-Code **nicht** mitgezählt), Grund-Code `section-lines-exceeded`, Meldung auf der Überschriften-Zeile. Untergrenze `1`, nicht `0` (ein Abschnitt hat so gut wie nie null bereinigte Zeilen; `0` wäre faktisch ein Verbot). Vier neue Akzeptanzkriterien (Grenzwert, Fenced-Code-Ausnahme, Config-Rand, Modul-aus). Ohne den Schlüssel byte-identisch. **Anlass ist ein eingehender Change Request** des Adopters `ai-harness-course`, der die Bedingung als „zehnte" zählt und einen Out-of-Scope-Satz zu Alters-Mechaniken als Beleg zitiert, der tatsächlich einen ID-Stichtag ausschließt, nicht eine Alters-Prüfung — die eigene Ordinal-Zählung dieser Historie (achte bis elfte Bedingung s. u.) macht `max-lines` zur zwölften; der Schluss des CR (keine Alters-Mechanik) bleibt richtig, nur der zitierte Beleg nicht. Begründung in begleitender ADR | [CR `ai-harness-course` 2026-09-27](../docs/plan/cr/2026-09-27-cr-eingehend-ai-harness-course-structure-max-lines.md) |

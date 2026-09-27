@@ -1,6 +1,6 @@
 # ADR-0091: Die gemeinsame `[]Line`-Link-Extraktion erkennt einen Zeilenumbruch hinter `](` absatzweise — die string-basierte Extraktion bleibt zeilenbasiert
 
-**Status:** Accepted
+**Status:** Superseded by ADR-0092
 
 **Datum:** 2026-09-27
 
@@ -156,3 +156,4 @@ Ohne eines von beiden: permanent.
 | Datum | Ereignis |
 |---|---|
 | 2026-09-27 | Proposed → Accepted (`slice-232`) |
+| 2026-09-27 | Accepted → Superseded by ADR-0092: unabhängiger Review (R1-H1, HIGH) hat die absatzweise Faltung als fehlerhaft nachgewiesen — ein unbalanciertes `[` in gewöhnlicher Prosa konnte mit einer späteren, unabhängigen `](…)`-Sequenz im selben Absatz zu einem erfundenen Link verschmelzen. ADR-0092 begrenzt den Lookahead auf eine Zeile und die Adress-Klammer |
