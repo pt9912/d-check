@@ -20,7 +20,7 @@ Eine neue ADR begleitet die Änderung (die nächste freie Nummer).
 [`DC-FA-LINK-001.a`](../../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
 (Ziel-Menge des Moduls `links`).
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** claude-sonnet-5. **Datum:** 2026-09-27.
 
@@ -183,6 +183,14 @@ deklariert, keine Ausdifferenzierung nötig.
 (Stichworte Referenz-Definition, Reference-Style, `links`-Modul): **keine
 Treffer**. Die im Change Request genannte Beobachtung liegt im Register des
 Konsumenten.
+
+**Vorgelagert — Nachtlauf-Stand lesen** (bei der Beanspruchung, 2026-09-27):
+`make nightly-state` meldet `upstream-drift.yml` **ROT** (Lauf
+2026-09-27T06:03:41Z, unverändert seit slice-232), `image-scan.yml` **grün**
+(Lauf 2026-09-27T09:18:12Z). Derselbe veraltete Stand wie bei slice-232: vier
+der fünf gemeldeten Fremd-Release-Stände sind bereits gehoben, die
+Kurs-Baseline (`v6.9.0` → `v6.10.0`) bleibt bewusst zurückgestellt bis
+`v6.11.0`. Keiner der fünf Punkte berührt dieses Modul (`links`).
 
 **Modus-Begründungsblock:** alle berührten Sub-Areas GF.
 
