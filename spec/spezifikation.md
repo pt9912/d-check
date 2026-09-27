@@ -984,9 +984,16 @@ strippen wäre, und damit keine geteilte Antwort zu übernehmen.
    Whitespace, Zieladresse und optionaler Titel-Suffix **auf derselben
    Zeile** — unabhängig davon, ob das Label an anderer Stelle verwendet wird
    (die Verwendung wird nicht aufgelöst). Der Fund wird der
-   Definitions-Zeile zugeordnet, Ziel-Normalisierung (Schritt 4) und
-   Titel-Abtrennung sind dieselben wie bei einem Inline-Link. **Drei
-   benannte Grenzen:** eine Definition trägt **kein** Blockquote- oder
+   Definitions-Zeile zugeordnet; die Zieladresse selbst wird wie bei einem
+   Inline-Link normalisiert (Schritt 4), ihre Abgrenzung vom optionalen
+   Titel ist aber **strenger**: das Ziel-Token darf **keinen** eingebetteten
+   Whitespace tragen (bare oder `<…>`-umschlossen), und **danach** darf nur
+   noch optionaler Whitespace oder ein korrekt delimitierter Titel (`"…"`,
+   `'…'` oder `(…)`) bis zum Zeilenende folgen — sonst bleibt die **ganze**
+   Zeile unerkannt. Ohne diese Prüfung würde eine gewöhnliche Prosazeile wie
+   `[TERM]: First In, First Out` fälschlich als Definition mit erfundenem
+   Ziel „First" gelesen. **Drei weitere benannte Grenzen:** eine Definition
+   trägt **kein** Blockquote- oder
    Listen-Präfix vor der öffnenden Klammer (nur die drei Leerzeichen der
    CommonMark-Einrückungsgrenze); ihr Label kennt **keine**
    Backslash-Escapes — ein `\]` **vor** dem eigentlichen Label-Ende lässt
@@ -3519,6 +3526,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-09-27 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3 präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf behauptete, Ziel-Normalisierung UND Titel-Abtrennung einer Definition seien „dieselben wie bei einem Inline-Link" — der Review (R1-H1, HIGH) zeigte am Testfall `[TERM]: First In, First Out`, dass der naive Whitespace-Schnitt eine gewöhnliche Prosazeile fälschlich als Definition mit erfundenem Ziel liest. Die Zusage ist jetzt präzise: das Ziel-Token trägt keinen eingebetteten Whitespace, danach folgt nur optionaler Whitespace oder ein korrekt delimitierter Titel (`"…"`, `'…'`, `(…)`), sonst bleibt die ganze Zeile unerkannt |
 | 2026-09-27 | Nachzug **vor** dem ersten Test, **vor** der ersten Closure dieser Erweiterung: §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3 präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf beschrieb einen `\]` im Label als „beendet die Label-Erkennung wie ein unescaptes `]`" — die eigene Verifikation der Erkennungs-Regex vor dem ersten Test ergab: die verankerte Regex scheitert an dieser Eingabe vollständig, die **ganze** Zeile bleibt unerkannt, statt nur die Label-Grenze zu verschieben. Die zugesagte Form ändert sich nicht, nur die Beschreibung dieser einen Grenze |
 | 2026-09-27 | §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3 um die Erkennung von Link-Referenz-Definitionen (`[label]: ziel "titel"`) erweitert ([`DC-FA-LINK-001`](lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) 0.93.0, additiv, Begründung in begleitender ADR): dieselbe gemeinsame Extraktion (`ExtractLinks`) erkennt eine Definition unabhängig von ihrer Verwendung und ordnet den Fund ihrer Zeile zu; Ziel-Normalisierung und Titel-Abtrennung sind dieselben wie bei einem Inline-Link. Drei benannte Grenzen: kein Blockquote-/Listen-Präfix, keine Backslash-Escapes im Label, kein Zeilenumbruch vor Ziel oder Titel — die Definition ist strukturell einzeilig. Fünf der sechs Konsumenten behandeln eine Definition wie jeden anderen `LinkRef`; das Modul `anchors` überspringt sie vollständig (neuer Out-of-Scope-Satz in [`DC-FA-ANCH-001`](lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors)). **Anlass ist ein Change Request** eines Konsumenten |
 | 2026-09-27 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3 präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf beschrieb eine **absatzweise Faltung** (ganzer Absatz zu einem String zusammengefügt, wie die Inline-Code-Erkennung aus Schritt 2). Der Review fand: `matchBracket` zählt Klammer-Tiefe ohne Zeilen-Rücksicht — ein unbalanciertes `[` in gewöhnlicher Prosa konnte dadurch mit einer späteren, unabhängigen `](…)`-Sequenz zu einem **erfundenen Link** verschmelzen (empirisch am Testfall nachgewiesen). Die Zusage ist jetzt enger: **nur** die Adress-Klammer darf um eine Zeile verlängert werden, die Linktext-Klammer bleibt **strikt zeilenlokal** — dieselbe Fehlerklasse ist dadurch strukturell ausgeschlossen statt vermieden. Die zugesagte Form selbst (ein Zeilenumbruch hinter `](`, Fundzeile = öffnende Zeile) ändert sich nicht |

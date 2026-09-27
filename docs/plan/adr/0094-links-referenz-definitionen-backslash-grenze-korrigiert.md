@@ -1,6 +1,6 @@
 # ADR-0094: Ein Backslash im Definitions-Label lässt die ganze Zeile unerkannt, nicht nur die Label-Grenze (supersedes ADR-0093)
 
-**Status:** Accepted
+**Status:** Superseded by ADR-0095
 
 **Supersedes:** ADR-0093
 
@@ -84,3 +84,4 @@ Bedingung wie ADR-0093 Re-Evaluierungs-Trigger 3). Ohne das: permanent.
 | Datum | Ereignis |
 |---|---|
 | 2026-09-27 | Proposed → Accepted (`slice-233`, Nachzug vor dem ersten Test) |
+| 2026-09-27 | Accepted → Superseded by ADR-0095: unabhängiger Review (R1-H1, HIGH) fand, dass die Titel-Abtrennung entgegen der Behauptung „identisch zur Titel-Abtrennung eines Inline-Links" keine echte CommonMark-Titel-Validierung vornahm — eine Prosa-Zeile wie `[TERM]: First In, First Out` wurde faelschlich als Definition mit erfundenem Ziel erkannt. ADR-0095 ergaenzt eine Titel-Delimiter-Pruefung |
