@@ -90,7 +90,7 @@ Lastenheft und Spezifikation, nicht nur in den Code.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — höchstens drei Liefer-Punkte.
 
-- [ ] **Vertrag:** `spec/lastenheft.md` (Struktur-Anforderung: Bedingungs-Tabelle
+- [x] **Vertrag:** `spec/lastenheft.md` (Struktur-Anforderung: Bedingungs-Tabelle
       um `max-lines` (int ≥ 1) ⇒ `section-lines-exceeded` erweitert, drei
       Akzeptanzkriterien aus dem Break-Test des CR — Grenzwert N/N+1,
       fehlender Abschnitt, `sections: one` mit mehreren Treffern —, die
@@ -106,7 +106,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       verglichene Alternativen (u. a. `forbid-pattern`-Wiederholungs-Muster,
       eine Zeichen- statt Zeilen-Zählung, „nichts tun"), eine Fitness Function,
       einen `Re-Evaluierungs-Trigger`.
-- [ ] **Umsetzung:** `MaxLines *int` an `model.StructureRule`, Validierung am
+- [x] **Umsetzung:** `MaxLines *int` an `model.StructureRule`, Validierung am
       Config-Rand (`max-lines` explizit < 1 ⇒ Exit 2 — Untergrenze 1, nicht 0:
       ein Abschnitt hat immer mindestens die Überschriftenzeile im rohen Text,
       aber der bereinigte Body kann bei `max-lines: 0` nie befundfrei sein,
@@ -121,18 +121,18 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       `section-ambiguous`, keine Messung), `hint` gewinnt gegen die
       modul-eigene Meldung, ohne den Schlüssel byte-identisch
       ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
-- [ ] **Spiegel:** `AllReasons()`/`reasonTexts()` (`internal/hexagon/core/app/diagnose.go`)
+- [x] **Spiegel:** `AllReasons()`/`reasonTexts()` (`internal/hexagon/core/app/diagnose.go`)
       um den neuen Grund-Code; Spiegel-Liste in §3 **vor** dem Editieren, was
       Release-Prep ist (Handbuch, CHANGELOG, README) steht dort benannt statt
       übergangen.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben oder „keine
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben oder „keine
       Beobachtung angefallen" in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen —
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen —
       wellenlos hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -187,20 +187,68 @@ Lerneintrag geschrieben.
 ## 6. Risiken und offene Punkte
 
 - Die Untergrenze `max-lines >= 1` ist eine Design-Entscheidung dieses Plans,
-  keine Vorgabe des CR. **Ausgang:** bei Closure zu vergeben (die ADR trägt
-  die Begründung; ein anderer Wert bliebe Review-Sache).
+  keine Vorgabe des CR. **Ausgang:** entfallen — der unabhängige Review
+  (`docs/reviews/2026-09-27-slice-237-structure-max-lines-review-r1.md`) hat
+  die Untergrenze gegen Config/Spec/Test geprüft und ohne Befund
+  bestätigt; die Begründung trägt
+  [ADR-0089](../../adr/0089-structure-max-lines-zwoelfte-bedingung.md) (c).
 - Die Fenced-Code-Ausnahme kann bei einem Abschnitt mit viel Beispielcode und
   wenig Prosa dazu führen, dass `max-lines` nie greift, obwohl die Datei
   insgesamt wächst — das deckt eher `file[].max-lines` (slice-236) ab.
-  **Ausgang:** bei Closure zu vergeben (benannte Grenze, kein Defekt).
+  **Ausgang:** entfallen — als benannte Grenze in `spec/lastenheft.md`,
+  `spec/spezifikation.md` (Schema-Zeile) und
+  [ADR-0089](../../adr/0089-structure-max-lines-zwoelfte-bedingung.md)
+  §Konsequenzen dokumentiert, kein Rückbau nötig.
 - Zwei gleich benannte Schlüssel (`structure[].max-lines`,
   `file[].max-lines`) mit unterschiedlicher Semantik sind ein
-  Verwechslungsrisiko in Doku und Support. **Ausgang:** bei Closure zu
-  vergeben (die Abgrenzung steht im Vertrag, ist aber keine Sensor-Zusage).
+  Verwechslungsrisiko in Doku und Support. **Ausgang:** weiter offen →
+  [`BEO-ALL/max-lines-namenskollision-structure-file`](../observations/BEO-ALL/max-lines-namenskollision-structure-file/observation.md)
+  im Register (1×;
+  [ADR-0089](../../adr/0089-structure-max-lines-zwoelfte-bedingung.md) trägt
+  denselben Punkt zusätzlich als eigenen Re-Evaluierungs-Trigger).
 
 ## 7. Closure-Notiz
 
-*(Bei der Closure zu füllen.)*
+- **Was hat funktioniert:** Die Drei-Commit-Zerlegung (CR ablegen → Vertrag →
+  Code) hielt sauber, unabhängig vom unabhängigen Review bestätigt — keine
+  Vermischung, kein README/Handbuch im Feature-Commit (anders als beim
+  Schwester-Slice slice-236, F-1). Die gezielte Prüfung gegen die dortigen
+  Findings (Spiegel-Vollständigkeit Bereichskürzel/Glossar/Betriebsdoku) hat
+  bestätigt, dass sie hier nicht greifen, weil `max-lines` eine Erweiterung
+  einer bestehenden Anforderung ist, kein neues Modul.
+- **Was ging anders als geplant:** Der unabhängige Review fand einen
+  MEDIUM-Befund (F-1): der Config-Rand-Test für `max-lines < 1` fehlte in
+  `TestDecode_StructureFehler`, obwohl Implementierung und Vertrag korrekt
+  waren. Nachgezogen in einem eigenen Commit
+  (`321d1cac`, R1-F-1). Zusätzlich musste `structureConditions` wegen
+  `gocognit` (Komplexität > 20) refaktoriert werden — die neue Bedingung
+  wanderte in eine eigene Funktion `maxLinesViolation`.
+- **Steering-Loop-Eintrag:** keiner — dieser Slice hat kein Register-Item auf
+  3× gehoben, das eine neue Regel/einen neuen Sensor/eine Spec-Lücke
+  verkörpert; die eine Beobachtung, die 3× erreichte
+  (`BEO-ALL/briefing-datei-ueberschreitet-lade-budget`), bekam den Ausgang
+  **geplant** (siehe unten), keinen verkörperten.
+- **Beobachtungs-Register (`../observations/`):**
+  `BEO-ALL/briefing-datei-ueberschreitet-lade-budget/evidence/slice-237.md`
+  neu angelegt — Zähler steht damit bei 3×; Lese-Schritt (wellenlos, durch
+  diese Closure ausgelöst) weist den Ausgang **geplant** zu:
+  `slice-239` (Auftraggeber-Entscheidung zu Schwelle und Werkzeug für
+  `AGENTS.md`), `state.md` entsprechend fortgeschrieben. Zusätzlich neu
+  angelegt: `BEO-ALL/max-lines-namenskollision-structure-file/` (1×, siehe
+  §6 dritter Punkt).
+- **Folge-Slices:** `slice-239` (Eine Zeilenobergrenze für `AGENTS.md`
+  aktivieren) — liegt als Datei in `open/`.
+- **Risiken aus §6:** alle drei mit Ausgang — siehe §6.
+- **Drei Paarungen** (wellenlos, hier geprüft):
+  - **Anker:** keiner zu prüfen — kein Steering-Loop-Eintrag mit `liegt in`
+    in diesem Slice (siehe oben).
+  - **Folge-Slice:** `slice-239` existiert als Datei in
+    `docs/plan/planning/open/slice-239-agents-md-zeilenbudget-schwelle.md`
+    — geprüft.
+  - **Register:** beide zitierten Pfade
+    (`BEO-ALL/briefing-datei-ueberschreitet-lade-budget`,
+    `BEO-ALL/max-lines-namenskollision-structure-file`) existieren als
+    Verzeichnis mit nicht-leerem `evidence/` — geprüft.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
