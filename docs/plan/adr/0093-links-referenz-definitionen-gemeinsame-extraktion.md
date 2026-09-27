@@ -1,6 +1,6 @@
 # ADR-0093: Link-Referenz-Definitionen werden über die gemeinsame Extraktion geprüft, unabhängig von ihrer Verwendung — mit einer Ausnahme (`anchors`)
 
-**Status:** Accepted
+**Status:** Superseded by ADR-0094
 
 **Datum:** 2026-09-27
 
@@ -134,3 +134,4 @@ Ohne eines von diesen: permanent.
 | Datum | Ereignis |
 |---|---|
 | 2026-09-27 | Proposed → Accepted (`slice-233`) |
+| 2026-09-27 | Accepted → Superseded by ADR-0094: eigene Verifikation der Regex vor dem ersten Test widerlegte die Rationale zu Grenze 2 — ein `\]` im Label führt nicht zu einer falschen, aber unschädlichen Label-Grenze, sondern lässt die **ganze** Zeile unerkannt (der ankernde regulär Ausdruck scheitert vollständig). ADR-0094 korrigiert nur diesen Satz |

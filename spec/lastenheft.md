@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.93.0
+**Version:** 0.93.1
 
 **Status:** Draft
 
@@ -1141,11 +1141,12 @@ Erweiterung gilt für dieselben sechs Module wie die gemeinsame
 eine Definition nicht, ein Fragment-Anteil des Ziels bleibt ungeprüft (die
 Anker-Anforderung gilt Links, nicht Definitionen). **Drei Grenzen bleiben
 bestehen:** eine Definition beginnt **außerhalb** von Blockquote und Liste
-(kein `>`- oder Listen-Präfix vor der öffnenden Klammer); ihr Label trägt
-**keine** Backslash-Escapes (ein `\]` im Label wird nicht als Teil des Labels
-erkannt); und Ziel oder Titel **hinter einem Zeilenumbruch** werden nicht
-erkannt — dieselbe zeilenlokale Grenze wie beim Linktext eines Inline-Links.
-Begründung in begleitender ADR.
+(kein `>`- oder Listen-Präfix vor der öffnenden Klammer); ihr Label kennt
+**keine** Backslash-Escapes — ein `\]` **vor** dem eigentlichen Label-Ende
+lässt die **ganze** Zeile unerkannt (still, ohne Fehlbefund), statt nur die
+Label-Grenze zu verschieben; und Ziel oder Titel **hinter einem
+Zeilenumbruch** werden nicht erkannt — dieselbe zeilenlokale Grenze wie
+beim Linktext eines Inline-Links. Begründung in begleitender ADR.
 
 **Akzeptanzkriterien:**
 
@@ -3947,6 +3948,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.93.1 | 2026-09-27 | Nachzug **vor** dem ersten Test, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf (0.93.0) behauptete, ein `\]` im Label einer Referenz-Definition führe nur zu einer falschen Label-Grenze, während die Ziel-Prüfung korrekt bliebe. Eigene Verifikation der Erkennungs-Regex ergab das Gegenteil: die verankerte Regex scheitert an dieser Eingabe vollständig, die **ganze** Zeile bleibt unerkannt, keine Ziel-Prüfung läuft. Die zugesagte Form (welche Definitionen erkannt werden) ändert sich nicht, nur die Beschreibung dieser einen Grenze |
 | 0.93.0 | 2026-09-27 | [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) um die Prüfung von Link-Referenz-Definitionen (`[label]: ziel "titel"`) erweitert (additiv, standardmäßig an; Erweiterung statt neues Kürzel — dieselbe Prüfung, verengter Out-of-Scope-Satz): eine Definition mit Datei-Ziel wird von der gemeinsamen Extraktion erkannt und **unabhängig von ihrer Verwendung** geprüft — ein totes Ziel meldet `target-missing` auf der Definitions-Zeile, mit derselben Auflösung, Escape-/Symlink-Prüfung und demselben `ignore-refs`-Ventil wie ein Inline-Link. Gilt für dieselben sechs Module wie die gemeinsame `[]Line`-Extraktion, mit einer Ausnahme: das Modul `anchors` behandelt Definitionen nicht (neuer Out-of-Scope-Satz dort). Drei Grenzen bleiben benannt: kein Blockquote-/Listen-Präfix, kein Backslash-Escape im Label, kein Zeilenumbruch vor Ziel oder Titel. Zwei neue Akzeptanzkriterien (Happy, Negative); der Out-of-Scope-Satz „Reference-Style-Links" ist auf die **Verwendungs-Auflösung** verengt. Begründung in begleitender ADR. **Anlass ist ein Change Request** eines Konsumenten | — |
 | 0.92.1 | 2026-09-27 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf (0.92.0) sagte eine **absatzweise** Erkennung zu (ganzer Absatz als ein String). Der Review fand: die zugrunde liegende Klammer-Zählung kennt keine Zeilengrenzen — ein unbalanciertes `[` in gewöhnlicher Prosa konnte dadurch mit einer späteren, unabhängigen `](…)`-Sequenz zu einem **erfundenen Link** verschmelzen, empirisch nachgewiesen. Die Zusage ist jetzt enger: **nur** die Adress-Klammer darf um die unmittelbare Folgezeile verlängert werden, die Linktext-Klammer bleibt **strikt zeilenlokal** — dieselbe Fehlerklasse ist damit strukturell ausgeschlossen. Die zugesagte Form (Zeilenumbruch hinter `](`, Fundzeile = öffnende Zeile, zwei Akzeptanzkriterien) ändert sich nicht |
 | 0.92.0 | 2026-09-27 | [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) um die Erkennung eines Zeilenumbruchs unmittelbar hinter `](` erweitert (additiv, standardmäßig an; Erweiterung statt neues Kürzel — dieselbe Prüfung, verengte Extraktions-Grenze): die gemeinsame `[]Line`-Extraktion (`ExtractLinks`, sechs Konsumenten `links`/`links.resolve-from`/`anchors`/`matrix`/`external`/`tracked`) erkennt eine Zieladresse jetzt **absatzweise**, wenn sie einen einzigen Zeilenumbruch hinter `](` trägt — wie die bestehende absatzweise Inline-Code-Erkennung. Der Fund wird der öffnenden Zeile des Links zugeschrieben; Bilder teilen den Parser und werden mitgezogen. Zwei Grenzen bleiben benannt: Zeilenumbruch im Linktext bzw. vor einem Titel-Suffix bleibt unerkannt, und die string-basierte Extraktion (`ids`, `pins`, `--repair`, `planning`-Zitate) bleibt strikt zeilenbasiert — `--repair` erzeugt für die neue Form keinen Fix-Kandidaten. Zwei neue Akzeptanzkriterien (Happy, Negative). Begründung in begleitender ADR. **Anlass ist ein Change Request** eines Konsumenten | — |
