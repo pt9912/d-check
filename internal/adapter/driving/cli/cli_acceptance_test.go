@@ -1294,6 +1294,59 @@ func TestCLI037_IDPrefix_FlagUebergehtKonflikt(t *testing.T) {
 	}
 }
 
+// slice-234 Happy: eine -RB--Kennungs-Überschrift im Lastenheft nimmt die
+// Randbedingungs-Reihe in das erzeugte Anforderungs-Muster auf (derselbe
+// Ableitungs-Durchlauf wie FA/QA, ai-harness-Modus ohne --id-prefix).
+func TestCLI234_RB_Happy(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "# AC-RB-01 — x\n")
+	write(t, root, "docs/a.md", "# x\n")
+	code, stdout, stderr := run(t, "--suggest-config", "ai-harness", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	re := reqPattern(t, stdout)
+	if !re.MatchString("AC-RB-01") {
+		t.Fatalf("Muster matcht AC-RB-01 nicht: %q", re.String())
+	}
+	if !re.MatchString("AC-FA-CLI-001") || !re.MatchString("AC-QA-01") {
+		t.Fatalf("Muster verliert FA/QA neben RB: %q", re.String())
+	}
+}
+
+// slice-234 Abwesend: ohne -RB--Überschrift bleibt das Anforderungs-Muster
+// byte-gleich zum Stand ohne diese Erweiterung — die Alternation trägt KEIN
+// |RB, sonst wechselte die Ausgabe für jedes FA/QA-only-Repo (DC-FA-CLI-006).
+func TestCLI234_RB_AbwesendByteGleich(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "# AC-FA-CLI-001 — x\n\n# AC-QA-01 — y\n")
+	write(t, root, "docs/a.md", "# x\n")
+	code, stdout, stderr := run(t, "--suggest-config", "ai-harness", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	re := reqPattern(t, stdout)
+	const want = `AC-(FA-[A-Z]+|QA)-\d+`
+	if re.String() != want {
+		t.Fatalf("Muster ohne -RB- muss byte-gleich zum Stand vor der Erweiterung bleiben: got %q, want %q", re.String(), want)
+	}
+	if re.MatchString("AC-RB-01") {
+		t.Fatalf("Muster matcht RB, obwohl keine -RB--Überschrift im Repo steht: %q", re.String())
+	}
+}
+
+// slice-234 Mehrdeutigkeit: ein zweites Präfix, das NUR über eine
+// -RB--Kennung auftritt, löst denselben Konflikt-Fehler aus wie bei FA/QA.
+func TestCLI234_RB_Mehrdeutigkeit(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "# AC-FA-CLI-001 — x\n\n# ZZ-RB-01 — y\n")
+	write(t, root, "docs/a.md", "# x\n")
+	code, _, stderr := run(t, "--suggest-config", "ai-harness", root)
+	if code != 2 || !strings.Contains(stderr, "mehrdeutig") {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+}
+
 // traceDoc spiegelt die JSON-Struktur der RTM (DC-FA-CLI-009).
 type traceDoc struct {
 	Requirements []struct {

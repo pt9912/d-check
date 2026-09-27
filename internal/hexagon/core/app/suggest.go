@@ -17,10 +17,10 @@ import (
 var idShape = regexp.MustCompile(`^([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*)-(\d+)([A-Za-z]?)$`)
 
 // reqShape erkennt eine Anforderungs-Kennung (`<PREFIX>-FA-<BEREICH>-NNN`
-// bzw. `<PREFIX>-QA-NN`) und fängt das **Projekt-Präfix** (Segment vor
-// `-FA-`/`-QA-`). Grundlage der Präfix-Ableitung im ai-harness-Modus
-// (slice-037).
-var reqShape = regexp.MustCompile(`^([A-Z][A-Z0-9]*)-(?:FA-[A-Z]+|QA)-\d+[A-Za-z]?$`)
+// bzw. `<PREFIX>-QA-NN` bzw. `<PREFIX>-RB-NN`) und fängt das
+// **Projekt-Präfix** (Segment vor `-FA-`/`-QA-`/`-RB-`). Grundlage der
+// Präfix-Ableitung im ai-harness-Modus (DC-FA-CLI-006).
+var reqShape = regexp.MustCompile(`^([A-Z][A-Z0-9]*)-(?:FA-[A-Z]+|QA|RB)-\d+[A-Za-z]?$`)
 
 // idPrefixShape validiert einen explizit angegebenen --id-prefix: ein
 // Großbuchstaben-Segment (z. B. `DC`, `AC`, `BC`).
@@ -93,15 +93,16 @@ func SuggestConfig(fsys driven.Filesystem, sources []string, idPrefix string) (s
 		// sonst im repo-bewussten Modus aus dem Lastenheft abgeleitet; sonst
 		// Platzhalter — kein stiller DC--Default in Fremd-Repos.
 		reqPrefix := idPrefix
+		sawRB := false
 		if reqPrefix == "" && harness {
-			derived, err := deriveReqPrefix(fsys)
+			derived, rb, err := deriveReqPrefix(fsys)
 			if err != nil {
 				return "", err
 			}
-			reqPrefix = derived
+			reqPrefix, sawRB = derived, rb
 		}
 		// initMode (Voll-Kanon) hat Vorrang: repoAware nur bei reinem ai-harness.
-		return renderHarness(fsys, patterns, !initMode, reqPrefix), nil
+		return renderHarness(fsys, patterns, !initMode, reqPrefix, sawRB), nil
 	}
 	return renderSuggestion(patterns, probeOptInModules(fsys)), nil
 }
@@ -178,17 +179,23 @@ func deriveRegex(ids []string) string {
 
 // deriveReqPrefix leitet das Anforderungs-Präfix aus dem Lastenheft ab
 // (ai-harness-Modus, slice-037): das **eindeutige** Projekt-Präfix aller
-// FA-/QA-Kennungs-Headings in spec/lastenheft.md. Liefert "" wenn die Datei
-// fehlt/keine Anforderungs-Kennung trägt (→ Platzhalter); Fehler bei
-// **mehreren** verschiedenen Präfixen (der Mensch gibt --id-prefix explizit).
-func deriveReqPrefix(fsys driven.Filesystem) (string, error) {
+// FA-/QA-/RB-Kennungs-Headings in spec/lastenheft.md. Liefert "" wenn die
+// Datei fehlt/keine Anforderungs-Kennung trägt (→ Platzhalter); Fehler bei
+// **mehreren** verschiedenen Präfixen (der Mensch gibt --id-prefix explizit)
+// — auch dann, wenn das zweite Präfix nur über eine `-RB-`-Kennung auftritt.
+// sawRB meldet, ob mindestens eine der gesehenen Kennungen die
+// Randbedingungs-Reihe `RB` trug: das Anforderungs-Muster (harnessIDPatterns)
+// nimmt `RB` nur dann in seine Alternation auf — sonst wechselte die Ausgabe
+// für **jedes** Repo, auch ohne `-RB-`-Heading, und die zugesagte
+// Byte-Gleichheit (DC-FA-CLI-006) wäre unerreichbar.
+func deriveReqPrefix(fsys driven.Filesystem) (prefix string, sawRB bool, err error) {
 	const lh = "spec/lastenheft.md"
 	if !pathExists(fsys, lh) {
-		return "", nil
+		return "", false, nil
 	}
 	content, err := fsys.ReadFile(lh)
 	if err != nil {
-		return "", nil
+		return "", false, nil
 	}
 	prefixes := map[string]bool{}
 	for _, h := range rules.ExtractHeadings(content) {
@@ -197,26 +204,31 @@ func deriveReqPrefix(fsys driven.Filesystem) (string, error) {
 			continue
 		}
 		tok := strings.Trim(fields[0], "`.,:;")
-		if m := reqShape.FindStringSubmatch(tok); m != nil {
-			prefixes[m[1]] = true
+		m := reqShape.FindStringSubmatch(tok)
+		if m == nil {
+			continue
+		}
+		prefixes[m[1]] = true
+		if strings.HasPrefix(tok[len(m[1])+1:], "RB-") {
+			sawRB = true
 		}
 	}
 	switch len(prefixes) {
 	case 0:
-		return "", nil
+		return "", sawRB, nil
 	case 1:
 		var only string
 		for p := range prefixes {
 			only = p
 		}
-		return only, nil
+		return only, sawRB, nil
 	default:
 		ps := make([]string, 0, len(prefixes))
 		for p := range prefixes {
 			ps = append(ps, p)
 		}
 		sort.Strings(ps)
-		return "", fmt.Errorf("mehrdeutiges Anforderungs-Präfix im Lastenheft (%s) — --id-prefix explizit angeben", strings.Join(ps, ", "))
+		return "", sawRB, fmt.Errorf("mehrdeutiges Anforderungs-Präfix im Lastenheft (%s) — --id-prefix explizit angeben", strings.Join(ps, ", "))
 	}
 }
 
@@ -323,17 +335,25 @@ type harnessIDPattern struct {
 // Reihenfolge (DC-QA-02; DC-FA-CLI-006.a). Nur das **Anforderungs**-Muster
 // trägt ein projektspezifisches Präfix (reqPrefix); ADR/MR/slice/CO sind
 // konventions-fest. Leeres reqPrefix → markierter Platzhalter `<PREFIX>`
-// plus TODO statt eines stillen `DC-` (slice-037, ADR-0015).
-func harnessIDPatterns(reqPrefix string) []harnessIDPattern {
+// plus TODO statt eines stillen `DC-` (slice-037, ADR-0015). includeRB nimmt
+// die Randbedingungs-Reihe `RB` in die Alternation auf — anders als `FA`/`QA`
+// (feste Konvention, unabhängig vom Repo-Inhalt) **bedingt**: sonst wechselte
+// das Muster für jedes Repo, auch ohne `-RB-`-Heading, und die zugesagte
+// Byte-Gleichheit ohne diese Kennung wäre unerreichbar (DC-FA-CLI-006).
+func harnessIDPatterns(reqPrefix string, includeRB bool) []harnessIDPattern {
 	todo := ""
 	if reqPrefix == "" {
 		reqPrefix = "<PREFIX>"
 		todo = "TODO: <PREFIX> durch das Projekt-Kennungs-Präfix ersetzen (oder --id-prefix angeben)"
 	}
+	reqKinds := "FA-[A-Z]+|QA"
+	if includeRB {
+		reqKinds += "|RB"
+	}
 	return []harnessIDPattern{
 		{regex: `ADR-\d{4}`, target: "docs/plan/adr/"},
 		{regex: `MR-\d{3}`, target: "harness/conventions.md"},
-		{regex: reqPrefix + `-(FA-[A-Z]+|QA)-\d+`, target: "spec/lastenheft.md", todo: todo},
+		{regex: reqPrefix + `-(` + reqKinds + `)-\d+`, target: "spec/lastenheft.md", todo: todo},
 		{regex: `slice-\d{3}`, target: "docs/plan/planning/"},
 		{regex: `CO-\d{3}`, always: true, hint: "Carveouts: target setzen, falls genutzt"},
 	}
@@ -369,9 +389,11 @@ func harnessClasses() []harnessClass {
 // vorhandene Pfade aktiv, fehlende auskommentiert mit Hinweis.
 // repoAware=false (`ai-harness-init`): Voll-Kanon, alle Blöcke aktiv
 // (Zielbild fürs leere Repo). extra sind aus echten Quellen abgeleitete
-// Muster (Kombi-Aufruf). Deterministisch: feste Reihenfolge, keine
-// Map-Iteration für die Ausgabe.
-func renderHarness(fsys driven.Filesystem, extra []suggestedPattern, repoAware bool, reqPrefix string) string {
+// Muster (Kombi-Aufruf). sawRB kommt aus deriveReqPrefix (nur gesetzt bei
+// repo-bewusster Ableitung ohne --id-prefix) und steuert, ob das
+// Anforderungs-Muster die Randbedingungs-Reihe `RB` aufnimmt. Deterministisch:
+// feste Reihenfolge, keine Map-Iteration für die Ausgabe.
+func renderHarness(fsys driven.Filesystem, extra []suggestedPattern, repoAware bool, reqPrefix string, sawRB bool) string {
 	var b strings.Builder
 	b.WriteString("# .d-check.yml — Vorschlag aus `d-check --suggest-config` (advisory).\n")
 	if repoAware {
@@ -404,7 +426,7 @@ func renderHarness(fsys driven.Filesystem, extra []suggestedPattern, repoAware b
 	b.WriteString("# Weitere opt-in-Module sind situativ und hier nicht vorab aktiviert:\n")
 	b.WriteString("# external, diagrams, versions, pins, immutable, tracked, targets, structure — Voll-Schema: d-check --print-config.\n")
 	b.WriteString("# vcs/commits brauchen eine Commit-Range und werden als Makefile-Target verteilt: d-check --print-mk.\n\n")
-	b.WriteString(renderHarnessIDs(fsys, extra, repoAware, reqPrefix))
+	b.WriteString(renderHarnessIDs(fsys, extra, repoAware, reqPrefix, sawRB))
 	b.WriteString("\n")
 	b.WriteString(renderHarnessMatrix(fsys, repoAware))
 	b.WriteString("\n")
@@ -423,8 +445,8 @@ func renderHarness(fsys driven.Filesystem, extra []suggestedPattern, repoAware b
 // repoAware=true: Muster aktiv nur bei vorhandenem Target (sonst
 // auskommentiert mit Hinweis), scope auf existierende roots verengt.
 // repoAware=false: alle Muster aktiv (außer Carveout ohne Target), voller
-// scope. Danach die extra-Muster echter Quellen.
-func renderHarnessIDs(fsys driven.Filesystem, extra []suggestedPattern, repoAware bool, reqPrefix string) string {
+// scope. Danach die extra-Muster echter Quellen. sawRB s. renderHarness.
+func renderHarnessIDs(fsys driven.Filesystem, extra []suggestedPattern, repoAware bool, reqPrefix string, sawRB bool) string {
 	var b strings.Builder
 	b.WriteString("ids:\n")
 	scope := []string{"spec", "docs/user"}
@@ -435,7 +457,7 @@ func renderHarnessIDs(fsys driven.Filesystem, extra []suggestedPattern, repoAwar
 		fmt.Fprintf(&b, "  scope:\n    roots: [%s]\n", strings.Join(scope, ", "))
 	}
 	b.WriteString("  patterns:\n")
-	for _, p := range harnessIDPatterns(reqPrefix) {
+	for _, p := range harnessIDPatterns(reqPrefix, sawRB) {
 		if !p.always && (!repoAware || pathExists(fsys, p.target)) {
 			if p.todo != "" {
 				fmt.Fprintf(&b, "    # %s\n", p.todo)
