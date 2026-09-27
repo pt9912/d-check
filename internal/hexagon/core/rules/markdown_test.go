@@ -201,6 +201,45 @@ func TestExtractLinks_ZweiVollstaendigeLinksImSelbenAbsatz(t *testing.T) {
 	}
 }
 
+// ADR-0093: eine Link-Referenz-Definition wird unabhängig von ihrer
+// Verwendung erkannt, mit IsDefinition markiert.
+func TestExtractLinks_ReferenzDefinition_Erkannt(t *testing.T) {
+	lines := []Line{{No: 3, Text: "[label]: ziel.md"}}
+	refs := ExtractLinks(lines)
+	want := []LinkRef{{Line: 3, Target: "ziel.md", Text: "label", IsDefinition: true}}
+	if !reflect.DeepEqual(refs, want) {
+		t.Fatalf("refs = %+v\nwant  %+v", refs, want)
+	}
+}
+
+// ADR-0093: ein Titel-Suffix auf derselben Zeile wird wie bei einem
+// Inline-Link abgetrennt (NormalizeTarget).
+func TestExtractLinks_ReferenzDefinition_TitelAbgetrennt(t *testing.T) {
+	lines := []Line{{No: 1, Text: `[label]: ziel.md "Titel"`}}
+	refs := ExtractLinks(lines)
+	if len(refs) != 1 || refs[0].Target != "ziel.md" {
+		t.Fatalf("Titel nicht korrekt abgetrennt: %+v", refs)
+	}
+}
+
+// ADR-0093: eine Definition mit Blockquote-Präfix wird nicht erkannt —
+// benannte Grenze, kein Fund entsteht.
+func TestExtractLinks_ReferenzDefinition_BlockquotePraefixNichtErkannt(t *testing.T) {
+	lines := []Line{{No: 1, Text: "> [label]: ziel.md"}}
+	if refs := ExtractLinks(lines); len(refs) != 0 {
+		t.Fatalf("Blockquote-Praefix haette die Definition nicht erkennen duerfen: %+v", refs)
+	}
+}
+
+// ADR-0094: ein Backslash vor dem eigentlichen Label-Ende lässt die GANZE
+// Zeile unerkannt — nicht nur eine falsche, aber unschädliche Label-Grenze.
+func TestExtractLinks_ReferenzDefinition_BackslashLaesstZeileUnerkannt(t *testing.T) {
+	lines := []Line{{No: 1, Text: `[foo\]bar]: ziel.md`}}
+	if refs := ExtractLinks(lines); len(refs) != 0 {
+		t.Fatalf("Backslash-Escape haette die ganze Zeile unerkannt lassen muessen: %+v", refs)
+	}
+}
+
 // Die Invariante aus TrimFenceIndent — Space und Tab, nicht unicode-weit —
 // gilt fuer JEDEN Konsumenten der Fence-Lexik, nicht nur fuer den Waechter aus
 // dem Modul spans. Ohne Assertion je Konsument liesse sich einer davon

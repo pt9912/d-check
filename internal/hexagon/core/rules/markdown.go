@@ -1,6 +1,9 @@
 package rules
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
 // Line ist eine vorverarbeitete Markdown-Zeile: Fenced-Code-Blöcke
 // sind entfernt (ganze Zeilen), Inline-Code-Spans geleert
@@ -478,6 +481,10 @@ type LinkRef struct {
 	Target  string // roher Zielausdruck (ohne <>-Quoting und Titel)
 	Text    string // Linktext zwischen [ und ] (für den matrix-Lineage-Match)
 	IsImage bool
+	// IsDefinition markiert eine Link-Referenz-Definition (`[label]: ziel`)
+	// statt eines Inline-Links (ADR-0093) — anchors überspringt diese Refs,
+	// alle anderen ExtractLinks-Konsumenten behandeln sie gleich.
+	IsDefinition bool
 }
 
 // LinkSpan beschreibt die Byte-Spannen eines Inline-Links innerhalb
@@ -529,6 +536,10 @@ func ExtractLinks(lines []Line) []LinkRef {
 	var refs []LinkRef
 	consumed := 0
 	for idx, ln := range lines {
+		if ref, ok := parseDefinitionLine(ln.Text); ok {
+			ref.Line = ln.No
+			refs = append(refs, ref)
+		}
 		text := ln.Text
 		if consumed > 0 {
 			if consumed > len(text) {
@@ -555,6 +566,24 @@ func ExtractLinks(lines []Line) []LinkRef {
 		})
 	}
 	return refs
+}
+
+// definitionRe erkennt eine Link-Referenz-Definition `[label]: ziel "titel"`
+// nach CommonMark, eingeschränkt auf die einzeilige Form (ADR-0093): bis zu
+// drei führende Leerzeichen (kein Blockquote-/Listen-Präfix), Label ohne
+// Backslash-Escape-Kenntnis, Ziel + optionaler Titel auf derselben Zeile.
+var definitionRe = regexp.MustCompile(`^ {0,3}\[([^\]\n]+)\]:[ \t]+(\S.*)$`)
+
+// parseDefinitionLine erkennt genau eine Link-Referenz-Definition auf `text`
+// (ADR-0093). Das Ziel wird wie bei einem Inline-Link normalisiert
+// (Titel-Abtrennung, <>-Entquotung, s. NormalizeTarget) — unabhängig davon,
+// ob das Label an anderer Stelle im Dokument verwendet wird.
+func parseDefinitionLine(text string) (LinkRef, bool) {
+	m := definitionRe.FindStringSubmatch(text)
+	if m == nil {
+		return LinkRef{}, false
+	}
+	return LinkRef{Target: NormalizeTarget(m[2]), Text: m[1], IsDefinition: true}, true
 }
 
 // ExtractLinkSpans liefert die Link-Spannen einer vorverarbeiteten Zeile in

@@ -240,6 +240,9 @@ func resolveAnchorRef(fsys driven.Filesystem, file string, ref LinkRef) (anchorR
 func CheckAnchors(fsys driven.Filesystem, file string, content []byte, lines []Line, cache map[string]map[string]bool, ignoreRefs []model.IgnoreRef) []model.Finding {
 	var findings []model.Finding
 	for _, ref := range ExtractLinks(lines) {
+		if ref.IsDefinition {
+			continue // ADR-0093: anchors prueft Referenz-Definitionen nicht
+		}
 		a, ok := resolveAnchorRef(fsys, file, ref)
 		if !ok {
 			continue

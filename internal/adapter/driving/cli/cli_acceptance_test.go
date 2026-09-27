@@ -2399,6 +2399,71 @@ func TestCLI232_UnveraenderteKontrollformen(t *testing.T) {
 	}
 }
 
+// Negative: eine Link-Referenz-Definition mit totem Ziel meldet
+// target-missing wie ein Inline-Link, unabhängig von ihrer Verwendung
+// (ADR-0093).
+func TestCLI233_ReferenzDefinition_TotesZiel(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "[label]: fehlt.md\n")
+	code, stdout, _ := run(t, "--disable", "anchors", root)
+	if code != 1 {
+		t.Fatalf("Exit = %d, want 1", code)
+	}
+	if !strings.Contains(stdout, "docs/a.md:1\tfehlt.md\ttarget-missing") {
+		t.Fatalf("Befund-Zeile fehlt: %q", stdout)
+	}
+}
+
+// Happy: dieselbe Form mit lebendem Ziel bleibt befundfrei.
+func TestCLI233_ReferenzDefinition_LebendesZiel(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/ziel.md", "# x\n")
+	write(t, root, "docs/a.md", "[label]: ziel.md\n")
+	code, _, stderr := run(t, "--disable", "anchors", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+}
+
+// Boundary: eine Definition innerhalb eines Fenced-Code-Blocks bleibt
+// befundfrei — dieselbe Vorverarbeitung wie bei Inline-Links.
+func TestCLI233_ReferenzDefinition_ImFence(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "```\n[label]: fehlt.md\n```\n")
+	code, _, stderr := run(t, "--disable", "anchors", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+}
+
+// Boundary: anchors überspringt eine Definition vollständig (ADR-0093) —
+// ein totes Fragment-Ziel bei existierender Datei bleibt befundfrei, obwohl
+// ein gleichwertiger Inline-Link von anchors beanstandet würde.
+func TestCLI233_ReferenzDefinition_AnchorsUebersprungen(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/ziel.md", "# x\n")
+	write(t, root, "docs/a.md", "[label]: ziel.md#nichtvorhanden\n")
+	code, _, stderr := run(t, root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q (anchors haette schweigen muessen)", code, stderr)
+	}
+}
+
+// Kontrolle: Blockquote-Präfix und Backslash-Escape im Label lassen die
+// Definition unerkannt (ADR-0093/ADR-0094) — auch mit totem Ziel entsteht
+// kein Befund, die Zeile bleibt still statt teilweise erkannt.
+func TestCLI233_UnveraenderteKontrollformen(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", strings.Join([]string{
+		"> [blockquote]: fehlt-1.md",
+		`[foo\]bar]: fehlt-2.md`,
+	}, "\n")+"\n")
+	code, _, stderr := run(t, "--disable", "anchors", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q (beide Formen haetten unerkannt bleiben muessen)", code, stderr)
+	}
+}
+
 // slice-076 (DC-FA-LINK-001.a Schritt 1, Tabellen-Reader/`markdownTableLines`):
 // dieselbe Infozeilen-Regel muss auch im Tabellen-Automaten gelten, sonst sieht
 // `trace` das Dokument anders als `links`. Eine ```-Infozeile mit Backtick ÜBER
