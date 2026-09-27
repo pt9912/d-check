@@ -1,1 +1,1 @@
-**Stand:** geplant — `slice-239` (Auftraggeber-Entscheidung zu Schwelle und Werkzeug, 3× erreicht mit `slice-237`).
+**Stand:** verkörpert — `.d-check.yml` (Modul `file`, seit `slice-239`); `AGENTS.md`/`harness/README.md` tragen jetzt `max-lines: 400`.

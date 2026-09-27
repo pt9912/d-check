@@ -29,7 +29,9 @@ also korrigiert werden, solange der Wert die erlaubte Form behält; §3.5
 schützt den **Kern**, nicht dieses Feld. **Benannte Bestands-Ausnahme:** die
 historischen `**Status:**`-Felder der `done/`-Slices bleiben, wie sie sind
 — sie sind eingefrorene Lauf-Belege, ihr Lifecycle-Zustand ist ohnehin das
-Verzeichnis, und das Feld hat dort keine Funktion (§5). Gemeldet wird von
+Verzeichnis, und das Feld hat dort keine Funktion
+([`AGENTS.md` §5](../../AGENTS.md#5-dokumentations-regeln), Regel 11).
+Gemeldet wird von
 ihnen nur, was dem Verzeichnis **widerspricht**.
 
 Kanon:

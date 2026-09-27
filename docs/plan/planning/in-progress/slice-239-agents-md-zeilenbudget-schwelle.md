@@ -76,6 +76,7 @@ stehen bleiben. Kein Wortlaut geht verloren, nur der Ort wechselt.
 | `.d-check.yml` | update | `file[]`-Regeln für `AGENTS.md`, `harness/README.md`; `file` neu in `modules:` |
 | `Makefile` | update | `FOCUS_DISABLE` um `--disable file` ergänzt (spiegelt `.d-check.yml` `modules:`, Makefile-Kommentar-Pflicht) |
 | `internal/adapter/driven/configyaml/gate_consistency_test.go` | update | `file` in `netlessDocModules()` — sonst meldet `TestQA03_NetlessModuleList_Live` das neu aktivierte Modul als unklassifiziert |
+| `.harness/skills/reviewer.md` | update | `d-check:cite AGENTS.md:366-367` neu geankert auf `281-281` — die Kürzung verschiebt die zitierte Zeile |
 
 **Ansatz:** Die Auslagerung ist ein mechanisches Muster, pro Regel wiederholt
 — Überschrift und Anker bleiben unverändert (keine Rewrite-Pflicht für die
@@ -105,8 +106,10 @@ DoD vollständig (§2) + Closure-Notiz mit Lerneintrag.
 
 - Ein extrahierter Abschnitt verliert beim Kürzen operative Substanz, die ein
   Implementer beim schnellen Lesen von `AGENTS.md` gebraucht hätte, ohne den
-  Pointer zu verfolgen. — **Ausgang:** weiter offen: → wird beim Review
-  geprüft; hält sich der Befund, `BEO-ALL/regel-auslagerung-verliert-substanz`.
+  Pointer zu verfolgen. — **Ausgang:** entfallen: unabhängiger Review R1 hat
+  alle 13 Volltext-Dateien Zeile für Zeile gegen die AGENTS.md-Vorfassung
+  geprüft (12/13 wortgleich, zwei kleine Wortlaut-Lücken F-1/F-2 gefunden und
+  behoben) — keine operative Substanz ging verloren.
 - Ein Sensor (`ids`/`matrix`/`codepaths`) meldet einen der ~24 zitierenden
   Bestandsdateien, weil ein Anker sich doch verschiebt. — **Ausgang:**
   entfallen: `make gates` lief nach der Kürzung grün, kein Befund auf
@@ -114,7 +117,48 @@ DoD vollständig (§2) + Closure-Notiz mit Lerneintrag.
 
 ## 7. Closure-Notiz
 
-*(Bei der Closure zu füllen.)*
+- **Was hat funktioniert:** Die Anker-Stabilität trug wie geplant — weil
+  jede `### 3.x`/`## 5`-Überschrift unverändert stehen blieb, brauchte keine
+  der ~24 zitierenden Bestandsdateien einen Nachzug; `make gates` bestätigte
+  das leer (kein Befund auf einer Bestandsdatei). Das Muster aus
+  `harness/conventions.md`s Adaptions-Block (Index im Hauptdokument,
+  Volltext eine Datei weiter) übertrug sich mechanisch auf `AGENTS.md` §3.x
+  und §5.
+- **Was ging anders als geplant:** Die Aktivierung des Moduls `file` in der
+  `.d-check.yml`-`modules:`-Liste zog zwei ungeplante Mirror-Pflichten nach
+  sich (`Makefile` `FOCUS_DISABLE`, `netlessDocModules()` in
+  `gate_consistency_test.go`) — im Plan (§3) nachgetragen, bevor der Code
+  geschrieben wurde, wie es der Fund verlangte, nicht danach.
+- **Steering-Loop-Eintrag:** Modul `file` scharf geschaltet: `AGENTS.md` und
+  `harness/README.md` tragen jetzt eine echte Zeilenobergrenze (400) statt
+  eines bloß existierenden, nie aktivierten Sensors — liegt in
+  `.d-check.yml` (Modul `file`). Auslöser:
+  `BEO-ALL/briefing-datei-ueberschreitet-lade-budget` (slice-231,
+  slice-236, slice-237 — 3×).
+- **Beobachtungs-Register (`../observations/`):**
+  `BEO-ALL/briefing-datei-ueberschreitet-lade-budget/state.md` von `geplant`
+  auf `verkörpert` gesetzt (Zielort + Anker siehe oben).
+- **Folge-Slices:** keine.
+- **Risiken aus §6:** beide entfallen — siehe §6.
+- **Drei Paarungen** (wellenlos, hier geprüft):
+  - **Anker:** `.d-check.yml` trägt `seit slice-239` im Kommentar über dem
+    `file:`-Block — geprüft.
+  - **Folge-Slice:** keiner genannt — entfällt.
+  - **Register:** `BEO-ALL/briefing-datei-ueberschreitet-lade-budget`
+    existiert und trägt Belege (`evidence/`) — geprüft.
+- **Review:** R1 (`docs/reviews/2026-09-27-slice-239-agents-md-regel-auslagerung-review-r1.md`),
+  4 LOW, nicht merge-blockierend. F-1 (verlorener Halbsatz in der §5-Tabelle)
+  und F-2 (uneinheitlich behandelte `(§N)`-Querverweise beim Verschieben)
+  sowie F-3 (Plan-Tabelle ohne den `reviewer.md`-Nachzug) behoben. F-4
+  (Fitness-Function-Tabelle in [ADR-0096](../../adr/0096-agents-md-regel-auslagerung-harness-rules.md)
+  beschreibt die Aktivierung als `--enable file` statt über
+  `.d-check.yml`s `modules:`-Liste) **bewusst nicht behoben** —
+  [ADR-0096](../../adr/0096-agents-md-regel-auslagerung-harness-rules.md)
+  ist bereits `Accepted` und committet; eine Korrektur bräche
+  `make adr-check` (getestet: `core-drift-vcs`) und
+  verlangte eine eigene Folge-ADR für eine reine Wortlaut-Nuance in einer
+  Tabellenzelle. Unverhältnismäßig für den Befund — dokumentiert statt
+  korrigiert.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
