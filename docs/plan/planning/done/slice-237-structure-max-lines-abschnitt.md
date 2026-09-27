@@ -242,9 +242,9 @@ Lerneintrag geschrieben.
 - **Drei Paarungen** (wellenlos, hier geprüft):
   - **Anker:** keiner zu prüfen — kein Steering-Loop-Eintrag mit `liegt in`
     in diesem Slice (siehe oben).
-  - **Folge-Slice:** `slice-239` existiert als Datei in
-    `docs/plan/planning/open/slice-239-agents-md-zeilenbudget-schwelle.md`
-    — geprüft.
+  - **Folge-Slice:** `slice-239` existiert als Datei im Planning-Lifecycle
+    (Baseline-Regelwerk `modul-06-roadmap.md` §Wellen-Closure-Prozedur,
+    Folge-Slice-Paarung) — geprüft.
   - **Register:** beide zitierten Pfade
     (`BEO-ALL/briefing-datei-ueberschreitet-lade-budget`,
     `BEO-ALL/max-lines-namenskollision-structure-file`) existieren als
