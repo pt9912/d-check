@@ -17,7 +17,7 @@ Kanon: `modul-08-agentenrollen.md` §Welche Rolle braucht welche Artefaktklasse,
 
 **Berührte Spec-Stellen:** —
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** claude-sonnet-5. **Datum:** 2026-09-27.
 
@@ -167,6 +167,14 @@ Harness-Werkzeug-Dateien unter `.claude/` fallen unter den Default `*`
 Agent-Typ ist genau so ein Zustellkanal. Und
 [`kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`](../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/observation.md)
 (1×) für die Chronik-Freiheit der Dateien.
+
+**Vorgelagert — Nachtlauf-Stand lesen** (bei der Beanspruchung, 2026-09-27):
+`make nightly-state` meldet `upstream-drift.yml` **ROT** (Lauf
+2026-09-27T06:03:41Z, unverändert seit slice-232/233), `image-scan.yml`
+**grün** (Lauf 2026-09-27T09:18:12Z). Derselbe veraltete Stand: vier der
+fünf gemeldeten Fremd-Release-Stände sind bereits gehoben, die Kurs-Baseline
+(`v6.9.0` → `v6.10.0`) bleibt bewusst zurückgestellt bis `v6.11.0`. Keiner
+der fünf Punkte berührt dieses Repo-Werkzeug (`.claude/`).
 
 **Modus-Begründungsblock:** alle berührten Sub-Areas GF.
 
