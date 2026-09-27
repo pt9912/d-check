@@ -22,7 +22,7 @@ Extraktion**, **standardmäßig an**. Eine neue ADR begleitet die Änderung
 (Schritt 3, die dort als „normative Grenze für alle Module" geführte
 Zeilenbasiertheit).
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** claude-sonnet-5. **Datum:** 2026-09-27.
 
@@ -204,6 +204,16 @@ Ausdifferenzierung nötig.
 Link-Extraktion, Referenz-Definition, `ExtractLinks`): **keine Treffer**. Die
 im Change Request genannte Beobachtung liegt im Register des Konsumenten,
 nicht in diesem.
+
+**Vorgelagert — Nachtlauf-Stand lesen** (bei der Beanspruchung, 2026-09-27):
+`make nightly-state` meldet `upstream-drift.yml` **ROT** (Lauf
+2026-09-27T06:03:41Z), `image-scan.yml` **grün**. Der Lauf ist inzwischen
+**veraltet**: vier der fünf gemeldeten Fremd-Release-Stände
+(`golangci-lint`, `semgrep`, `a-check`, `golang`-Basis-Digest) wurden seit
+diesem Lauf bereits gehoben (vier `build(images)`-Commits, je mit
+`make ci` verifiziert); offen bleibt nur die Kurs-Baseline
+(`v6.9.0` → `v6.10.0`, bewusst zurückgestellt bis `v6.11.0`). Keiner der
+fünf Punkte berührt dieses Modul (`links`).
 
 **Modus-Begründungsblock:** alle berührten Sub-Areas GF.
 
