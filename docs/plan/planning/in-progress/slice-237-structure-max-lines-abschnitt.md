@@ -19,7 +19,7 @@ Einzelmodul-Frage). Eingehender Change Request des Konsumenten
 [`DC-FA-STRUCT-001.a`](../../../../spec/spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
 (Schritt der Prosa-Bedingungen).
 
-**Verantwortlich:** —
+**Verantwortlich:** claude-sonnet-5.
 
 **Autor:** claude-sonnet-5. **Datum:** 2026-09-27.
 
@@ -163,11 +163,12 @@ und die Bedingungs-Tabelle der Struktur-Anforderung (siehe Bezug); Handbuch-Refe
 
 ## 4. Trigger
 
-**Start** (`next` → `in-progress`): keine Abhängigkeit zu den anderen
-offenen Plänen; bumpt das Lastenheft wie mehrere andere in der Warteschlange
-— läuft nach dem Closure des jeweils aktuell beanspruchten Slice (WIP-Limit
-1). Bei der Beanspruchung entsteht der dritte Vorprüfungs-Block
-(Nachtlauf-Stand).
+**Start** (`open` → `in-progress`): Auftraggeber-Priorisierung 2026-09-27 —
+dieser Slice startet nach `slice-236` und vor `slice-232`/`-233`/`-234`/`-235`,
+die vor ihm in der Warteschlange standen. Bumpt das Lastenheft wie mehrere
+andere in der Warteschlange; läuft nacheinander (WIP-Limit 1), kein
+Versions-Bump-Konflikt. Bei der Beanspruchung entsteht der dritte
+Vorprüfungs-Block (Nachtlauf-Stand).
 
 **Rückführungen — vorab benennen:**
 
@@ -223,8 +224,15 @@ deklariert, keine Ausdifferenzierung nötig.
 (Stichworte `structure`, Zeilenbudget, Ratchet, Modul-Wachstum,
 `briefing-datei`): Treffer
 [`briefing-datei-ueberschreitet-lade-budget`](../observations/BEO-ALL/briefing-datei-ueberschreitet-lade-budget/observation.md)
-(1×) — derselbe Anlass wie bei slice-236, hier als Abschnitts- statt
+(2× nach `slice-236`s Closure) — derselbe Anlass, hier als Abschnitts- statt
 Datei-Grenze. Kein weiterer Treffer.
+
+**Vorgelagert — Nachtlauf-Stand lesen** (bei der Beanspruchung, 2026-09-27):
+`make nightly-state` meldet `upstream-drift.yml` **ROT** (Lauf
+2026-09-27T06:03Z, unverändert seit `slice-236`), `image-scan.yml` **grün**.
+Vier planmäßige Fremd-Release-Meldungen (`golangci-lint`, `semgrep`,
+`a-check` VERALTET; `golang`-Basis-Digest ABWEICHEND), keine unerwarteten;
+sie berühren dieses Modul nicht.
 
 **Modus-Begründungsblock:** alle berührten Sub-Areas GF.
 
