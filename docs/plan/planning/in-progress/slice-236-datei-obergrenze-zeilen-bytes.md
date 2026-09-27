@@ -20,7 +20,7 @@ max-bytes einer Datei".
 **Berührte Spec-Stellen:** — (die neue Fähigkeit trägt beim Schreiben der
 Spezifikation ihre eigene Kennung).
 
-**Verantwortlich:** —
+**Verantwortlich:** claude-sonnet-5.
 
 **Autor:** claude-sonnet-5. **Datum:** 2026-09-27.
 
@@ -139,9 +139,12 @@ Release-Prep ist, wird **benannt**, nicht übergangen.
 
 ## 4. Trigger
 
-**Start** (`next` → `in-progress`): nach dem Closure der vorangehenden
-Slices, die das Lastenheft bumpen; die Bumps laufen nacheinander. Bei der
-Beanspruchung entsteht der dritte Vorprüfungs-Block (Nachtlauf-Stand).
+**Start** (`open` → `in-progress`): Auftraggeber-Priorisierung 2026-09-27 —
+dieser Slice startet **vor** `slice-232`/`-233`/`-234`, die bislang vor ihm
+in der Warteschlange standen. Alle vier bumpen das Lastenheft; da sie
+nacheinander (WIP-Limit 1) implementiert werden, kollidiert kein
+Versions-Bump — es ändert sich nur die Reihenfolge. Bei der Beanspruchung
+entsteht der dritte Vorprüfungs-Block (Nachtlauf-Stand).
 
 **Rückführungen — vorab benennen:**
 
@@ -194,6 +197,15 @@ deklariert, keine Ausdifferenzierung nötig.
 [`briefing-datei-ueberschreitet-lade-budget`](../observations/BEO-ALL/briefing-datei-ueberschreitet-lade-budget/observation.md)
 (1×) — der Anlass; die Fähigkeit ist der fehlende Sensor, ihre Schwelle ist es
 nicht (§1).
+
+**Vorgelagert — Nachtlauf-Stand lesen** (bei der Beanspruchung, 2026-09-27):
+`make nightly-state` meldet `upstream-drift.yml` **ROT** (Lauf
+2026-09-27T06:03Z), `image-scan.yml` **grün**. Lokal nachgefahren: `golangci-lint`
+VERALTET (Pin 2.13.2, upstream 2.14.0), `semgrep` VERALTET (Pin 1.177.0,
+upstream 1.178.0), `a-check` VERALTET (Pin 0.19.0, upstream 0.20.0),
+`golang:1.27.1` ABWEICHEND (Digest unter demselben Tag neu gebaut). Vier
+planmäßige Fremd-Release-Meldungen, keine unerwarteten; sie berühren dieses
+Modul nicht.
 
 **Modus-Begründungsblock:** alle berührten Sub-Areas GF.
 
