@@ -22,7 +22,7 @@ Baseline-Regel.
 [`DC-FA-CLI-006.a`](../../../../spec/spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag)
 (reservierte Quellen: kanonisches Anforderungs-`ids`-Muster, Präfix-Ableitung).
 
-**Verantwortlich:** claude-sonnet-5.
+**Verantwortlich:** pt9912.
 
 **Autor:** claude-sonnet-5. **Datum:** 2026-09-27.
 
