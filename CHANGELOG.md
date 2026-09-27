@@ -4,6 +4,49 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.78.0] — 2026-09-27
+
+### Added
+
+- slice-236 — **Neues Modul `file`: Zeilen-/Byte-Obergrenzen einer ganzen
+  Datei**
+  ([`DC-FA-FILE-001`](spec/lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in),
+  [ADR-0088](docs/plan/adr/0088-file-modul-groessengrenzen.md)). Eine
+  Regel begrenzt `max-lines` (roh, wie `wc -l` plus eine unvollständige
+  Schlusszeile) und/oder `max-bytes` (roh, Fenced-/Inline-Code zählt mit)
+  einer **ganzen** Datei jeder Art, unabhängig von `scan.roots`/
+  `scan.ignore` — eigenes Modul statt einer Erweiterung von `structure`,
+  weil jenes den bereinigten Abschnittstext einer Markdown-Datei zählt.
+  Mindestens eine der beiden Schwellen ist Pflicht. Anlass:
+  Auftraggeber-Auftrag, den Umfang von `AGENTS.md` sichtbar zu machen
+  (noch keine Schwelle für eine konkrete Datei aktiviert).
+- slice-237 — **`structure` bekommt eine zwölfte Bedingung `max-lines`
+  (Zeilenbudget eines Abschnitts)**
+  ([`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in),
+  [ADR-0089](docs/plan/adr/0089-structure-max-lines-zwoelfte-bedingung.md)).
+  Obergrenze der Zeilenumbrüche im **bereinigten** Abschnittstext —
+  dieselbe Grundmenge wie `min-sentences`, Fenced-Code zählt also nicht
+  mit — sonst Grund-Code `section-lines-exceeded` auf der
+  Überschriftszeile. Untergrenze `1`, nicht `0` (ein Abschnitt hat so gut
+  wie nie null bereinigte Zeilen; `0` wäre faktisch ein Verbot). Abgrenzung
+  zu `file.max-lines`: gleicher Schlüsselname, verschiedene Grundmenge (roh/
+  ganze Datei vs. bereinigt/Abschnitt). Anlass ist ein eingehender Change
+  Request des Adopters `ai-harness-course`. Ohne den Schlüssel
+  byte-identisches Verhalten.
+- slice-234 — **`--suggest-config ai-harness` erkennt die
+  Randbedingungs-Reihe `RB`**
+  ([`DC-FA-CLI-006`](spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten),
+  [ADR-0090](docs/plan/adr/0090-suggest-config-rb-bedingt.md)). Die
+  Präfix-Ableitung im Modus `ai-harness` (ohne `--id-prefix`) erkennt jetzt
+  `<PREFIX>-RB-<NN>`-Kennungen gleichrangig zu `FA`/`QA`; das erzeugte
+  Anforderungs-`ids`-Muster nimmt `RB` aber **nur** auf, wenn derselbe
+  Ableitungs-Durchlauf mindestens eine `-RB-`-Überschrift sah — anders als
+  `FA`/`QA` (feste Konvention, unabhängig vom Repo-Inhalt), sonst wäre die
+  Ausgabe für **jedes** Repo ohne `-RB-`-Heading nicht mehr byte-gleich.
+  `--id-prefix` und `ai-harness-init` lesen das Lastenheft dafür nicht und
+  bleiben unverändert. Anlass ist ein Change Request des Konsumenten
+  `ai-harness-course`.
+
 ## [0.77.0] — 2026-09-18
 
 ### Added

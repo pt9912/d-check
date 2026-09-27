@@ -134,8 +134,10 @@ Dokuments:
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 - `structure` — Struktur-Invarianten **innerhalb** eines Dokuments: je Regel eine
   Dokumentklasse über **eigene** Globs, ein Abschnitt (Klartext oder RE2) und bis
-  zu **elf** Bedingungen mit je eigenem Grund-Code — nicht leer (`section-empty`),
-  Mindest-Sätze (`section-thin`), Task-Obergrenze (`section-oversized`),
+  zu **zwölf** Bedingungen mit je eigenem Grund-Code — nicht leer (`section-empty`),
+  Mindest-Sätze (`section-thin`), ein Zeilenbudget des **bereinigten** Textes
+  (`max-lines` ⇒ `section-lines-exceeded`, dieselbe Grundmenge wie `section-thin`
+  — Fenced-Code zählt nicht mit), Task-Obergrenze (`section-oversized`),
   **offene** Task-Items auf den **rohen** Zeilen (`max-open-tasks` ⇒
   `section-tasks-open`, ein Befund je Haken auf **seiner** Zeile — anders als
   `max-tasks` immun gegen die absatzweise Inline-Code-Paarung, dabei ebenso
@@ -176,6 +178,14 @@ Dokuments:
   opt-in; die Closure-Note-Struktur des Moduls `planning` ist ein **Preset**
   derselben Semantik
   ([`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in))
+- `file` — Zeilen-/Byte-Obergrenzen einer **ganzen** Datei, unabhängig von
+  Dateiart und `scan.roots`/`scan.ignore`: `max-lines` (roh, wie `wc -l`) ⇒
+  `file-lines-exceeded`, `max-bytes` (roh, Fenced-/Inline-Code zählt mit) ⇒
+  `file-bytes-exceeded`, mindestens eine Pflicht. Eigenes Modul statt einer
+  Erweiterung von `structure`, weil jenes den **bereinigten** Abschnittstext
+  einer Markdown-Datei zählt und `file` die **rohe** Datei jeder Art.
+  Hermetisch, opt-in
+  ([`DC-FA-FILE-001`](spec/lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in))
 - `workflows` — Deklarations-Konsistenz der `uses:`-Referenzen von CI-Workflows
   unterhalb eines **konfigurierten** Verzeichnisses (`workflows.dir` — nicht
   verdrahtet, weil CI-System-spezifisch), opt-in. Eine **fremde** Referenz nennt
@@ -301,7 +311,7 @@ Registry, aus der man zieht)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.78.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

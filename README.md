@@ -132,8 +132,10 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 - `structure` — structure invariants **within** a document: each rule defines a
   document class via **its own** globs, a section (literal or RE2) and up to
-  **eleven** conditions, each with its own reason code — non-empty (`section-empty`),
-  minimum sentences (`section-thin`), task ceiling (`section-oversized`),
+  **twelve** conditions, each with its own reason code — non-empty (`section-empty`),
+  minimum sentences (`section-thin`), a line budget of the **cleaned** text
+  (`max-lines` ⇒ `section-lines-exceeded`, same base set as `section-thin` —
+  fenced code does not count), task ceiling (`section-oversized`),
   **open** task items on the **raw** lines (`max-open-tasks` ⇒
   `section-tasks-open`, one finding per box on **its** line — unlike
   `max-tasks` it is immune to the paragraph-wide inline-code pairing, while
@@ -175,6 +177,14 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   opt-in; the closure-note structure of module `planning` is a **preset** of the
   same semantics
   ([`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in))
+- `file` — line/byte ceilings of an **entire** file, independent of file kind
+  and `scan.roots`/`scan.ignore`: `max-lines` (raw, like `wc -l`) ⇒
+  `file-lines-exceeded`, `max-bytes` (raw, fenced/inline code counts) ⇒
+  `file-bytes-exceeded`, at least one required. Its own module rather than an
+  extension of `structure`, because that one counts the **cleaned** section
+  text of a Markdown file while `file` counts the **raw** file of any kind.
+  Hermetic, opt-in
+  ([`DC-FA-FILE-001`](spec/lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in))
 - `workflows` — declaration consistency of the `uses:` references of CI
   workflows below a **configured** directory (`workflows.dir` — not hard-wired,
   because the location is CI-system specific), opt-in. A **foreign** reference
@@ -298,7 +308,7 @@ you pull from)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.78.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to
