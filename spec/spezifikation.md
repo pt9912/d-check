@@ -2931,6 +2931,61 @@ seine Mitglieder an keiner Zeile).
 
 ---
 
+### DC-FA-FILE-001.a — Zeilen- und Byte-Obergrenzen einer ganzen Datei (`file`)
+
+Verfeinert [`DC-FA-FILE-001`](lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in).
+Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
+**opt-in**. Post-Pass wie `structure`: Kandidaten kommen aus dem Baum, nicht
+aus dem gescannten Datei-Satz.
+
+1. **Config.** **Exit 2** je Regel bei: fehlendem `files`; ungültigem Glob in
+   `files` oder `exempt-paths`; **beiden** `max-lines` und `max-bytes`
+   abwesend (halbe Aktivierung — eine Regel ohne Schwelle prüft nichts);
+   einem negativen `max-lines`/`max-bytes`; einem gesetzten, aber leeren oder
+   mehrzeiligen `hint`; zwei Regeln mit identischer Identität (dem `files`-Glob).
+2. **Kandidaten je Regel.** Der Dateibaum wird **einmal je Lauf** komplett
+   gelaufen (die feste Skip-Liste gilt, `scan.roots`/`scan.ignore` **nicht** —
+   dieselbe Wahl wie bei `structure`/`mentions`: die Regel-Globs **sind** hier
+   der Geltungsbereich), dann je Regel gegen `files` gefiltert und um
+   `exempt-paths`-Treffer verkleinert. **Anders als `structure` ist die
+   Kandidaten-Menge nicht auf Markdown beschränkt** — jede Datei ist
+   Kandidat, weil eine Zeilen-/Byte-Zahl für jede Dateiart existiert.
+3. **Nullmengen-Härte.** Trifft eine Regel nach Schritt 2 keine Datei, meldet
+   sie `file-no-match` auf ihrem `files`-Glob (`line` = 1, `target` = die
+   Regel-Identität) — eine Regel zu setzen ist die Behauptung, dass sie
+   Dateien trifft. Ist der Dateibaum selbst nicht lesbar, gilt dasselbe für
+   **jede** Regel (ein Befund je Regel, kein Sammel-Befund).
+4. **Je Kandidaten-Datei lesen.** Eine **unlesbare Einzeldatei** ist
+   **fail-closed** wie bei `structure`: ein Befund `file-no-match`
+   (`line` = 1) statt eines stillen Übersprungs — ein Repo, das genau
+   deshalb rot werden soll, weil eine Datei nicht mehr lesbar ist, bliebe
+   sonst grün. Dieselbe Klasse *„die Regel hat nicht gemessen"* wie die
+   Nullmengen-Härte aus Schritt 3, kein Hint (Schritt 7).
+5. **Zeilen zählen.** Zeilenumbrüche (`\n`) im **rohen** Inhalt, plus eine
+   weitere, wenn der Inhalt nicht selbst auf einen Zeilenumbruch endet
+   (dieselbe Zählung, die `codepaths`/`citations` bereits teilen) — eine
+   leere Datei hat 0 Zeilen. Deckungsgleich mit `wc -l`, solange die Datei mit
+   einem Zeilenumbruch endet. Ist `max-lines` gesetzt und die Zeilenzahl
+   größer, ein Befund `file-lines-exceeded` (`line` = 1).
+6. **Bytes zählen.** Die rohe Länge des gelesenen Inhalts — **kein**
+   bereinigter Text: Fenced-Code-Blöcke und Inline-Code-Spannen zählen mit
+   (anders als jede Bedingung von `structure`), denn `file` prüft die Datei,
+   die geladen wird, nicht ihren Fließtext-Anteil. Ist `max-bytes` gesetzt und
+   die Byte-Zahl größer, ein Befund `file-bytes-exceeded` (`line` = 1).
+7. **Meldungs-Vorrang.** Trägt die Regel einen `hint`, gewinnt er gegen die
+   modul-eigene Meldung eines Schwellen-Befunds (`file-lines-exceeded`/
+   `file-bytes-exceeded`) — dieselbe Form wie `structure[].hint`. Die beiden
+   Befunde ohne Schwellen-Verletzung (`file-no-match` auf dem Glob, unlesbarer
+   Dateibaum) tragen **nie** den Hint: dort hat die Regel nicht gemessen, und
+   ein verfasster Hinweis auf die gehütete Zusage zeigte auf eine Bedingung,
+   die nie geprüft wurde.
+
+**Nicht Gegenstand:** Zeichen-, Wort- oder Token-Zählung; der bereinigte
+Abschnittstext (das ist `structure`s Domäne); `--repair`-Kandidaten; eine
+Schwelle für eine konkrete Datei dieses oder eines anderen Repos.
+
+---
+
 
 ## 2. Datenstrukturen und Schemas
 
@@ -3209,6 +3264,11 @@ Exit 2 ohne Prüfung
 | `structure[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`) über die Quell-Pfade; Treffer werden von **dieser** Regel nicht geprüft — hebeln den Leerlauf-Befund aber nicht aus |
 | `structure[].exempt-expect-count` | int | abwesend (Nullmengen-Härte gilt) | **erwartete Anzahl** der von `exempt-section-pattern` abgezogenen Abschnitte. Stimmt sie, ist eine geleerte Menge **kein** Befund (der deklarierte Bestandszustand); weicht sie ab ⇒ `section-exempt-mismatch` (`line` = 1), in **beide** Richtungen und auch bei verbleibender Restmenge. **Zeiger-Semantik:** eine explizit deklarierte **0** bedeutet *„das Muster soll heute noch nichts treffen"* und ist von „nicht deklariert" unterscheidbar. Greift **nur** nach dem Abzug — trifft schon `section-pattern` nichts, bleibt es `section-missing`. Geht **nicht** in die Regel-Identität ein: zwei erwartete Zahlen über derselben Regel sind ein Widerspruch, kein Paar. Ohne `exempt-section-pattern` ⇒ Exit 2; Wert < 0 ⇒ Exit 2 |
 | `structure[].exempt-section-pattern` | string | leer (aus) | RE2 gegen **dieselbe** getrimmte Überschriften-Zeile wie `section-pattern` (**einschließlich `#`-Folge** — ein analog geschriebenes Muster soll nicht still danebengreifen); getroffene Abschnitte prüft **diese** Regel nicht. Geschwister von `exempt-paths` eine Granularitätsstufe tiefer, für Bestände **innerhalb einer Datei**. Läuft **vor** der Kardinalitäts-Prüfung; leert es die Menge ⇒ `section-missing` mit Schlüssel und Zahl in der Meldung — und dieser Befund behält seine modul-eigene Meldung auch neben einem `hint` (die Regel hat dort nicht gemessen). **Sieht Inline-Code**, anders als das Item-Muster: es teilt die Zeichenkette mit `section-pattern`. Ein **gesetztes** Muster geht in die Regel-Identität ein (`… :: ohne <muster>`), ein leeres nicht. Nicht kompilierend ⇒ Exit 2 |
+| `file[].files` | string | — | Glob (Pfad, wie `scan.ignore`) über **Wurzel-relative** Pfade des gesamten Baums, unabhängig von `scan.roots`/`scan.ignore`; Pflicht je Regel. Null Kandidaten — auch nach Abzug von `exempt-paths` — ⇒ `file-no-match` auf dem Glob ([`DC-FA-FILE-001`](lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in)) |
+| `file[].max-lines` | int | abwesend (aus) | Obergrenze der Zeilen der **ganzen** Datei (roh gezählt, wie `wc -l` plus eine unvollständige Schlusszeile) ⇒ sonst `file-lines-exceeded`; **explizit** < 0 ⇒ Exit 2. Mindestens eines von `max-lines`/`max-bytes` ist Pflicht |
+| `file[].max-bytes` | int | abwesend (aus) | Obergrenze der Byte-Größe der **ganzen** Datei (roh, `len(content)` — kein bereinigter Text) ⇒ sonst `file-bytes-exceeded`; **explizit** < 0 ⇒ Exit 2. Mindestens eines von `max-lines`/`max-bytes` ist Pflicht |
+| `file[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`) über die Kandidaten-Pfade dieser Regel — verkleinert nur, trägt keinen eigenen Grund-Code. Hebt den Leerlauf-Befund **nicht** aus: bleiben nach Abzug null Kandidaten, meldet `file-no-match` weiter |
+| `file[].hint` | string | leer (aus) | vom Konfigurations-Autor **verfasste** Erläuterung; schreibt das Befund-Feld `message` eines Schwellen-Befunds ([`SPEC-001`](#spec-001--befund)) — dieselbe Form wie `structure[].hint`. **Zwei Befunde ausgenommen:** `file-no-match` und der unlesbare Dateibaum — dort hat die Regel nicht gemessen. Explizit leer oder mit Tab/Zeilenumbruch ⇒ Exit 2 |
 | `workflows.dir` | string | leer (aus) | Verzeichnis der Workflow-Dateien — **Aktivierungs-Schalter** des Moduls; leer ⇒ inert (keine Datei geöffnet). Der Ort ist **nicht verdrahtet**, weil er CI-System-spezifisch ist. Gelesen werden die Dateien **unmittelbar** darin mit Endung `.yml` **oder** `.yaml`; null Kandidaten oder null `uses:`-Referenzen ⇒ Befund (fail-closed). Nur Weißraum ⇒ Exit 2 |
 | `workflows.exempt-paths` | string[] | leer | Globs über Wurzel-relative Pfade; Treffer werden **nicht** geprüft. Ungültiges Glob ⇒ Exit 2. **Hebt den Leerlauf-Befund nicht aus:** bleiben nach Abzug null Kandidaten, ist das derselbe fail-closed-Befund |
 | `reviews.done-dir` | string | leer (aus) | Verzeichnis der `done/`-Slice-Pläne — **Aktivierungs-Schalter** des Moduls; leer ⇒ inert (keine Datei geöffnet). Gelesen werden die Dateien **unmittelbar** darin mit Endung `.md` und Präfix `slice-`; null Kandidaten ⇒ Befund (fail-closed). Nur Weißraum ⇒ Exit 2 |
@@ -3351,6 +3411,9 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-080` | `uses-pin-tag-conflict` | workflows | derselbe SHA trägt innerhalb der Scan-Menge — dateiübergreifend gruppiert — mehr als einen distinkten Tag-Kommentar-Text; **eine** Meldung je beteiligter Zeile (`line` = ihre Zeile), mit den distinkten Werten in der Meldung. Ein identischer Kommentar über beliebig viele Zeilen ist Wiederholung, kein Befund; welcher Wert stimmt, ist Netz |
 | `SPEC-081` | `review-missing` | reviews | ein `done/`-Slice mit Review-Zusage (DoD-Zeile mit „unabhängiger Review", jede Bullet-Form, Haken-Zustand egal) hat **keinen** Report unter `reviews.reviews-dir` mit derselben `slice-<NNN>`-Kennung im Dateinamen — **oder** die Prüfmenge ist leer: kein Kandidat in `reviews.done-dir` bzw. `reviews.reviews-dir` unlesbar (`file` = `reviews.done-dir`, `line` = 1). Geprüft wird die **Deckung**, nicht die Qualität des Reports |
 | `SPEC-082` | `artifact-unmentioned` | mentions | ein Mitglied der Soll-Menge (`mentions.artifacts`) kommt in **keinem** Dokument der Ist-Menge (`mentions.documents`) vor. `file` = der Artefakt-Pfad, `line` = **1** (Vertrags-Platzhalter: das Artefakt wird nie geöffnet), `target` = die Ist-Globs. Die **leere** Soll- oder Ist-Menge ist kein Befund, sondern **Exit 2** |
+| `SPEC-084` | `file-no-match` | file | eine Regel trifft keine Datei (auch nach Abzug von `exempt-paths`) — oder der Dateibaum ist nicht lesbar (ein Befund je Regel, kein Sammel-Befund); `line` = 1, `target` = die Regel-Identität (`files`-Glob) |
+| `SPEC-085` | `file-lines-exceeded` | file | eine Datei hat mehr Zeilen, als `max-lines` erlaubt — roh gezählt wie `wc -l` plus eine unvollständige Schlusszeile, **nicht** der von `structure` bereinigte Text; `line` = 1 |
+| `SPEC-086` | `file-bytes-exceeded` | file | eine Datei ist größer, als `max-bytes` erlaubt — die rohe Byte-Länge, **kein** bereinigter Text: Fenced-Code und Inline-Code zählen mit; `line` = 1 |
 | `SPEC-069` | `section-column-missing` | structure | die über `table.column[].name` benannte Spalte ist nicht adressierbar: keine Tabelle des Abschnitts bindet sie (`line` = Abschnitts-Überschrift), der Name kommt in einer Kopfzeile mehrfach vor (`line` = Kopfzeile) oder eine Datenzeile reicht nicht bis zur Spalte (`line` = diese Zeile) |
 | `SPEC-059` | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `SPEC-060` | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
@@ -3379,6 +3442,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-09-27 | Neues Modul-Verfahren §[`DC-FA-FILE-001.a`](spezifikation.md#dc-fa-file-001a--zeilen--und-byte-obergrenzen-einer-ganzen-datei-file) ([`DC-FA-FILE-001`](lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in) 0.89.0, Begründung in begleitender ADR): sieben Schritte über Zeilen-/Byte-Obergrenzen einer ganzen Datei, unabhängig von Dateiart und `scan.roots`/`scan.ignore` — eigenes Modul statt einer Erweiterung von `structure`, weil jenes den bereinigten Abschnittstext einer Markdown-Datei zählt. §2-Schema um `file[].files`/`max-lines`/`max-bytes`/`exempt-paths`/`hint`, §4 um [`SPEC-084`](#4-grund--und-fehler-codes)/[`SPEC-085`](#4-grund--und-fehler-codes)/[`SPEC-086`](#4-grund--und-fehler-codes) |
 | 2026-09-18 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 7 + §2-Schema (`matrix.rules[].allow-if-same-id`) ergänzt: Instanz-Identitäts-Ausnahme ([`DC-FA-MTX-003`](lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)) — eine Regel mit `allow-if-same-id: true` nimmt eine Token-Form-`matrix-forbidden`-Kante aus, wenn das (bereits vorhandene) `token`-Muster der Ziel-Klasse am Fund und dasselbe Muster der Quell-Klasse am Pfad der Quelldatei dieselbe Capture-Gruppen-ID liefern — kein neues Klassen-Feld, dieselbe Regex doppelt genutzt. Fail-closed: `allow-if-same-id` ohne genau eine Capture-Gruppe auf **beiden** beteiligten `token`-Mustern ⇒ Exit 2. Wirkt ausschließlich auf die Token-Form (Schritt 6); Link-Form und `matrix-inactive` unberührt. Default-aus byte-identisch. Anlass: eingehender CR des Adopters `pg-change-feed` (`docs/plan/cr/2026-09-18-cr-eingehend-pg-change-feed-matrix-instanz-identitaet.md`). Begründung in begleitender ADR |
 | 2026-09-17 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 um die Pack-Namens-Auflösung ergänzt (slice-226 <!-- d-check:status-provenance -->, eingehender CR `ai-harness-init`, kein Lastenheft-Bump — dieselbe Zusage, eine erweiterte Erkennung): ein Pack mit gültigem SHA1/SHA256-Hash-Suffix und passender Index-Datei wird jetzt **unabhängig vom Dateinamens-Präfix** aufgelöst — vorher machte allein der rekonstruierte kanonische Name `pack-<hash>.{pack,idx}` einen Pack für die Enumeration sichtbar, und `git maintenance run --task=loose-objects` (eine von git selbst empfohlene Routine-Wartung, die `loose-<hash>.pack` schreibt) machte damit gültige Objekte grundlos unsichtbar. Ein Pack ohne gültiges Hash-Suffix oder ohne passenden Index bleibt weiterhin unsichtbar, der fail-closed-Abbruch für eine wirklich unauflösbare Menge ist unverändert. Kein neuer Grund-Code, kein Konfigurations-Schlüssel |
 | 2026-09-17 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 **umgeschrieben** (slice-220 <!-- d-check:status-provenance -->, [`CO-001`](../docs/plan/carveouts/done/CO-001-vcs-range-stiller-skip.md)-Anlass, kein Lastenheft-Bump — dieselbe Zusage, ein anderer Mechanismus): die geschützte Klasse `vcs.paths` wird jetzt **direkt gegen beide vollständigen Tree-Stände** aufgelöst statt gegen einen Diff, und beide Mengen-Enden brechen fail-closed ab, sobald ein Unterbaum-Objekt nicht lesbar ist — der frühere Diff-Walker (ohne bzw. mit Rename-Erkennung) machte aus genau diesem Fall ein stilles Ende der Aufzählung. Damit entfallen ersatzlos: die Diff-Status-Klassen `M`/`T`/`D`/`R`/`A`, der Absatz über die (ab-/an-)geschaltete Rename-Erkennung des Range-Pfads (eine Umbenennung ist jetzt strukturell Löschung+Hinzufügung, weil beide Mengen unabhängig gelesen werden — kein Diff-Modus kann das mehr verdecken) und der Absatz aus dem 2026-09-08-Eintrag darunter über die nachgelesene BASE-Lesbarkeit einer Hinzufügung (`A`) — eine unlesbare BASE lässt schon die Enumeration selbst fehlschlagen, bevor ein Pfad klassifiziert wird. **Die Gegenrichtungs-Zusagen bleiben unverändert:** ein Tree-Eintrag ohne Datei-Inhalt (Verzeichnis, Gitlink) bleibt befundfrei, der Preis (keine Inhalts-Ähnlichkeits-Messung, ein durch Gitlink ersetzter immutabler Pfad bleibt unbemerkt) ebenso. **Anlass:** [`CO-001`](../docs/plan/carveouts/done/CO-001-vcs-range-stiller-skip.md)s dritte Ausprägung (ein geschütztes Verzeichnis wird gelöscht, dessen BASE-Tree unlesbar ist — **ohne** Pendant auf der Gegenseite) lag **unterhalb** jeder Stelle, an der die alte Diff-basierte Fassung hätte eingreifen können; der neue Mechanismus schließt sie strukturell, statt einen vierten Patch auf derselben Schicht zu versuchen ([`BEO-ALL/fix-schliesst-pfad-nicht-klasse`](../docs/plan/planning/observations/BEO-ALL/fix-schliesst-pfad-nicht-klasse/observation.md)). **Eine vierte, bisher fehldiagnostizierte Ausprägung fällt auf denselben Codepfad:** ein unlesbarer **HEAD**-Tree meldete zuvor fälschlich `core-drift-vcs` „gelöscht oder umbenannt" (Exit 1) statt eines Umgebungsfehlers |

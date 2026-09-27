@@ -83,7 +83,7 @@ sie hat heute keinen Sensor.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — höchstens drei Liefer-Punkte.
 
-- [ ] **Vertrag:** Lastenheft (neue Anforderung für das Modul `file`, mit Happy · Boundary · Negative
+- [x] **Vertrag:** Lastenheft (neue Anforderung für das Modul `file`, mit Happy · Boundary · Negative
       und Out-of-Scope, Versions-Bump mit Historie-Zeile nach
       [MR-032](../../../../harness/conventions/MR-032-historie-vor-accepted.md)),
       Spezifikation (Zählregel, Schema-Schlüssel, Grund-Codes, Grenze nach

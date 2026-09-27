@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.88.0
+**Version:** 0.89.0
 
 **Status:** Draft
 
@@ -108,7 +108,7 @@ verweist für das Konfigurations-Format auf
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
 `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`, `reviews`, `mentions`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
+`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`, `reviews`, `mentions`, `file`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -3774,6 +3774,62 @@ der Zustand nicht geraten werden muss.
 
 **Out-of-Scope:** Spiegel auf weitere Registries; ein vom GHCR-Bild **abweichender** Docker-Hub-Bau (etwa andere Basis oder andere Plattform-Matrix) — die Zusage ist Inhalts-Gleichheit, nicht Parallelbau; **Gleichheit des Manifest-Digests** (registry-lokal, siehe oben); der **Inhalt** der Hub-Beschreibungsseite — er wird aus [`packaging/dockerhub/`](../packaging/dockerhub/README.md) gesetzt, ist aber nicht Teil der Distributions-Zusage: sein Fehlschlag lässt das Release grün.
 
+---
+
+### DC-FA-FILE-001 — Zeilen- und Byte-Obergrenzen einer ganzen Datei (Modul `file`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `file` prüft d-check für eine
+konfigurierte Liste von Regeln, ob eine **ganze** Datei mehr **Zeilen** oder
+mehr **Bytes** trägt, als die Regel erlaubt — unabhängig von ihrer Dateiart:
+anders als [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
+braucht die Regel keinen Abschnitt und ist nicht auf Markdown beschränkt,
+denn eine Zeilen-/Byte-Zahl gibt es für jede Dateiart. Jede Regel benennt
+ihre Dateien selbst über einen Glob (`file[].files`, Syntax wie
+[`DC-FA-SCAN-001`](#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln)) über
+den **gesamten** Baum, unabhängig von `scan.roots`/`scan.ignore` — wie
+`structure` kennt das Modul deshalb kein `<modul>.scope`.
+
+**Zwei unabhängige Schwellen, mindestens eine Pflicht.** `max-lines` und
+`max-bytes` stehen nebeneinander in derselben Regel; eine Regel ohne beide
+prüfte nichts und ist ein Konfigurationsfehler (Exit 2) — dieselbe
+halbe-Aktivierung-Disziplin wie bei den `tasks-ignore-pattern`/`max-tasks`-Paaren
+von `structure`. `file[].exempt-paths` nimmt Dateien aus (Glob über den
+aufgelösten Pfad, Syntax wie `scan.ignore`); `file[].hint` ist die vom
+Konfigurations-Autor **verfasste** Erläuterung, die das Befund-Feld `message`
+schreibt (dieselbe Form wie `structure[].hint`).
+
+**Zählregel.** Zeilen sind Zeilenumbrüche plus eine unvollständige
+Schlusszeile (dieselbe Zählung wie `codepaths`/`citations`; deckungsgleich
+mit `wc -l`, solange die Datei mit einem Zeilenumbruch endet). Bytes sind die
+rohe Dateigröße — keine Zeichen-, Wort- oder Token-Zählung, und **kein**
+bereinigter Text: Fenced-Code und Inline-Code zählen mit, denn `file` prüft
+die Datei, die geladen wird, nicht ihren Fließtext-Anteil.
+
+**Nullmengen-Härte wie `structure`:** Eine Regel, die keine Datei trifft
+(auch nach Abzug von `exempt-paths`), meldet `file-no-match` auf ihrem Glob,
+statt leer zu laufen — eine Regel zu setzen ist die Behauptung, dass sie
+Dateien trifft. Eine **unlesbare Einzeldatei** ist ebenso fail-closed
+(derselbe Grund-Code, `structure`s eigene Wahl für denselben Fall): sie still
+zu überspringen wäre genau der Grün-Pfad, den die Nullmengen-Härte
+ausschließt.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given eine Regel mit `max-lines: 500` und eine Kandidaten-Datei mit 500 Zeilen, when `d-check --enable file` läuft, then kein Befund, Exit 0.
+- **Boundary (Grenzwert):** Given dieselbe Regel und eine Kandidaten-Datei mit 501 Zeilen, when `d-check --enable file` läuft, then ein Befund `file-lines-exceeded` (`line` = 1), Exit 1 — 500 bleibt grün, 501 rot.
+- **Boundary (Bytes zählen roh):** Given eine Regel mit `max-bytes` knapp unter der Größe einer Datei mit einem Fenced-Code-Block, when `d-check --enable file` läuft, then meldet die Regel den Fund — anders als eine `structure[].forbid-pattern`-Zusage auf denselben Text, die den Fenced-Block ausblendet.
+- **Negative (Nullmenge):** Given eine Regel, deren Glob nach Abzug von `exempt-paths` keine Datei trifft, when `d-check --enable file` läuft, then ein Befund `file-no-match` auf dem Glob, Exit 1.
+- **Negative (halbe Aktivierung):** Given eine Regel ohne `max-lines` **und** ohne `max-bytes`, when die Konfiguration geladen wird, then **Exit 2**.
+- **Modul-aus:** Given **kein** aktives `file`, when `d-check` läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
+
+**Out-of-Scope:** Zeichen-, Wort- oder Token-Zählung; Zählung des
+**bereinigten** Textes (das ist `structure`s Domäne); `--repair`-Kandidaten
+(eine zu große Datei ist keine mechanische Reparatur); eine Schwelle für
+`AGENTS.md` oder eine andere Datei dieses Repos — diese Anforderung legt die
+Fähigkeit fest, nicht ihre Nutzung.
+
+---
+
 ## 4. Nichtfunktionale Anforderungen
 
 ### DC-QA-01 — Performance
@@ -3824,6 +3880,7 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.89.0 | 2026-09-27 | Neue Anforderung [`DC-FA-FILE-001`](#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in) (Modul `file`, 25.): Obergrenze für Zeilen (`max-lines`) und/oder Bytes (`max-bytes`) einer **ganzen** Datei, unabhängig von Dateiart und `scan.roots`/`scan.ignore` — eigenes Modul statt einer Erweiterung von [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), weil jenes den bereinigten Abschnittstext einer Markdown-Datei zählt und `file` die rohe Datei jeder Art (Begründung in begleitender ADR). Zeilen zählen wie `wc -l` plus eine unvollständige Schlusszeile (dieselbe Zählung wie `codepaths`/`citations`), Bytes roh. Mindestens eine Schwelle ist Pflicht; ohne sie Exit 2. `DC-FA-CLI-002`s Modul-Liste um `file` erweitert. Anlass: Auftraggeber-Auftrag, keine Schwelle für den eigenen Bestand gesetzt (Folge-Slice). Sechs Akzeptanzkriterien (Happy, Grenzwert, rohe Bytes, Nullmenge, halbe Aktivierung, Modul-aus) | — |
 | 0.88.0 | 2026-09-18 | [`DC-FA-MTX-003`](#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix) um die **Instanz-Identitäts-Ausnahme** erweitert (`matrix.rules[].allow-if-same-id`, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): eine sonst verbotene Token-Referenz wird ausgenommen, wenn Quelle und Ziel dieselbe Instanz-ID tragen — dasselbe Freigabe-Prinzip wie die Supersede-Lineage-Ausnahme aus [`DC-FA-MTX-001`](#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix), hier auf `matrix-forbidden` (Token-Form) statt `matrix-inactive` angewandt und über den **Quell-Pfad** statt ein deklariertes Feld korreliert (ein Slice trägt keine „Supersedes"-Zeile, die Zugehörigkeit liegt in der Namenskonvention). Nutzt das **bereits vorhandene** `token`-Muster der beteiligten Klassen doppelt — gegen den Fließtext (Fund-Erkennung, unverändert) und gegen den Pfad der Quelldatei (neu, Instanz-Ermittlung) —, kein neues Klassen-Feld. Fail-closed am Config-Rand: `allow-if-same-id: true` ohne `token` mit genau einer Capture-Gruppe auf **beiden** beteiligten Klassen ⇒ Exit 2. **Anlass ist ein eingehender CR** des Adopters `pg-change-feed` (`docs/plan/cr/2026-09-18-cr-eingehend-pg-change-feed-matrix-instanz-identitaet.md`): die Klassen-Engine konnte „eigenes Zitat" (harmlos) nicht von „fremdes Zitat" (Archivierungs-Risiko) unterscheiden. Fünf neue Akzeptanzkriterien (Happy, Boundary, keine Korrelation, Fehlkonfiguration, Default). Ohne den Schlüssel byte-identisches Verhalten. Begründung in begleitender ADR | — |
 | 0.87.1 | 2026-09-17 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Fähigkeit: [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um `open-tasks-require-marker-section` erweitert (**Erweiterung** der elften Bedingung, kein neues Kürzel; Begründung in begleitender ADR-Geschichte). **Der Erstentwurf (0.87.0) traf nur den Gleichschnitt-Fall:** die Marken-Suche lief ausschließlich im selben Abschnitt, den `max-open-tasks` bereits zählt. Baseline `v6.9.0` verortet die Zeile `Gegenstand:` aber in einem **eigenen** Abschnitt „Closure-Notiz", nicht im DoD-Abschnitt — ein Dokument, das exakt der Baseline-Ziel-Form folgt, erhielt fälschlich `section-open-tasks-marker-missing`, **empirisch reproduziert** (unabhängiger Review, isolierte Fixture gegen das gebaute Image). Der einzige Grund, warum der Anlassfall (`slice-221` <!-- d-check:status-provenance -->) zuvor grün lief, war eine zweite, undokumentierte Kopie der Marke direkt im DoD-Abschnitt — nirgends als Voraussetzung genannt. **Der neue Schlüssel** (RE2, dieselbe Zeile wie `section-pattern`) durchsucht **jeden** Abschnitt, dessen Überschrift trifft (Vereinigung mehrerer Treffer); **abwesend** bleibt das Verhalten wie 0.87.0 (byte-identisch für Bestandskonfigurationen ohne den neuen Schlüssel). Trifft das Muster keinen Abschnitt, gilt die Marke als fehlend — dieselbe Lesart wie eine Datei ohne den Abschnitt. Vier neue Akzeptanzkriterien (Erkennung im anderen Abschnitt, Vorzustand-Gegenprobe, fehlender Abschnitt, abweichende Nummerierung). **Ohne** `open-tasks-require-marker` ⇒ Exit 2 | — |
 | 0.87.0 | 2026-09-17 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um `open-tasks-require-marker` erweitert (elfte Bedingung, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): eine Marke, konditioniert auf `max-open-tasks` — greift nur, wenn dessen Zählung für den Abschnitt bereits meldet. Vorhanden ⇒ **alle** `section-tasks-open`-Einzelbefunde des Abschnitts entfallen (Erlaubnis); fehlt sie ⇒ **ein** neuer Grund-Code `section-open-tasks-marker-missing` ersetzt sie (Pflicht) — nie beide zugleich für denselben Abschnitt. **Anlass ist ein eingehender CR** des Adopters `ai-harness-init` (`docs/plan/cr/2026-09-17-cr-eingehend-ai-harness-init-stilllegungs-form.md`), der die Pflicht-Hälfte bittet, um Baseline `v6.9.0`s neuen Slice-Lifecycle-Zweig „Gegenstand entfallen/übernommen" gate-tragfähig zu machen — die Erlaubnis-Hälfte trägt denselben Zweck für den eigenen Bestand (Träger slice-225 <!-- d-check:status-provenance -->). **Der CR nennt selbst `DC-FA-PLAN-001`**; zutreffend ist `DC-FA-STRUCT-001`, weil `max-open-tasks` und diese Bedingung im Modul `structure` leben, nicht `planning` — beide Module laufen unter `.d-check.closure.yml` nebeneinander, was die Verwechslung erklärt. Fünf neue Akzeptanzkriterien (Erlaubnis, Pflicht, Normalfall unberührt, abwesender Schlüssel, Config-Rand). Ohne den Schlüssel byte-identisches Verhalten. Begründung in begleitender ADR | — |
