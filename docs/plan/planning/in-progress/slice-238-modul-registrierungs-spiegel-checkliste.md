@@ -77,32 +77,33 @@ deckt eine einzelne Doku-Zeile, kein repo-weites Muster.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — höchstens drei Liefer-Punkte.
 
-- [ ] **Entscheidung (A) oder (B)** getroffen und begründet — bei (A) reicht
+- [x] **Entscheidung (A) oder (B)** getroffen und begründet — bei (A) reicht
       eine ADR-lose Fitness-Function-Ergänzung (kein neues Modul, kein neues
       `DC-*`), bei (B) eine `AGENTS.md`-Ergänzung mit Herkunfts-Anker.
-- [ ] **Vollständige Fundort-Liste** einmal zusammengetragen (Diese Datei,
+- [x] **Vollständige Fundort-Liste** einmal zusammengetragen (Diese Datei,
       `harness/README.md`, `AGENTS.md`, `spec/lastenheft.md` (§3, §6),
       `spec/spezifikation.md` §2/§4, `docs/user/*.md`, `README*.md`,
       `internal/adapter/driving/cli/config_template.go`,
       `internal/hexagon/core/app/diagnose.go`, `internal/hexagon/core/model/config.go`,
       `.d-check.yml`, `Makefile` `FOCUS_DISABLE`) — geprüft durch tatsächliches
       Lesen, nicht durch Wiederholung dieser Aufzählung.
-- [ ] Umsetzung nach der getroffenen Entscheidung.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] Umsetzung nach der getroffenen Entscheidung.
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — kein Self-Review.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — der
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — der
       Ausgang von `BEO-ALL/modulliste-spiegel-ungegated` (heute `geplant:
       slice-238`) wird auf `verkörpert` gesetzt.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
-- [ ] Die drei Paarungen sind getragen — wellenlos hier geprüft.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Die drei Paarungen sind getragen — wellenlos hier geprüft.
 
 ## 3. Plan (vor Code)
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| noch offen | — | abhängig von Entscheidung (A)/(B) in §2 |
+| `internal/hexagon/core/app/registry_mirror_test.go` | neu | sechs Deckungstests gegen `model.ValidModules()` (Lastenheft-Beschreibung, Glossar, Operations-Optionen-Tabelle, README.md/README.de.md-Bullets, Handbuch-Tabelle) plus Guard-Test |
+| `internal/adapter/driven/configyaml/gate_consistency_test.go` | update | dritte Prüfrichtung in `assertNetlessModules` (unbekanntes, weder gelistetes noch verbotenes Modul); neuer Deckungstest `FOCUS_DISABLE` gegen `.d-check.yml` `modules:` |
 
 ## 4. Trigger
 
@@ -126,11 +127,59 @@ Lerneintrag geschrieben.
 
 - Eine wörtliche Vollständigkeitsprüfung (A) kann durch bewusste Ausnahmen
   (`external`/`sources`/`vcs` fehlen in manchen Listen mit Absicht) selbst
-  aufwändig werden. **Ausgang:** bei Closure zu vergeben.
+  aufwändig werden. **Ausgang: entfallen.** Zwei Klassen bewusster
+  Teilmengen wurden identifiziert und explizit AUS der mechanischen Prüfung
+  genommen, statt sie mit einer Ausnahme-Liste nachzubilden: die
+  Bereichskürzel-Liste (Abkürzungen, keine wörtlichen Modulnamen) und das
+  „fixe Standard-Modulset" der `ai-harness`-Gerüste (bewusste Teilmenge,
+  kein Vollständigkeits-Anspruch) — beide von zwei unabhängigen Reviews
+  bestätigt. Der zusätzliche Aufwand blieb dadurch klein: sechs
+  Deckungstests plus zwei Guard-Tests, keine Ausnahme-Liste nötig.
 
 ## 7. Closure-Notiz
 
-*(Bei der Closure zu füllen.)*
+**Geliefert:** Option (A) — sechs mechanische Deckungstests
+(`internal/hexagon/core/app/registry_mirror_test.go`) halten
+`model.ValidModules()` gegen sechs wörtlich-vollständige Doku-Fundorte
+(Lastenheft-Beschreibung
+[`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl),
+Lastenheft-Glossar,
+`docs/user/operations.md` Optionen-Tabelle, `README.md`, `README.de.md`,
+`docs/user/benutzerhandbuch.md` §6 Regelmodule-Tabelle), plus eine dritte
+Prüfrichtung im bestehenden Netzlos-Guard
+(`internal/adapter/driven/configyaml/gate_consistency_test.go`,
+`assertNetlessModules`) und ein neuer Deckungstest, der `FOCUS_DISABLE`
+(Makefile) gegen `.d-check.yml` `modules:` hält — ein vierter, andersartiger
+Fundort-Typ (Spiegel der aktiven Konfiguration statt der vollen Registry).
+Jeder Mechanismus trägt einen Guard-Test mit synthetischen Eingaben
+(fehlendes/verwaistes/unbekanntes Modul), kein neues `DC-*`, keine ADR
+(ADR-lose Fitness-Function-Ergänzung, wie im Plan vorgesehen).
+
+**Bewusst nicht mechanisiert, mit Begründung:** die Bereichskürzel-Liste
+(`spec/lastenheft.md` §3) ist eine Abkürzungs-Liste, keine wörtliche
+Modulnamen-Liste; die „fixe Standard-Modulset"-Stellen (`--suggest-config
+ai-harness`-Gerüst, drei Fundorte) führen eine bewusste **Teilmenge** ohne
+Vollständigkeits-Anspruch. Beide Ausschlüsse wurden von zwei unabhängigen
+Reviews eigenständig nachgeprüft und bestätigt.
+
+**Zwei Review-Runden.** R1 fand F-1 (HIGH, merge-blockierend): drei neue
+Kommentare trugen verbotene Review-Befund-Marker (`AGENTS.md` §3.7,
+teils wortgleich aus dem Bestand übernommen), sowie F-2 (MEDIUM): zwei
+prominente, wörtlich-vollständige Modul-Spiegel (`README.md`/`README.de.md`,
+Handbuch-Tabelle) blieben zunächst ungedeckt — genau die Art Lücke, die
+diesen Slice ausgelöst hat, hätte sich sonst am wahrscheinlichsten
+wiederholt. Beide behoben; R2 verifizierte die Korrektur mit einer
+vollständigen Neu-Prüfung, eigenen adversariellen Regex-Proben (24/24
+Treffer ohne Fehltreffer) und zwei selbst gebauten Mutationsproben und fand
+einen weiteren, nicht blockierenden LOW-Fund (ein veraltendes
+Ordinal-Element „3. Evidenz" in zwei Kommentaren) — sofort behoben.
+
+**Register-Ausgang:**
+[`BEO-ALL/modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
+wechselt von `geplant: slice-238` auf `verkörpert` — liegt in
+`internal/hexagon/core/app/registry_mirror_test.go` (seit slice-238).
+
+**Risiko-Ausgang:** das einzige Risiko aus §6 *entfallen* — siehe dort.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

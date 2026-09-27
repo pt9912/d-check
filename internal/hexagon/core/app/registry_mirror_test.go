@@ -9,10 +9,10 @@ import (
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
 )
 
-// BEO-ALL/modulliste-spiegel-ungegated: mehrere Prosa-/Doku-Fundorte
-// spiegeln model.ValidModules() als wörtliche, vollständige Liste -- diese
-// Datei hält sie mechanisch nach. Zwei Erkennungsformen: eine ankernde
-// Umgebungs-Phrase mit eingegrenzter Backtick-Liste (Lastenheft-Sätze,
+// BEO-ALL/modulliste-spiegel-ungegated (seit slice-238): mehrere Prosa-/
+// Doku-Fundorte spiegeln model.ValidModules() als wörtliche, vollständige
+// Liste -- diese Datei hält sie mechanisch nach. Zwei Erkennungsformen: eine
+// ankernde Umgebungs-Phrase mit eingegrenzter Backtick-Liste (Lastenheft-Sätze,
 // Optionen-Tabellenzelle -- ein zweiter Backtick-Token auf derselben Zeile,
 // etwa eine referenzierte DC-ID, würde sonst mitgezählt) und ein
 // whole-file-Zeilenmuster für Listen, in denen jede Zeile genau einen

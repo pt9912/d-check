@@ -1,1 +1,8 @@
-**Stand:** geplant — `slice-238` (Sensor oder vollständige Checkliste für die Modul-Registrierungs-Spiegel). Erreicht mit `slice-236` 3× (`slice-115`, `slice-152`, `slice-236` — je andere Fundorte, dieselbe Klasse). Der Netzlos-Guard im Go-Test prüft weiterhin nur eine Teilmengen-Richtung (entferntes Modul), nicht ein hinzugefügtes ohne Spiegel — das bleibt Gegenstand von `slice-238`.
+**Stand:** verkörpert — sechs Deckungstests gegen `model.ValidModules()`
+(`internal/hexagon/core/app/registry_mirror_test.go`) plus eine dritte
+Prüfrichtung im Netzlos-Guard und ein `FOCUS_DISABLE`-Deckungstest
+(`internal/adapter/driven/configyaml/gate_consistency_test.go`) — liegt in
+`internal/hexagon/core/app/registry_mirror_test.go` (seit slice-238).
+Bewusst nicht mechanisiert: die Bereichskürzel-Liste (Abkürzungen) und die
+„fixe Standard-Modulset"-Stellen (bewusste Teilmenge) — beide von zwei
+unabhängigen Reviews bestätigt.
