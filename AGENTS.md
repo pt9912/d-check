@@ -186,17 +186,12 @@ Wellendokument → `done/`) ist der **Regelfall** (Fall 1): reiner `git mv`
 zuerst — die relativen Verweise der bewegten Datei lösen für den Moment
 nicht mehr auf, was Kanon ausdrücklich zulässt, solange dieser
 Zwischenstand nicht die Spitze eines Push wird —, dann die
-Link-Tiefen-Korrektur als eigener Commit. **Historische Klärung:** Diese
-Datei nannte hier früher eine eigene „Ausnahme" mit der Begründung, der
-lokale `pre-commit`-Hook mache den kanonischen Weg unmöglich. Das war
-falsch — der Hook prüft den **Arbeitsbaum**, nicht den git-Diff des
-jeweiligen Commits, und ein Zwei-Commit-Vorgang, dessen Korrektur bereits
-im Arbeitsbaum vorliegt, bevor der reine Move committet wird, passiert ihn
-anstandslos, obwohl der Move-Commit für sich genommen inkonsistent bleibt
-— genau das hat die eigene Commit-Historie von
-[slice-223](docs/plan/planning/done/wellenlos/slice-223-commit-zerlegung-ausnahmen-aufloesen.md)
-gezeigt, als der unabhängige Review sie isoliert nachstellte. [`MR-013`](harness/conventions.md#mr-013)
-ist seither vollständig aufgelöst
+Link-Tiefen-Korrektur als eigener Commit. Der lokale `pre-commit`-Hook prüft
+den **Arbeitsbaum**, nicht den git-Diff des jeweiligen Commits: ein
+Zwei-Commit-Vorgang, dessen Korrektur bereits im Arbeitsbaum vorliegt, bevor
+der reine Move committet wird, passiert ihn, obwohl der Move-Commit für sich
+genommen inkonsistent bleibt. [`MR-013`](harness/conventions.md#mr-013) ist
+vollständig aufgelöst
 ([`conventions/done/`](harness/conventions/done/MR-013-lifecycle-move-buendelung.md)).
 
 ### 3.4 Architektur sprach-/meilensteinfrei; Spec-Straten nie abwärts
@@ -335,12 +330,12 @@ Laufzeit auf; `make workflow-pins` meldet ihn als `uses-local-missing`. Sie gilt
 Action. Die Zahl der lokalen Referenzen steht in der Erfolgsmeldung, statt
 stillschweigend übergangen zu werden.
 
-**Die Existenz ist nicht die einzige Frage — das stand hier zu weit**
+**Die Existenz ist nicht die einzige Frage**
 ([ADR-0071](docs/plan/adr/0071-lokale-workflow-referenz-rechte-pruefung.md)).
 Ein aufgerufener Workflow bekommt nur die Rechte, die der aufrufende **Job**
 selbst führt; verlangt er mehr, lehnt GitHub den **ganzen Lauf vor dem ersten
-Job** ab (`startup_failure`, kein Log) — gemessen am Tag-Push von `v0.66.0`,
-während dieses Gate grün meldete. Geprüft wird deshalb auch die
+Job** ab (`startup_failure`, kein Log) — die Existenz-Prüfung allein sieht das
+nicht. Geprüft wird deshalb auch die
 **Rechte-Anforderung des Ziels**: ein Job ohne eigenes `permissions:`, dessen
 Ziel Rechte verlangt (`uses-local-perms-undeclared`), und ein Aufrufer, der
 einen geforderten Scope zu niedrig führt (`uses-local-perms-narrow`). Was der
@@ -352,10 +347,9 @@ Parser-Zusage.
 **Begründung:** Supply-Chain-Härtung — ein Tag lässt sich umhängen, ein SHA
 nicht; dieselbe Härtung wie der Docker/make-only-Pfad in §3.1.
 
-**Durchgesetzt:** `make workflow-pins` in `make gates` — seit
-[ADR-0072](docs/plan/adr/0072-workflows-modul.md) **via Modul `workflows`**
-(Dogfooding über das eigene Image; das frühere Skript ist darin aufgegangen).
-Er trägt die **Form** —
+**Durchgesetzt:** `make workflow-pins` in `make gates` — über das Modul
+`workflows` ([ADR-0072](docs/plan/adr/0072-workflows-modul.md); Dogfooding über
+das eigene Image). Er trägt die **Form** —
 voller SHA plus Tag-Kommentar —, nicht die **Gültigkeit**: ob der SHA existiert
 und den Commit bezeichnet, den der Tag-Kommentar behauptet, prüft er nicht.
 *(Auflösungs-Trigger: permanent — die Gültigkeitsfrage ist Netz und gehört zur
@@ -379,8 +373,7 @@ Richtungen: ein im Index behauptetes `make X` ohne Makefile-Regel meldet
 
 **Die Prosa-Hälfte trägt kein Mechanismus** — das Modul `targets` liest als
 Doku-Target nur `` `make X` `` in Zeilen, deren erstes Zeichen `|` ist, und
-seit der Umstellung auf den einen Index nur noch in
-[`harness/README.md`](harness/README.md); **diese Datei ist weder Scan-Ziel
+zwar nur in [`harness/README.md`](harness/README.md); **diese Datei ist weder Scan-Ziel
 noch Autorität**. Ein erfundenes Target im Fließtext — hier oder anderswo —
 erzeugt null Befunde. Das ist §3.8 auf diesen Sensor angewandt: er verspricht
 nur über seine Scan-Menge. *(Auflösungs-Trigger: permanent — die Prosa-Hälfte
@@ -390,10 +383,8 @@ zu decken hieße, jede Backtick-Nennung im Repo als Deklaration zu lesen.)*
 
 - Commits/PRs müssen mindestens eine `DC-*`-, `ADR-*`-, `MR-*`- oder
   `slice-*`-ID nennen (maschinell erzwungen: `make trace-check` /
-  `commit-msg`-Hook / PR-CI — seit dem Modul `commits` dogfooded über das
+  `commit-msg`-Hook / PR-CI — über das Modul `commits`, dogfooded über das
   eigene Image, [ADR-0027](docs/plan/adr/0027-commits-traceability-modul.md);
-  die abgelöste Skript-Mechanik trug
-  [ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md).
   Ausnahme: Merge-/Revert-Commits). Vergeben werden IDs nur beim
   Spec-/ADR-Schreiben nach dem deklarierten Schema
   ([`MR-008`](harness/conventions.md#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage))
@@ -451,18 +442,17 @@ zu decken hieße, jede Backtick-Nennung im Repo als Deklaration zu lesen.)*
   ihre Form — ein nachträglich umgeschriebener DoD-Punkt fälschte einen
   Lauf-Beleg.
 
-  **Seit slice-172 hält das ein Sensor**, und zwar am **Ruheort**: eine
+  **Ein Sensor hält das**, und zwar am **Ruheort**: eine
   `structure`-Regel im Closure-Profil meldet jeden offenen DoD-Haken eines
   `done/`-Slice (`max-open-tasks: 0` ⇒ `section-tasks-open`, je Haken auf
   seiner Zeile, mit verfasstem Reparatur-Hinweis). Sie läuft in
   `make verify-closure-notes`, **nicht** in `gates` — sonst meldete sie beim
-  Arbeiten an einem laufenden Slice. Der Altbestand bis
-  [`slice-170`](docs/plan/planning/done/wellenlos/slice-170-workflows-modul.md) ist mit
+  Arbeiten an einem laufenden Slice. Der Altbestand ist mit
   fester Ziffernzahl ausgenommen
   ([`MR-056`](harness/conventions.md#mr-056)). **Drei Grenzen gehören dazu:**
   ein Haken ist eine **Selbstauskunft** — die Regel verschiebt die Lücke von
   *unsichtbar* nach *behauptet* und prüft keinen Review; und ein **vergessener
-  Schluss-Fence** macht die **Bedingung** blind (isoliert gemessen: 0 Befunde, Exit 0), weshalb dasselbe Profil `spans` fährt — `fence-unclosed` meldet den Fall. **Der Bindepunkt als Ganzes wird davon nicht grün:** im heutigen Profil melden Nachbarregeln, und `spans` nennt die Ursache. Und **ein Haken INNERHALB eines wohlgeformten Fenced-Blocks ist unsichtbar** — dort meldet auch `fence-unclosed` nichts; dieselbe Fence-Treue, die eine Illustration schützt, ist der Weg, einen Haken zu verstecken. Und **ein Haken IM Fenced-Block ist unsichtbar** — wohlgeformt, also auch ohne `fence-unclosed`; das ist dieselbe Fence-Treue, die eine Illustration schützt, und zugleich der Weg, einen Haken zu verstecken.
+  Schluss-Fence** macht die **Bedingung** blind (isoliert gemessen: 0 Befunde, Exit 0), weshalb dasselbe Profil `spans` fährt — `fence-unclosed` meldet den Fall. **Der Bindepunkt als Ganzes wird davon nicht grün:** im heutigen Profil melden Nachbarregeln, und `spans` nennt die Ursache. Und **ein Haken INNERHALB eines wohlgeformten Fenced-Blocks ist unsichtbar** — dort meldet auch `fence-unclosed` nichts; dieselbe Fence-Treue, die eine Illustration schützt, ist der Weg, einen Haken zu verstecken.
 - Slice-Pläne tragen **kein** `**Status:**`-Feld — der Lifecycle-Zustand **ist** die
   Verzeichnis-Position; neue Slices führen stattdessen den `**Lifecycle:**`-Hinweis
   (Baseline-`slice.template.md`). Alt-Slices in `done/` behalten ihr historisches Feld.
@@ -488,19 +478,17 @@ zu decken hieße, jede Backtick-Nennung im Repo als Deklaration zu lesen.)*
   Auswahl. Vor dem Handoff deshalb zweierlei: **den Vertrags-Teil desselben
   Artefakts durchgehen und jede Zusage einmal umdrehen** — was folgt daraus für
   das Grün? —, und **wo der Gegenstand Code oder Konfiguration ist, gegen
-  diese prüfen statt gegen die Prosa darüber**. Gemessen an sieben Fundstellen:
-  In **sechs** stand die fehlende Grenze bereits im Vertrags-Teil oder in der
-  Konfiguration; in der **siebten** stand sie **nur im Code** — und der
-  Vertrags-Text daneben sagte das Gegenteil des Verhaltens. **Die zweite Hälfte
-  der Regel ist genau für diesen Fall da**, und zwei Grenzen, die nur aus der
-  Prosa abgeleitet waren, beschrieben denn auch Mechanismen, die es nicht gibt.
+  diese prüfen statt gegen die Prosa darüber**. Die fehlende Grenze steht
+  meist bereits im Vertrags-Teil oder in der Konfiguration; steht sie **nur im
+  Code**, sagt der Vertrags-Text daneben das Gegenteil des Verhaltens — **dafür
+  ist die zweite Hälfte der Regel da**, denn eine nur aus der Prosa abgeleitete
+  Grenze beschreibt leicht einen Mechanismus, den es nicht gibt.
   **Nächste Verwandte:** [§3.8](#38-ein-modul-verspricht-nur-über-das-was-es-scannt)
   verlangt dieselbe Umkehrung für ein **Modul** und seine Scan-Menge; dieser
   Absatz verlangt sie für **jede** aufgeschriebene Grenze. **Drei Grenzen:**
   Die Regel gilt dem **Autor vor der Übergabe** und ersetzt den fremden Leser
-  nicht — gemessen fand ihn in allen sieben Fällen **jemand anderes als der
-  Autor**, sechsmal der unabhängige Review, einmal der Auftraggeber; §6 richtet
-  davon den Review ein, nicht jeden fremden Leser. Ihre erste Hälfte setzt
+  nicht — die Lücke findet **jemand anderes als der Autor**; §6 richtet davon
+  den Review ein, nicht jeden fremden Leser. Ihre erste Hälfte setzt
   einen **korrekten** Vertrags-Text voraus — wo er lügt, fängt nur die zweite.
   Und belegt ist sie an **Sensor-Beschreibungen**, nicht an Grenzen-Listen
   überhaupt. Urteil, kein `grep`; der Reviewer-Skill trägt den Anker dazu.
@@ -550,11 +538,8 @@ zu decken hieße, jede Backtick-Nennung im Repo als Deklaration zu lesen.)*
   `[Unreleased]`-Abschnitt: jeder Eintrag steht unter seiner Versions-Nummer,
   und die steht erst fest, wenn das Release geschnitten wird. Ein Slice, der
   seine Zeile vorzieht, muss sie beim Bump wieder anfassen. Dieselbe Grenze
-  gilt den beiden `README*.md` und dem Handbuch-Kopf. **Gemessen, nicht
-  vereinbart:** die Feature-Commits der letzten Slices fassen `CHANGELOG.md`
-  nicht an. Ohne diesen Satz meldet jede Verifikation den Rückstand erneut —
-  zu Recht, denn die Regel darüber sagte nur *„wird gepflegt"* und nicht
-  *wann*.
+  gilt den beiden `README*.md` und dem Handbuch-Kopf. Ein fehlender Eintrag im
+  Feature-Commit ist deshalb kein Rückstand.
 
 ## 6. Minimal Agent Workflow
 
