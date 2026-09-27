@@ -215,20 +215,6 @@ Dokuments:
   **Fail-closed** bei fehlender oder leerer Menge (Exit 2, nicht „0 Befunde").
   **Hermetisch** (kein git, kein Netz), opt-in
   ([`DC-FA-MENT-001`](spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in))
-- `file` — Zeilen-/Byte-Obergrenze einer **ganzen** Datei, jeder Art, nicht
-  nur Markdown: jede Regel benennt ihre Dateien selbst über einen Glob über
-  den gesamten Baum (`file[].files`, unabhängig von
-  `scan.roots`/`scan.ignore`, wie bei `structure`) und prüft `max-lines`
-  und/oder `max-bytes` — mindestens eines ist Pflicht. Zeilen sind
-  Zeilenumbrüche plus eine unvollständige Schlusszeile (dieselbe Zählung,
-  die `codepaths`/`citations` teilen, deckungsgleich mit `wc -l`, solange
-  die Datei mit einem Zeilenumbruch endet); Bytes sind die rohe
-  Inhaltslänge — **nicht** der von `structure` bereinigte Text, Fenced-Code
-  und Inline-Code zählen also mit. Sonst `file-lines-exceeded`/
-  `file-bytes-exceeded`. Eine Regel ohne Treffer (nach `exempt-paths`)
-  meldet `file-no-match` statt leer zu laufen. **Hermetisch** (kein git,
-  kein Netz), opt-in
-  ([`DC-FA-FILE-001`](spec/lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.

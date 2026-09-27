@@ -213,18 +213,6 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   artifacts are **never opened**. **Fail-closed** on a missing or empty set
   (exit 2, not "0 findings"). **Hermetic** (no git, no network), opt-in
   ([`DC-FA-MENT-001`](spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in))
-- `file` — line/byte ceilings for a **whole** file, of any type, not just
-  Markdown: each rule names its own files via a glob over the entire tree
-  (`file[].files`, independent of `scan.roots`/`scan.ignore`, as with
-  `structure`) and checks `max-lines` and/or `max-bytes` — at least one is
-  required. Lines are newlines plus one for a trailing partial line (the
-  same count `codepaths`/`citations` share, matching `wc -l` when the file
-  ends in a newline); bytes are the raw content length — **not** the
-  cleaned text `structure` reads, so fenced code and inline code count.
-  Otherwise `file-lines-exceeded`/`file-bytes-exceeded`. A rule matching no
-  file (after `exempt-paths`) reports `file-no-match` instead of running
-  empty. **Hermetic** (no git, no network), opt-in
-  ([`DC-FA-FILE-001`](spec/lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in))
 
 Every finding names file, line, target and reason; exit codes:
 `0` clean, `1` findings, `2` environment or configuration error.

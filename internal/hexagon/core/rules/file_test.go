@@ -174,6 +174,44 @@ func TestCheckFile_BytesZaehltRohNichtRunen(t *testing.T) {
 	}
 }
 
+// Ist schon der Dateibaum nicht lesbar, meldet JEDE Regel -- ein Befund je
+// Regel, kein Sammel-Befund, damit die Identitaet der unmessbaren Behauptung
+// erhalten bleibt (wie bei structure, TestStructureUnlesbarerBaumFailClosed).
+func TestCheckFile_DateibaumUnlesbarJeRegelEinBefund(t *testing.T) {
+	fs := listErrFS{coretest.NewMemFS(map[string]string{"a.txt": nLines(1)})}
+	rules := []model.FileRule{
+		{Files: "a.txt", MaxLines: ptr(1)},
+		{Files: "b.txt", MaxLines: ptr(1)},
+	}
+	f := CheckFile(fs, rules)
+	if len(f) != len(rules) {
+		t.Fatalf("erwartet je Regel einen Befund, got %+v", f)
+	}
+	for _, fi := range f {
+		if fi.Reason != ReasonFileNoMatch || !strings.Contains(fi.Message, "fail-closed") {
+			t.Errorf("erwartet fail-closed-Befund, got %+v", fi)
+		}
+	}
+	if f[0].Target == f[1].Target {
+		t.Errorf("die Regel-Identitaet muss erhalten bleiben: %q", f[0].Target)
+	}
+}
+
+// Grenzwert-Symmetrie fuer max-bytes, eigenstaendig wie bei max-lines: N ist
+// gruen, N+1 ist rot.
+func TestCheckFile_MaxBytesGrenzwert(t *testing.T) {
+	body := nLines(3) // 6 Bytes
+	r := model.FileRule{Files: "a.txt", MaxBytes: ptr(len(body))}
+	if f := CheckFile(coretest.NewMemFS(map[string]string{"a.txt": body}), []model.FileRule{r}); f != nil {
+		t.Fatalf("Byte-Zahl == max-bytes ⇒ befundfrei, got %+v", f)
+	}
+	rEins := model.FileRule{Files: "a.txt", MaxBytes: ptr(len(body) - 1)}
+	f := CheckFile(coretest.NewMemFS(map[string]string{"a.txt": body}), []model.FileRule{rEins})
+	if len(f) != 1 || f[0].Reason != ReasonFileBytesExceeded {
+		t.Fatalf("Byte-Zahl > max-bytes muss file-bytes-exceeded melden, got %+v", f)
+	}
+}
+
 // Regel-Identitaet ist der files-Glob; zwei Regeln mit demselben Glob sind
 // eine Konfigurations-Dopplung. Geprueft ist hier nur die Kern-Funktion
 // (CheckFile prueft keine Dopplung -- das ist Sache des Config-Adapters);

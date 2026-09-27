@@ -1,1 +1,1 @@
-**Stand:** offen — der Netzlos-Guard im Go-Test prüft nur eine Teilmengen-Richtung (entferntes Modul), nicht ein hinzugefügtes ohne Spiegel.
+**Stand:** geplant — `slice-238` (Sensor oder vollständige Checkliste für die Modul-Registrierungs-Spiegel). Erreicht mit `slice-236` 3× (`slice-115`, `slice-152`, `slice-236` — je andere Fundorte, dieselbe Klasse). Der Netzlos-Guard im Go-Test prüft weiterhin nur eine Teilmengen-Richtung (entferntes Modul), nicht ein hinzugefügtes ohne Spiegel — das bleibt Gegenstand von `slice-238`.

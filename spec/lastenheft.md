@@ -77,7 +77,8 @@ statt per Code-Kopie.
 > innerhalb eines Dokuments, Modul `structure`), `WF`
 > (Workflow-Deklarations-Konsistenz, Modul `workflows`), `RVW`
 > (Review-Report-Deckung, Modul `reviews`), `MENT`
-> (Erwähnungs-Deckung einer Artefakt-Menge, Modul `mentions`), `CONF`
+> (Erwähnungs-Deckung einer Artefakt-Menge, Modul `mentions`), `FILE`
+> (Zeilen-/Byte-Obergrenzen einer ganzen Datei, Modul `file`), `CONF`
 > (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
@@ -3866,7 +3867,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`, `reviews`, `mentions`, `file`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |

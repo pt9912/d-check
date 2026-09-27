@@ -2949,7 +2949,9 @@ aus dem gescannten Datei-Satz.
    der Geltungsbereich), dann je Regel gegen `files` gefiltert und um
    `exempt-paths`-Treffer verkleinert. **Anders als `structure` ist die
    Kandidaten-Menge nicht auf Markdown beschränkt** — jede Datei ist
-   Kandidat, weil eine Zeilen-/Byte-Zahl für jede Dateiart existiert.
+   Kandidat, weil eine Zeilen-/Byte-Zahl für jede Dateiart existiert. **Keine
+   Symlinks** (wie bei `structure`): eine nur über einen Symlink erreichbare
+   Datei prüft auch dieses Modul nicht.
 3. **Nullmengen-Härte.** Trifft eine Regel nach Schritt 2 keine Datei, meldet
    sie `file-no-match` auf ihrem `files`-Glob (`line` = 1, `target` = die
    Regel-Identität) — eine Regel zu setzen ist die Behauptung, dass sie
