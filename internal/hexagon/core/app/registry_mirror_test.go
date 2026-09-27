@@ -9,14 +9,18 @@ import (
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
 )
 
-// slice-238 (BEO-ALL/modulliste-spiegel-ungegated, 3. Evidenz): drei Prosa-
-// Fundorte spiegeln model.ValidModules() als wörtliche, vollständige
-// Backtick-Liste -- gefunden über eine ankernde Umgebungs-Phrase je Ort,
-// damit ein zweiter Backtick-Token auf derselben Zeile (z. B. eine
-// referenzierte DC-ID) nicht mitgezählt wird. Deckt genau die drei Orte, die
-// slice-236s Review nachtragen musste (F-2/F-3/F-4) -- nicht die
-// Bereichskürzel-Liste (Abkürzungen, keine wörtlichen Modulnamen) und nicht
-// die "fixe Standard-Modulset"-Stellen (ai-harness-Gerüst, eine bewusste
+// BEO-ALL/modulliste-spiegel-ungegated: mehrere Prosa-/Doku-Fundorte
+// spiegeln model.ValidModules() als wörtliche, vollständige Liste -- diese
+// Datei hält sie mechanisch nach. Zwei Erkennungsformen: eine ankernde
+// Umgebungs-Phrase mit eingegrenzter Backtick-Liste (Lastenheft-Sätze,
+// Optionen-Tabellenzelle -- ein zweiter Backtick-Token auf derselben Zeile,
+// etwa eine referenzierte DC-ID, würde sonst mitgezählt) und ein
+// whole-file-Zeilenmuster für Listen, in denen jede Zeile genau einen
+// Modulnamen einleitet (README-Bullets, Handbuch-Tabelle) -- dort kollidiert
+// kein anderer Backtick-Token mit dem Muster (geprüft: Trefferzahl je Datei
+// entspricht genau der Modul-Anzahl). Bewusst NICHT gedeckt: die
+// Bereichskürzel-Liste (Abkürzungen, keine wörtlichen Modulnamen) und die
+// "fixe Standard-Modulset"-Stellen (ai-harness-Gerüst, eine bewusste
 // Teilmenge, kein Vollständigkeits-Anspruch).
 
 // backtickTokenRE liest einzelne `wort`-Tokens aus einem bereits
@@ -36,8 +40,7 @@ func moduleTokensIn(s string) []string {
 // model.ValidModules() steht in got, und got trägt keinen Namen, den die
 // Registry nicht kennt (verwaister Fundort-Eintrag nach einer Entfernung).
 // Reine Funktion (kein *testing.T) -- so treffen Live-Prüfung und
-// Guard-Test denselben Code (slice-057-R3-Lehre: nur der Guard löst den
-// Befund aus).
+// Guard-Test denselben Code.
 func moduleMirrorIssues(got []string) []string {
 	if len(got) == 0 {
 		return []string{"kein Modulname gefunden (Anker-Phrase verschoben oder Regex verfehlt die Zeile)"}
@@ -130,4 +133,39 @@ func TestModulRegistrySpiegel_OperationsMdOptionen(t *testing.T) {
 		t.Fatal("Optionen-Tabellenzeile '--enable/--disable' nicht gefunden (fail-closed)")
 	}
 	assertModuleMirrorComplete(t, "docs/user/operations.md Optionen-Tabelle", moduleTokensIn(m[1]))
+}
+
+// bulletModuleLineRE liest eine README-Bullet-Zeile, die genau einen
+// Modulnamen einleitet (`- `modul` — …`). Whole-file-Muster: die Trefferzahl
+// in README.md/README.de.md entspricht genau len(model.ValidModules()) --
+// kein anderer Bullet im Dokument trifft dieselbe Form.
+var bulletModuleLineRE = regexp.MustCompile(`(?m)^- ` + "`" + `([a-z]+)` + "`" + ` — `)
+
+func TestModulRegistrySpiegel_ReadmeEn(t *testing.T) {
+	content := readRepoFile(t, "README.md")
+	assertModuleMirrorComplete(t, "README.md Modul-Bullets", moduleLinesIn(content, bulletModuleLineRE))
+}
+
+func TestModulRegistrySpiegel_ReadmeDe(t *testing.T) {
+	content := readRepoFile(t, "README.de.md")
+	assertModuleMirrorComplete(t, "README.de.md Modul-Bullets", moduleLinesIn(content, bulletModuleLineRE))
+}
+
+// tableModuleRowRE liest eine Handbuch-Tabellenzeile, deren erste Zelle
+// genau einen Modulnamen trägt (`| `modul` …`).
+var tableModuleRowRE = regexp.MustCompile("(?m)^\\| `([a-z]+)`")
+
+func TestModulRegistrySpiegel_BenutzerhandbuchTabelle(t *testing.T) {
+	content := readRepoFile(t, filepath.Join("docs", "user", "benutzerhandbuch.md"))
+	assertModuleMirrorComplete(t, "docs/user/benutzerhandbuch.md §6 Regelmodule", moduleLinesIn(content, tableModuleRowRE))
+}
+
+// moduleLinesIn wendet re (genau eine Capture-Gruppe je Zeile) über den
+// gesamten Text an.
+func moduleLinesIn(content string, re *regexp.Regexp) []string {
+	var out []string
+	for _, m := range re.FindAllStringSubmatch(content, -1) {
+		out = append(out, m[1])
+	}
+	return out
 }

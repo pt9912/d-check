@@ -167,8 +167,7 @@ func TestFocusDisable_DecktDCheckYmlModules(t *testing.T) {
 
 // focusDisableIssues vergleicht FOCUS_DISABLE-Tokens gegen die
 // .d-check.yml-modules-Liste in beide Richtungen. Reine Funktion (kein
-// *testing.T) -- so treffen Live-Prüfung und Guard-Test denselben Code
-// (slice-057-R3-Lehre: nur der Guard löst den Befund aus).
+// *testing.T) -- so treffen Live-Prüfung und Guard-Test denselben Code.
 func focusDisableIssues(focus, ymlModules []string) []string {
 	var issues []string
 	focusSet := map[string]bool{}
