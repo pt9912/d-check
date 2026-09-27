@@ -384,7 +384,7 @@ zu decken hieße, jede Backtick-Nennung im Repo als Deklaration zu lesen.)*
 - Commits/PRs müssen mindestens eine `DC-*`-, `ADR-*`-, `MR-*`- oder
   `slice-*`-ID nennen (maschinell erzwungen: `make trace-check` /
   `commit-msg`-Hook / PR-CI — über das Modul `commits`, dogfooded über das
-  eigene Image, [ADR-0027](docs/plan/adr/0027-commits-traceability-modul.md);
+  eigene Image, [ADR-0027](docs/plan/adr/0027-commits-traceability-modul.md).
   Ausnahme: Merge-/Revert-Commits). Vergeben werden IDs nur beim
   Spec-/ADR-Schreiben nach dem deklarierten Schema
   ([`MR-008`](harness/conventions.md#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage))
@@ -397,12 +397,11 @@ zu decken hieße, jede Backtick-Nennung im Repo als Deklaration zu lesen.)*
   `commit-message.prefix` in [`.github/dependabot.yml`](.github/dependabot.yml)
   lautet `build(deps) [ADR-0067]` bzw. `build(ci) [ADR-0067]`; damit erfüllt <!-- d-check:ignore (literale Konfigurationswerte, keine Verweise) -->
   jeder Bump-Commit dieselbe Regel wie jeder andere
-  ([ADR-0067](docs/plan/adr/0067-dependabot-als-hebender-kanal.md)). Die
-  naheliegende Alternative — `commits.exempt-pattern` erweitern — hätte den Gate
-  für eine **ganze Commit-Klasse** blind gemacht; das ist der Grund, nicht §3.6.
-  §3.6 **verbietet** eine Lockerung nicht, es verlangt eine ADR dafür — die
-  Alternative wäre also dokumentiert zulässig gewesen und ist aus dem Sachgrund
-  verworfen, nicht aus einem Verfahrensgrund. **Die Kennung gilt dem Kanal,
+  ([ADR-0067](docs/plan/adr/0067-dependabot-als-hebender-kanal.md)). Eine
+  Erweiterung von `commits.exempt-pattern` machte den Gate für eine **ganze
+  Commit-Klasse** blind; das ist der Grund gegen sie, nicht §3.6 — der
+  **verbietet** eine Lockerung nicht, sondern verlangt eine ADR dafür. Der
+  Grund ist ein sachlicher, kein verfahrensmäßiger. **Die Kennung gilt dem Kanal,
   nicht dem Inhalt des einzelnen Bumps**; wer mehr Bezug hineinliest, liest zu
   viel.
 - Neue oder geänderte `DC-*`-Anforderungen entstehen nur in
@@ -478,17 +477,18 @@ zu decken hieße, jede Backtick-Nennung im Repo als Deklaration zu lesen.)*
   Auswahl. Vor dem Handoff deshalb zweierlei: **den Vertrags-Teil desselben
   Artefakts durchgehen und jede Zusage einmal umdrehen** — was folgt daraus für
   das Grün? —, und **wo der Gegenstand Code oder Konfiguration ist, gegen
-  diese prüfen statt gegen die Prosa darüber**. Die fehlende Grenze steht
-  meist bereits im Vertrags-Teil oder in der Konfiguration; steht sie **nur im
-  Code**, sagt der Vertrags-Text daneben das Gegenteil des Verhaltens — **dafür
-  ist die zweite Hälfte der Regel da**, denn eine nur aus der Prosa abgeleitete
-  Grenze beschreibt leicht einen Mechanismus, den es nicht gibt.
+  diese prüfen statt gegen die Prosa darüber**. In den belegten Fällen stand die
+  fehlende Grenze fast immer bereits im Vertrags-Teil oder in der
+  Konfiguration; in einem stand sie **nur im Code**, und der Vertrags-Text
+  daneben sagte das Gegenteil des Verhaltens — **dafür ist die zweite Hälfte
+  der Regel da**, denn eine nur aus der Prosa abgeleitete Grenze beschrieb dort
+  einen Mechanismus, den es nicht gibt.
   **Nächste Verwandte:** [§3.8](#38-ein-modul-verspricht-nur-über-das-was-es-scannt)
   verlangt dieselbe Umkehrung für ein **Modul** und seine Scan-Menge; dieser
   Absatz verlangt sie für **jede** aufgeschriebene Grenze. **Drei Grenzen:**
   Die Regel gilt dem **Autor vor der Übergabe** und ersetzt den fremden Leser
-  nicht — die Lücke findet **jemand anderes als der Autor**; §6 richtet davon
-  den Review ein, nicht jeden fremden Leser. Ihre erste Hälfte setzt
+  nicht — in den belegten Fällen fand die Lücke **jemand anderes als der
+  Autor**; §6 richtet davon den Review ein, nicht jeden fremden Leser. Ihre erste Hälfte setzt
   einen **korrekten** Vertrags-Text voraus — wo er lügt, fängt nur die zweite.
   Und belegt ist sie an **Sensor-Beschreibungen**, nicht an Grenzen-Listen
   überhaupt. Urteil, kein `grep`; der Reviewer-Skill trägt den Anker dazu.
@@ -538,8 +538,8 @@ zu decken hieße, jede Backtick-Nennung im Repo als Deklaration zu lesen.)*
   `[Unreleased]`-Abschnitt: jeder Eintrag steht unter seiner Versions-Nummer,
   und die steht erst fest, wenn das Release geschnitten wird. Ein Slice, der
   seine Zeile vorzieht, muss sie beim Bump wieder anfassen. Dieselbe Grenze
-  gilt den beiden `README*.md` und dem Handbuch-Kopf. Ein fehlender Eintrag im
-  Feature-Commit ist deshalb kein Rückstand.
+  gilt den beiden `README*.md` und dem Handbuch-Kopf. Ein fehlender Eintrag
+  dort im Feature-Commit ist deshalb kein Rückstand.
 
 ## 6. Minimal Agent Workflow
 
