@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.92.1
+**Version:** 0.93.0
 
 **Status:** Draft
 
@@ -1126,6 +1126,27 @@ ausgeschlossen; und die string-basierte Extraktion (Module `ids`, `pins`,
 sie erhält strukturell nie mehr als eine Zeile. `--repair` erzeugt für die
 neue Form deshalb keinen Fix-Kandidaten. Begründung in begleitender ADR.
 
+**Referenz-Definitionen (`[label]: ziel "titel"`).** Eine
+Link-Referenz-Definition — Label in eckigen Klammern, Doppelpunkt,
+Zieladresse und optionaler Titel auf **derselben** Zeile, mit bis zu drei
+führenden Leerzeichen — wird von der gemeinsamen Extraktion erkannt und
+**unabhängig davon**, ob sie an anderer Stelle im Dokument verwendet wird
+(`[text][label]`, `[label][]`, `[label]`), wie ein Inline-Link behandelt: ein
+totes Dateiziel meldet `target-missing`, mit derselben Auflösung,
+Escape-/Symlink-Prüfung und demselben `ignore-refs`-Ventil wie ein
+Inline-Link. Der Fund wird der Definitions-Zeile zugeschrieben. Diese
+Erweiterung gilt für dieselben sechs Module wie die gemeinsame
+`[]Line`-Extraktion (`links`, `links.resolve-from`, `anchors`, `matrix`,
+`external`, `tracked`) — mit einer Ausnahme: das Modul `anchors` behandelt
+eine Definition nicht, ein Fragment-Anteil des Ziels bleibt ungeprüft (die
+Anker-Anforderung gilt Links, nicht Definitionen). **Drei Grenzen bleiben
+bestehen:** eine Definition beginnt **außerhalb** von Blockquote und Liste
+(kein `>`- oder Listen-Präfix vor der öffnenden Klammer); ihr Label trägt
+**keine** Backslash-Escapes (ein `\]` im Label wird nicht als Teil des Labels
+erkannt); und Ziel oder Titel **hinter einem Zeilenumbruch** werden nicht
+erkannt — dieselbe zeilenlokale Grenze wie beim Linktext eines Inline-Links.
+Begründung in begleitender ADR.
+
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given ein Link auf eine existierende Datei im Repo, when das Modul `links` läuft, then kein Befund.
@@ -1142,7 +1163,10 @@ neue Form deshalb keinen Fix-Kandidaten. Begründung in begleitender ADR.
 - **Happy Path (Zeilenumbruch):** Given einen Link `[text](` am Zeilenende, gefolgt von `ziel.md)` auf der nächsten Zeile, wobei `ziel.md` existiert, when das Modul läuft, then kein Befund.
 - **Negative (Zeilenumbruch):** Given denselben Aufbau mit einem nicht existierenden `ziel.md`, when das Modul läuft, then ein Befund `target-missing`, gemeldet auf der **öffnenden** Zeile des Links (der Zeile mit `[text](`).
 
-**Out-of-Scope:** Reference-Style-Links (`[text][ref]` mit separater `[ref]: ziel`-Definition); semantische Prüfung, ob das verlinkte Dokument inhaltlich passt.
+- **Happy Path (Referenz-Definition):** Given eine Definition `[label]: ziel.md`, wobei `ziel.md` existiert und die Definition an keiner Stelle im Dokument verwendet wird, when das Modul läuft, then kein Befund.
+- **Negative (Referenz-Definition):** Given eine Definition `[label]: fehlt.md` mit totem Ziel, when das Modul läuft, then ein Befund `target-missing`, gemeldet auf der Definitions-Zeile.
+
+**Out-of-Scope:** Auflösung der **Verwendung** eines Reference-Style-Links (`[text][label]`, `[label][]`, `[label]`) auf seine Definition — geprüft wird die Definition selbst, unabhängig von ihrer Verwendung (siehe oben); semantische Prüfung, ob das verlinkte Dokument inhaltlich passt.
 
 ---
 
@@ -1202,6 +1226,11 @@ nimmt bestimmte Ziele referenz-weit von der Anker-Prüfung aus.
 - HTML-Anker in über mehrere Zeilen verteilten Tags (Erkennung ist konservativ und zeilenbasiert).
 - `name`-Attribut an anderen Elementen als `<a>` (GitHub honoriert `name` nur dort).
 - Prüfung von HTML als eigenständigem Dateiformat — bleibt global Out-of-Scope (§5); erkannt werden ausschließlich Inline-HTML-Anker **innerhalb von Markdown-Dateien**.
+- Ein Fragment-Anteil des Ziels einer Link-Referenz-Definition
+  (`[label]: ziel.md#anker`) — Definitionen speist die gemeinsame Extraktion
+  nur für die Existenz-Prüfung des Moduls `links`
+  ([`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)),
+  nicht für die Anker-Prüfung dieses Moduls.
 
 ---
 
@@ -3918,6 +3947,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.93.0 | 2026-09-27 | [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) um die Prüfung von Link-Referenz-Definitionen (`[label]: ziel "titel"`) erweitert (additiv, standardmäßig an; Erweiterung statt neues Kürzel — dieselbe Prüfung, verengter Out-of-Scope-Satz): eine Definition mit Datei-Ziel wird von der gemeinsamen Extraktion erkannt und **unabhängig von ihrer Verwendung** geprüft — ein totes Ziel meldet `target-missing` auf der Definitions-Zeile, mit derselben Auflösung, Escape-/Symlink-Prüfung und demselben `ignore-refs`-Ventil wie ein Inline-Link. Gilt für dieselben sechs Module wie die gemeinsame `[]Line`-Extraktion, mit einer Ausnahme: das Modul `anchors` behandelt Definitionen nicht (neuer Out-of-Scope-Satz dort). Drei Grenzen bleiben benannt: kein Blockquote-/Listen-Präfix, kein Backslash-Escape im Label, kein Zeilenumbruch vor Ziel oder Titel. Zwei neue Akzeptanzkriterien (Happy, Negative); der Out-of-Scope-Satz „Reference-Style-Links" ist auf die **Verwendungs-Auflösung** verengt. Begründung in begleitender ADR. **Anlass ist ein Change Request** eines Konsumenten | — |
 | 0.92.1 | 2026-09-27 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf (0.92.0) sagte eine **absatzweise** Erkennung zu (ganzer Absatz als ein String). Der Review fand: die zugrunde liegende Klammer-Zählung kennt keine Zeilengrenzen — ein unbalanciertes `[` in gewöhnlicher Prosa konnte dadurch mit einer späteren, unabhängigen `](…)`-Sequenz zu einem **erfundenen Link** verschmelzen, empirisch nachgewiesen. Die Zusage ist jetzt enger: **nur** die Adress-Klammer darf um die unmittelbare Folgezeile verlängert werden, die Linktext-Klammer bleibt **strikt zeilenlokal** — dieselbe Fehlerklasse ist damit strukturell ausgeschlossen. Die zugesagte Form (Zeilenumbruch hinter `](`, Fundzeile = öffnende Zeile, zwei Akzeptanzkriterien) ändert sich nicht |
 | 0.92.0 | 2026-09-27 | [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) um die Erkennung eines Zeilenumbruchs unmittelbar hinter `](` erweitert (additiv, standardmäßig an; Erweiterung statt neues Kürzel — dieselbe Prüfung, verengte Extraktions-Grenze): die gemeinsame `[]Line`-Extraktion (`ExtractLinks`, sechs Konsumenten `links`/`links.resolve-from`/`anchors`/`matrix`/`external`/`tracked`) erkennt eine Zieladresse jetzt **absatzweise**, wenn sie einen einzigen Zeilenumbruch hinter `](` trägt — wie die bestehende absatzweise Inline-Code-Erkennung. Der Fund wird der öffnenden Zeile des Links zugeschrieben; Bilder teilen den Parser und werden mitgezogen. Zwei Grenzen bleiben benannt: Zeilenumbruch im Linktext bzw. vor einem Titel-Suffix bleibt unerkannt, und die string-basierte Extraktion (`ids`, `pins`, `--repair`, `planning`-Zitate) bleibt strikt zeilenbasiert — `--repair` erzeugt für die neue Form keinen Fix-Kandidaten. Zwei neue Akzeptanzkriterien (Happy, Negative). Begründung in begleitender ADR. **Anlass ist ein Change Request** eines Konsumenten | — |
 | 0.91.0 | 2026-09-27 | [`DC-FA-CLI-006`](#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) um die Randbedingungs-Reihe `RB` erweitert (additiv; Erweiterung statt neues Kürzel — dieselbe Präfix-Ableitung wie `FA`/`QA`): der `ai-harness`-Ableitungs-Durchlauf (repo-bewusst, ohne `--id-prefix`) erkennt `<PREFIX>-RB-<NN>`-Kennungen jetzt sowohl bei der Präfix-Ableitung als auch im erzeugten Anforderungs-`ids`-Muster — Letzteres nur, wenn derselbe Durchlauf mindestens eine `-RB-`-Überschrift sah, sonst bleibt die Ausgabe **byte-gleich** (dieselbe Bedingung gilt nicht für `--id-prefix` oder `ai-harness-init`, die das Lastenheft für diesen Zweck nicht lesen — benannte Grenze). Drei neue Akzeptanzkriterien (Happy, Abwesend, Mehrdeutigkeit — Letztere verschärft das bestehende Verhalten bei mehreren Präfixen auf den Fall, dass das zweite Präfix nur über `-RB-` auftritt). Ein neuer Out-of-Scope-Satz benennt die Grenze zur Requirements Traceability Matrix ([`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)): die Erweiterung wirkt nur auf die Prüfungs-Musterableitung, nicht auf die RTM-Anforderungsmenge. **Anlass ist ein Change Request** des Konsumenten `ai-harness-course` (2026-09-27) — die Randbedingungs-Reihe selbst ist dort noch in einer ungetaggten Welle, die hier gepinnte Baseline kennt sie nicht; d-check trägt die Form als Konsument dieses CR, nicht als adoptierte Baseline-Regel. Begründung (Alternativen, benannte Grenzen) in begleitender ADR | — |

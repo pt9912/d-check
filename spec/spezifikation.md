@@ -977,6 +977,25 @@ strippen wäre, und damit keine geteilte Antwort zu übernehmen.
    sehen, unabhängig vom Absatz-Kontext. Ein Fix-Kandidat für die neue Form
    entsteht deshalb nicht (`--repair` schreibt auf Byte-Spannen **einer**
    Zeile).
+
+   **Referenz-Definitionen (`[label]: ziel "titel"`):** zusätzlich zu
+   Inline-Links erkennt dieselbe gemeinsame Extraktion (`ExtractLinks`) eine
+   Link-Referenz-Definition — bis zu drei führende Leerzeichen, `[label]:`,
+   Whitespace, Zieladresse und optionaler Titel-Suffix **auf derselben
+   Zeile** — unabhängig davon, ob das Label an anderer Stelle verwendet wird
+   (die Verwendung wird nicht aufgelöst). Der Fund wird der
+   Definitions-Zeile zugeordnet, Ziel-Normalisierung (Schritt 4) und
+   Titel-Abtrennung sind dieselben wie bei einem Inline-Link. **Drei
+   benannte Grenzen:** eine Definition trägt **kein** Blockquote- oder
+   Listen-Präfix vor der öffnenden Klammer (nur die drei Leerzeichen der
+   CommonMark-Einrückungsgrenze); ihr Label kennt **keine**
+   Backslash-Escapes (ein `\]` beendet die Label-Erkennung wie ein
+   unescaptes `]`); und Ziel oder Titel **hinter einem Zeilenumbruch**
+   werden nicht erkannt — die Definition ist strukturell einzeilig. Für das
+   Modul `anchors` gilt eine Ausnahme: es überspringt eine Definition
+   vollständig (kein Fragment-Anteil geprüft) — die übrigen fünf
+   Konsumenten (`links`, `links.resolve-from`, `matrix`, `external`,
+   `tracked`) behandeln sie wie jeden anderen `LinkRef`.
 4. **Ziel-Normalisierung:** Prozent-Dekodierung (RFC 3986, vollständig)
    → Auflösung relativ zum Verzeichnis der enthaltenden Datei →
    lexikalische Normalisierung. Die Repo-Escape-Prüfung erfolgt **nach**
@@ -3498,6 +3517,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-09-27 | §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3 um die Erkennung von Link-Referenz-Definitionen (`[label]: ziel "titel"`) erweitert ([`DC-FA-LINK-001`](lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) 0.93.0, additiv, Begründung in begleitender ADR): dieselbe gemeinsame Extraktion (`ExtractLinks`) erkennt eine Definition unabhängig von ihrer Verwendung und ordnet den Fund ihrer Zeile zu; Ziel-Normalisierung und Titel-Abtrennung sind dieselben wie bei einem Inline-Link. Drei benannte Grenzen: kein Blockquote-/Listen-Präfix, keine Backslash-Escapes im Label, kein Zeilenumbruch vor Ziel oder Titel — die Definition ist strukturell einzeilig. Fünf der sechs Konsumenten behandeln eine Definition wie jeden anderen `LinkRef`; das Modul `anchors` überspringt sie vollständig (neuer Out-of-Scope-Satz in [`DC-FA-ANCH-001`](lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors)). **Anlass ist ein Change Request** eines Konsumenten |
 | 2026-09-27 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3 präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf beschrieb eine **absatzweise Faltung** (ganzer Absatz zu einem String zusammengefügt, wie die Inline-Code-Erkennung aus Schritt 2). Der Review fand: `matchBracket` zählt Klammer-Tiefe ohne Zeilen-Rücksicht — ein unbalanciertes `[` in gewöhnlicher Prosa konnte dadurch mit einer späteren, unabhängigen `](…)`-Sequenz zu einem **erfundenen Link** verschmelzen (empirisch am Testfall nachgewiesen). Die Zusage ist jetzt enger: **nur** die Adress-Klammer darf um eine Zeile verlängert werden, die Linktext-Klammer bleibt **strikt zeilenlokal** — dieselbe Fehlerklasse ist dadurch strukturell ausgeschlossen statt vermieden. Die zugesagte Form selbst (ein Zeilenumbruch hinter `](`, Fundzeile = öffnende Zeile) ändert sich nicht |
 | 2026-09-27 | §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3 präzisiert ([`DC-FA-LINK-001`](lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) 0.92.0, additiv, Begründung in begleitender ADR): die Extraktion bleibt grundsätzlich zeilenbasiert, gewinnt aber eine **absatzweise** Ausnahme für die `[]Line`-Signatur (`ExtractLinks`, sechs Konsumenten) — dieselbe Grenzziehung (Leerzeilen, Fences) wie die absatzweise Inline-Code-Erkennung aus Schritt 2. Ein Fund wird der öffnenden Zeile zugeschrieben. Zwei Grenzen benannt: Zeilenumbruch im Linktext/vor einem Titel bleibt unerkannt; die string-basierte Extraktion (`ExtractLinkSpans`, vier Konsumenten) bleibt strikt zeilenbasiert, weil sie strukturell nie mehr als eine Zeile erhält — kein Fix-Kandidat für `--repair` bei der neuen Form. Ohne die neue Form byte-identisches Verhalten für einzeilige Links (dieselbe Zeilen-Zuordnung wie zuvor) |
 | 2026-09-27 | §[`DC-FA-CLI-006.a`](spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag) um die Randbedingungs-Reihe `RB` erweitert ([`DC-FA-CLI-006`](lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) 0.91.0, additiv, Begründung in begleitender ADR): der Absatz „Anforderungs-Präfix" erkennt `<PREFIX>-RB-<NN>` bei der Präfix-Ableitung aus `spec/lastenheft.md` gleichrangig zu `FA`/`QA`; das erzeugte Anforderungs-Muster selbst nimmt `RB` aber **nur bedingt** auf — nur wenn derselbe `ai-harness`-Ableitungs-Durchlauf (ohne `--id-prefix`) mindestens eine `-RB-`-Überschrift sah, anders als `FA`/`QA`, die die Alternation unbedingt tragen (feste Konvention). Ohne `-RB-`-Heading im gescannten Lastenheft bleibt die Ausgabe byte-gleich; für `--id-prefix` oder `ai-harness-init` (die das Lastenheft dafür nicht lesen) bleibt `RB` immer außen vor — benannte Grenze. Weitere benannte Grenze: die Erweiterung wirkt nur auf die Prüfungs-Musterableitung, nicht auf die Requirements Traceability Matrix ([`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)) — das bleibt eine Konsumenten-Entscheidung über dessen `id-pattern`-Konfiguration. **Anlass ist ein Change Request** des Konsumenten `ai-harness-course` (2026-09-27) — die Reihe selbst steht dort in einer ungetaggten Welle, die gepinnte Baseline kennt sie nicht |
