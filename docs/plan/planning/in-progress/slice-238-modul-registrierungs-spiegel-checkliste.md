@@ -17,7 +17,7 @@ die mit `slice-236` ihre dritte Evidenz erreicht hat.
 
 **Berührte Spec-Stellen:** —
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** claude-sonnet-5. **Datum:** 2026-09-27.
 
@@ -152,6 +152,14 @@ Harness-Werkzeug selbst (`*`, Kürzel `ALL`); bereits deklariert.
 **Vorgelagert — offene Beobachtungen sichten:**
 [`BEO-ALL/modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
 ist der Auslöser dieses Slice selbst (3×, Ausgang `geplant`).
+
+**Vorgelagert — Nachtlauf-Stand lesen** (bei der Beanspruchung, 2026-09-27):
+`make nightly-state` meldet `upstream-drift.yml` **ROT** (Lauf
+2026-09-27T06:03:41Z, unverändert seit slice-232/233/235), `image-scan.yml`
+**grün** (Lauf 2026-09-27T09:18:12Z). Derselbe veraltete Stand: vier der
+fünf gemeldeten Fremd-Release-Stände sind bereits gehoben, die Kurs-Baseline
+(`v6.9.0` → `v6.10.0`) bleibt bewusst zurückgestellt bis `v6.11.0`. Keiner
+der fünf Punkte berührt dieses Harness-Werkzeug.
 
 **Modus-Begründungsblock:** GF.
 
