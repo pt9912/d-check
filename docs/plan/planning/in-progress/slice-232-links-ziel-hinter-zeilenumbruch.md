@@ -80,7 +80,7 @@ Verhalten nicht.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — höchstens drei Liefer-Punkte.
 
-- [ ] **Vertrag:** `spec/lastenheft.md` (Link-Anforderung: Beschreibung, zwei
+- [x] **Vertrag:** `spec/lastenheft.md` (Link-Anforderung: Beschreibung, zwei
       Akzeptanzkriterien Negative/Happy für die neue Form, Versions-Bump mit
       Historie-Zeile nach [MR-032](../../../../harness/conventions/MR-032-historie-vor-accepted.md)),
       `spec/spezifikation.md` (Extraktions-Abschnitt, Schritt 3: Grenze verengt,
@@ -91,25 +91,25 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Abschnitt eine ADR oder einen Slice; die ADR trägt `Schärft:` aufwärts,
       mindestens drei verglichene Alternativen mit Trade-off, eine Fitness
       Function und einen `Re-Evaluierungs-Trigger`.
-- [ ] **Extraktion:** die gemeinsame Extraktion erkennt `](` + Whitespace mit
+- [x] **Extraktion:** die gemeinsame Extraktion erkennt `](` + Whitespace mit
       **einem** Zeilenumbruch + Adresse; alle Konsumenten von `ExtractLinks`
       und `ExtractLinkSpans` sind gelesen, ihr Verhalten für die neue Form in
       der ADR benannt. Tests: Fixture je Form mit totem Ziel (vorher 0 /
       nachher je 1 `target-missing`, **Rot-Beleg gegen den alten Stand**) und
       mit lebendem Ziel (0), plus unveränderte Inline-/Titel-/Spitzklammer-/
       Klammer-Kontrollen.
-- [ ] **Bestandsmessung:** `make doc-check` auf diesem Repo (Dogfooding) und die
+- [x] **Bestandsmessung:** `make doc-check` auf diesem Repo (Dogfooding) und die
       Befundzahl der Konsumenten-Module gegen den Stand vor der Änderung;
       jeder neue Befund ist behoben oder mit Grund benannt (Ausgabe in §7).
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8, kein
       Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben oder „keine
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben oder „keine
       Beobachtung angefallen" in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 3. Plan (vor Code)
 
@@ -167,18 +167,89 @@ Lerneintrag geschrieben.
 ## 6. Risiken und offene Punkte
 
 - Standard-an: Konsumenten mit bisher stillen toten Zielen werden rot.
-  **Ausgang:** bei Closure zu vergeben (Release-Prep nennt es im CHANGELOG).
+  **Ausgang: entfallen.** Die Bestandsmessung dieses Repos (§7) zeigt 0 neue
+  Befunde der neuen Form — kein realer Konsument dieses Repos wurde rot. Die
+  Erwähnung im CHANGELOG bleibt Standard-Release-Prep für jedes neue
+  Standard-an-Verhalten (`AGENTS.md` §5), kein Folge-Slice nötig.
 - Ein Konsument (`ids`, `pins`, `repair`) rechnet still mit der Zeilenlokalität
   und liefert bei der neuen Form ein falsches, aber grünes Ergebnis.
-  **Ausgang:** bei Closure zu vergeben.
+  **Ausgang: entfallen.** Alle vier String-Konsumenten (`ids`, `pins`,
+  `--repair`, `planning`) sind in
+  [ADR-0092](../../adr/0092-links-zeilenumbruch-begrenzter-lookahead.md)
+  namentlich analysiert; `ExtractLinkSpans` ruft `forEachLink` weiterhin mit
+  `next=""` auf — byte-identisches Verhalten zum Stand vor dieser Änderung,
+  unabhängig von R1 und R2 am Code verifiziert.
 - Der Befund-Zeilen-Entscheid verschiebt Zeilennummern für Bestandsbefunde
   der neuen Form; der Determinismus (siehe Bezug) bleibt gewahrt, die
-  Byte-Identität gilt für Eingaben **ohne** die neue Form. **Ausgang:** bei
-  Closure zu vergeben.
+  Byte-Identität gilt für Eingaben **ohne** die neue Form. **Ausgang:
+  entfallen.** `TestCLI232_UnveraenderteKontrollformen` und
+  `TestExtractLinks_ZweiVollstaendigeLinksImSelbenAbsatz` belegen, dass
+  Bestandsformen ohne die neue Form ihre bisherige Zeile behalten; die
+  Determinismus-Suite
+  ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus))
+  bleibt grün.
 
 ## 7. Closure-Notiz
 
-*(Bei der Closure zu füllen.)*
+**Geliefert:** die gemeinsame Link-Extraktion (`ExtractLinks`) erkennt eine
+Zieladresse, die hinter `](` einen einzigen Zeilenumbruch trägt; ein totes
+Ziel meldet `target-missing` wie bei der Inline-Form, auf der öffnenden
+Zeile. `spec/lastenheft.md` (0.92.1), `spec/spezifikation.md`
+([`DC-FA-LINK-001.a`](../../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+Schritt 3) und
+[ADR-0092](../../adr/0092-links-zeilenumbruch-begrenzter-lookahead.md)
+(Accepted) tragen die Entscheidung.
+
+**Was anders lief — ein echter Design-Fehler, kein Nachzug.** Die erste
+ADR-Fassung dieser Entscheidung — mittlerweile Superseded — faltete den
+ganzen Absatz zu einem String und ließ den zeilenblinden `matchBracket`
+über **beide** Klammern (Linktext und Adresse) laufen. Der unabhängige Review R1 fand dadurch einen HIGH-Befund (R1-H1): ein
+unbalanciertes `[` in gewöhnlicher Prosa konnte mit einer späteren,
+unabhängigen `](…)`-Sequenz zu einem erfundenen Link verschmelzen. Das Design
+wurde daraufhin **neu geschnitten**, nicht nur gepatcht: nur die
+Adress-Klammer darf um genau eine Zeile verlängert werden, die
+Linktext-Klammer bleibt strikt zeilenlokal —
+[ADR-0092](../../adr/0092-links-zeilenumbruch-begrenzter-lookahead.md)
+supersedet die Erstfassung entsprechend (nur ihr `**Status:**`-Feld + ein
+`## Geschichte`-Anhang geändert, Kern unangetastet, `AGENTS.md` §3.5). Ein
+zweiter Review (R2) verifizierte die Korrektur eigenständig (fünf weitere
+adversarielle Fälle, unabhängiger Rot-Beleg gegen die Erstfassung) und fand
+einen weiteren, trivialen HIGH-Befund (R2-H1: zwei neue Kommentare trugen
+verbotene Review-Befund-Marker, `AGENTS.md` §3.7) sowie MEDIUM/LOW/INFO-Befunde
+ohne Merge-Sperre. Alle Befunde sind eingearbeitet.
+
+**Bestandsmessung (DoD-Pflicht, alle sechs `ExtractLinks`-Konsumenten):**
+`make doc-check` gegen den Stand unmittelbar vor diesem Slice
+(`45d55827`) und gegen die Endfassung, beide mit `--enable external --enable
+tracked` (die beiden im eigenen `.d-check.yml` inaktiven Konsumenten):
+**107 → 107 Befunde**, alle `external-status` (Sandbox ohne Netz,
+unveränderlich). Kein neuer Befund. Nachrichtlich, weil vom Review
+angemahnt: die **Zwischenfassung** von R1 (vor der R1-H1-Korrektur) lag bei
+108 Befunden — ein zusätzlicher, von der Absatz-Faltung erfundener Fund an
+`tools/archive-wave/README.md:3`, der mit der Korrektur wieder verschwindet.
+Dieser Zwischenwert war nie der Vergleichspunkt der ursprünglichen
+Bestandsmessungs-Zusage (Vor-Slice-Baseline gegen Endfassung); die
+Fix-Commit-Botschaft hatte diesen Geltungsbereich nicht benannt (R2-M1) —
+siehe Beobachtungs-Register.
+
+**Steering-Loop-Einträge:**
+
+- Neue Beobachtung
+  [`BEO-ALL/zeilenblinder-matcher-verschmilzt-unabhaengige-fundstellen`](../observations/BEO-ALL/zeilenblinder-matcher-verschmilzt-unabhaengige-fundstellen/observation.md)
+  (1×, `offen`): ein zeilenblinder Klammer-Matcher über mehrzeilig
+  gefaltetem Text verschmilzt unabhängige Fundstellen — Lookahead gehört auf
+  eine Zeile und auf die Klammer begrenzt, die die neue Form tatsächlich
+  verlangt.
+- Weiterer Beleg für die bereits verkörperte Beobachtung
+  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/observation.md)
+  (Richtung b, zweimal in diesem Slice: R1-M1 und R2-M1) — Hard Rule
+  `AGENTS.md` §5 bleibt in Kraft, kein neuer Trigger.
+
+**Risiko-Ausgänge:** alle drei Risiken aus §6 *entfallen*, mit Beleg (siehe
+dort).
+
+**Register-Sichtung bei Planung:** §8 vermerkte „keine Treffer" — zutreffend
+geblieben; keine der beiden neuen Beobachtungen war zuvor im Register.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
