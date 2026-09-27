@@ -146,7 +146,7 @@ type linkEnd struct {
 // nonImageLinkEnds liefert die Nicht-Bild-Links einer vorverarbeiteten Zeile.
 func nonImageLinkEnds(text string) []linkEnd {
 	var out []linkEnd
-	forEachLink(text, func(ref LinkRef, span LinkSpan) {
+	forEachLink(text, "", func(ref LinkRef, span LinkSpan) {
 		if !span.IsImage {
 			out = append(out, linkEnd{end: span.End, target: ref.Target})
 		}

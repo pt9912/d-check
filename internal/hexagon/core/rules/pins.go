@@ -67,7 +67,7 @@ func bindPins(text, raw string) []pinBinding {
 		target string
 	}
 	var links []lk
-	forEachLink(text, func(ref LinkRef, span LinkSpan) {
+	forEachLink(text, "", func(ref LinkRef, span LinkSpan) {
 		if !span.IsImage {
 			links = append(links, lk{end: span.End, target: ref.Target})
 		}

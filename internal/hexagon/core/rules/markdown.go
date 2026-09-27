@@ -491,96 +491,94 @@ type LinkSpan struct {
 	IsImage            bool
 }
 
-// forEachLink ruft fn für jeden Inline-Link der Zeile auf —
-// gemeinsamer Iterator von ExtractLinks und ExtractLinkSpans.
-func forEachLink(text string, fn func(LinkRef, LinkSpan)) {
+// forEachLink ruft fn für jeden Inline-Link/jedes Bild der Zeile `text` auf —
+// gemeinsamer Iterator von ExtractLinks und ExtractLinkSpans. next ist die
+// Folgezeile IM SELBEN ABSATZ (sonst ""): reißt eine Zieladresse unmittelbar
+// hinter `](` mit einem einzigen Zeilenumbruch ab, wird next herangezogen, um
+// sie zu vervollständigen (ADR-0091) — die Linktext-Klammer `[…]` bleibt dabei
+// strikt auf `text` beschränkt (s. parseLinkAt). spillover (Rückgabe) ist die
+// Zahl der aus next verbrauchten Bytes (0, wenn kein Link hineinreichte); der
+// Aufrufer zieht sie von next ab, bevor er next als nächste "aktuelle" Zeile
+// verarbeitet — sonst würde derselbe Text zweimal gescannt.
+func forEachLink(text, next string, fn func(LinkRef, LinkSpan)) (spillover int) {
 	for i := 0; i < len(text); i++ {
-		ref, span, ok := parseLinkAt(text, i)
+		ref, span, ok := parseLinkAt(text, next, i)
 		if !ok {
 			continue
 		}
 		fn(ref, span)
+		if span.End > len(text) {
+			spillover = span.End - len(text) - 1 // "-1" für den eingefügten "\n"
+			break
+		}
 		i = span.End - 1
 	}
-}
-
-// linkParagraphs gruppiert vorverarbeitete Zeilen zu Absätzen — Leerzeile
-// oder Fenced-Block-Lücke trennt, dieselbe Grenzziehung wie proseParagraphs
-// für die absatzweise Inline-Code-Erkennung (spec/spezifikation.md
-// §DC-FA-LINK-001.a Schritt 2). Grundlage der absatzweisen Link-Extraktion
-// (ADR-0091): ein Zeilenumbruch unmittelbar hinter `](` liegt innerhalb
-// eines Absatzes, nie über eine Leerzeile oder einen Fence hinweg.
-func linkParagraphs(lines []Line) [][]Line {
-	var groups [][]Line
-	var cur []Line
-	prevNo := 0
-	for _, ln := range lines {
-		blank := strings.TrimSpace(ln.Text) == ""
-		if len(cur) > 0 && (blank || fencedBlockBetween(prevNo, ln.No)) {
-			groups = append(groups, cur)
-			cur = nil
-		}
-		if !blank {
-			cur = append(cur, ln)
-		}
-		prevNo = ln.No
-	}
-	if len(cur) > 0 {
-		groups = append(groups, cur)
-	}
-	return groups
+	return spillover
 }
 
 // ExtractLinks findet Inline-Links [text](ziel) und Bilder ![alt](ziel);
 // mehrere pro Zeile werden alle erfasst (spec/spezifikation.md
-// §DC-FA-LINK-001.a Schritt 3). Absatzweise wie stripInlineCodeByLine/
-// inlineSpansByLine (ADR-0091): eine Zieladresse, die unmittelbar hinter
-// `](` einen einzigen Zeilenumbruch trägt, wird dadurch erkannt. Ein Fund
-// wird der Zeile zugeschrieben, auf der er ÖFFNET (`[`/`![`) — für einen
+// §DC-FA-LINK-001.a Schritt 3). Eine Zieladresse, die unmittelbar hinter `](`
+// einen einzigen Zeilenumbruch trägt, wird zusätzlich erkannt (ADR-0091) —
+// begrenzt auf EINEN Zeilen-Lookahead, nie einen ganzen Absatz: die
+// Linktext-Klammer bleibt zeilenlokal (s. parseLinkAt), nur die
+// Adress-Klammer darf in die unmittelbare Folgezeile reichen. Ein Fund wird
+// der Zeile zugeschrieben, auf der er ÖFFNET (`[`/`![`) — für einen
 // einzeiligen Treffer unverändert die bisherige Zeile.
 func ExtractLinks(lines []Line) []LinkRef {
 	var refs []LinkRef
-	for _, grp := range linkParagraphs(lines) {
-		raws := make([]string, len(grp))
-		for i, ln := range grp {
-			raws[i] = ln.Text
-		}
-		joined := strings.Join(raws, "\n")
-		starts := make([]int, len(grp))
-		off := 0
-		for i, r := range raws {
-			starts[i] = off
-			off += len(r) + 1
-		}
-		forEachLink(joined, func(ref LinkRef, span LinkSpan) {
-			for i := range grp {
-				lineStart := starts[i]
-				lineEnd := lineStart + len(raws[i])
-				if span.Start >= lineStart && span.Start <= lineEnd {
-					ref.Line = grp[i].No
-					break
-				}
+	consumed := 0
+	for idx, ln := range lines {
+		text := ln.Text
+		if consumed > 0 {
+			if consumed > len(text) {
+				consumed = len(text)
 			}
-			ref.Text = joined[span.TextStart:span.TextEnd]
+			text = text[consumed:]
+		}
+		var next string
+		if idx+1 < len(lines) {
+			nl := lines[idx+1]
+			if !fencedBlockBetween(ln.No, nl.No) && strings.TrimSpace(nl.Text) != "" {
+				next = nl.Text
+			}
+		}
+		no := ln.No
+		consumed = forEachLink(text, next, func(ref LinkRef, span LinkSpan) {
+			ref.Line = no
+			textEnd := span.TextEnd
+			if textEnd > len(text) {
+				textEnd = len(text) // defensiv: Linktext bleibt zeilenlokal, sollte nie eintreten
+			}
+			ref.Text = text[span.TextStart:textEnd]
 			refs = append(refs, ref)
 		})
 	}
 	return refs
 }
 
-// ExtractLinkSpans liefert die Link-Spannen einer vorverarbeiteten
-// Zeile in Vorkommens-Reihenfolge.
+// ExtractLinkSpans liefert die Link-Spannen einer vorverarbeiteten Zeile in
+// Vorkommens-Reihenfolge — strikt zeilenbasiert (kein Zeilen-Lookahead): die
+// String-Signatur bekommt strukturell nie mehr als eine Zeile, kann die
+// absatzweise Erweiterung aus ExtractLinks/ADR-0091 also nicht sehen
+// (benannte Grenze, spec/spezifikation.md §DC-FA-LINK-001.a Schritt 3).
 func ExtractLinkSpans(text string) []LinkSpan {
 	var spans []LinkSpan
-	forEachLink(text, func(_ LinkRef, span LinkSpan) {
+	forEachLink(text, "", func(_ LinkRef, span LinkSpan) {
 		spans = append(spans, span)
 	})
 	return spans
 }
 
-// parseLinkAt liest an Position i einen Inline-Link (Linktext
-// klammer-balanciert, Ziel mit balancierten Klammern).
-func parseLinkAt(s string, i int) (LinkRef, LinkSpan, bool) {
+// parseLinkAt liest an Position i einen Inline-Link. Die Linktext-Klammer
+// `[…]` bleibt STRIKT auf s (die aktuelle Zeile) beschränkt — sonst
+// verschmölze ein unbalanciertes `[` in gewöhnlicher Prosa mit einer
+// späteren, unabhängigen `](…)`-Sequenz im selben Absatz zu einem erfundenen
+// Link (Review-Befund R1-H1, ADR-0091). Schließt die Adress-Klammer `(…)`
+// nicht innerhalb von s, wird next (falls nicht leer) genau einmal
+// angehängt, um eine Zieladresse zu erkennen, die hinter `](` einen
+// einzigen Zeilenumbruch trägt.
+func parseLinkAt(s, next string, i int) (LinkRef, LinkSpan, bool) {
 	isImage := false
 	start := i
 	switch {
@@ -594,11 +592,16 @@ func parseLinkAt(s string, i int) (LinkRef, LinkSpan, bool) {
 	if !ok || textEnd+1 >= len(s) || s[textEnd+1] != '(' {
 		return LinkRef{}, LinkSpan{}, false
 	}
-	destEnd, ok := matchBracket(s, textEnd+1, '(', ')')
+	full := s
+	destEnd, ok := matchBracket(full, textEnd+1, '(', ')')
+	if !ok && next != "" {
+		full = s + "\n" + next
+		destEnd, ok = matchBracket(full, textEnd+1, '(', ')')
+	}
 	if !ok {
 		return LinkRef{}, LinkSpan{}, false
 	}
-	ref := LinkRef{Target: NormalizeTarget(s[textEnd+2 : destEnd]), IsImage: isImage}
+	ref := LinkRef{Target: NormalizeTarget(full[textEnd+2 : destEnd]), IsImage: isImage}
 	span := LinkSpan{
 		Start: i, End: destEnd + 1,
 		TextStart: start + 1, TextEnd: textEnd,

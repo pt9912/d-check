@@ -151,6 +151,56 @@ func TestExtractLinks_Kanten(t *testing.T) {
 	}
 }
 
+// ADR-0091 (Review R1-H1): ein unbalanciertes `[` in gewöhnlicher Prosa
+// (keine schließende `]` auf seiner Zeile) darf NICHT mit einer späteren,
+// unabhängigen `](…)`-Sequenz im selben Absatz zu einem erfundenen Link
+// verschmelzen — die Linktext-Klammer bleibt strikt zeilenlokal, nur die
+// Adress-Klammer darf um genau eine Zeile verlängert werden.
+func TestExtractLinks_UnbalancierteKlammerVerschmilztNicht(t *testing.T) {
+	lines := []Line{
+		{No: 1, Text: "Das Array a[i steht in der Doku."},
+		{No: 2, Text: "Ein Verweis](echt.md) wird erwähnt."},
+	}
+	refs := ExtractLinks(lines)
+	if len(refs) != 0 {
+		t.Fatalf("erfundener Link entstand aus unabhängigen Zeilen: %+v", refs)
+	}
+}
+
+// ADR-0091: eine Zieladresse hinter `](` mit genau einem Zeilenumbruch wird
+// erkannt (Grenzwert: der Lookahead reicht exakt eine Zeile weit), der Fund
+// wird der öffnenden Zeile zugeschrieben.
+func TestExtractLinks_ZeilenumbruchHinterKlammer(t *testing.T) {
+	lines := []Line{
+		{No: 1, Text: "[text]("},
+		{No: 2, Text: "ziel.md) danach"},
+	}
+	refs := ExtractLinks(lines)
+	want := []LinkRef{{Line: 1, Target: "ziel.md", Text: "text"}}
+	if !reflect.DeepEqual(refs, want) {
+		t.Fatalf("refs = %+v\nwant  %+v", refs, want)
+	}
+}
+
+// ADR-0091: zwei vollständige, einzeilige Links auf unmittelbar
+// aufeinanderfolgenden Zeilen desselben Absatzes bleiben unabhängig — der
+// Ein-Zeilen-Lookahead greift nur, wenn die Adress-Klammer auf der
+// aktuellen Zeile NICHT schließt.
+func TestExtractLinks_ZweiVollstaendigeLinksImSelbenAbsatz(t *testing.T) {
+	lines := []Line{
+		{No: 1, Text: "[a](b.md)"},
+		{No: 2, Text: "[c](d.md)"},
+	}
+	refs := ExtractLinks(lines)
+	want := []LinkRef{
+		{Line: 1, Target: "b.md", Text: "a"},
+		{Line: 2, Target: "d.md", Text: "c"},
+	}
+	if !reflect.DeepEqual(refs, want) {
+		t.Fatalf("refs = %+v\nwant  %+v", refs, want)
+	}
+}
+
 // Die Invariante aus TrimFenceIndent — Space und Tab, nicht unicode-weit —
 // gilt fuer JEDEN Konsumenten der Fence-Lexik, nicht nur fuer den Waechter aus
 // dem Modul spans. Ohne Assertion je Konsument liesse sich einer davon
