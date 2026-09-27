@@ -97,6 +97,7 @@ Register (Baseline-Vorlage `templates/docs/plan/adr/README.template.md`).
 | [ADR-0087](0087-matrix-instanz-identitaets-ausnahme.md) | `matrix` bekommt eine Instanz-Identitäts-Ausnahme über Regel-Feld statt Klassen-Feld | Accepted | 2026-09-18 | [`DC-FA-MTX-003`](../../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix), [`DC-FA-MTX-001`](../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix) |
 | [ADR-0088](0088-file-modul-groessengrenzen.md) | Zeilen-/Byte-Obergrenzen einer ganzen Datei werden ein eigenes Modul `file`, keine Erweiterung von `structure` | Accepted | 2026-09-27 | [`DC-FA-FILE-001`](../../../spec/lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in) |
 | [ADR-0089](0089-structure-max-lines-zwoelfte-bedingung.md) | `structure` bekommt eine zwölfte Bedingung `max-lines` (Zeilenbudget eines Abschnitts), Untergrenze 1 | Accepted | 2026-09-27 | [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), [ADR-0088](0088-file-modul-groessengrenzen.md) |
+| [ADR-0090](0090-suggest-config-rb-bedingt.md) | `--suggest-config ai-harness` nimmt `RB` nur bei tatsächlichem Repo-Fund auf, nicht unbedingt wie `FA`/`QA` | Accepted | 2026-09-27 | [`DC-FA-CLI-006`](../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) |
 
 ## Konventionen
 
