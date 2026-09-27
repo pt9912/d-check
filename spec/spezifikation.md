@@ -950,9 +950,27 @@ strippen wäre, und damit keine geteilte Antwort zu übernehmen.
    `![alt](ziel)` per Klammer-balancierter Suche; mehrere Links pro
    Zeile werden alle erfasst. Ziele in `<…>` werden entquotet; ein
    Titel-Suffix (` "…"`) wird abgetrennt. Die Extraktion ist
-   **zeilenbasiert**: Inline-Links, deren Syntax sich über einen
-   Zeilenumbruch erstreckt (GFM-Soft-Break im Linktext), werden nicht
-   erkannt — normative Grenze für alle Module.
+   **grundsätzlich zeilenbasiert**, mit einer **absatzweisen** Ausnahme
+   für die **eine** gemeinsame Extraktion (`ExtractLinks`, `[]Line`-Signatur,
+   sechs Konsumenten: `links`, `links.resolve-from`, `anchors`, `matrix`,
+   `external`, `tracked`): trägt eine Zieladresse unmittelbar hinter `](`
+   **einen einzigen** Zeilenumbruch (optionale Whitespace davor/danach),
+   wird sie **wie bei Inline-Code** (Schritt 2) absatzweise erkannt —
+   Absatzgrenzen sind Leerzeilen und Fences, dieselbe Grenzziehung. Ein
+   gefundener Link/ein Bild wird der Zeile zugeordnet, auf der er
+   **öffnet** (`[`/`![`) — unverändert für einzeilige Treffer, neu
+   maßgeblich für den Zeilenumbruch-Fall. Bilder **teilen** den Parser und
+   werden **mitgezogen** (keine eigene Zusage, nur Konsequenz derselben
+   Erkennung). **Zwei benannte Grenzen bleiben stehen:** ein
+   Zeilenumbruch **im Linktext** oder **zwischen Adresse und Titel**
+   (`](ziel` ⏎ `"titel")`) wird **nicht** erkannt — nicht gemessen, nicht
+   zugesagt; und die **zweite** Extraktions-Form (`ExtractLinkSpans`,
+   String-Signatur, vier Konsumenten: `ids`, `pins`, `--repair`,
+   `planning`-Beobachtungs-Zitate) bleibt **strikt zeilenbasiert** — sie
+   erhält nie mehr als eine Zeile und kann die neue Form strukturell nicht
+   sehen, unabhängig vom Absatz-Kontext. Ein Fix-Kandidat für die neue Form
+   entsteht deshalb nicht (`--repair` schreibt auf Byte-Spannen **einer**
+   Zeile).
 4. **Ziel-Normalisierung:** Prozent-Dekodierung (RFC 3986, vollständig)
    → Auflösung relativ zum Verzeichnis der enthaltenden Datei →
    lexikalische Normalisierung. Die Repo-Escape-Prüfung erfolgt **nach**
@@ -3474,6 +3492,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-09-27 | §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3 präzisiert ([`DC-FA-LINK-001`](lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) 0.92.0, additiv, Begründung in begleitender ADR): die Extraktion bleibt grundsätzlich zeilenbasiert, gewinnt aber eine **absatzweise** Ausnahme für die `[]Line`-Signatur (`ExtractLinks`, sechs Konsumenten) — dieselbe Grenzziehung (Leerzeilen, Fences) wie die absatzweise Inline-Code-Erkennung aus Schritt 2. Ein Fund wird der öffnenden Zeile zugeschrieben. Zwei Grenzen benannt: Zeilenumbruch im Linktext/vor einem Titel bleibt unerkannt; die string-basierte Extraktion (`ExtractLinkSpans`, vier Konsumenten) bleibt strikt zeilenbasiert, weil sie strukturell nie mehr als eine Zeile erhält — kein Fix-Kandidat für `--repair` bei der neuen Form. Ohne die neue Form byte-identisches Verhalten für einzeilige Links (dieselbe Zeilen-Zuordnung wie zuvor) |
 | 2026-09-27 | §[`DC-FA-CLI-006.a`](spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag) um die Randbedingungs-Reihe `RB` erweitert ([`DC-FA-CLI-006`](lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) 0.91.0, additiv, Begründung in begleitender ADR): der Absatz „Anforderungs-Präfix" erkennt `<PREFIX>-RB-<NN>` bei der Präfix-Ableitung aus `spec/lastenheft.md` gleichrangig zu `FA`/`QA`; das erzeugte Anforderungs-Muster selbst nimmt `RB` aber **nur bedingt** auf — nur wenn derselbe `ai-harness`-Ableitungs-Durchlauf (ohne `--id-prefix`) mindestens eine `-RB-`-Überschrift sah, anders als `FA`/`QA`, die die Alternation unbedingt tragen (feste Konvention). Ohne `-RB-`-Heading im gescannten Lastenheft bleibt die Ausgabe byte-gleich; für `--id-prefix` oder `ai-harness-init` (die das Lastenheft dafür nicht lesen) bleibt `RB` immer außen vor — benannte Grenze. Weitere benannte Grenze: die Erweiterung wirkt nur auf die Prüfungs-Musterableitung, nicht auf die Requirements Traceability Matrix ([`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)) — das bleibt eine Konsumenten-Entscheidung über dessen `id-pattern`-Konfiguration. **Anlass ist ein Change Request** des Konsumenten `ai-harness-course` (2026-09-27) — die Reihe selbst steht dort in einer ungetaggten Welle, die gepinnte Baseline kennt sie nicht |
 | 2026-09-27 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 1/6 und das §2-Schema um `max-lines` erweitert (**zwölfte** Bedingung, [`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.90.0, Begründung in begleitender ADR): Obergrenze der Zeilenumbrüche im **bereinigten** Abschnittstext — dieselbe Grundmenge wie `min-sentences` (Fenced-Code vollständig entfernt, zählt nicht mit) ⇒ sonst [`SPEC-087`](#4-grund--und-fehler-codes) `section-lines-exceeded` (`line` = Überschriftszeile). **Explizit** < 1 ⇒ Exit 2 — Untergrenze `1`, nicht `0` (der bereinigte Text ist so gut wie nie leer, `0` wäre faktisch ein Abschnitts-Verbot). **Abgrenzung zu `file[].max-lines`** ([`DC-FA-FILE-001`](lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in), 0.89.0): gleicher Schlüsselname unter verschiedenen Top-Level-Blöcken, verschiedene Grundmenge (roh/ganze Datei vs. bereinigt/Abschnitt) — keine gemeinsame Zusage. Ohne den Schlüssel byte-identisches Verhalten. **Anlass ist ein eingehender CR** des Adopters `ai-harness-course` (`docs/plan/cr/2026-09-27-cr-eingehend-ai-harness-course-structure-max-lines.md`), der die Bedingung als „zehnte" zählt; die eigene Ordinal-Zählung des Lastenhefts macht sie zur zwölften. Begründung (Untergrenze, Alternativen) in begleitender ADR |
 | 2026-09-27 | Neues Modul-Verfahren §[`DC-FA-FILE-001.a`](spezifikation.md#dc-fa-file-001a--zeilen--und-byte-obergrenzen-einer-ganzen-datei-file) ([`DC-FA-FILE-001`](lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in) 0.89.0, Begründung in begleitender ADR): sieben Schritte über Zeilen-/Byte-Obergrenzen einer ganzen Datei, unabhängig von Dateiart und `scan.roots`/`scan.ignore` — eigenes Modul statt einer Erweiterung von `structure`, weil jenes den bereinigten Abschnittstext einer Markdown-Datei zählt. §2-Schema um `file[].files`/`max-lines`/`max-bytes`/`exempt-paths`/`hint`, §4 um [`SPEC-084`](#4-grund--und-fehler-codes)/[`SPEC-085`](#4-grund--und-fehler-codes)/[`SPEC-086`](#4-grund--und-fehler-codes) |

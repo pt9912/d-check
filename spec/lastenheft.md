@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.91.0
+**Version:** 0.92.0
 
 **Status:** Draft
 
@@ -1108,6 +1108,20 @@ vor; Ziel-Menge, Vorverarbeitung, Dekodierung und Ventile sind die der
 bestehenden Prüfung. Ohne den Block ist der Befundsatz byte-identisch
 ([`DC-QA-02`](#dc-qa-02--determinismus)). Begründung in begleitender ADR.
 
+**Ziel hinter dem Zeilenumbruch.** Trägt die Zieladresse unmittelbar hinter
+`](` einen **einzigen** Zeilenumbruch (optionaler Whitespace davor/danach),
+wird sie von der gemeinsamen Extraktion **absatzweise** erkannt — wie ein
+Inline-Link, dessen Syntax vollständig in einer Zeile steht. Der Fund wird
+der **öffnenden** Zeile des Links (`[`/`![`) zugeschrieben. Diese Erweiterung
+gilt für die sechs Module, die die gemeinsame `[]Line`-Extraktion nutzen
+(`links`, `links.resolve-from`, `anchors`, `matrix`, `external`, `tracked`;
+Bilder teilen denselben Parser und werden mitgezogen). **Zwei Grenzen bleiben
+bestehen:** ein Zeilenumbruch im Linktext oder zwischen Adresse und Titel
+wird nicht erkannt; und die string-basierte Extraktion (Module `ids`, `pins`,
+`--repair`, die Zitat-Prüfung des Moduls `planning`) bleibt zeilenbasiert —
+sie erhält strukturell nie mehr als eine Zeile. `--repair` erzeugt für die
+neue Form deshalb keinen Fix-Kandidaten. Begründung in begleitender ADR.
+
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given ein Link auf eine existierende Datei im Repo, when das Modul `links` läuft, then kein Befund.
@@ -1120,6 +1134,9 @@ bestehenden Prüfung. Ohne den Block ist der Befundsatz byte-identisch
 - **Negative (resolve-from, Ziel-Identität):** Given einen Verweis, der von jedem Ort der Gruppe auflöst, aber auf **verschiedene** existierende Dateien, when das Modul läuft, then ein Befund `link-position-dependent`, dessen Meldung die divergierenden Ziele nennt.
 - **Boundary (ortsfeste Datei):** Given eine Datei in einem `fixed-dirs`-Verzeichnis mit einem Verweis, der nur vom Ist-Ort auflöst, when das Modul läuft, then **kein** Befund — ortsfeste Dateien sind keine Quellen.
 - **Modul-aus (resolve-from):** Given **kein** `links.resolve-from`-Block, when `d-check` läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
+
+- **Happy Path (Zeilenumbruch):** Given einen Link `[text](` am Zeilenende, gefolgt von `ziel.md)` auf der nächsten Zeile, wobei `ziel.md` existiert, when das Modul läuft, then kein Befund.
+- **Negative (Zeilenumbruch):** Given denselben Aufbau mit einem nicht existierenden `ziel.md`, when das Modul läuft, then ein Befund `target-missing`, gemeldet auf der **öffnenden** Zeile des Links (der Zeile mit `[text](`).
 
 **Out-of-Scope:** Reference-Style-Links (`[text][ref]` mit separater `[ref]: ziel`-Definition); semantische Prüfung, ob das verlinkte Dokument inhaltlich passt.
 
@@ -3897,6 +3914,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.92.0 | 2026-09-27 | [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) um die Erkennung eines Zeilenumbruchs unmittelbar hinter `](` erweitert (additiv, standardmäßig an; Erweiterung statt neues Kürzel — dieselbe Prüfung, verengte Extraktions-Grenze): die gemeinsame `[]Line`-Extraktion (`ExtractLinks`, sechs Konsumenten `links`/`links.resolve-from`/`anchors`/`matrix`/`external`/`tracked`) erkennt eine Zieladresse jetzt **absatzweise**, wenn sie einen einzigen Zeilenumbruch hinter `](` trägt — wie die bestehende absatzweise Inline-Code-Erkennung. Der Fund wird der öffnenden Zeile des Links zugeschrieben; Bilder teilen den Parser und werden mitgezogen. Zwei Grenzen bleiben benannt: Zeilenumbruch im Linktext bzw. vor einem Titel-Suffix bleibt unerkannt, und die string-basierte Extraktion (`ids`, `pins`, `--repair`, `planning`-Zitate) bleibt strikt zeilenbasiert — `--repair` erzeugt für die neue Form keinen Fix-Kandidaten. Zwei neue Akzeptanzkriterien (Happy, Negative). Begründung in begleitender ADR. **Anlass ist ein Change Request** eines Konsumenten | — |
 | 0.91.0 | 2026-09-27 | [`DC-FA-CLI-006`](#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) um die Randbedingungs-Reihe `RB` erweitert (additiv; Erweiterung statt neues Kürzel — dieselbe Präfix-Ableitung wie `FA`/`QA`): der `ai-harness`-Ableitungs-Durchlauf (repo-bewusst, ohne `--id-prefix`) erkennt `<PREFIX>-RB-<NN>`-Kennungen jetzt sowohl bei der Präfix-Ableitung als auch im erzeugten Anforderungs-`ids`-Muster — Letzteres nur, wenn derselbe Durchlauf mindestens eine `-RB-`-Überschrift sah, sonst bleibt die Ausgabe **byte-gleich** (dieselbe Bedingung gilt nicht für `--id-prefix` oder `ai-harness-init`, die das Lastenheft für diesen Zweck nicht lesen — benannte Grenze). Drei neue Akzeptanzkriterien (Happy, Abwesend, Mehrdeutigkeit — Letztere verschärft das bestehende Verhalten bei mehreren Präfixen auf den Fall, dass das zweite Präfix nur über `-RB-` auftritt). Ein neuer Out-of-Scope-Satz benennt die Grenze zur Requirements Traceability Matrix ([`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)): die Erweiterung wirkt nur auf die Prüfungs-Musterableitung, nicht auf die RTM-Anforderungsmenge. **Anlass ist ein Change Request** des Konsumenten `ai-harness-course` (2026-09-27) — die Randbedingungs-Reihe selbst ist dort noch in einer ungetaggten Welle, die hier gepinnte Baseline kennt sie nicht; d-check trägt die Form als Konsument dieses CR, nicht als adoptierte Baseline-Regel. Begründung (Alternativen, benannte Grenzen) in begleitender ADR | — |
 | 0.90.0 | 2026-09-27 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um `max-lines` erweitert (**zwölfte** Bedingung, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): Obergrenze der Zeilen des **bereinigten** Abschnittstexts (dieselbe Grundmenge wie `min-sentences` — Fenced-Code **nicht** mitgezählt), Grund-Code `section-lines-exceeded`, Meldung auf der Überschriften-Zeile. Untergrenze `1`, nicht `0` (ein Abschnitt hat so gut wie nie null bereinigte Zeilen; `0` wäre faktisch ein Verbot). Vier neue Akzeptanzkriterien (Grenzwert, Fenced-Code-Ausnahme, Config-Rand, Modul-aus). Ohne den Schlüssel byte-identisch. **Anlass ist ein eingehender Change Request** des Adopters `ai-harness-course`, der die Bedingung als „zehnte" zählt und einen Out-of-Scope-Satz zu Alters-Mechaniken als Beleg zitiert, der tatsächlich einen ID-Stichtag ausschließt, nicht eine Alters-Prüfung — die eigene Ordinal-Zählung dieser Historie (achte bis elfte Bedingung s. u.) macht `max-lines` zur zwölften; der Schluss des CR (keine Alters-Mechanik) bleibt richtig, nur der zitierte Beleg nicht. Begründung in begleitender ADR | [CR `ai-harness-course` 2026-09-27](../docs/plan/cr/2026-09-27-cr-eingehend-ai-harness-course-structure-max-lines.md) |
 | 0.89.0 | 2026-09-27 | Neue Anforderung [`DC-FA-FILE-001`](#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in) (Modul `file`, 25.): Obergrenze für Zeilen (`max-lines`) und/oder Bytes (`max-bytes`) einer **ganzen** Datei, unabhängig von Dateiart und `scan.roots`/`scan.ignore` — eigenes Modul statt einer Erweiterung von [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), weil jenes den bereinigten Abschnittstext einer Markdown-Datei zählt und `file` die rohe Datei jeder Art (Begründung in begleitender ADR). Zeilen zählen wie `wc -l` plus eine unvollständige Schlusszeile (dieselbe Zählung wie `codepaths`/`citations`), Bytes roh. Mindestens eine Schwelle ist Pflicht; ohne sie Exit 2. `DC-FA-CLI-002`s Modul-Liste um `file` erweitert. Anlass: Auftraggeber-Auftrag, keine Schwelle für den eigenen Bestand gesetzt (Folge-Slice). Sechs Akzeptanzkriterien (Happy, Grenzwert, rohe Bytes, Nullmenge, halbe Aktivierung, Modul-aus) | — |
