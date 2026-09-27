@@ -1347,6 +1347,31 @@ func TestCLI234_RB_Mehrdeutigkeit(t *testing.T) {
 	}
 }
 
+// slice-234 Rot-Beleg: die vorgeschlagene Anforderungs-Regel wird tatsächlich
+// angewandt (Round-Trip) und meldet eine unverlinkte -RB--Kennung wie jede
+// andere Anforderungs-Kennung — das Lastenheft-AK „RB Happy" verspricht mehr
+// als nur ein passendes Regex-Objekt (unabhängiger Review R1-M2).
+func TestCLI234_RB_AngewendetMeldetUnverlinkteKennung(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "# AC-RB-01 — x\n")
+	// Der Verweis steht ABSICHTLICH NICHT in spec/lastenheft.md selbst: ein
+	// Vorkommen in der eigenen Ziel-Datei des Musters ist von der Linkpflicht
+	// ausgenommen (Selbstbezugs-Ausnahme, DC-FA-ID-001) und würde nie melden.
+	write(t, root, "docs/user/notes.md", "Verweis auf AC-RB-07 hier.\n")
+	code, stdout, stderr := run(t, "--suggest-config", "ai-harness", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	write(t, root, ".d-check.yml", stdout)
+	code, stdout, stderr = run(t, root)
+	if code != 1 {
+		t.Fatalf("Exit = %d, stderr = %q, stdout:\n%s", code, stderr, stdout)
+	}
+	if !strings.Contains(stdout, "AC-RB-07\tid-unlinked") {
+		t.Fatalf("erwartet id-unlinked für die nackte Kennung AC-RB-07:\n%s", stdout)
+	}
+}
+
 // traceDoc spiegelt die JSON-Struktur der RTM (DC-FA-CLI-009).
 type traceDoc struct {
 	Requirements []struct {
