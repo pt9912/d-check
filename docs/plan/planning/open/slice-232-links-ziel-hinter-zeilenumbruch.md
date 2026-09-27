@@ -85,7 +85,12 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Historie-Zeile nach [MR-032](../../../../harness/conventions/MR-032-historie-vor-accepted.md)),
       `spec/spezifikation.md` (Extraktions-Abschnitt, Schritt 3: Grenze verengt,
       Behandlung von Zeilennummer und `--repair` benannt) und eine neue
-      ADR samt Index-Eintrag.
+      ADR samt Index-Eintrag. **Form nach dem Kanon** (`modul-03-spec.md`,
+      `modul-04-adrs.md`): die Historie-Zeile nennt **weder ADR noch Slice**
+      (Decken-Regel, in keiner Spalte), die Spezifikation nennt in keinem
+      Abschnitt eine ADR oder einen Slice; die ADR trägt `Schärft:` aufwärts,
+      mindestens drei verglichene Alternativen mit Trade-off, eine Fitness
+      Function und einen `Re-Evaluierungs-Trigger`.
 - [ ] **Extraktion:** die gemeinsame Extraktion erkennt `](` + Whitespace mit
       **einem** Zeilenumbruch + Adresse; alle Konsumenten von `ExtractLinks`
       und `ExtractLinkSpans` sind gelesen, ihr Verhalten für die neue Form in
@@ -115,6 +120,14 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 | `docs/plan/adr/` (neu) + `README.md` | neu / update | Begründung der gemeinsamen Extraktion und der Standard-Aktivierung; Alternativen (nur `links`, Opt-in) mit dem Grund ihrer Verwerfung; `## Re-Evaluierungs-Trigger` |
 | `internal/hexagon/core/rules/markdown.go` | update | Erkennung im Parser bzw. der Vorverarbeitung |
 | `internal/hexagon/core/rules/markdown_test.go`, `links` -Tests, Akzeptanz-Fixture | update / neu | Happy/Boundary/Negative nach den Akzeptanzkriterien |
+
+**Reihenfolge der Vertrags-Änderung.** Das Lastenheft steht auf `Draft`: der
+Kanon (`grundlagen-source-precedence.md`, *Wann die CR-Pflicht beginnt*) lässt
+es vor `Accepted` frei änderbar, die Trennung von Entscheidung und Umsetzung
+„greift noch nicht"; [MR-032](../../../../harness/conventions/MR-032-historie-vor-accepted.md)
+verlangt Bump und Historie-Zeile trotzdem (`Verweis` bleibt `—`). Die
+Änderung darf **im** Slice liegen; sie steht in einem eigenen Commit vor dem
+Code.
 
 **Entscheidungen, die die ADR trägt (vor dem Code zu treffen):**
 

@@ -96,7 +96,12 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Versions-Bump mit Historie-Zeile nach
       [MR-032](../../../../harness/conventions/MR-032-historie-vor-accepted.md)),
       `spec/spezifikation.md` (Präfix-Ableitung und kanonisches Muster;
-      RTM-Grenze benannt).
+      RTM-Grenze benannt). **Form nach dem Kanon** (`modul-03-spec.md`): die
+      Historie-Zeile nennt **weder ADR noch Slice** (Decken-Regel), die
+      Spezifikation nennt in keinem Abschnitt eine ADR oder einen Slice. Ob die
+      RTM-Abgrenzung eine eigene ADR braucht (Entscheidung mit Alternativen:
+      RTM erweitern, nicht erweitern, per `id-pattern` dem Konsumenten
+      überlassen), wird **vor** dem ersten Edit entschieden und in §7 benannt.
 - [ ] **Generator:** `reqShape` und das Anforderungs-Muster in
       `harnessIDPatterns` kennen `RB`; Tests: RB-Lastenheft (Muster enthält
       `RB`, fehlende `-RB-07` wird gemeldet — **Rot-Beleg gegen den alten
@@ -122,6 +127,14 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 | `spec/spezifikation.md` (Konfigurations-Vorschlag) | update | Schritt „reservierte Quellen": dritte Reihe; benannte RTM-Grenze |
 | `internal/hexagon/core/app/suggest.go` | update | zwei Muster: `reqShape` und Anforderungs-Zeile in `harnessIDPatterns` (Doc-Kommentar von `reqShape` nennt die Gestalt mit) |
 | `internal/adapter/driving/cli/cli_acceptance_test.go` | update | drei Break-Tests nach den Akzeptanzkriterien; die Generator-Logik hat keine eigene Unit-Testdatei, ihre Belege sind die CLI-Akzeptanztests der `--id-prefix`-Kriterien |
+
+**Reihenfolge der Vertrags-Änderung.** Das Lastenheft steht auf `Draft`: der
+Kanon (`grundlagen-source-precedence.md`, *Wann die CR-Pflicht beginnt*) lässt
+es vor `Accepted` frei änderbar und die Trennung von Entscheidung und Umsetzung
+„greift noch nicht"; [MR-032](../../../../harness/conventions/MR-032-historie-vor-accepted.md)
+verlangt Bump und Historie-Zeile trotzdem (`Verweis` bleibt `—`). Die
+Änderung darf deshalb **im** Slice liegen; sie steht in einem eigenen Commit vor
+dem Generator-Code, damit sie einzeln lesbar bleibt.
 
 **Vor dem Editieren — Spiegel listen** ([MR-025](../../../../harness/conventions/MR-025-spiegel-vor-dem-editieren.md)):
 die Gestalt `FA-…|QA` steht an vier Fundorten (`reqShape`,

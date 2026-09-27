@@ -75,6 +75,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       [MR-032](../../../../harness/conventions/MR-032-historie-vor-accepted.md)),
       `spec/spezifikation.md` (Extraktion der Definition, Form der
       Definitions-Zeile, Grenzen aus §1) und eine neue ADR samt Index-Eintrag.
+      **Form nach dem Kanon** (`modul-03-spec.md`, `modul-04-adrs.md`): die
+      Historie-Zeile nennt **weder ADR noch Slice** (Decken-Regel), die
+      Spezifikation nennt in keinem Abschnitt eine ADR oder einen Slice; die
+      ADR trägt `Schärft:` aufwärts, mindestens drei verglichene Alternativen
+      mit Trade-off, eine Fitness Function und einen `Re-Evaluierungs-Trigger`.
 - [ ] **Prüfung:** `links` erkennt Definitions-Zeilen außerhalb von Fences und
       Inline-Code (dieselbe Vorverarbeitung wie bei Inline-Links) und prüft
       das Datei-Ziel mit **derselben** Auflösung, Escape-Prüfung, Symlink-Regel
@@ -103,6 +108,12 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 | `docs/plan/adr/` (neu) + `README.md` | neu / update | „jede Definition" statt „nur verwendete" mit Alternativen; Standard-Aktivierung; `## Re-Evaluierungs-Trigger` |
 | `internal/hexagon/core/rules/links.go`, `markdown.go` | update | Definitions-Erkennung, Einspeisung in die bestehende Ziel-Prüfung |
 | Tests und Akzeptanz-Fixture | update / neu | Happy/Boundary/Negative nach den Akzeptanzkriterien |
+
+**Reihenfolge der Vertrags-Änderung:** wie im Vorgänger-Plan — Lastenheft auf
+`Draft`, die Änderung darf im Slice liegen (Kanon, *Wann die CR-Pflicht
+beginnt*; [MR-032](../../../../harness/conventions/MR-032-historie-vor-accepted.md)
+verlangt Bump und Historie-Zeile trotzdem) und steht in einem eigenen Commit vor
+dem Code.
 
 **Zu klären, bevor Code entsteht:** Wo der Definitions-Befund seine Zeile und
 sein `Ziel`-Feld her nimmt (die Definitions-Zeile), und ob `codepaths`,
