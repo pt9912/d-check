@@ -69,7 +69,7 @@ Verhalten nicht.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — höchstens drei Liefer-Punkte.
 
-- [ ] **Vertrag:** `spec/lastenheft.md` (Link-Anforderung: Out-of-Scope-Satz
+- [x] **Vertrag:** `spec/lastenheft.md` (Link-Anforderung: Out-of-Scope-Satz
       auf die Verwendung eingegrenzt, Beschreibung und je ein Akzeptanzkriterium
       Negative/Happy, Bump mit Historie-Zeile nach
       [MR-032](../../../../harness/conventions/MR-032-historie-vor-accepted.md)),
@@ -80,24 +80,24 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Spezifikation nennt in keinem Abschnitt eine ADR oder einen Slice; die
       ADR trägt `Schärft:` aufwärts, mindestens drei verglichene Alternativen
       mit Trade-off, eine Fitness Function und einen `Re-Evaluierungs-Trigger`.
-- [ ] **Prüfung:** `links` erkennt Definitions-Zeilen außerhalb von Fences und
+- [x] **Prüfung:** `links` erkennt Definitions-Zeilen außerhalb von Fences und
       Inline-Code (dieselbe Vorverarbeitung wie bei Inline-Links) und prüft
       das Datei-Ziel mit **derselben** Auflösung, Escape-Prüfung, Symlink-Regel
       und `ignore-refs`-Ventil. Tests: totes Ziel (vorher 0 / nachher 1
       `target-missing`, Rot-Beleg gegen den alten Stand), lebendes Ziel (0),
       externes Schema (0), Definition im Fence (0), unveränderte
       Inline-Kontrollen.
-- [ ] **Bestandsmessung:** `make doc-check` auf diesem Repo (Dogfooding) gegen
+- [x] **Bestandsmessung:** `make doc-check` auf diesem Repo (Dogfooding) gegen
       den Stand vor der Änderung; jeder neue Befund behoben oder mit Grund
       benannt (Ausgabe in §7).
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben oder „keine
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben oder „keine
       Beobachtung angefallen" in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 3. Plan (vor Code)
 
@@ -169,7 +169,58 @@ Lerneintrag geschrieben.
 
 ## 7. Closure-Notiz
 
-*(Bei der Closure zu füllen.)*
+**Geliefert:** die gemeinsame Link-Extraktion (`ExtractLinks`) erkennt eine
+Link-Referenz-Definition (`[label]: ziel "titel"`) unabhängig davon, ob sie
+im Dokument verwendet wird; ein totes Dateiziel meldet `target-missing` wie
+bei einem Inline-Link, auf der Definitions-Zeile. `spec/lastenheft.md`
+(0.93.2), `spec/spezifikation.md`
+([`DC-FA-LINK-001.a`](../../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+Schritt 3) und eine
+dreigliedrige Entscheidungs-Kette (zwei Nachzüge, je Accepted → Superseded)
+mit
+[ADR-0095](../../adr/0095-links-referenz-definitionen-titel-delimiter-pflicht.md)
+als aktuellem, Accepted Tip tragen die Entscheidung. Fünf der sechs `ExtractLinks`-Konsumenten
+behandeln eine Definition wie jeden anderen `LinkRef`; `anchors` überspringt
+sie vollständig (neuer Out-of-Scope-Satz).
+
+**Zwei unabhängige Review-Runden fanden je einen echten HIGH-Befund.** R1
+(R1-H1): die Erstfassung ließ `NormalizeTarget` naiv am ersten Leerzeichen
+abschneiden — eine gewöhnliche Prosazeile (`[TERM]: First In, First Out`)
+wurde dadurch als Definition mit erfundenem Ziel „First" gelesen.
+Korrigiert durch die aktuelle Fassung der Entscheidungs-Kette
+([ADR-0095](../../adr/0095-links-referenz-definitionen-titel-delimiter-pflicht.md)):
+der Rest der Zeile hinter dem Ziel-Token muss leer oder ein korrekt
+delimitierter Titel (`"…"`, `'…'`, `(…)`) sein, sonst bleibt die **ganze**
+Zeile unerkannt. R2 fand dabei außerdem verbotene Review-Befund-Marker in
+zwei neuen Kommentaren (R2-H1, trivial behoben) sowie eine eigene, während
+der Implementierung **selbst** vor dem ersten Test entdeckte Ungenauigkeit
+in der Erstfassung der Kette: ein Backslash-Escape im Label lässt die ganze
+Zeile unerkannt, nicht nur die Label-Grenze verschieben — noch vor jedem
+Review korrigiert. Alle merge-blockierenden Befunde sind eingearbeitet; ein
+MEDIUM-Fund (R2-M1: ein whitespace-freies, klammerartiges Ziel-Token wie
+`[TODO]: (spaeter)` bleibt
+unvalidiert) ist laut Review-Verdikt nicht blockierend und als offene
+Beobachtung registriert (§6).
+
+**Bestandsmessung (DoD-Pflicht, alle sechs `ExtractLinks`-Konsumenten):**
+`make doc-check --enable external --enable tracked` gegen den Stand
+unmittelbar vor diesem Slice (`6f8d6906`) und gegen die Endfassung: **107 →
+107 Befunde**, unverändert (`external-status`, Sandbox ohne Netz). Kein
+neuer Befund, unabhängig von R1 und R2 bestätigt.
+
+**Steering-Loop-Eintrag:** neue Beobachtung
+[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/observation.md)
+(1×, `offen`): eine Erkennungs-Regex für eine Markdown-Mikrosyntax bleibt
+gegen Freitext-Negativfälle ungeprüft, bis ein Review adversarial dagegen
+testet — in diesem Slice zweimal in Folge (R1-H1, R2-M1), derselbe
+Mechanismus auf zwei Ebenen.
+
+**Risiko-Ausgänge:** zwei von drei Risiken aus §6 *entfallen*, eines
+*eingetreten (teilweise)* mit einem Teil-Ausgang *weiter offen* — siehe
+dort.
+
+**Register-Sichtung bei Planung:** §8 vermerkte „keine Treffer" —
+zutreffend geblieben; die neue Beobachtung war zuvor nicht im Register.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
