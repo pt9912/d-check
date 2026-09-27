@@ -1,0 +1,2 @@
+**Vorgang:** slice-231
+**Fund:** Die Chronik-Streichung hat `AGENTS.md` von 38258 auf 36917 Bytes gekürzt (−1341, rund 3,5 %). Die Größe bleibt im Wesentlichen bestehen; §3 trägt rund 16 KB, §5 rund 12 KB Regeltext. Acht Überschriften-Anker der Datei werden von Dokumenten außerhalb der eingefrorenen Bestände verlinkt (etwa die Abschnitte zu ADR-Immutabilität und Gate-Lockerung), dazu Kommentare in `.d-check.yml` — jede Auslagerung braucht vorher die Spiegel-Liste.

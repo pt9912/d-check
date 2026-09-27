@@ -94,28 +94,28 @@ sie findet Wörter, nicht Sätze; gelesen wird §3 und §5 vollständig):
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice.
 
-- [ ] Alle Chronik-Sätze nach der Form aus §1 sind aus `AGENTS.md` §3 und §5
+- [x] Alle Chronik-Sätze nach der Form aus §1 sind aus `AGENTS.md` §3 und §5
       entfernt; §7 führt sie **einzeln** (Fundstelle, Satz-Anfang, Test, der
       ihn als Chronik ausweist) und nennt, welche Grenze aus einem
       Chronik-Absatz herausgelöst wurde und stehen blieb.
-- [ ] `AGENTS.md` trägt **keinen** Link mehr auf ein Planungs-Artefakt
+- [x] `AGENTS.md` trägt **keinen** Link mehr auf ein Planungs-Artefakt
       (`slice-`- oder `welle-`-Pfad); Herkunfts-Anker `(seit …)` bleiben, ihre
       Zahl vorher und nachher steht in §7 (Kommando `grep`, Form der Anker
       aus §1).
-- [ ] Der Retirement-Check ist je berührter verankerter Regel gelaufen: die
+- [x] Der Retirement-Check ist je berührter verankerter Regel gelaufen: die
       `state.md` der Beobachtung wurde gelesen, ihr benannter Zielort
       (`AGENTS.md` §5 bzw. §3.8) und der Anker stehen unverändert; §7 nennt das
       Ergebnis je Regel.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag; sie nennt die Größe der
-      Datei vorher und nachher (Zeichen, mit `wc -c`) **und** was danach noch
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag; sie nennt die Größe der
+      Datei vorher und nachher (Bytes, mit `wc -c`) **und** was danach noch
       nicht gelöst ist.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
       „keine Beobachtung angefallen" in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen —
       wellenlos hier geprüft.
 
@@ -125,7 +125,6 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 |---|---|---|
 | `AGENTS.md` §3 (3.3, 3.7, 3.9) | update | Chronik-Sätze und Planungs-Links nach der Form aus §1 entfernen; Bestandsgrenzen und Herkunfts-Anker bleiben wörtlich |
 | `AGENTS.md` §5 (Haken-Absatz, Grenzen-Regel, Zähl-Regel, CHANGELOG-Regel, fünf Steering-Loop-Klammern) | update | dasselbe; die doppelt stehende Fenced-Block-Aussage wird zu **einer** |
-
 | `.harness/skills/reviewer.md` (eine `d-check:cite`-Direktive auf `AGENTS.md`-Zeilen) | update | Spiegel, im ersten Wurf des Plans **nicht** gelistet und erst vom `doc-check` gefunden (`citation-mismatch`): jede Kürzung vor der zitierten Stelle verschiebt die Zeilen-Spanne; sie wird auf den neuen Stand nachgezogen, der zitierte Wortlaut bleibt unverändert |
 
 Kein Test, keine Code-Datei. Belege sind `make gates` (doc-check prüft Links
@@ -166,19 +165,110 @@ Lerneintrag geschrieben.
 
 - Chronik und Grenze stehen im selben Absatz (§5 Haken-Absatz: die „drei
   Grenzen" folgen dem Chronik-Einstieg); die Kürzung nimmt eine Grenze mit —
-  eine Regel, deren Reichweite still schrumpft. **Ausgang:** bei Closure zu
-  vergeben.
+  eine Regel, deren Reichweite still schrumpft. **Ausgang:** entfallen — der
+  unabhängige Review hat den Diff Hunk für Hunk gegen den Ausgangsstand
+  gehalten und keine verlorene Regel oder Grenze gefunden; die drei
+  Fenced-Block-Grenzen des Haken-Absatzes stehen unverändert. Die verwandte
+  Abweichung in der Gegenrichtung (F-2, eine Reichweite wurde zur Allaussage
+  **erweitert**) ist im Review gefunden und behoben.
 - Die Stichwort-Suche findet Chronik nur, wo ein Stichwort steht; ein Satz wie
   „Ohne diesen Satz meldet jede Verifikation den Rückstand erneut" fiele
-  durch. **Ausgang:** bei Closure zu vergeben.
+  durch. **Ausgang:** eingetreten — der Dependabot-Punkt in `AGENTS.md` §5 (eine
+  Konjunktiv-Erwägung über eine verworfene Alternative) fiel durch das Raster
+  und wurde vom unabhängigen Review gefunden (F-1). Behoben im selben Slice
+  (Fix-Commit der Review-Runde 1); ein Folge-Slice ist nicht nötig, weil nichts
+  offen bleibt — der Ausgang ist damit *geschlossen im Slice*, nicht mit einer
+  Folge-Slice-Kennung belegt.
 - Nach der Kürzung bleibt `AGENTS.md` der Größenordnung nach groß — die
   Chronik ist nur ein Teil der 38 KB; die Beobachtung „zu groß" bliebe damit
-  zu weiten Teilen offen. **Ausgang:** bei Closure zu vergeben (Folge-Slice
-  mit Kennung oder Register-Eintrag).
+  zu weiten Teilen offen. **Ausgang:** weiter offen — Register-Eintrag
+  [`BEO-ALL/briefing-datei-ueberschreitet-lade-budget`](../observations/BEO-ALL/briefing-datei-ueberschreitet-lade-budget/observation.md)
+  (1×). Gemessen: 38258 → 36917 Bytes.
 
 ## 7. Closure-Notiz
 
-*(Bei der Closure zu füllen.)*
+- **Was hat funktioniert:** Die Form der Chronik stand **vor** der Messung im
+  Plan (§1: Genese, frühere Fassung, Messvorfall als Herleitung, Planungs-Link;
+  Gegenprobe über die zwei Tests aus §3.7), und der Diff ließ sich gegen sie
+  Hunk für Hunk prüfen — der unabhängige Review konnte jede Entfernung als
+  Chronik oder Regelinhalt einordnen und fand **keine** verlorene Regel. Der
+  Sensor (`doc-check`, `citations`) meldete den gebrochenen Spiegel im inneren
+  Loop, bevor der Feature-Commit entstand.
+- **Was ging anders als geplant:** (1) Der Plan listete einen Spiegel nicht: eine
+  `d-check:cite`-Direktive im Reviewer-Skill zitiert `AGENTS.md` per
+  Zeilen-Spanne, und jede Kürzung davor verschiebt sie. Der Plan wurde **vor**
+  der Skill-Änderung ergänzt (§3), nicht nachträglich. (2) Das Stichwort-Raster
+  fand nicht alles: der Dependabot-Punkt (Konjunktiv-Erwägung über eine
+  verworfene Alternative) und ein Satz samt Link zur abgelösten
+  Skript-Mechanik fielen durch — beide vom Review (F-1) bzw. beim Lesen von §5
+  gefunden. (3) Ich habe beim Kürzen eine gemessene Reichweite zur Allaussage
+  **erweitert** statt sie zu streichen (F-2); der Review fand es.
+- **Entfernte Chronik-Sätze** (Fundstelle, Satz-Anfang, Test — je Satz Adressat
+  und Zeitform):
+  - §3.3 „Historische Klärung: Diese Datei nannte hier früher …" — Vergangenheit
+    über die Datei selbst, niemand handelt daraus.
+  - §3.3 „— genau das hat die eigene Commit-Historie von …" samt Planungs-Link —
+    Genese, Verstoß gegen die Regel „keine Slice-Verweise".
+  - §3.3 „ist seither vollständig aufgelöst" → „ist vollständig aufgelöst" —
+    Zustand bleibt, die Zeitangabe entfällt.
+  - §3.9 „das stand hier zu weit" — Selbstkorrektur.
+  - §3.9 „gemessen am Tag-Push von `v0.66.0`, während dieses Gate grün meldete"
+    — Messvorfall als Herleitung; die **Grenze** („die Existenz-Prüfung allein
+    sieht das nicht") ist herausgelöst und bleibt.
+  - §3.9 „das frühere Skript ist darin aufgegangen" und „seit ADR … via Modul" —
+    Genese; der Zeiger auf die Modul-ADR bleibt.
+  - §4 „seit der Umstellung auf den einen Index" — Genese; „nur in
+    `harness/README.md`" bleibt.
+  - §5 (Commits) „seit dem Modul `commits` dogfooded" und „die abgelöste
+    Skript-Mechanik trug …" samt ADR-Link — Genese (der zweite Satz steht in
+    keiner der beiden Plan-Aufzählungen und ist hier einzeln geführt).
+  - §5 (Haken-Absatz) „Seit slice-172 hält das ein Sensor" → „Ein Sensor hält
+    das" — Genese; ein Fließtext-Satz, **kein** Herkunfts-Anker.
+  - §5 (Haken-Absatz) „Der Altbestand bis `slice-170`" samt Planungs-Link →
+    „Der Altbestand"; die Abgrenzung trägt
+    [MR-056](../../../../harness/conventions/MR-056-dod-haken-waechter.md) (ein
+    Hop mehr, benannt in Review-Befund F-3).
+  - §5 (Haken-Absatz) der zweite, wortgleich wiederholte Fenced-Block-Satz —
+    Duplikat, kein Chronik-Satz.
+  - §5 (Grenzen-Regel) „Gemessen an sieben Fundstellen: In sechs …" und „gemessen
+    fand ihn in allen sieben Fällen …" — Messvorfall als Herleitung; als
+    „in den belegten Fällen" an die Messmenge gebunden (F-2), die Zahlen stehen
+    in der Beobachtung.
+  - §5 (CHANGELOG) „Gemessen, nicht vereinbart: die Feature-Commits der letzten
+    Slices …" und „die Regel darüber sagte nur …" — Genese; der operative
+    Kern („ein fehlender Eintrag im Feature-Commit ist kein Rückstand") bleibt.
+  - §5 (Dependabot) „Die naheliegende Alternative … hätte … wäre also
+    dokumentiert zulässig gewesen …" — Konjunktiv über Verworfenes (F-1); der
+    Grund gegen die Alternative steht im Indikativ weiter da.
+- **Retirement-Check je berührter verankerter Regel** (`state.md` gelesen,
+  Zielort und Anker verglichen): die Regeln zu überzogenen Botschaften (§5,
+  Anker `seit welle-82`), zitierter Quelle (§5, `seit slice-147`), Zählmethode
+  (§5, `seit slice-210`) und Grenzen-Liste (§5, `seit slice-213`) tragen
+  Zielort und Anker **unverändert**; der Text der Grenzen-Regel ist berührt
+  (Herleitung gekürzt, Reichweite an die belegten Fälle gebunden), ihr Ableiter
+  und ihre Grenzen stehen. Die Regel zur Scan-Achse (§3.8) ist **nicht
+  berührt**. Anker vorher/nachher: 5/5 (`grep -oE 'seit (slice|welle)-[0-9]+'`).
+- **Größe:** 38258 → 36917 Bytes (`wc -c`), 591 → 576 Zeilen. **Nicht gelöst:**
+  die Datei bleibt im Wesentlichen so groß; entfernt sind rund 3,5 %, der
+  Rest ist Regeltext (§3 rund 16 KB, §5 rund 12 KB).
+- **Steering-Loop-Eintrag:** gezählt, nicht verkörpert. Lernsignale: (a) die
+  Spiegel-Suche vor dem Editieren muss **Zitat-Spannen** einschließen — wer vor
+  einer zitierten Stelle kürzt, verschiebt sie; der Sensor fängt es, aber erst
+  nach dem Edit; (b) ein Stichwort-Raster ist ein Suchraster, kein Umfang, und
+  eine Kürzung neigt zum **Umformulieren** statt zum Streichen — beides fand
+  der Review, nicht der Lauf.
+- **Beobachtungs-Register (`../observations/`):**
+  `BEO-ALL/briefing-datei-ueberschreitet-lade-budget/` neu angelegt, Beleg
+  `evidence/slice-231.md` (1×); `evidence/slice-231.md` in
+  `BEO-ALL/commit-message-overclaims-work/` ergänzt (Klasse (b) an einem
+  Regeltext statt an einer Botschaft, benannt).
+- **Folge-Slices:** keine. Der Auslager-Vorgang hat keine Kennung; er steht als
+  offene Beobachtung im Register.
+- **Risiken aus §6:** alle drei mit Ausgang (§6).
+- **Drei Paarungen:** Anker — kein `liegt in`-Feld verwendet, kein Gegenstand.
+  Folge-Slice — keiner genannt, kein Gegenstand. Register — beide
+  genannten Beobachtungs-Verzeichnisse existieren und tragen je einen Beleg
+  für diesen Vorgang.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
