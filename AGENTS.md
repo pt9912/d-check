@@ -421,9 +421,8 @@ zu decken hieße, jede Backtick-Nennung im Repo als Deklaration zu lesen.)*
 - Slice-Lifecycle (`open → next → in-progress → done`) ist reine Datei-Bewegung (`git mv`, siehe §3.3).
 - Neue Slice-Köpfe tragen das Feld `**Verantwortlich:**` (Rolleninhaber der
   Implementer-Rolle, gesetzt **spätestens bei der Beanspruchung** — beim
-  Move `open→next` bzw. direkt `open→in-progress`, wie dieses Repo ihn
-  fährt; Deklaration, kein Sensor — Baseline v5.5.0, template-forward,
-  kein Retrofit).
+  Move `open→next` bzw. direkt `open→in-progress`; Deklaration, kein Sensor).
+  Bestand: kein Retrofit.
 - Das Slice-Kopf-Feld `**Berührte Spec-Stellen:**` nennt die **Kennung**, wo
   das Zielelement eine trägt (`SPEC-<NNN>`, `ARC-<NNN>`,
   `<DC-ID>.<Buchstabe>`), sonst den Abschnitt; `—`, wenn der Slice keine
