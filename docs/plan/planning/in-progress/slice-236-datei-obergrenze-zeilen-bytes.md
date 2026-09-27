@@ -111,7 +111,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder „keine
       Beobachtung angefallen" in §7 notiert.
 - [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen —
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen —
       wellenlos hier geprüft.
 
 ## 3. Plan (vor Code)
