@@ -53,7 +53,7 @@ func assertNetlessModules(modules []string) error {
 			return fmt.Errorf("modules aktiviert %q — das Netzlos-Gate darf kein Netz-/Range-Modul tragen (DC-QA-03)", m)
 		}
 	}
-	// slice-238 (BEO-ALL/modulliste-spiegel-ungegated, 3. Evidenz): die
+	// BEO-ALL/modulliste-spiegel-ungegated: die
 	// beiden Schleifen oben prüfen nur netlessDocModules() ⊆ modules und
 	// forbiddenInNetless() ∩ modules = ∅ -- ein NEUES, weder gelistetes
 	// noch verbotenes Modul in modules fiele durch beide Maschen. Diese
@@ -126,9 +126,8 @@ func TestQA03_ClosureProfil_KeineZweiteNetzTuer(t *testing.T) {
 // disableTokenRE liest einen einzelnen "--disable <modul>"-Token.
 var disableTokenRE = regexp.MustCompile(`--disable ([a-z]+)`)
 
-// TestFocusDisable_DecktDCheckYmlModules (slice-238,
-// BEO-ALL/modulliste-spiegel-ungegated, 3. Evidenz): FOCUS_DISABLE
-// (Makefile) spiegelt bewusst NICHT model.ValidModules(), sondern die
+// TestFocusDisable_DecktDCheckYmlModules (BEO-ALL/modulliste-spiegel-ungegated):
+// FOCUS_DISABLE (Makefile) spiegelt bewusst NICHT model.ValidModules(), sondern die
 // .d-check.yml-modules-Liste (Makefile-Kommentar: "Spiegelt die
 // .d-check.yml-modules-Liste; wächst die dort, hier nachziehen") -- ein
 // anderer Fundort-Typ als die drei ValidModules()-Spiegel in
