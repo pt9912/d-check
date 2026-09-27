@@ -242,7 +242,7 @@ func TestExtractLinks_ReferenzDefinition_BackslashLaesstZeileUnerkannt(t *testin
 
 // ADR-0095: eine gewoehnliche Prosazeile ohne delimitierten Titel ist KEINE
 // Definition — Rot-Beleg gegen die ADR-0093/0094-Fassung, die hier faelschlich
-// das erfundene Ziel "First" erkannt haette (unabhaengiger Review, R1-H1).
+// das erfundene Ziel "First" erkannt haette.
 func TestExtractLinks_ReferenzDefinition_ProsaOhneTitelDelimiterNichtErkannt(t *testing.T) {
 	lines := []Line{{No: 1, Text: "[TERM]: First In, First Out"}}
 	if refs := ExtractLinks(lines); len(refs) != 0 {

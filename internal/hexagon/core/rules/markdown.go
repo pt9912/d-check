@@ -575,7 +575,7 @@ func ExtractLinks(lines []Line) []LinkRef {
 // Whitespace (bare, oder `<…>`-umschlossen) und danach **nichts** außer
 // optionalem Whitespace oder einem korrekt abgegrenzten Titel (`"…"`, `'…'`
 // oder `(…)`) bis zum Zeilenende — eine Prosa-Zeile wie `[TERM]: First In,
-// First Out` ist damit KEINE Definition (ADR-0095, R1-H1): ohne die
+// First Out` ist damit KEINE Definition (ADR-0095): ohne die
 // Titel-Validierung würde ihr Rest fälschlich als Titel verworfen.
 var definitionRe = regexp.MustCompile(`^ {0,3}\[([^\]\n]+)\]:[ \t]+(<[^<>\n]*>|\S+)(?:[ \t]+(?:"[^"\n]*"|'[^'\n]*'|\([^()\n]*\)))?[ \t]*$`)
 

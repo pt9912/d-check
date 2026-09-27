@@ -146,16 +146,26 @@ Lerneintrag geschrieben.
 ## 6. Risiken und offene Punkte
 
 - Standard-an: Konsumenten mit bisher stillen toten Definitions-Zielen werden
-  rot — auch bei **unbenutzten** Definitionen. **Ausgang:** bei Closure zu
-  vergeben (Release-Prep nennt es im CHANGELOG).
+  rot — auch bei **unbenutzten** Definitionen. **Ausgang: entfallen.** Die
+  Bestandsmessung (§7) zeigt 0 neue Befunde in diesem Repo. Die
+  CHANGELOG-Erwähnung bleibt Standard-Release-Prep für jedes neue
+  Standard-an-Verhalten (`AGENTS.md` §5), kein Folge-Slice nötig.
 - Eine Definition in einem Dokument, das Ziele bewusst als Platzhalter führt
-  (Templates), meldet Fehlalarme. **Ausgang:** bei Closure zu vergeben
-  (`ignore-refs` ist das vorhandene Ventil; die Bestandsmessung zeigt, ob es
-  trägt).
+  (Templates), meldet Fehlalarme. **Ausgang: entfallen.** Kein solcher Fall
+  in diesem Repo (Bestandsmessung 0 neue Befunde); `ignore-refs` bleibt als
+  Ventil verfügbar, falls ein Konsument ihn braucht.
 - Die Form „Definition" ist enger oder weiter als CommonMark (Einrückung bis
   drei Spaces, Label mit Backslash-Escapes, Definition in Blockquote/Liste).
-  **Ausgang:** bei Closure zu vergeben (die Form wird **vor** der Messung
-  ausgeschrieben, nach `AGENTS.md` §5).
+  **Ausgang: eingetreten, teilweise.** Die Form wurde vor der Messung
+  in der begleitenden Entscheidungs-Kette
+  ([ADR-0095](../../adr/0095-links-referenz-definitionen-titel-delimiter-pflicht.md))
+  ausgeschrieben und deckt die drei genannten Fälle ab. Zwei unabhängige
+  Review-Runden fanden zusätzlich: (a) eine Titel-Delimiter-Lücke ließ
+  gewöhnliche Prosa als Definition mit erfundenem Ziel lesen, behoben; (b)
+  ein whitespace-freies, klammerartiges Ziel-Token (`[TODO]: (spaeter)`)
+  bleibt unvalidiert, nicht blockierend laut Review-Verdikt. **Ausgang für
+  (b): weiter offen** →
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/observation.md).
 
 ## 7. Closure-Notiz
 
