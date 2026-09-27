@@ -233,7 +233,7 @@ func structureMatcher(r model.StructureRule) func(string) bool {
 	return func(raw string) bool { return re.MatchString(strings.TrimSpace(raw)) }
 }
 
-// structureConditions prüft die sechs Prosa-Bedingungen auf dem bereinigten
+// structureConditions prüft die sieben Prosa-Bedingungen auf dem bereinigten
 // Abschnitts-Text. Jede hat einen eigenen Grund-Code, damit zwei Verletzungen
 // desselben Abschnitts nicht unter der Befund-Deduplikation zusammenfallen.
 // VIER Bedingungen lesen einen anderen Text und leben anderswo: die
@@ -271,6 +271,9 @@ func structureConditions(r model.StructureRule, file string, line int, body stri
 				" Task-Items"+zusatz+", erlaubt sind "+strconv.Itoa(*r.MaxTasks))
 		}
 	}
+	if msg, ok := maxLinesViolation(r.MaxLines, body); ok {
+		add(model.ReasonSectionLinesExceeded, msg)
+	}
 	if r.ForbidPattern != "" && regexp.MustCompile(r.ForbidPattern).MatchString(body) {
 		add(model.ReasonSectionForbidden, "verbotenes Muster trifft: "+r.ForbidPattern)
 	}
@@ -284,6 +287,28 @@ func structureConditions(r model.StructureRule, file string, line int, body stri
 		}
 	}
 	return out
+}
+
+// maxLinesViolation prueft max-lines gegen den bereinigten Abschnittstext
+// (ADR-0089) und liefert die Meldung, wenn die Schwelle ueberschritten ist --
+// ausgelagert aus structureConditions, weil die Bedingung sonst dessen
+// kognitive Komplexitaet ueber die Gate-Schwelle hebt.
+//
+// body ist zeilenweise aus SectionProse rekonstruiert -- JEDE erhaltene
+// Zeile traegt einen Zeilenumbruch dahinter (auch die letzte), eine
+// unvollstaendige Schlusszeile gibt es hier nicht. Die Zeilenzahl ist
+// deshalb schlicht die Zahl der Umbrueche, keine +1-Korrektur wie beim
+// rohen Datei-Inhalt (countLines).
+func maxLinesViolation(maxLines *int, body string) (string, bool) {
+	if maxLines == nil {
+		return "", false
+	}
+	got := strings.Count(body, "\n")
+	if got <= *maxLines {
+		return "", false
+	}
+	return "Abschnitt trägt " + strconv.Itoa(got) +
+		" Zeilen (Fenced-Code nicht mitgezählt), erlaubt sind " + strconv.Itoa(*maxLines), true
 }
 
 // structureHeadings prüft die Überschriften INNERHALB des Abschnitts gegen

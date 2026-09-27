@@ -63,6 +63,11 @@ const (
 	ReasonSectionEmpty          = "section-empty"
 	ReasonSectionThin           = "section-thin"
 	ReasonSectionOversized      = "section-oversized"
+	// ReasonSectionLinesExceeded: der bereinigte Abschnittstext traegt mehr
+	// Zeilen, als max-lines erlaubt (zwoelfte Bedingung, ADR-0089); Fenced-Code
+	// zaehlt NICHT mit, weil SectionProse ihn entfernt (dieselbe Grundmenge wie
+	// non-empty/min-sentences).
+	ReasonSectionLinesExceeded  = "section-lines-exceeded"
 	ReasonSectionForbidden      = "section-forbidden"
 	ReasonSectionPatternMissing = "section-pattern-missing"
 	ReasonSectionMarkerMissing  = "section-marker-missing"

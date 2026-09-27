@@ -511,6 +511,13 @@ type StructureRule struct {
 	NonEmpty       bool
 	MinSentences   *int
 	MaxTasks       *int
+	// MaxLines ist die Obergrenze der ZEILEN des bereinigten Abschnittstexts
+	// (zwoelfte Bedingung, ADR-0089) -- dieselbe Grundmenge wie MinSentences,
+	// also OHNE Fenced-Code (SectionProse entfernt ihn vollstaendig, nicht nur
+	// maskiert). Untergrenze 1, nicht 0: der bereinigte Body eines Abschnitts
+	// mit Ueberschrift ist so gut wie nie leer, 0 waere faktisch ein
+	// Abschnitts-Verbot (ADR-0089 Entscheidung).
+	MaxLines       *int
 	// MaxOpenTasks ist die Obergrenze der OFFENEN Task-Items -- gezaehlt auf
 	// den ROHEN Abschnitts-Zeilen, nicht auf dem bereinigten Text wie
 	// MaxTasks. Das ist der Unterschied, um den es geht: ein einzelner

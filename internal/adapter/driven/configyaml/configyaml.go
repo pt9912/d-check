@@ -232,6 +232,7 @@ type rawStructure struct {
 	NonEmpty       bool     `yaml:"non-empty"`
 	MinSentences   *int     `yaml:"min-sentences"`
 	MaxTasks       *int     `yaml:"max-tasks"`
+	MaxLines       *int     `yaml:"max-lines"`
 	MaxOpenTasks   *int     `yaml:"max-open-tasks"`
 	ForbidPattern  string   `yaml:"forbid-pattern"`
 	RequirePattern string   `yaml:"require-pattern"`
@@ -349,6 +350,9 @@ func structureBedingungsFehler(r rawStructure) string {
 	}
 	if r.MaxOpenTasks != nil && *r.MaxOpenTasks < 0 {
 		return fmt.Sprintf("max-open-tasks %d muss >= 0 sein", *r.MaxOpenTasks)
+	}
+	if r.MaxLines != nil && *r.MaxLines < 1 {
+		return fmt.Sprintf("max-lines %d muss >= 1 sein", *r.MaxLines)
 	}
 	for _, m := range r.RequireAll {
 		if strings.TrimSpace(m) == "" {
@@ -529,7 +533,7 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 	return model.StructureRule{
 		Files: r.Files, Section: r.Section, SectionPattern: r.SectionPattern,
 		Sections: r.Sections, NonEmpty: r.NonEmpty, MinSentences: r.MinSentences,
-		MaxTasks: r.MaxTasks, MaxOpenTasks: r.MaxOpenTasks, ForbidPattern: r.ForbidPattern,
+		MaxTasks: r.MaxTasks, MaxOpenTasks: r.MaxOpenTasks, MaxLines: r.MaxLines, ForbidPattern: r.ForbidPattern,
 		RequirePattern: r.RequirePattern, RequireAll: r.RequireAll,
 		HeadingsMatch: r.HeadingsMatch, HeadingsLevel: r.HeadingsLevel,
 		Table:       applyTable(r.Table),
