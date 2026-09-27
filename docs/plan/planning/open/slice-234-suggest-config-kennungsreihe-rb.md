@@ -22,7 +22,7 @@ Baseline-Regel.
 [`DC-FA-CLI-006.a`](../../../../spec/spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag)
 (reservierte Quellen: kanonisches Anforderungs-`ids`-Muster, Präfix-Ableitung).
 
-**Verantwortlich:** —
+**Verantwortlich:** claude-sonnet-5.
 
 **Autor:** claude-sonnet-5. **Datum:** 2026-09-27.
 
@@ -204,6 +204,14 @@ deklariert, keine Ausdifferenzierung nötig.
 **Vorgelagert — offene Beobachtungen sichten:** Register durchgegangen
 (Stichworte Kennungsreihe, `--suggest-config`, `--id-prefix`,
 `ai-harness-init`, `reqShape`): **keine Treffer**.
+
+**Vorgelagert — Nachtlauf-Stand lesen** (bei der Beanspruchung, 2026-09-27):
+`make nightly-state` meldet `upstream-drift.yml` **ROT** (Lauf
+2026-09-27T06:03:41Z, derselbe Lauf wie bei `slice-237`s Beanspruchung,
+unverändert), `image-scan.yml` **grün** (2026-09-26T08:38:12Z). Dieselben
+vier planmäßigen Fremd-Release-Meldungen (`golangci-lint`, `semgrep`,
+`a-check` VERALTET; `golang`-Basis-Digest ABWEICHEND), keine unerwarteten;
+sie berühren dieses Modul (`suggest`) nicht.
 
 **Modus-Begründungsblock:** alle berührten Sub-Areas GF.
 
