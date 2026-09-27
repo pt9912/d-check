@@ -58,7 +58,7 @@ Verhalten nicht.
 - **Definition mit Ziel hinter dem Zeilenumbruch** (`[label]:` ⏎ `ziel`) und
   **mehrzeilige Titel** — nicht gemeldet, nicht gemessen; die
   Zeilenumbruch-Form bei Inline-Links liefert
-  [slice-232](../in-progress/slice-232-links-ziel-hinter-zeilenumbruch.md).
+  [slice-232](../done/slice-232-links-ziel-hinter-zeilenumbruch.md).
 - **`--repair` für Definitionen** — Schreib-Pfad, anderer Vorgang (siehe
   slice-232).
 - **Handbuch, README, CHANGELOG, Release** — Release-Prep-Vorgang
@@ -125,7 +125,7 @@ nicht als Nebenwirkung hinzunehmen.
 ## 4. Trigger
 
 **Start** (`next` → `in-progress`): **nach** dem Closure von
-[slice-232](../in-progress/slice-232-links-ziel-hinter-zeilenumbruch.md) — beide bumpen das
+[slice-232](../done/slice-232-links-ziel-hinter-zeilenumbruch.md) — beide bumpen das
 Lastenheft und die Link-Anforderung; parallele Läufe kollidierten in der
 Versions-Nummer und in der Extraktions-Stelle. Bei der Beanspruchung entsteht
 der dritte Vorprüfungs-Block (Nachtlauf-Stand).
