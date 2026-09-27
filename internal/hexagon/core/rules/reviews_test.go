@@ -221,3 +221,20 @@ func TestReviewsUnreadableReviewsDirNoPromisesStillFailsClosed(t *testing.T) {
 		t.Fatalf("erwartet genau die Leerlauf-Meldung auf DoneDir, got %+v", f)
 	}
 }
+
+// slice-235: ein Verifikations-Bericht ohne "review" im Dateinamen deckt die
+// Zusage genauso -- das Modul prueft nur die slice-<NNN>-Substring-Praesenz
+// im Dateinamen, nicht den Inhalt oder ein Namens-Suffix. Die Ablage eines
+// Verifier-Berichts unter docs/reviews/ verschiebt damit weder den Zaehler
+// (das Modul zaehlt gar nicht) noch taeuscht sie eine Reviewer-Deckung vor,
+// die es nicht gibt -- es gibt nur "gedeckt/nicht gedeckt" je Slice-ID.
+func TestReviewsVerifierNamedReportSatisfiesCoverage(t *testing.T) {
+	files := map[string]string{
+		"docs/plan/planning/done/slice-100-x.md": "## 2. Definition of Done\n\n" +
+			"- [x] `make gates` grün; unabhängiger Review.\n",
+		"docs/reviews/2026-01-01-slice-100-x-verify.md": "# Verifikation\n",
+	}
+	if f := rvRun(files); f != nil {
+		t.Fatalf("erwartet befundfrei (Verifier-Bericht deckt dieselbe Zusage), got %+v", reasons(f))
+	}
+}
