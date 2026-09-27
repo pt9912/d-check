@@ -569,15 +569,20 @@ func ExtractLinks(lines []Line) []LinkRef {
 }
 
 // definitionRe erkennt eine Link-Referenz-Definition `[label]: ziel "titel"`
-// nach CommonMark, eingeschränkt auf die einzeilige Form (ADR-0093): bis zu
-// drei führende Leerzeichen (kein Blockquote-/Listen-Präfix), Label ohne
-// Backslash-Escape-Kenntnis, Ziel + optionaler Titel auf derselben Zeile.
-var definitionRe = regexp.MustCompile(`^ {0,3}\[([^\]\n]+)\]:[ \t]+(\S.*)$`)
+// nach CommonMark, eingeschränkt auf die einzeilige Form (ADR-0093/ADR-0095):
+// bis zu drei führende Leerzeichen (kein Blockquote-/Listen-Präfix), Label
+// ohne Backslash-Escape-Kenntnis, ein Ziel-Token OHNE eingebetteten
+// Whitespace (bare, oder `<…>`-umschlossen) und danach **nichts** außer
+// optionalem Whitespace oder einem korrekt abgegrenzten Titel (`"…"`, `'…'`
+// oder `(…)`) bis zum Zeilenende — eine Prosa-Zeile wie `[TERM]: First In,
+// First Out` ist damit KEINE Definition (ADR-0095, R1-H1): ohne die
+// Titel-Validierung würde ihr Rest fälschlich als Titel verworfen.
+var definitionRe = regexp.MustCompile(`^ {0,3}\[([^\]\n]+)\]:[ \t]+(<[^<>\n]*>|\S+)(?:[ \t]+(?:"[^"\n]*"|'[^'\n]*'|\([^()\n]*\)))?[ \t]*$`)
 
 // parseDefinitionLine erkennt genau eine Link-Referenz-Definition auf `text`
-// (ADR-0093). Das Ziel wird wie bei einem Inline-Link normalisiert
-// (Titel-Abtrennung, <>-Entquotung, s. NormalizeTarget) — unabhängig davon,
-// ob das Label an anderer Stelle im Dokument verwendet wird.
+// (ADR-0093/ADR-0095). Das Ziel-Token wird wie bei einem Inline-Link
+// normalisiert (<>-Entquotung, s. NormalizeTarget) — unabhängig davon, ob
+// das Label an anderer Stelle im Dokument verwendet wird.
 func parseDefinitionLine(text string) (LinkRef, bool) {
 	m := definitionRe.FindStringSubmatch(text)
 	if m == nil {

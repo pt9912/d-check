@@ -2449,18 +2449,20 @@ func TestCLI233_ReferenzDefinition_AnchorsUebersprungen(t *testing.T) {
 	}
 }
 
-// Kontrolle: Blockquote-Präfix und Backslash-Escape im Label lassen die
-// Definition unerkannt (ADR-0093/ADR-0094) — auch mit totem Ziel entsteht
-// kein Befund, die Zeile bleibt still statt teilweise erkannt.
+// Kontrolle: Blockquote-Präfix, Backslash-Escape im Label und ein Titel ohne
+// gültigen Delimiter lassen die Definition unerkannt (ADR-0093/0094/0095) —
+// auch mit totem "Ziel" entsteht kein Befund, die Zeile bleibt still statt
+// teilweise erkannt.
 func TestCLI233_UnveraenderteKontrollformen(t *testing.T) {
 	root := t.TempDir()
 	write(t, root, "docs/a.md", strings.Join([]string{
 		"> [blockquote]: fehlt-1.md",
 		`[foo\]bar]: fehlt-2.md`,
+		"[TERM]: First In, First Out",
 	}, "\n")+"\n")
 	code, _, stderr := run(t, "--disable", "anchors", root)
 	if code != 0 {
-		t.Fatalf("Exit = %d, stderr = %q (beide Formen haetten unerkannt bleiben muessen)", code, stderr)
+		t.Fatalf("Exit = %d, stderr = %q (alle drei Formen haetten unerkannt bleiben muessen)", code, stderr)
 	}
 }
 

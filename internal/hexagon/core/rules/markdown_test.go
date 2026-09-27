@@ -240,6 +240,32 @@ func TestExtractLinks_ReferenzDefinition_BackslashLaesstZeileUnerkannt(t *testin
 	}
 }
 
+// ADR-0095: eine gewoehnliche Prosazeile ohne delimitierten Titel ist KEINE
+// Definition — Rot-Beleg gegen die ADR-0093/0094-Fassung, die hier faelschlich
+// das erfundene Ziel "First" erkannt haette (unabhaengiger Review, R1-H1).
+func TestExtractLinks_ReferenzDefinition_ProsaOhneTitelDelimiterNichtErkannt(t *testing.T) {
+	lines := []Line{{No: 1, Text: "[TERM]: First In, First Out"}}
+	if refs := ExtractLinks(lines); len(refs) != 0 {
+		t.Fatalf("Prosazeile ohne Titel-Delimiter haette unerkannt bleiben muessen: %+v", refs)
+	}
+}
+
+// ADR-0095: ein korrekt delimitierter Titel mit einfachen Anfuehrungszeichen
+// bzw. Klammern wird weiterhin erkannt (keine Regression durch die
+// Titel-Delimiter-Pflicht).
+func TestExtractLinks_ReferenzDefinition_AlternativeTitelDelimiter(t *testing.T) {
+	cases := []string{
+		`[label]: ziel.md 'Titel'`,
+		`[label]: ziel.md (Titel)`,
+	}
+	for _, text := range cases {
+		refs := ExtractLinks([]Line{{No: 1, Text: text}})
+		if len(refs) != 1 || refs[0].Target != "ziel.md" {
+			t.Fatalf("%q: refs = %+v, want genau einen LinkRef mit Target ziel.md", text, refs)
+		}
+	}
+}
+
 // Die Invariante aus TrimFenceIndent — Space und Tab, nicht unicode-weit —
 // gilt fuer JEDEN Konsumenten der Fence-Lexik, nicht nur fuer den Waechter aus
 // dem Modul spans. Ohne Assertion je Konsument liesse sich einer davon
