@@ -55,7 +55,7 @@ Verhalten nicht.
 - **Referenz-Definitionen** (`[name]: ziel`) — anderer Vertragssatz: sie stehen
   heute im Out-of-Scope der Link-Anforderung (siehe Bezug) und brauchen dort eine
   Streichung, keine Schärfung der Extraktion. Übernimmt
-  [slice-233](../in-progress/slice-233-links-referenz-definitionen.md).
+  [slice-233](slice-233-links-referenz-definitionen.md).
 - **Linktext über Zeilenumbruch** (`[lang\ntext](ziel)`) — der
   Change Request nennt nur die Lücke zwischen `](` und der Adresse; die
   Lücke im Linktext ist nicht gemessen. Die Grenze in der Spezifikation wird
@@ -146,7 +146,7 @@ Code.
 
 **Start** (`next` → `in-progress`): keine Abhängigkeit. Bei der Beanspruchung
 entsteht der dritte Vorprüfungs-Block (Nachtlauf-Stand, `make nightly-state`).
-[slice-233](../in-progress/slice-233-links-referenz-definitionen.md) startet **nach** dem
+[slice-233](slice-233-links-referenz-definitionen.md) startet **nach** dem
 Closure dieses Slice: beide bumpen die Link-Anforderung und das Lastenheft.
 
 **Rückführungen — vorab benennen:**
