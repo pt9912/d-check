@@ -20,9 +20,11 @@ Getrackt-Status-Konsistenz, bis hin zu Struktur-Invarianten **innerhalb** eines
 Dokuments:
 
 - `links` — lokale Link- und Bildreferenzen: Ziel existiert, kein
-  Repo-Escape; opt-in `resolve-from`: Dateien in **wandernden**
-  Lifecycle-Verzeichnissen lösen jedes relative Ziel von jedem Ort ihrer
-  Gruppe auf — gemeldet **vor** dem `git mv`
+  Repo-Escape — auch bei Zieladresse hinter einem einzigen Zeilenumbruch
+  nach `](` und bei Link-Referenz-Definitionen (`[label]: ziel`,
+  unabhängig von ihrer Verwendung); opt-in `resolve-from`: Dateien in
+  **wandernden** Lifecycle-Verzeichnissen lösen jedes relative Ziel von
+  jedem Ort ihrer Gruppe auf — gemeldet **vor** dem `git mv`
   ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links))
 - `anchors` — Heading-Anker (GitHub-Slug-Verfahren) und Inline-HTML-Anker
   (`<a name>`, `id=`)
@@ -311,7 +313,7 @@ Registry, aus der man zieht)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.78.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

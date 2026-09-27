@@ -21,7 +21,9 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
 **within** a document:
 
 - `links` — local link and image references: target exists, no
-  repo escape; opt-in `resolve-from`: files in **moving** lifecycle
+  repo escape — also for a target address behind a single line break after
+  `](` and for link reference definitions (`[label]: target`, checked
+  regardless of use); opt-in `resolve-from`: files in **moving** lifecycle
   directories must resolve every relative target from every location of
   their group — reported **before** the `git mv`
   ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links))
@@ -308,7 +310,7 @@ you pull from)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.78.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

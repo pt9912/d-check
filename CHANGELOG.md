@@ -4,6 +4,41 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.79.0] — 2026-09-27
+
+### Added
+
+- slice-232 — **`links` erkennt eine Zieladresse hinter einem einzigen
+  Zeilenumbruch nach `](`, standardmäßig an**
+  ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links),
+  [ADR-0092](docs/plan/adr/0092-links-zeilenumbruch-begrenzter-lookahead.md),
+  supersedet [ADR-0091](docs/plan/adr/0091-links-absatzweise-zeilenumbruch-extraktion.md)).
+  Nur die **Adress-Klammer** darf um die unmittelbare Folgezeile im selben
+  Absatz verlängert werden; die **Linktext-Klammer** bleibt strikt
+  zeilenlokal, damit ein unbalanciertes `[` in gewöhnlicher Prosa nicht mit
+  einer späteren, unabhängigen `](…)`-Sequenz zu einem erfundenen Link
+  verschmilzt. Der Fund wird der öffnenden Zeile des Links zugeschrieben.
+  Gilt für dieselben sechs Module wie die gemeinsame Link-Extraktion
+  (`links`, `links.resolve-from`, `anchors`, `matrix`, `external`,
+  `tracked`); Bilder teilen den Parser und werden mitgezogen. Anlass ist
+  ein Change Request eines Konsumenten.
+- slice-233 — **`links` prüft Link-Referenz-Definitionen (`[label]: ziel
+  "titel"`) unabhängig von ihrer Verwendung, standardmäßig an**
+  ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links),
+  [ADR-0095](docs/plan/adr/0095-links-referenz-definitionen-titel-delimiter-pflicht.md),
+  supersedet [ADR-0094](docs/plan/adr/0094-links-referenz-definitionen-backslash-grenze-korrigiert.md)
+  und [ADR-0093](docs/plan/adr/0093-links-referenz-definitionen-gemeinsame-extraktion.md)).
+  Ein totes Ziel meldet `target-missing` auf der Definitions-Zeile, mit
+  derselben Auflösung, Escape-/Symlink-Prüfung und demselben
+  `ignore-refs`-Ventil wie ein Inline-Link — unabhängig davon, ob die
+  Definition im Dokument verwendet wird. Gilt für fünf der sechs Module der
+  gemeinsamen Extraktion; das Modul `anchors` behandelt Definitionen nicht
+  (neuer Out-of-Scope-Satz). Drei benannte Grenzen: kein Blockquote-/
+  Listen-Präfix, keine Backslash-Escapes im Label, kein Zeilenumbruch vor
+  Ziel oder Titel — und der Rest der Zeile hinter dem Ziel-Token muss ein
+  korrekt delimitierter Titel (`"…"`, `'…'`, `(…)`) sein, sonst bleibt die
+  ganze Zeile unerkannt. Anlass ist ein Change Request eines Konsumenten.
+
 ## [0.78.0] — 2026-09-27
 
 ### Added
