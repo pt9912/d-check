@@ -166,15 +166,30 @@ konventions-fest. Quelle des Präfix: die Option `--id-prefix <PREFIX>`
 das zweite Präfix nur über eine `-RB-`-Überschrift auftritt). Ohne Option
 **und** ohne Ableitung (insbesondere `ai-harness-init` fürs leere Repo)
 bleibt der markierte Platzhalter `<PREFIX>` mit `# TODO`-Hinweis stehen —
-**kein** stiller `DC-`. **Die Randbedingungs-Reihe `RB`** (`<PREFIX>-RB-<NN>`)
-trägt dieselbe Präfix-Ableitung und dasselbe Anforderungs-`ids`-Muster wie
-`FA`/`QA` — sie erweitert nur die **Prüfungs**-Musterableitung, **nicht** die
-Requirements Traceability Matrix
+**kein** stiller `DC-`.
+
+**Die Randbedingungs-Reihe `RB`** (`<PREFIX>-RB-<NN>`) trägt dieselbe
+Präfix-Ableitung wie `FA`/`QA`. Das Anforderungs-`ids`-Muster selbst nimmt
+`RB` in seine Alternation **nur dann** auf, wenn derselbe Ableitungs-Durchlauf
+(Modus `ai-harness`, kein `--id-prefix`) mindestens eine `-RB-`-Überschrift in
+`spec/lastenheft.md` gesehen hat — anders als `FA`/`QA`, die die Alternation
+unabhängig vom tatsächlichen Bestand immer tragen (feste Konvention). Der
+Unterschied ist bewusst: Ohne diese Bedingung wechselte das Muster für **jedes**
+Repo (auch `FA`/`QA`-only), sobald `d-check` diese Fähigkeit einmal kennt —
+die zugesagte Byte-Gleichheit unten wäre unerreichbar. **Benannte Grenze:**
+Die Bedingung prüft **nur** den `ai-harness`-Ableitungs-Durchlauf; ein Repo,
+das `--id-prefix` explizit setzt oder den Voll-Kanon `ai-harness-init` nutzt,
+liest `spec/lastenheft.md` dafür nicht — `RB` bleibt dort außen vor, selbst
+wenn das Repo `-RB-`-Kennungen führt (derselbe Konsument kann das
+Anforderungs-Muster in diesen beiden Fällen ohnehin nur über die generische
+Quellen-Ableitung oder von Hand erweitern). Die Erweiterung wirkt zudem nur
+auf die **Prüfungs**-Musterableitung, **nicht** auf die Requirements
+Traceability Matrix
 ([`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)):
 ob eine Randbedingung dort als Anforderung zählt, bleibt eine
 Konsumenten-Entscheidung über dessen eigene `id-pattern`-Konfiguration. Ohne
-eine `-RB-`-Überschrift im Repo ist die erzeugte Ausgabe byte-gleich zum
-Stand ohne diese Erweiterung.
+eine `-RB-`-Überschrift im gescannten `spec/lastenheft.md` ist die erzeugte
+Ausgabe **byte-gleich** zum Stand ohne diese Erweiterung.
 
 Kanonische Vorlage (Spiegel der Repo-Konvention; `ai-harness-init` gibt sie
 vollständig aktiv aus, `ai-harness` nur die im Baum vorhandenen Teile):
@@ -199,7 +214,8 @@ ids:
       link-policy: always
       exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
     # <PREFIX>: via --id-prefix bzw. im ai-harness-Modus aus dem Lastenheft
-    # abgeleitet; ohne beides bleibt der Platzhalter + TODO stehen.
+    # abgeleitet; ohne beides bleibt der Platzhalter + TODO stehen. |RB nur,
+    # wenn derselbe Ableitungs-Durchlauf eine -RB--Ueberschrift sah.
     - regex: '<PREFIX>-(FA-[A-Z]+|QA|RB)-\d+'
       target: spec/lastenheft.md
       link-policy: always
