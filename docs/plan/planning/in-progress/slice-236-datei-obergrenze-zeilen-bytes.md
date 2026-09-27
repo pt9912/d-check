@@ -107,10 +107,10 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8, kein
       Self-Review.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder „keine
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder „keine
       Beobachtung angefallen" in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen —
       wellenlos hier geprüft.
 
@@ -162,17 +162,75 @@ Lerneintrag geschrieben.
 
 - Ein neues Modul fehlt in einer Aufzählung, die kein Gate hält — der Bestand
   zeigt, dass die Modul-Listen von Hand nachgezogen werden.
-  **Ausgang:** bei Closure zu vergeben.
+  **Ausgang:** eingetreten — der unabhängige Review fand drei bisher nicht
+  benannte Fundorte (Bereichskürzel-Liste, Glossar, `operations.md`;
+  F-2/F-3/F-4), behoben im Fix-Commit. Die verwandte Beobachtung
+  [`BEO-ALL/modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
+  erreicht damit 3× — Ausgang `geplant`,
+  [slice-238](../open/slice-238-modul-registrierungs-spiegel-checkliste.md).
 - Die Datei-Menge kommt aus dem Glob und nicht aus dem Scan-Bereich; eine
   Datei außerhalb der Scan-Wurzeln wird geprüft, eine gelöschte nicht.
-  **Ausgang:** bei Closure zu vergeben (die Grenze steht in der Spezifikation).
+  **Ausgang:** entfallen — das ist die bewusst gewählte, in der Spezifikation
+  benannte Eigenschaft (wie bei `structure`/`mentions`), kein unentdeckter
+  Mangel.
 - Ohne die Schwellen-Entscheidung bleibt die Fähigkeit ungenutzt, und
   die Beobachtung zur Größe der Briefing-Datei hat weiter keinen Sensor.
-  **Ausgang:** bei Closure zu vergeben.
+  **Ausgang:** weiter offen —
+  [`BEO-ALL/briefing-datei-ueberschreitet-lade-budget`](../observations/BEO-ALL/briefing-datei-ueberschreitet-lade-budget/observation.md)
+  (jetzt 2×): der Sensor existiert, seine Nutzung für `AGENTS.md` ist ein
+  eigener Folge-Slice ohne Kennung.
 
 ## 7. Closure-Notiz
 
-*(Bei der Closure zu füllen.)*
+- **Was hat funktioniert:** Die Formvorlage bestehender Module (`structure`,
+  `reviews`, `mentions`) hat die Umsetzung geführt — Zähler-Wiederverwendung
+  (`countLines`, geteilt mit `codepaths`/`citations`) statt einer eigenen
+  Implementierung, `Identity()`/`MessageFor()` nach demselben Muster wie
+  `StructureRule`. Der unabhängige Review hat die Kernimplementierung
+  (Zählung, Config-Validierung, Hexagon-Schichtung, Determinismus,
+  Referenzrichtung, ADR-Form) ohne Beanstandung bestätigt.
+- **Was ging anders als geplant:** (1) Die geplante Ort-Entscheidung
+  (eigenes Modul statt `structure`-Erweiterung) stand vor dem Code fest
+  (Auftraggeber, 2026-09-27) und hat sich im Nachhinein bestätigt — kein
+  Rückbau nötig. (2) Zwei eigene Fehler traten während der Umsetzung auf,
+  vor dem Review korrigiert: eine `cut -c1-200`-Terminaltrunkierung hat beim
+  ersten Versuch, „file" in die `--print-config`-Verfügbar-Zeile
+  einzufügen, das Zeilenende (`external, sources`) verschluckt; die
+  Spezifikation sagte zunächst „unlesbare Einzeldatei liefert keinen Befund"
+  zu, inkonsistent mit `structure`s eigenem fail-closed-Vorbild für denselben
+  Fall — beim Vergleich mit der Nullmengen-Härte aufgefallen und auf
+  fail-closed vereinheitlicht. (3) Trotz eigener Sorgfalt fand der
+  unabhängige Review sieben weitere Befunde (§DoD, unten) — am schwersten
+  wog F-1: der Umsetzungs-Commit hat README-Bullets ergänzt, obwohl §1
+  dieses Plans „Handbuch, README, CHANGELOG, Release — Release-Prep, kein
+  Feature-Commit" ausdrücklich ausschließt. Ich habe die eigene Abgrenzung
+  im Lauf verletzt, nicht der Kanon war unklar.
+- **Retirement-Check:** keine bestehende Regel wurde gelockert oder entfernt;
+  entfällt.
+- **Steering-Loop-Eintrag:** gezählt, nicht verkörpert für den Fall F-1
+  (Plan-Abgrenzung im eigenen Lauf verletzt, neuer Eintrag
+  [`BEO-ALL/plan-abgrenzung-im-selben-lauf-verletzt`](../observations/BEO-ALL/plan-abgrenzung-im-selben-lauf-verletzt/observation.md))
+  — Beobachtung steht bei 1×, unter der Schwelle.
+- **Beobachtungs-Register (`../observations/`):**
+  `evidence/slice-236.md` in
+  [`BEO-ALL/modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
+  ergänzt — Zähler steht damit bei 3×, Ausgang `geplant`
+  ([slice-238](../open/slice-238-modul-registrierungs-spiegel-checkliste.md));
+  `evidence/slice-236.md` in
+  [`BEO-ALL/briefing-datei-ueberschreitet-lade-budget`](../observations/BEO-ALL/briefing-datei-ueberschreitet-lade-budget/observation.md)
+  ergänzt — Zähler steht bei 2×, weiter offen;
+  [`BEO-ALL/plan-abgrenzung-im-selben-lauf-verletzt`](../observations/BEO-ALL/plan-abgrenzung-im-selben-lauf-verletzt/observation.md)
+  neu angelegt, Beleg `evidence/slice-236.md` (1×).
+- **Folge-Slices:** [slice-238](../open/slice-238-modul-registrierungs-spiegel-checkliste.md)
+  (Sensor oder Checkliste für die Modul-Registrierungs-Spiegel) — ist eine
+  Datei in `open/`.
+- **Risiken aus §6:** eines eingetreten (Folge-Slice slice-238), eines
+  entfallen (benannte Grenze, kein Mangel), eines weiter offen (Register).
+- **Drei Paarungen:** Anker — kein `liegt in`-Feld verwendet, nichts
+  verkörpert, kein Gegenstand. Folge-Slice — `slice-238` existiert als Datei
+  in `docs/plan/planning/open/`, geprüft ok. Register — beide genannten
+  Beobachtungs-Verzeichnisse existieren und tragen je einen neuen Beleg für
+  diesen Vorgang, geprüft ok.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
