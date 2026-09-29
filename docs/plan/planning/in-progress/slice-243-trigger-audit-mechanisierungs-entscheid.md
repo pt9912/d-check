@@ -56,14 +56,14 @@ sinnvoll ist oder bei Bedarf folgt; beides ist ein zulässiger Ausgang.
 
 ## 2. Definition of Done
 
-- [ ] Je Klasse eine belegte Zeile „mechanisch prüfbar (Bauform) /
+- [x] Je Klasse eine belegte Zeile „mechanisch prüfbar (Bauform) /
       Prosa-Verbleib (Begründung)" — vier Zeilen, jede mit Gegenstand
       (Datei/Config-Mechanismus, nicht bloße Behauptung).
-- [ ] Die Entscheidung ist getragen: bei „mechanisch prüfbar" — Umsetzung
+- [x] Die Entscheidung ist getragen: bei „mechanisch prüfbar" — Umsetzung
       im Slice oder benannter Folge-Slice mit Anforderungs-Umris; bei
       „Prosa-Verbleib" — Begründung, die gegen die
       vierte-Mal-Schwelle argumentiert.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 
 ## 3. Plan (vor Code)
 
@@ -104,15 +104,47 @@ wellenlos hier geprüft).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Die vier Zeilen gegen den Baum bewertet, nicht
+  gegen die Beschreibung — der Carveout-Bestand (`carveouts/done/` CO-001,
+  CO-002; kein offener), die Schwellen-Form (kalibrierte Konstanten),
+  die 97 ADR-Trigger-Konditionale, die §3-Trigger-Zeilen.
+- **Was ging anders als geplant:** — *(der Evaluierungs-Vollzug traf die
+  Plan-Lage: keine Überraschung, keine Mechanisierungs-Lücke gefunden)*
+- **Bewertung je Klasse (DoD 1):**
+  - **Carveout — Prosa-Verbleib.** Prüfbar wäre der Zustand
+    (Verzeichnis-Position, gemessen: `carveouts/done/` only); die
+    Audit-Frage „Auflösungs-Trigger eingetreten?" steht im Carveout-Körper
+    als je einzigartiges Konditional. Ein Gate auf „keine offenen
+    Carveouts" kriminalisiert legitime Zustände.
+  - **bootstrap-aware Gate — n.a.** d-checks Schwellen sind kalibrierte
+    Konstanten ohne Hochschalt-Trigger (V-Beleg slice-241); nichts zu
+    mechanisieren.
+  - **ADR — Prosa-Verbleib.** 97 Re-Evaluierungs-Trigger, jeder ein
+    einzigartiges Konditional („Wenn die Marke wiederholt am falschen Ort
+    trifft …"); „eingetreten?" ist Urteil. Die Linkpflicht (ids) deckt die
+    Erreichbarkeit, nicht die Bedeutungsfälle.
+  - **Hard Rule — Prosa-Verbleib.** Existenz einer Trigger-Zeile wäre
+    structure-Form prüfbar — kriminalisiert aber den grandfathered
+    Alt-Bestand (§3.1/§3.5/§3.7/§3.9) und beantwortet doch nicht
+    „ausgelöst?".
+- **Steering-Loop-Eintrag:** keiner — die vierte-Mal-Schwelle ist nicht
+  erreicht (kein Audit-Fehler bisher); der Prosa-Verbleib argumentiert
+  exakt damit (DoD 2).
+- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag — der
+  Audit-Schritt trägt seinen Vollzugs-Beleg in der Closure-Notiz
+  (slice-241-Muster).
+- **Folge-Slices:** keine — bei der ersten Audit-Auffälligkeit kehrt die
+  Frage zurück (dann mit belegtem Anlass, gegen die
+  vierte-Mal-Schwelle).
+- **Risiken aus §6:** R1 (vorzeitige Mechanisierung) — abgewehrt, der
+  Prosa-Verbleib argumentiert gegen die Schwelle; R2
+  (Zustands- vs. Urteils-Prüfung) — je Zeile getrennt belegt.
+- **Drei Paarungen:** Lerneintrag „der Audit hat vier Klassen, keine
+  mechanisierbar ohne Anlass" — Folge-Slice: keiner — Register: kein
+  neuer Eintrag.
+- **Nachtlauf-Stand bei der Beanspruchung** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+  beide Nachtläufe grün (upstream-drift 2026-09-29, image-scan
+  2026-09-28).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
