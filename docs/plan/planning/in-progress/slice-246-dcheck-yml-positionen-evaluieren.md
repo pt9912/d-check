@@ -52,12 +52,14 @@ bewertet — adoptiert (Config-Update) oder abgelehnt (Begründung):
 
 ## 2. Definition of Done
 
-- [ ] Je Position (5) eine belegte Entscheidung: adoptiert (Config-Update,
+- [x] Je Position (5) eine belegte Entscheidung: adoptiert (Config-Update,
       gates grün, Befund-Effekt gegen den Bestand geprüft) oder abgelehnt
       (Begründung).
-- [ ] Bei adoptierten Positionen: die Befund-Wirkung gegen den eigenen
-      Bestand gemessen (d-check-Lauf vor/nach, Differenz notiert).
-- [ ] `make gates` grün.
+- [x] Bei adoptierten Positionen: die Befund-Wirkung gegen den eigenen
+      Bestand gemessen (d-check-Lauf vor/nach, Differenz notiert). — *keine
+      Position wurde adoptiert; die Messung (29 Befunde) trägt die
+      Ablehnungen 2+3 als Folge-Slice.*
+- [x] `make gates` grün.
 
 ## 3. Plan (vor Code)
 
@@ -94,15 +96,47 @@ wellenlos hier geprüft).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** die Probe — die Kandidaten-Konfiguration (nach
+  dem Snapshot `/tmp/aih-v6.13.0`) lief gegen den Bestand, bevor eine
+  Entscheidung fiel: 29 Befunde (25 `aussen`-Links aus den Straten, 1 nacktes
+  MR-Token, 1 `matrix-inactive`-Seiteneffekt). Die fünf Entscheidungen:
+  (1) **welle-Klasse** — bereits Bestand in schärferer Form
+  ([`MR-034`](../../../../harness/conventions.md#mr-034--die-referenzmatrix-bewacht-auch-die-kante-adr--welle),
+  Token `welle-\d{2,}`, beide Regeln); (2) **aussen** — Grundsatz bejaht,
+  Bestands-Nachzug trägt [slice-248](../open/slice-248-matrix-aussen-adaptionsblock.md);
+  (3) **adaptionsblock** — dieselbe Lage, im selben Folge-Slice; (4)
+  **segment-tolerante ids** — abgelehnt, keine segmentierte ADR-Form im
+  Bestand (gemessen: null Treffer), die Weite wäre unbelegte Vorsorge; (5)
+  **exclude-sections-Scoping** — abgelehnt, kein eigener Fall: die
+  Spec-Historie trägt ein anderes Heading als die ADR-Geschichte, die
+  globale Ausnahme `[Geschichte]` trifft sie nicht.
+- **Was ging anders als geplant:** Position 1 war bereits Bestand — der Plan
+  nahm an, die welle-Klasse „kehrt mit welle-91 zurück"; die Kante
+  `adr→welle` ist seit
+  [`MR-034`](../../../../harness/conventions.md#mr-034--die-referenzmatrix-bewacht-auch-die-kante-adr--welle)
+  bewacht. Die Probe-Ordnung hatte `aussen`
+  vor `adaptionsblock` (First-Match) — die Befund-Labels sind darum teilweise
+  vertauscht, die Zählung ist gültig; die Ordnungskorrektur trägt slice-248.
+  Die Bestands-Wirkung von Position 2+3 überstieg die Adoptions-Schwelle
+  dieses Slice — die Rückführungs-Denke des Plans (entworfen für Position 5)
+  greift bei 2+3 sinngemäß.
+- **Steering-Loop-Eintrag:** keine Verkörperung — keine der Klassen erreichte
+  die Schwelle; die First-Match-Lektion (Klassen-Ordnung) ist im Folge-Slice
+  verankert, nicht als Regel.
+- **Beobachtungs-Register (`../observations/`):** keine Beobachtung angefallen.
+- **Folge-Slices:** [slice-248](../open/slice-248-matrix-aussen-adaptionsblock.md)
+  (matrix-Klassen `aussen` + `adaptionsblock` adoptieren — samt
+  Bestands-Nachzug) — ist eine Datei in `open/`.
+- **Risiken aus §6:** Risiko 1 (Adoptierte Positionen färben den Bestand
+  neu): eingetreten — gemessen (29 Befunde), getragen von slice-248. Risiko 2
+  (welle-Klasse ohne Wellen-Bestand ist leerer Fang): entfallen — die Klasse
+  ist bereits Bestand, der Fall existiert nicht. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): beide Läufe grün am
+  2026-09-29 (upstream-drift 06:29 UTC, image-scan 09:52 UTC) — nichts zu
+  lesen.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld, nichts verkörpert,
+  die Paarung trifft nicht zu; (b) Folge-Slice — slice-248 existiert in
+  `open/`; (c) Register — keine neuen Einträge, keine Zitate.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
