@@ -90,7 +90,7 @@ Plan **geändert**, nicht nur ergänzt.
 | `spec/lastenheft.md` | update | neue `DC-*` + Historie-Zeile ([MR-032](../../../../harness/conventions.md#mr-032)) |
 | `spec/spezifikation.md` | update | Leerfall-Grund-Code in den Abschnitt zu den situativen Range-Modulen |
 | `internal/adapter/driven/git` (Adapter hinter `vcs`) | update | leere Range statt stiller Befundlosigkeit laut abbrechen |
-| Testdatei zum Adapter | neu/update | Happy/Negative/Boundary — nach der neuen `DC-*`. ABWEICHUNG (R1-L-1): der Test fährt ein volles Fixture (zwei Commits in-memory), nicht slice-245s shallow-Clone-Aufbau — der shallow-Fall ist durch die deklarierte Grenze (Spec §DC-FA-VCS-002.a) und den Wächter abgedeckt, nicht automatisiert |
+| Testdatei zum Adapter | neu/update | Happy/Negative/Boundary — nach der neuen `DC-*`. ABWEICHUNG (R1-L-1): der Test fährt ein volles Fixture (zwei Commits in-memory), nicht slice-245s shallow-Clone-Aufbau — der shallow-Fall ist durch die deklarierte Grenze (Spec [§DC-FA-VCS-002.a](../../../../spec/spezifikation.md#dc-fa-vcs-002a--leere-commit-range-vcs)) und den Wächter abgedeckt, nicht automatisiert |
 
 **Ansatz:** Der Adapter kennt nach der Range-Auflösung die Commit-Zahl
 bereits — die leere Range ist dort ein eigener Zweig neben der unauflösbaren
