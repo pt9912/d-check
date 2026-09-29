@@ -23,7 +23,7 @@
   Erstens generalisiert `grundlagen-source-precedence.md` §Vergabe das
   ID-Schema — Kennungen als **Namen statt Nummern** für Slice/Welle,
   Mehrfach-Schreiber-Kollisionsbehandlung, Bereichssegmente für ADR/Carveout.
-  d-checks eigene Aussage (dichte, repo-weite Nummern, [MR-000](../conventions.md#mr-000--baseline-aussage))
+  d-checks eigene Aussage (dichte, repo-weite Nummern, [MR-000](../../conventions.md#mr-000--baseline-aussage))
   bleibt davon unberührt — die Vorlage generalisiert, sie zwingt nicht.
   Zweitens trägt `modul-05-planning-harness.md` einen **vierten
   Lifecycle-Zweig** — „Ein Slice, dessen Gegenstand ein anderer übernimmt"
@@ -37,7 +37,7 @@
   Ausnahme, anders als beim Vorgänger.
 
   **Vier Spiegel-Klassen, drei davon gate-blind**
-  ([`BEO-ALL/pin-bump-mirrors-ungated`](../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md),
+  ([`BEO-ALL/pin-bump-mirrors-ungated`](../../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md),
   weiterhin ohne formgültigen Ausgang). Gemessen am **echten** Vorzustand —
   direkt nach dem Materialisieren von `v6.9.0`, vor jeder Ersetzung, **beide**
   Bäume noch vorhanden: 87 Dateien nannten `v6.6.0` mit **181** Vorkommen.
@@ -51,19 +51,19 @@
   Stand nennen: die MR-071-Datei selbst (jetzt in `conventions/done/`;
   Vergangenheits-Aussage über die v6.6.0-Hebung, bleibt bei ihrer Auflösung
   unverändert stehen), ein `done/`-Slice
-  ([slice-222](../../docs/plan/planning/done/wellenlos/slice-222-baseline-v660-bump.md)),
+  ([slice-222](../../../docs/plan/planning/done/wellenlos/slice-222-baseline-v660-bump.md)),
   zwei Review-Reports, drei Evidence-Dateien im Beobachtungs-Register, ein
   wörtliches Fremdzitat im CR — und ein **neunter, erst im Review
   gefundener** Fall: der Kommentar bei `.d-check.yml:235` (*„Die
   v6.6.0-Vorlage fuehrt 40 Tabellenzeilen statt 39"*), der den elften
-  `ignore-refs`-Eintrag aus [`MR-071`](../conventions/done/MR-071-baseline-v660.md)
+  `ignore-refs`-Eintrag aus [`MR-071`](MR-071-baseline-v660.md)
   begründet — eine Vergangenheits-Aussage über den **vorherigen**
   Bump (`v6.5.0`→`v6.6.0`), nicht über diesen. Inhaltlich korrekt
   unverändert, aber **erst im Review deklariert**, nicht in der ersten
   Frozen-Liste dieses Slice — Beleg bei
-  [`BEO-ALL/pin-bump-mirrors-ungated`](../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+  [`BEO-ALL/pin-bump-mirrors-ungated`](../../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
   (Review-Finding F-1, Report jetzt archiviert, siehe
-  [Slice-Stub](../../docs/plan/planning/done/wellenlos/slice-224-baseline-v690-bump.md)).
+  [Slice-Stub](../../../docs/plan/planning/done/wellenlos/slice-224-baseline-v690-bump.md)).
 
   Die übrigen **50 lebenden** Dateien sind retargetet — mehrheitlich als
   einfacher Pfad-Verweis (`.harness/baseline/v6.6.0/…`, gate-gedeckt — ein im
@@ -86,7 +86,7 @@
   §Aktive Adaptionen — dieselbe Über-Hebungs-Klasse wie bei `MR-067` in
   slice-222, diesmal am Index-Eintrag statt an der Datei selbst. Erkannt vor
   dem nächsten Schritt (kein Review nötig, um es zu finden), zurückgesetzt
-  auf `v6.6.0`. **Grenze bestätigt:** [`MR-070`](../conventions.md#mr-070)s
+  auf `v6.6.0`. **Grenze bestätigt:** [`MR-070`](../../conventions.md#mr-070)s
   Frozen-Liste deckt Datei-Eigenschaften, keine Tabellenzeilen — wer über
   eine Datei sed't, die selbst einen Adaptions-Index trägt, muss dessen
   Zeilen einzeln gegen ihren Gegenstand lesen.
@@ -110,10 +110,10 @@
   274→369) — die Nummerierung wechselte von Bullet auf `1./2.`, was den
   zitierten Text selbst nicht berührt.
 
-  **Ein Zitat-Delta, nach [`MR-039`](../conventions.md#mr-039) hier
+  **Ein Zitat-Delta, nach [`MR-039`](../../conventions.md#mr-039) hier
   vermerkt, nicht am zitierenden Dokument:**
 
-  | Quelle | Zitiert (Stand `v6.6.0`, in [`MR-056`](../conventions.md#mr-056)) | Seit `v6.9.0` |
+  | Quelle | Zitiert (Stand `v6.6.0`, in [`MR-056`](../../conventions.md#mr-056)) | Seit `v6.9.0` |
   |---|---|---|
   | `regelwerk/modul-05-planning-harness.md` §Lifecycle als State Machine | *„DoD-Häkchen und Closure-Notiz sind die Bedingung dafür, dass die Datei überhaupt nach `done/` darf."* | *„…darf — mit einer Ausnahme für die Liefer-Häkchen ([§Ein Slice, dessen Gegenstand ein anderer übernimmt])."* — die Ausnahme spiegelt den neuen vierten Lifecycle-Zweig (oben) |
 
