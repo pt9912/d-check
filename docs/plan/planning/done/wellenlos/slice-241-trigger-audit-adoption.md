@@ -10,11 +10,11 @@ repo-weites Mehr (Baseline-Regelwerk
 `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht).
 
 **Bezug:** die Hebung
-[`MR-073`](../../../../harness/conventions.md#mr-073--baseline-pin-hebung-auf-v6130-fünfzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)
+[`MR-073`](../../../../../harness/conventions.md#mr-073--baseline-pin-hebung-auf-v6130-fünfzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)
 liefert das Delta (Baseline-Regelwerk `modul-06-roadmap.md` §Closure,
-Schritt 2 „Trigger-Audit der Welle"), [`MR-051`](../../../../harness/conventions.md#mr-051)
-(Re-Ankern), [`MR-054`](../../../../harness/conventions.md#mr-054),
-[`MR-053`](../../../../harness/conventions.md#mr-053). Keine `DC-*` —
+Schritt 2 „Trigger-Audit der Welle"), [`MR-051`](../../../../../harness/conventions.md#mr-051)
+(Re-Ankern), [`MR-054`](../../../../../harness/conventions.md#mr-054),
+[`MR-053`](../../../../../harness/conventions.md#mr-053). Keine `DC-*` —
 keine Produkt-Anforderung berührt.
 
 **Berührte Spec-Stellen:** — *(die Closure-Praxis ist kein Spec-Stratum;
@@ -47,7 +47,7 @@ und bei der Closure dieses eigenen Slices erstmals vollzogen.
 - **Keine Retro-Audit über den Bestand** — die `done/`-Slices gelten als
   geprüft durch ihre Reviews; der Audit gilt ab seiner Einführung für
   neue Closures.
-- **Keine Änderung der Closure-Notiz-Schema-Form** ([`MR-056`](../../../../harness/conventions.md#mr-056)
+- **Keine Änderung der Closure-Notiz-Schema-Form** ([`MR-056`](../../../../../harness/conventions.md#mr-056)
   bleibt, wie sie ist) — der Audit ist ein Prüfschritt, kein neues
   Pflichtfeld, solange der Vollzug nichts anderes zwingend macht.
 
@@ -75,7 +75,7 @@ und bei der Closure dieses eigenen Slices erstmals vollzogen.
 **Start** (`open` → `in-progress`): direkt beansprucht — die
 Auftraggeber-Freigabe „ja bitte" zu den vier Deltas der v6.13.0-Hebung
 (2026-09-29) ist die Beanspruchung selbst; der Nachtlauf-Stand wird bei
-der Beanspruchung gelesen ([`MR-053`](../../../../harness/conventions.md#mr-053)).
+der Beanspruchung gelesen ([`MR-053`](../../../../../harness/conventions.md#mr-053)).
 
 **Rückführungen — vorab benennen, nicht erst im Nachhinein begründen:**
 
@@ -121,14 +121,14 @@ wellenlos hier geprüft).
   in `AGENTS.md` §3 stehen auf permanent; §3.1, §3.5, §3.7, §3.9 tragen
   keine Trigger-Zeile (Alt-Bestand, als Beobachtung vermerkt;
   V-1-Korrektur des Verifiers). Nachtlauf-Stand bei der Beanspruchung
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): beide Nachtläufe
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): beide Nachtläufe
   grün (upstream-drift 2026-09-29, image-scan 2026-09-28).
 - **Steering-Loop-Eintrag:** die Klasse commit-boundary-cross-slice
   (Slice-A-Commit trägt Slice-B-Gegenstand) tritt hier erstmals als
   Caught-by-Review auf; verwandt mit
-  [`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+  [`BEO-ALL/pin-bump-mirrors-ungated`](../../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
   (record-claim-vs-diff) — kein formgültiger Ausgang, kein neuer Eintrag.
-- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag — der
+- **Beobachtungs-Register (`../../observations/`):** kein neuer Eintrag — der
   stehende BEO-ALL/pin-bump-mirrors-ungated trägt die verwandte Klasse.
 - **Folge-Slices:** keine — die Adoption ist abgeschlossen; die
   Mechanisierungs-Frage (Audit als Sensor) ist bewusst offen gelassen
@@ -156,7 +156,7 @@ Harness-Werkzeug selbst (`*`, Kürzel `ALL`); bereits deklariert.
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:**
-[`BEO-ALL/registerzeile-ohne-ausgang-nach-schwelle`](../observations/BEO-ALL/registerzeile-ohne-ausgang-nach-schwelle/observation.md)
+[`BEO-ALL/registerzeile-ohne-ausgang-nach-schwelle`](../../observations/BEO-ALL/registerzeile-ohne-ausgang-nach-schwelle/observation.md)
 ist benachbart offen (Trigger mit Verfallsdatum ohne Ausgang — derselbe
 Gegenstandsbereich Register/Steering-Loop); keine weitere berührte
 Sub-Area mit Treffern; der Ausgang bleibt ausgeschildert.
@@ -175,4 +175,4 @@ Sub-Area mit Treffern; der Ausgang bleibt ausgeschildert.
 - **Phase-Reife:** Phase 3.
 - **Evidenz-/Diskrepanz-Risiko:** Niedrig — Doku-Adoption mit Beleg-Vollzug.
 - **Reconciliation-Aufwand:** Keiner — Graduation-Trigger bleibt
-  [`BEO-ALL/registerzeile-ohne-ausgang-nach-schwelle`](../observations/BEO-ALL/registerzeile-ohne-ausgang-nach-schwelle/observation.md).
+  [`BEO-ALL/registerzeile-ohne-ausgang-nach-schwelle`](../../observations/BEO-ALL/registerzeile-ohne-ausgang-nach-schwelle/observation.md).

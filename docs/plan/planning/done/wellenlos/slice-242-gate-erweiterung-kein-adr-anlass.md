@@ -10,12 +10,12 @@ Ergänzungs-Fall ist kein repo-weites Mehr (Baseline-Regelwerk
 `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht).
 
 **Bezug:** die Hebung
-[`MR-073`](../../../../harness/conventions.md#mr-073--baseline-pin-hebung-auf-v6130-fünfzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)
+[`MR-073`](../../../../../harness/conventions.md#mr-073--baseline-pin-hebung-auf-v6130-fünfzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)
 liefert das Delta (Baseline-Regelwerk `modul-04-adrs.md` v6.13.0:
 „Eine Gate-Erweiterung ist nicht automatisch ein ADR-Anlass"),
-[`MR-051`](../../../../harness/conventions.md#mr-051),
-[`MR-054`](../../../../harness/conventions.md#mr-054),
-[`MR-053`](../../../../harness/conventions.md#mr-053).
+[`MR-051`](../../../../../harness/conventions.md#mr-051),
+[`MR-054`](../../../../../harness/conventions.md#mr-054),
+[`MR-053`](../../../../../harness/conventions.md#mr-053).
 Keine `DC-*` — keine Produkt-Anforderung berührt.
 
 **Berührte Spec-Stellen:** — *(AGENTS.md ist kein Spec-Stratum;
@@ -73,7 +73,7 @@ Im Zweifel: ADR.
 **Start** (`open` → `in-progress`): direkt beansprucht — die
 Auftraggeber-Freigabe „ja bitte" zu den vier Deltas der v6.13.0-Hebung
 (2026-09-29) ist die Beanspruchung selbst; der Nachtlauf-Stand wird bei
-der Beanspruchung gelesen ([`MR-053`](../../../../harness/conventions.md#mr-053)).
+der Beanspruchung gelesen ([`MR-053`](../../../../../harness/conventions.md#mr-053)).
 
 **Rückführungen — vorab benennen, nicht erst im Nachhinein begründen:**
 
@@ -103,7 +103,7 @@ wellenlos hier geprüft).
   2: alle fünf Tragflächen aus `modul-04` v6.13.0 übernommen, keine Drift);
   die bewusste Abgrenzung „PR-blockierender Satz" unzitiert gelassen
   (R1-Negativbefund 3). Nachtlauf-Stand bei der Beanspruchung
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): beide Nachtläufe
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): beide Nachtläufe
   grün (upstream-drift 2026-09-29, image-scan 2026-09-28).
 - **Was ging anders als geplant:** Der §3.6-Text landete zuerst im
   slice-241-Commit (Kreuz-Zuordnung, Ursache: verunreinigter Index nach
@@ -111,9 +111,9 @@ wellenlos hier geprüft).
   Review-R1-F-1 (MEDIUM, Push-Blocker in der Historie) fang es. Zweite
   Instanz der Klasse commit-boundary-cross-slice in dieser Session.
 - **Steering-Loop-Eintrag:** verwandt mit
-  [`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+  [`BEO-ALL/pin-bump-mirrors-ungated`](../../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
   (record-claim-vs-diff); kein formgültiger Ausgang, kein neuer Eintrag.
-- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag.
+- **Beobachtungs-Register (`../../observations/`):** kein neuer Eintrag.
 - **Folge-Slices:** keine — der Urteilsbegriff „unabhängig lauffähig"
   (Plan-Risiko 2) bleibt definiert-nach-Baseline; sein Bestands-Beleg
   folgt bei der nächsten tatsächlichen Gate-Aufnahme (dort ist der
@@ -142,7 +142,7 @@ Harness-Werkzeug selbst (`*`, Kürzel `ALL`); bereits deklariert.
 
 **Vorgelagert — offene Beobachtungen sichten:** keine berührte Sub-Area
 mit Treffern in offenen Beobachtungen; der stehende
-[`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+[`BEO-ALL/pin-bump-mirrors-ungated`](../../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
 trägt Pin-Hebungen, nicht ADR-Anlass-Fragen.
 
 **Vorgelagert — Nachtlauf-Stand lesen** (bei der Beanspruchung):
@@ -161,4 +161,4 @@ trägt Pin-Hebungen, nicht ADR-Anlass-Fragen.
 - **Evidenz-/Diskrepanz-Risiko:** Niedrig — eine Ergänzung, eine
   Gegenprobe.
 - **Reconciliation-Aufwand:** Keiner — Graduation-Trigger bleibt
-  [`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md).
+  [`BEO-ALL/pin-bump-mirrors-ungated`](../../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md).
