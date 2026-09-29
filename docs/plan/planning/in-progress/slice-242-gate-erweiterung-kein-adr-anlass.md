@@ -54,12 +54,12 @@ Im Zweifel: ADR.
 
 ## 2. Definition of Done
 
-- [ ] `AGENTS.md` §3.6 trägt die Klarstellung: Aufnahme eines existierenden
+- [x] `AGENTS.md` §3.6 trägt die Klarstellung: Aufnahme eines existierenden
       Wächters = Verweis auf die tragende ADR genügt; neue Fehlerklasse /
       neuer Scope / Widerspruch = eigene ADR; „Im Zweifel: ADR".
-- [ ] Der Senkungs-Satz (§3.6, erste Aussage) ist byte-identisch geblieben
+- [x] Der Senkungs-Satz (§3.6, erste Aussage) ist byte-identisch geblieben
       — Gegenprobe per `git diff` am Commit.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 
 ## 3. Plan (vor Code)
 
@@ -97,15 +97,32 @@ wellenlos hier geprüft).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Die Ergänzung additiv gehalten — der
+  Senkungs-Satz ist byte-identisch (Gegenprobe `git diff`, R1-Negativbefund
+  1 bestätigt das unabhängig); die Delta-Treue ist voll (R1-Negativbefund
+  2: alle fünf Tragflächen aus `modul-04` v6.13.0 übernommen, keine Drift);
+  die bewusste Abgrenzung „PR-blockierender Satz" unzitiert gelassen
+  (R1-Negativbefund 3).
+- **Was ging anders als geplant:** Der §3.6-Text landete zuerst im
+  slice-241-Commit (Kreuz-Zuordnung, Ursache: verunreinigter Index nach
+  einem am Hook gescheiterten Commit-Versuch) — Re-Split vor Push,
+  Review-R1-F-1 (MEDIUM, Push-Blocker in der Historie) fang es. Zweite
+  Instanz der Klasse commit-boundary-cross-slice in dieser Session.
+- **Steering-Loop-Eintrag:** verwandt mit
+  [`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+  (record-claim-vs-diff); kein formgültiger Ausgang, kein neuer Eintrag.
+- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag.
+- **Folge-Slices:** keine — der Urteilsbegriff „unabhängig lauffähig"
+  (Plan-Risiko 2) bleibt definiert-nach-Baseline; sein Bestands-Beleg
+  folgt bei der nächsten tatsächlichen Gate-Aufnahme (dort ist der
+  Ausgang zu notieren).
+- **Risiken aus §6:** R1 (versehentliche Lockerung des Senkungs-Verbots) —
+  Gegenprobe bestanden, byte-identisch; R2 („unabhängig lauffähig"
+  unbelegt) — bewusst offener Punkt, Ausgang bei der nächsten Aufnahme
+  notieren.
+- **Drei Paarungen:** Lerneintrag „commit-boundary-cross-slice, zweite
+  Instanz" — Folge-Slice: keiner formuliert — Register: stehender Eintrag,
+  unverändert offen.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
