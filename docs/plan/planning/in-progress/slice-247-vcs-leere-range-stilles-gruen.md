@@ -67,21 +67,21 @@ Plan **geändert**, nicht nur ergänzt.
 
 ## 2. Definition of Done
 
-- [ ] Neue `DC-*`-Anforderung im Lastenheft (nur dort; Historie-Zeile und
+- [x] Neue `DC-*`-Anforderung im Lastenheft (nur dort; Historie-Zeile und
       Versions-Bump per [`MR-032`](../../../../harness/conventions.md#mr-032)),
       die den Leerfall als laut zu meldenden Zustand festlegt; die
       Spezifikation trägt die Grund-Code-Form des Leerfalls.
-- [ ] Der Fix ist umgesetzt: leere, auflösbare Range im vcs-Modul ⇒
+- [x] Der Fix ist umgesetzt: leere, auflösbare Range im vcs-Modul ⇒
       Exit ≠ 0 mit benannter Meldung; der Test, der das fordert, lief ohne
       den Fix aus dem richtigen Grund rot (Bewusstes Brechen, Modul 11 —
       Gegenprobe ist derselbe shallow-Clone-Aufbau wie in slice-245).
-- [ ] Regression belegt: das commits-Modul und der
+- [x] Regression belegt: das commits-Modul und der
       history-range-guard behalten ihr laut-Verhalten (Stände von
       slice-245, Proben B und D).
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
       Rollenwechsel nach Schritt 8, kein Self-Review.
-- [ ] Closure-Notiz mit Lerneintrag; jedes Risiko aus §6 mit Ausgang.
+- [x] Closure-Notiz mit Lerneintrag; jedes Risiko aus §6 mit Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -121,23 +121,47 @@ wellenlos hier geprüft.
 - Konsumenten, die heute eine leere Range fahren (shallow checkout ohne
   fetch-depth), bekommen künftig laut statt grün — das ist der Zweck
   (fail-closed), dennoch: die eigenen Workflows sind auf fetch-depth zu
-  prüfen, bevor der Fix committet. — **Ausgang:** *(offen)*
+  prüfen, bevor der Fix committet. — **Ausgang:** entfallen — die eigenen
+  Workflows fetchen `fetch-depth: 0` (ci.yml:44), fremde Konsumenten lösen
+  ihren Klon-Boden selbst.
 - Die neue `DC-*` ändert zugesagte Semantik (Grund-Code der
   Range-Behandlung) — die Spiegel (Spezifikation, Benutzerhandbuch-Beispiele,
   `--print-mk`-Form) werden vor dem Editieren aufgelistet
-  ([`MR-025`](../../../../harness/conventions.md#mr-025)). — **Ausgang:** *(offen)*
+  ([`MR-025`](../../../../harness/conventions.md#mr-025)). — **Ausgang:**
+  entfallen — Spezifikation und Nachbarn gezogen (R1-M-1: §DC-FA-COMMITS-
+  001.a-Korrektur nachgezogen); Handbuch-Fehlerbilder sind Release-Prep
+  (Regel 17, R1-I-1 angenommen).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** die Kette Probe (slice-245) → gemessene Lücke →
+  [`DC-FA-VCS-002`](../../../../spec/lastenheft.md#dc-fa-vcs-002--leere-commit-range-im-modul-vcs-ist-laut-zu-melden-opt-in) → Fix → Bewusstes Brechen — jede Stufe mit eigenem Beleg;
+  der Verifier wiederholte den Rot-Lauf selbst (Pre-Fix-Einspielung,
+  einziger Suite-Fehler an der fail-closed-Assertion).
+- **Was ging anders als geplant:** der Gleichheits-Check feuerte im Fixture
+  von TestAllPathsUnlesbarerUnterbaum zuerst (Basis = Spitze war dessen
+  Fixture-Form) — der Test trägt jetzt zwei Commits, die Regression läuft
+  gegen head.md. ST1005 verlangt die bindestrich-gefügte Meldungs-Form der
+  Hausnachbarn (`Range-Leerfall`, nicht Satzanfang). R1-M-1 fand den
+  Semantik-Spiegel nur am Neuzugang, nicht am Nachbarn
+  ([§DC-FA-COMMITS-001](../../../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in).a — nachgezogen).
+- **Steering-Loop-Eintrag:** keine Verkörperung — die stille-Grün-Klasse
+  ([`BEO-ALL/stilles-gruen-ueber-leerer-range`](../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/state.md))
+  steht bei 1× und ist im vcs-Fall durch diesen Slice behoben; der Eintrag
+  bleibt offen (weitere Range-Module).
+- **Beobachtungs-Register (`../observations/`):** keine Beobachtung
+  angefallen; der Stand von `BEO-ALL/stilles-gruen-ueber-leerer-range`
+  trägt die Behebung.
+- **Folge-Slices:** keine.
+- **Risiken aus §6:** Risiko 1 (shallow-Abbruch der Konsumenten): entfallen
+  — die eigenen Workflows fetchen `fetch-depth: 0`, fremde Konsumenten
+  lösen ihren Klon-Boden selbst. Risiko 2 ([`MR-025`](../../../../harness/conventions.md#mr-025)-Spiegel): entfallen —
+  Spezifikation und Nachbarn gezogen; Handbuch-Fehlerbilder sind
+  Release-Prep (Regel 17, R1-I-1 angenommen). Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+  beide Läufe grün am 2026-09-29 — nichts zu lesen.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld, nichts verkörpert,
+  die Paarung trifft nicht zu; (b) Folge-Slice — keine; (c) Register —
+  keine neuen Einträge, keine Zitate.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
