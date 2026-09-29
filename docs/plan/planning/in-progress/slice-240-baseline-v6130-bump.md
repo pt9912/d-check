@@ -57,14 +57,17 @@ Klassen und Zitat-Delta gemessen am echten Vorzustand (nach
 
 ## 2. Definition of Done
 
-- [ ] Vendierter Baum steht auf `v6.13.0` (`SHA256SUMS` generiert und
+- [x] Vendierter Baum steht auf `v6.13.0` (`SHA256SUMS` generiert und
       verifiziert), der `v6.9.0`-Baum ist entfernt; §Baseline-Pin (Stand-URL
       + Datum) nachgezogen.
-- [ ] Alle deklarierten lebenden Referenz-Klassen nennen `v6.13.0`: Pfad-Verweise
+- [x] Alle deklarierten lebenden Referenz-Klassen nennen `v6.13.0`: Pfad-Verweise
       (`links`/`codepaths`-deckungsgleich), Release-/Tree-URLs, bare
       Versionsnennungen in lebenden Dokumenten; die 7 Alias-Symlinks unter
-      `.claude/rules/` lösen gegen `v6.13.0` auf.
-- [ ] `make gates` grün; `make baseline-freshness` meldet den Pin aktuell
+      `.claude/rules/` lösen gegen `v6.13.0` auf. *(gemessen 8 statt 7 —
+      Abweichung in
+      [`MR-073`](../../../../harness/conventions.md#mr-073--baseline-pin-hebung-auf-v6130-fünfzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)
+      dokumentiert)*
+- [x] `make gates` grün; `make baseline-freshness` meldet den Pin aktuell
       (Exit 0).
 
 ## 3. Plan (vor Code)
@@ -122,15 +125,45 @@ hier geprüft).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Messen vor Schreiben — Delta (28 von 55 Dateien
+  mit Inhalt) und Spiegel-Klassen (75 Dateien / 161 Vorkommen) am echten
+  Vorzustand, Frozen-Klassen per Eigenschaft statt per Verzeichnis
+  ([`MR-070`](../../../../harness/conventions.md#mr-070)); die Commit-Zerlegung
+  §3.3 (reiner Move, ±0 Zeilen) und der
+  [`MR-069`](../../../../harness/conventions.md#mr-069--das-ignore-refs-ventil-ist-eine-deklarierte-gate-senkung-und-es-wächst-mit-jedem-bump)-Ventil-Nachzug
+  (4 Einträge, messbegründet) hielten, `make gates` nach Implementierung und
+  nach Review-Korrektur grün.
+- **Was ging anders als geplant:** Drei Instanzen derselben Klasse
+  record-claim-vs-diff am MR-Eintrag: der Vorgänger-Swap traf
+  [`MR-072`](../../../../harness/conventions.md#mr-072--baseline-pin-hebung-auf-v690-vierzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)s
+  Index-Zeile und -Datei (Plan-Risiko 4, revertet); die erste
+  [`MR-073`](../../../../harness/conventions.md#mr-073--baseline-pin-hebung-auf-v6130-fünfzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)-Fassung
+  behauptete „kein cite-Neu-Ankern" (Review-R1-F-1); und die Korrektur
+  15/6/9 war selbst nicht diff-genau (Verifier V-1: 14/7/7, die
+  [`MR-043`](../../../../harness/conventions.md#mr-043--der-werkzeug-einstieg-importiert-agentsmd-statt-auf-ihn-zu-verweisen)-Spanne
+  fehlte). Jede Instanz klein, alle drei erst durch Zählen gegen den Diff
+  gefangen.
+- **Steering-Loop-Eintrag:** [`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+  — das Signal (MR-Eintrag behauptet Abwesenheit, der Diff zählt Vorkommen)
+  trat in diesem Slice zweimal auf (R1-F-1, V-1) nach dem Vorgänger-Fund
+  slice-224; der Ausgang bleibt „kein formgültiger", der Eintrag bleibt
+  stehen.
+- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag — der
+  stehende BEO-ALL/pin-bump-mirrors-ungated trägt den Vorgang.
+- **Folge-Slices:** vier inhaltliche Deltas der Hebung sind ohne Urteil
+  geblieben und warten je auf einen eigenen Konventions-Slice: Trigger-Audit
+  der Welle (`modul-06`), „Gate-Erweiterung ist kein ADR-Anlass" (`modul-04`),
+  AGENTS.template-Schnitt-Prinzip (Kurzzeile/Volltext-Trennung), ids/matrix-
+  Linkpflicht für ADR-Kennungen.
+- **Risiken aus §6:** R1 (Ersetzung trifft MR-Vorgänger-Zeile/-Datei) —
+  eingetreten, revertet; R2 (cite-Verankerung verschiebt sich) — 7 statt 0
+  neu geankert, Wortlaut identisch; R3 (frozen target-missing) — 4 Markdown-
+  Links, Ventil gewachsen; R4 (Zitat-Delta) — nicht eingetreten, Zitatzeile
+  byte-identisch.
+- **Drei Paarungen:** Lerneintrag „record-claim-vs-diff am MR-Eintrag, zweite
+  Instanz am selben Vorgang" — Folge-Slice: keiner formuliert, das Signal
+  trägt der stehende BEO-Eintrag — Register: BEO-ALL/
+  pin-bump-mirrors-ungated, unverändert offen.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
