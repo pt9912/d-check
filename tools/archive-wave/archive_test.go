@@ -276,3 +276,53 @@ func TestFixture_EndToEnd(t *testing.T) {
 		t.Fatalf("got %q, want %q", string(b), want)
 	}
 }
+
+// TestFixture_UnterordnerStubsBleiben belegt die Lifecycle-Unterordner-Form
+// dieses Repos: Slices in done/<welle-id>/ liegen bereits an newAbs — der
+// Stub muss sie an Ort und Stelle ueberschreiben und darf sie nicht per
+// Remove wieder loeschen (gemessen an welle-91).
+func TestFixture_UnterordnerStubsBleiben(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-91-results.md"),
+		"# Ergebnis welle-91\n")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-91-adoption-x.md"),
+		"# Welle welle-91: Adoption X\n\nInhalt.\n")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-91/slice-244-a.md"),
+		"# Slice slice-244: A\n\n**Welle:** welle-91.\n")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-91/slice-245-b.md"),
+		"# Slice slice-245: B\n\n**Welle:** welle-91.\n")
+	writeFile(t, filepath.Join(root, "docs/reviews/2026-09-29-slice-244-a-r1.md"),
+		"# Review slice-244\n")
+
+	wellePlan, err := FindWellePlan(root, "welle-91")
+	if err != nil {
+		t.Fatal(err)
+	}
+	slices, err := CollectSlices(root, "welle-91")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(slices) != 2 {
+		t.Fatalf("erwartet 2 Slices aus dem Unterordner, got %d: %v", len(slices), slices)
+	}
+	p := Plan{WelleID: "welle-91", WellePlan: wellePlan, Slices: slices}
+	if _, err := Apply(root, p); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, name := range []string{"slice-244-a.md", "slice-245-b.md"} {
+		stubB, err := os.ReadFile(filepath.Join(root, "docs/plan/planning/done/welle-91", name))
+		if err != nil {
+			t.Fatalf("Stub %s fehlt nach dem Archivieren: %v", name, err)
+		}
+		if !strings.Contains(string(stubB), "archiv.zip") {
+			t.Fatalf("Stub %s traegt keinen Archiv-Zeiger: %q", name, string(stubB))
+		}
+		if strings.Contains(string(stubB), "# Slice slice-244: A") {
+			t.Fatalf("Stub %s traegt noch den Volltext: %q", name, string(stubB))
+		}
+	}
+	if _, err := os.Stat(filepath.Join(root, "docs/plan/planning/done/welle-91/archiv.zip")); err != nil {
+		t.Fatalf("archiv.zip fehlt: %v", err)
+	}
+}

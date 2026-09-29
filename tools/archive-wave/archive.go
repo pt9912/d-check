@@ -104,6 +104,13 @@ func Apply(root string, p Plan) ([]Move, error) {
 		if err := os.WriteFile(newAbs, []byte(stub), 0o644); err != nil {
 			return nil, fmt.Errorf("%s schreiben: %w", newAbs, err)
 		}
+		// Ein Slice aus einem done-Unterordner (Lifecycle-Form dieses Repos)
+		// liegt bereits an newAbs: der Stub ueberschreibt ihn an Ort und
+		// Stelle, ein Remove wuerde den Stub wieder loeschen. Ein Move-Eintrag
+		// entfaellt — Old == New, es gibt nichts nachzuziehen.
+		if newAbs == s {
+			continue
+		}
 		if err := os.Remove(s); err != nil {
 			return nil, fmt.Errorf("%s loeschen: %w", s, err)
 		}
