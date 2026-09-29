@@ -118,8 +118,11 @@ wellenlos hier geprüft).
   ohne Hochschalt-Trigger); ADR — kein Re-Evaluierungs-Trigger im
   Einführungshorizont ausgelöst (Retro-Scan über den Bestand laut
   Plan-Abgrenzung ausgenommen); Hard Rule — die ausgeschilderten Trigger
-  in `AGENTS.md` §3 stehen auf permanent; §3.1, §3.5, §3.7 tragen keine
-  Trigger-Zeile (Alt-Bestand, als Beobachtung vermerkt).
+  in `AGENTS.md` §3 stehen auf permanent; §3.1, §3.5, §3.7, §3.9 tragen
+  keine Trigger-Zeile (Alt-Bestand, als Beobachtung vermerkt;
+  V-1-Korrektur des Verifiers). Nachtlauf-Stand bei der Beanspruchung
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): beide Nachtläufe
+  grün (upstream-drift 2026-09-29, image-scan 2026-09-28).
 - **Steering-Loop-Eintrag:** die Klasse commit-boundary-cross-slice
   (Slice-A-Commit trägt Slice-B-Gegenstand) tritt hier erstmals als
   Caught-by-Review auf; verwandt mit
