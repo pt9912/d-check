@@ -119,10 +119,16 @@ wellenlos hier geprüft).
   - **bootstrap-aware Gate — n.a.** d-checks Schwellen sind kalibrierte
     Konstanten ohne Hochschalt-Trigger (V-Beleg slice-241); nichts zu
     mechanisieren.
-  - **ADR — Prosa-Verbleib.** 97 Re-Evaluierungs-Trigger, jeder ein
-    einzigartiges Konditional („Wenn die Marke wiederholt am falschen Ort
-    trifft …"); „eingetreten?" ist Urteil. Die Linkpflicht (ids) deckt die
-    Erreichbarkeit, nicht die Bedeutungsfälle.
+  - **ADR — Prosa-Verbleib.** 76 von 97 ADR-Dateien tragen eine
+    `## Re-Evaluierungs-Trigger`-Sektion (gemessen: `grep -l` über
+    `docs/plan/adr/`); die Konditionale sind je einzigartig (Stichprobe
+    [ADR-0048](../../../../docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md),
+    [ADR-0066](../../../../docs/plan/adr/0066-cve-scan-gegen-das-publizierte-image.md),
+    [ADR-0072](../../../../docs/plan/adr/0072-workflows-modul.md) —
+    R1-Report); „eingetreten?“ ist Urteil.
+    Die Linkpflicht (ids) deckt die Erreichbarkeit, nicht die
+    Bedeutungsfälle. *(R1-F-1: die erste Fassung nannte „97 Konditionale“
+    — das war die ADR-Dateizahl, keine Trigger-Zählung.)*
   - **Hard Rule — Prosa-Verbleib.** Existenz einer Trigger-Zeile wäre
     structure-Form prüfbar — kriminalisiert aber den grandfathered
     Alt-Bestand (§3.1/§3.5/§3.7/§3.9) und beantwortet doch nicht
