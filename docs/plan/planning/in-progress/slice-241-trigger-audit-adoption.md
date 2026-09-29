@@ -53,15 +53,15 @@ und bei der Closure dieses eigenen Slices erstmals vollzogen.
 
 ## 2. Definition of Done
 
-- [ ] Der Trigger-Audit ist als Closure-Schritt dokumentiert — an dem Ort,
+- [x] Der Trigger-Audit ist als Closure-Schritt dokumentiert — an dem Ort,
       an dem die wellenlosen Closure-Schritte beschrieben sind
       (Entscheidung README-Abschnitt vs. Reviewer-Skill im Vollzug, mit
       Begründung) — und benennt die vier Klassen (Carveout ·
       bootstrap-aware Gate · ADR · Hard Rule) mit je Trigger und Wächter.
-- [ ] Der erste Audit-Vollzug ist belegt: an der eigenen Closure dieses
+- [x] Der erste Audit-Vollzug ist belegt: an der eigenen Closure dieses
       Slices sind die vier Klassen je geprüft (Beleg in der
       Closure-Notiz).
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 
 ## 3. Plan (vor Code)
 
@@ -103,15 +103,40 @@ wellenlos hier geprüft).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Messen vor Schreiben; die Ort-Entscheidung
+  (README statt Reviewer-Skill — der Ablauf lebt dort, wo die wellenlosen
+  Closure-Lese-Schritte beschrieben sind, Doppel-Dokumentation vermieden);
+  der Audit-Vollzug an der eigenen Closure (Beleg unten).
+- **Was ging anders als geplant:** Der Implementierungs-Commit bündelte
+  zuerst den Gegenstand von slice-242 (AGENTS.md §3.6) — Ursache: ein
+  `git add` aus einem am pre-commit-Hook gescheiterten Commit-Versuch
+  blieb im Index, und der Folgeschritt stieg auf den verunreinigten Index
+  ein. Re-Split vor Push (3e6e3b69 / 66c64b73), Review-R1-F-1 (HIGH)
+  fang es. **Audit-Vollzug (DoD 2), vier Klassen:** Carveout — kein
+  offener (`carveouts/done/` CO-001, CO-002 aufgelöst); bootstrap-aware
+  Gate — n.a. begründet (d-checks Schwellen sind kalibrierte Konstanten
+  ohne Hochschalt-Trigger); ADR — kein Re-Evaluierungs-Trigger im
+  Einführungshorizont ausgelöst (Retro-Scan über den Bestand laut
+  Plan-Abgrenzung ausgenommen); Hard Rule — die ausgeschilderten Trigger
+  in `AGENTS.md` §3 stehen auf permanent; §3.1, §3.5, §3.7 tragen keine
+  Trigger-Zeile (Alt-Bestand, als Beobachtung vermerkt).
+- **Steering-Loop-Eintrag:** die Klasse commit-boundary-cross-slice
+  (Slice-A-Commit trägt Slice-B-Gegenstand) tritt hier erstmals als
+  Caught-by-Review auf; verwandt mit
+  [`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+  (record-claim-vs-diff) — kein formgültiger Ausgang, kein neuer Eintrag.
+- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag — der
+  stehende BEO-ALL/pin-bump-mirrors-ungated trägt die verwandte Klasse.
+- **Folge-Slices:** keine — die Adoption ist abgeschlossen; die
+  Mechanisierungs-Frage (Audit als Sensor) ist bewusst offen gelassen
+  („verkörpert heißt nicht zwangsläufig automatisiert").
+- **Risiken aus §6:** R1 (Doppel-Dokumentation README/Skill) — vermieden,
+  README gewinnt; R2 (Prosa ohne Vollzugs-Beleg) — DoD 2 deckt; R3
+  (Terminologie-Übertragung bootstrap-aware Gate) — als n.a. begründet
+  (siehe Audit-Vollzug oben).
+- **Drei Paarungen:** Lerneintrag „commit-boundary-cross-slice, erster
+  Caught-by-Review-Fall" — Folge-Slice: keiner formuliert — Register:
+  stehender Eintrag, unverändert offen.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
