@@ -17,6 +17,16 @@ Evidence-Datei. **Wer liest:** die Welle-Closure (Lese-Schritt bei 3×,
 ohne Wellen-Betrieb löst die Slice-Closure selbst aus) und die
 Slice-Planung (Sichtungs-Schritt darunter, im Abschnitt der **vorgelagerten Prüfungen** jedes Slice-Plans — Baseline-Form `v6.13.0` §8, Haus-Form des eingefrorenen Bestands §7).
 
+**Trigger-Audit bei der Closure** (seit slice-241; Adoption des
+Baseline-Regelwerks `modul-06-roadmap.md` v6.13.0 §Closure, Schritt 2): jede
+Closure prüft die vier Trigger-Klassen — **Carveout** (Auflösungs-Trigger →
+aufgelöst · verlängert · permanent), **bootstrap-aware Gate**
+(Hochschalt-Trigger → Stufe hochschalten oder Carveout), **ADR**
+(Re-Evaluierungs-Trigger → bestätigen oder Folge-ADR), **Hard Rule**
+(Auflösungs-Trigger → Zeile aus `AGENTS.md` entfernen) — und belegt den
+Vollzug in der Closure-Notiz. „Verkörpert heißt nicht zwangsläufig
+automatisiert": der Audit ist Prosa-Schritt, kein Sensor.
+
 **Gestrichen heißt nicht gelöscht** — das Verzeichnis bleibt liegen,
 `state.md` trägt `gestrichen` mit Begründung; wer still löscht, macht eine
 Beobachtung ununterscheidbar von einer, die es nie gab.
