@@ -43,7 +43,7 @@ und geschätzter Aufwand (S/M/L, kein Termin).
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| — keine — | | | |
+| [welle-91](../welle-91-adoption-ai-harness-init.md) | Auftraggeber-Anfrage zur Adoption aus ai-harness-init v6.13.0; Snapshot liegt vor (2026-09-29) | slice-244 (Rollen/Commands) · slice-245 (Werkzeuge) · slice-246 (Config-Positionen) | M |
 
 ## Meilensteine
 
