@@ -71,12 +71,13 @@
 
   **`d-check:cite`-Neu-Ankern, kein Zitat-Delta** — die Abwesenheits-Behauptung
   der ersten Fassung dieses Eintrags war falsch (Review-R1-F-1, gemessen am
-  Diff statt behauptet): **15** Direktiven tragen der Hebung Rechnung, **6**
-  davon neu geankert — reine Zeilenverschiebung bei unverändertem Wortlaut
-  (`MR-005` `grundlagen-durchsetzungsschicht.md` 50→66; `MR-031`
-  `modul-09-implementierung.md` 196→203; `MR-049`
+  Diff statt behauptet), und die erste Korrektur-Zahl (15/6/9) trug nicht
+  diff-genau (Verifier V-1): gemessen **14** Direktiven, **7** davon neu
+  geankert — reine Zeilenverschiebung bei unverändertem Wortlaut (`MR-043`
+  `grundlagen-durchsetzungsschicht.md` 100-102→116-118; `MR-005` ebenda
+  50→66; `MR-031` `modul-09-implementierung.md` 196→203; `MR-049`
   `modul-05-planning-harness.md` 170-171→180-181 und 160→170; die beiden
-  Spannen des slice-240-Plans 363-364→373-374 und 369→379) — und **9**
+  Spannen des slice-240-Plans 363-364→373-374 und 369→379) — und **7**
   tag-only (Spanne identisch, nur der Baum-Pfad wechselte). Kein Zitat-Delta
   ([`MR-039`](../conventions.md#mr-039)): die wörtlichen Zitate in lebenden
   Dokumenten (MR-056 zu `modul-05` §Lifecycle) sind im `v6.13.0`-Wortlaut
