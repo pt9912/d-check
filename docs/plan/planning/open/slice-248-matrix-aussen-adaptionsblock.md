@@ -34,9 +34,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 adoptiert — Klassen-Ordnung: `aussen` als **letzte** Klasse (First-Match),
 `adaptionsblock` davor — samt Regeln `spec-straten→aussen`/`sicht→aussen` und
 `spec-straten→adaptionsblock`/`sicht→adaptionsblock` — und der Bestand wird
-auf den neuen Stand gezogen: die in slice-246 gemessenen Befunde (~25 Links
-aus den Straten in AGENTS.md, Konventionsspeicher, Harness-README, Packaging,
-CRs, Carveouts, Register und Baseline-Zitate; 1 nacktes MR-Token) sind je
+auf den neuen Stand gezogen: die in slice-246 gemessenen Befunde (28 `aussen`-Links
+aus den Straten — 20 im Lastenheft, 7 in der Spezifikation, 1 in der Sicht,
+Ziele 14× Konventionsspeicher, 6× AGENTS.md, 2× Baseline-Zitat, je 1
+Harness-README, Packaging, Carveout, Register, 2× CR — dazu 1 nacktes
+MR-Token und 11 `matrix-inactive`-Funde der Status-Prüfung) sind je
 entschieden — beseitigt oder per ADR gesichert ausgenommen.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
@@ -51,8 +53,10 @@ entschieden — beseitigt oder per ADR gesichert ausgenommen.
 - **Status-Prüfungs-Weitung als stillschweigende Senkung**: die
   `aussen`-Klasse zieht jede Datei in `status: forbidden` — die nötigen
   Ausnahmen sind je ein §3.6-Fall (Senkung nur per ADR), nicht ein
-  exempt-paths-Freifeld. Der gemessene Fall: `docs/user/releasing.md`
-  (`matrix-inactive`, Superseded-Referenz).
+  exempt-paths-Freifeld. Gemessen: 11 `matrix-inactive`-Funde — ADR-Index ×7
+  (er führt superseded ADRs, das ist seine Aufgabe), CHANGELOG ×3,
+  `docs/user/releasing.md` ×1 (Superseded-Referenz). Die Schwester nimmt den
+  ADR-Index, `docs/reviews/**` und `done/welle-*.md` in status.exempt-paths —
 
 Was hier steht, ist die Grenze, an der ein wachsender Slice sich messen lässt:
 Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
@@ -80,7 +84,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 |---|---|---|
 | `.d-check.yml` | update | beide Klassen + Regeln (Ordnung: adaptionsblock vor aussen, aussen zuletzt) |
 | `spec/lastenheft.md`, `spec/spezifikation.md`, `spec/architecture.md` | update | Link-Nachzug: die gemessenen Verweise je entscheiden |
-| `docs/user/releasing.md` (Status-Fall) | update oder ADR | `matrix-inactive`-Fund je nach Fallentscheid |
+| Status-Fälle: `docs/plan/adr/README.md`, `CHANGELOG.md`, `docs/user/releasing.md` | update oder ADR | je `matrix-inactive`-Fund eine Fallentscheid (11 gemessen) |
 | Testdatei | update | die .d-check.yml-Beispiele im Spec-Testkorpus gegen die neuen Klassen prüfen |
 
 **Ansatz:** die Probe von slice-246 als Ausgang nehmen, die Klassen-Ordnung
@@ -97,7 +101,7 @@ gelesen ([`MR-053`](../../../../harness/conventions.md#mr-053)).
 **Rückführungen — vorab benennen:**
 
 - `in-progress` → `next` (zu groß): übersteigt der Bestands-Nachzug eine
-  Sitzung (die gemessenen 29 Befunde entfalten je Link eine
+  Sitzung (die gemessenen 40 Befunde entfalten je Link eine
   Fallentscheidung), wird der Zuschnitt auf eine Teilmenge (nur
   `adaptionsblock`, oder nur `aussen`) verengt und zurückgeführt.
 - `in-progress` → `open` (blockiert): keiner bekannt.
@@ -158,7 +162,6 @@ mit Treffern in offenen Beobachtungen.
   Referenz-Richtung; die Klassen sind am Schwester-Stand belegt.
 - **Phase-Reife:** Phase 3.
 - **Evidenz-/Diskrepanz-Risiko:** Niedrig — der Bestands-Umfang ist
-  gemessen (29 Befunde in slice-246, Probe mit Kandidaten-Konfiguration).
-- **Reconciliation-Aufwand:** Gering — die Fallentscheidungen sind je Link
-  klein, ihre Zahl ist die Größe des Slice (deshalb der Rückführungs-Trigger
-  in §4).
+  gemessen (40 Befunde in slice-246, Probe mit Kandidaten-Konfiguration).
+- **Reconciliation-Aufwand:** Mittel — die Fallentscheidungen sind je Link
+  klein; ihre Zahl (40 gemessen) trägt der Rückführungs-Trigger in §4.
