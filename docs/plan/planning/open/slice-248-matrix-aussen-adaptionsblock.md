@@ -7,7 +7,7 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
-**Bezug:** [`slice-246`](../in-progress/slice-246-dcheck-yml-positionen-evaluieren.md)
+**Bezug:** [`slice-246`](../done/welle-91/slice-246-dcheck-yml-positionen-evaluieren.md)
 (dessen Probe: 29 Befunde gemessen, Kandidaten-Konfiguration nach dem
 Snapshot `/tmp/aih-v6.13.0`),
 [`MR-006`](../../../../harness/conventions.md#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs)

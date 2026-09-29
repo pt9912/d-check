@@ -7,9 +7,9 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle as State Machine.
 
 **Welle:** welle-91.
 
-**Bezug:** [`welle-91`](../welle-91-adoption-ai-harness-init.md),
-[`MR-073`](../../../../harness/conventions.md#mr-073),
-[`MR-034`](../../../../harness/conventions.md#mr-034--die-referenzmatrix-bewacht-auch-die-kante-adr--welle)
+**Bezug:** [`welle-91`](../../welle-91-adoption-ai-harness-init.md),
+[`MR-073`](../../../../../harness/conventions.md#mr-073),
+[`MR-034`](../../../../../harness/conventions.md#mr-034--die-referenzmatrix-bewacht-auch-die-kante-adr--welle)
 (Verwandt: die welle-Kante). Keine `DC-*` — falls das
 exclude-sections-Scoping einen Produkt-Umfang ergibt, trägt der
 **Folge-Slice** das Anforderungs-Delta.
@@ -73,7 +73,7 @@ bewertet — adoptiert (Config-Update) oder abgelehnt (Begründung):
 **Start** (`open` → `in-progress`): direkt beansprucht — die
 Welle-Eröffnung (welle-91, Auftraggeber 2026-09-29) ist die Beanspruchung;
 der Nachtlauf-Stand wird bei der Beanspruchung gelesen
-([`MR-053`](../../../../harness/conventions.md#mr-053)).
+([`MR-053`](../../../../../harness/conventions.md#mr-053)).
 
 **Rückführungen:** `in-progress` → `next` (zu groß): ergibt das
 exclude-sections-Scoping einen Produkt-Umfang, wird es geschnitten und
@@ -105,9 +105,9 @@ wellenlos hier geprüft).
   dazu 1 nacktes MR-Token) und 11 `matrix-inactive` (ADR-Index ×7, CHANGELOG
   ×3, releasing ×1). Die fünf Entscheidungen:
   (1) **welle-Klasse** — bereits Bestand in schärferer Form
-  ([`MR-034`](../../../../harness/conventions.md#mr-034--die-referenzmatrix-bewacht-auch-die-kante-adr--welle),
+  ([`MR-034`](../../../../../harness/conventions.md#mr-034--die-referenzmatrix-bewacht-auch-die-kante-adr--welle),
   Token `welle-\d{2,}`, beide Regeln); (2) **aussen** — Grundsatz bejaht,
-  Bestands-Nachzug trägt [slice-248](../open/slice-248-matrix-aussen-adaptionsblock.md);
+  Bestands-Nachzug trägt [slice-248](../../open/slice-248-matrix-aussen-adaptionsblock.md);
   (3) **adaptionsblock** — dieselbe Lage, im selben Folge-Slice; (4)
   **segment-tolerante ids** — abgelehnt, keine segmentierte ADR-Form im
   Bestand (gemessen: null Treffer), die Weite wäre unbelegte Vorsorge;
@@ -122,7 +122,7 @@ wellenlos hier geprüft).
 - **Was ging anders als geplant:** Position 1 war bereits Bestand — der Plan
   nahm an, die welle-Klasse „kehrt mit welle-91 zurück"; die Kante
   `adr→welle` ist seit
-  [`MR-034`](../../../../harness/conventions.md#mr-034--die-referenzmatrix-bewacht-auch-die-kante-adr--welle)
+  [`MR-034`](../../../../../harness/conventions.md#mr-034--die-referenzmatrix-bewacht-auch-die-kante-adr--welle)
   bewacht. Die Probe-Ordnung hatte `aussen`
   vor `adaptionsblock` (First-Match) — die Befund-Labels sind darum teilweise
   vertauscht, die Zählung ist gültig; die Ordnungskorrektur trägt slice-248.
@@ -132,15 +132,15 @@ wellenlos hier geprüft).
 - **Steering-Loop-Eintrag:** keine Verkörperung — keine der Klassen erreichte
   die Schwelle; die First-Match-Lektion (Klassen-Ordnung) ist im Folge-Slice
   verankert, nicht als Regel.
-- **Beobachtungs-Register (`../observations/`):** keine Beobachtung angefallen.
-- **Folge-Slices:** [slice-248](../open/slice-248-matrix-aussen-adaptionsblock.md)
+- **Beobachtungs-Register (`../../observations/`):** keine Beobachtung angefallen.
+- **Folge-Slices:** [slice-248](../../open/slice-248-matrix-aussen-adaptionsblock.md)
   (matrix-Klassen `aussen` + `adaptionsblock` adoptieren — samt
   Bestands-Nachzug) — ist eine Datei in `open/`.
 - **Risiken aus §6:** Risiko 1 (Adoptierte Positionen färben den Bestand
   neu): eingetreten — gemessen (40 Befunde), getragen von slice-248. Risiko 2
   (welle-Klasse ohne Wellen-Bestand ist leerer Fang): entfallen — die Klasse
   ist bereits Bestand, der Fall existiert nicht. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): beide Läufe grün am
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): beide Läufe grün am
   2026-09-29 (upstream-drift 06:29 UTC, image-scan 09:52 UTC) — nichts zu
   lesen.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld, nichts verkörpert,
