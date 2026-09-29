@@ -59,8 +59,8 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 Kein Register-Eintrag erreicht in dieser Welle die 3×-Schwelle — es gibt
 keine Verkörperung. Gezählt, nicht verkörpert: die stille-Grün-Klasse
 (`BEO-ALL/stilles-gruen-ueber-leerer-range`, neu angelegt, 1×) und die
-Kommentar-Klasse (`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-
-klassen`, auf 2× gestiegen). Beide tragen ihren Ausgang in den Folge-Slices
+Kommentar-Klasse (`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`,
+auf 2× gestiegen). Beide tragen ihren Ausgang in den Folge-Slices
 bzw. der individuellen Behebung, nicht in einer Regel.
 
 ## Beobachtungs-Register (Zeiger)
