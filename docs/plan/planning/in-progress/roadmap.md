@@ -35,8 +35,6 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 - [welle-91](../welle-91-adoption-ai-harness-init.md) — die Adoption aus
   ai-harness-init (Rollen/Commands · Werkzeuge · Config-Positionen).
 
-Nichts in Arbeit.
-
 ## Nächste Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
@@ -125,7 +123,6 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 | welle-62-zitat-verifikation | 2026-07-18 | [`welle-62-results.md`](../done/welle-62-results.md) |
 | welle-61-referenz-ventil-quell-skopus | 2026-07-18 | [`welle-61-results.md`](../done/welle-61-results.md) |
 | welle-60 (Kette slice-071/073/075/076) | 2026-07-17 | [`welle-60-results.md`](../done/welle-60-results.md) |
-
 
 ## Historische Trigger-Verschiebungen
 
