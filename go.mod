@@ -1,6 +1,6 @@
 module github.com/pt9912/d-check
 
-go 1.26.0
+go 1.27.1
 
 require (
 	github.com/go-git/go-billy/v5 v5.9.1
