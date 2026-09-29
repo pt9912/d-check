@@ -4,7 +4,7 @@
   Diff-Review (R1 liegt vor:
   [`2026-09-29-slice-242-gate-erweiterung-r1.md`](2026-09-29-slice-242-gate-erweiterung-r1.md)).
 - **Gegenstand:** wellenloser `slice-242`, Plan
-  [`docs/plan/planning/in-progress/slice-242-gate-erweiterung-kein-adr-anlass.md`](../plan/planning/in-progress/slice-242-gate-erweiterung-kein-adr-anlass.md).
+  [`docs/plan/planning/in-progress/slice-242-gate-erweiterung-kein-adr-anlass.md`](../plan/planning/done/wellenlos/slice-242-gate-erweiterung-kein-adr-anlass.md).
 - **Range:** `af11e907..HEAD` (`HEAD` = `23a4b9d4`); Arbeitsbaum clean bei Prüfbeginn.
 - **Sensoren, selbst gefahren:** `make gates` zweimal — der zweite Lauf mit sauber
   gefasstem Exit (`MAKE_EXIT=0`); alle Beweise unten sind eigene Ausgabe, keine
