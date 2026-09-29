@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave slice-mv selbstpruefung
+.PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave slice-mv selbstpruefung history-range-guard
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -410,6 +410,9 @@ slice-mv: ## Lifecycle-Wechsel eines Slice: SLICE=slice-<Kennung> TO=<open|next|
 
 selbstpruefung: ## Negativ-Selbsttest des commit-msg-Hooks im Wegwerf-Klon (kein Gate). Adoptiert aus ai-harness-init (slice-245); braucht Docker.
 	bash tools/harness/selbstpruefung.sh
+
+history-range-guard: ## Vorlauf-Wächter der history-lesenden Targets als Einzellauf (RANGE=a..b, STAGED=1, sonst HEAD~1..HEAD). Adoptiert aus ai-harness-init (slice-245); kein Gate.
+	bash tools/harness/history-range-guard.sh $(if $(STAGED),--staged,$(if $(RANGE),$(RANGE),HEAD~1..HEAD))
 
 clean: ## Lokale Images entfernen.
 	@-docker image rm \
