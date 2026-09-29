@@ -52,11 +52,11 @@ adoptiert (an d-check angepasst, mit `make`-Target) oder abgelehnt
 
 ## 2. Definition of Done
 
-- [ ] Je Werkzeug (5) eine belegte Entscheidung: adoptiert (funktioniert,
+- [x] Je Werkzeug (5) eine belegte Entscheidung: adoptiert (funktioniert,
       Target vorhanden, gates grün) oder abgelehnt (Begründung).
-- [ ] Bei history-range-guard: die stille-Grün-Behauptung ist am eigenen
+- [x] Bei history-range-guard: die stille-Grün-Behauptung ist am eigenen
       Adapter verifiziert (Gegenprobe im shallow-Clone, Ausgabe belegt).
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 
 ## 3. Plan (vor Code)
 
@@ -93,15 +93,45 @@ wellenlos hier geprüft).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Je Werkzeug eine belegte Entscheidung statt einer
+  Pauschalübernahme — die fünf Entscheidungen (3 adoptiert, 2 abgelehnt)
+  trägt die Tabelle des Verify-Reports
+  ([../../../../../docs/reviews/2026-09-29-slice-245-werkzeuge-verify.md](../../../../docs/reviews/2026-09-29-slice-245-werkzeuge-verify.md),
+  Vollauf von `make selbstpruefung` inklusive). Jede Verhaltens-Behauptung
+  (Identity-Fallback, Unterordner-Mapping, Wächter-Exit-Codes, leere Range)
+  wurde im Wegwerf-Klon gemessen, bevor sie in Doku oder Folge-Plan stand —
+  die shallow-Clone-Gegenprobe machte die stille-Grün-Lücke am eigenen
+  Adapter sichtbar und schnitt [slice-247](../open/slice-247-vcs-leere-range-stilles-gruen.md).
+- **Was ging anders als geplant:** Die d-check-Anpassung des slice-mv war
+  unvollständig — die ausgehende Verweis-Richtung zog die Pfadtiefe nicht
+  mit (R1-F-1, Repro des Reviewers), und die README-Zeilen behaupteten ein
+  history-range-guard-Target ohne Makefile-Regel (gate-phantom, gefunden im
+  repo-weiten Handoff-Lauf). Beides ist behoben
+  (09aeb4d5, 8637f08a), bevor slice-mv produktiv eingesetzt hat.
+- **Steering-Loop-Eintrag:** keine Verkörperung — zwei Einträge sind gezählt,
+  nicht verkörpert: die Klasse „Slice-Nummer im Kommentar" steht bei 2×
+  ([BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen](../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md)),
+  die stille-Grün-Klasse wurde neu angelegt
+  ([BEO-ALL/stilles-gruen-ueber-leerer-range](../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/state.md)).
+- **Beobachtungs-Register (`../observations/`):**
+  `BEO-ALL/stilles-gruen-ueber-leerer-range/` neu angelegt, Beleg
+  `evidence/slice-245.md`; `evidence/slice-245.md` in
+  `BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/` ergänzt —
+  Zähler steht damit bei 2×.
+- **Folge-Slices:** [slice-247](../open/slice-247-vcs-leere-range-stilles-gruen.md)
+  (vcs-Modul meldet stilles Grün über leerer, auflösbare Range) — ist eine
+  Datei in `open/`.
+- **Risiken aus §6:** Risiko 1 (Host-bash): entfallen — die Skripte bleiben
+  in der POSIX-bash-Klasse des Bestands, §3.1 gilt der Produkt-Toolchain
+  (R1-Negativbefund). Risiko 2 (shallow-Clone-Mechanik): entfallen — die
+  Gegenprobe lief lokal über `file://` ohne Netz und mehrfach wiederholt
+  (Verify-Report, eigene Messung). Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)): beide Läufe
+  grün am 2026-09-29 (upstream-drift 06:29 UTC, image-scan 09:52 UTC) —
+  nichts zu lesen.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld, nichts verkörpert,
+  die Paarung trifft nicht zu; (b) Folge-Slice — slice-247 existiert in
+  `open/`; (c) Register — beide genannten Verzeichnisse existieren, `evidence/`
+  ist je nicht leer.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
