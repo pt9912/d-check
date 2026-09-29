@@ -203,7 +203,12 @@ erlaubt bleiben `## Geschichte`-Anhänge + der `**Status:**`-Übergang;
 ### 3.6 Gates dürfen nicht ohne ADR gelockert werden
 
 Jede Schwellen-Senkung (Coverage, Linter-Strenge, Prüfregel) ist ein
-ADR, kein PR-Kommentar.
+ADR, kein PR-Kommentar. Die **Aufnahme** eines bereits existierenden,
+unabhängig lauffähigen Wächters in `make gates` ist umgekehrt kein
+ADR-Anlass — ein Verweis auf die ADR genügt, die den Wächter ursprünglich
+trägt; existiert keine, trägt schon die *Einführung* des Wächters selbst
+eine. Eine neue Fehlerklasse, ein neuer Scope oder ein Widerspruch zu einer
+bestehenden ADR braucht weiterhin eine eigene. Im Zweifel: ADR.
 
 **Kein Gate prüft das** — die Regel gilt einem **Akt**, nicht einem ruhenden
 Zustand: ob eine gesenkte Schwelle eine ADR *hat*, steht in keiner Datei, die
