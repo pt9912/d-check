@@ -10,11 +10,11 @@ derselbe Stand wie die vierzehn Vorgänger-Hebungen (Baseline-Regelwerk
 `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht: kein repo-weites Mehr).
 
 **Bezug:** die
-[`MR-011`](../../../../harness/conventions.md#mr-011)-Kette
-(§Baseline-Pin, [`MR-072`](../../../../harness/conventions.md#mr-072) als
-Vorgänger), [`MR-051`](../../../../harness/conventions.md#mr-051)
-(Re-Ankern), [`MR-069`](../../../../harness/conventions.md#mr-069)
-(Ventil), [`MR-055`](../../../../harness/conventions.md#mr-055)
+[`MR-011`](../../../../../harness/conventions.md#mr-011)-Kette
+(§Baseline-Pin, [`MR-072`](../../../../../harness/conventions.md#mr-072) als
+Vorgänger), [`MR-051`](../../../../../harness/conventions.md#mr-051)
+(Re-Ankern), [`MR-069`](../../../../../harness/conventions.md#mr-069)
+(Ventil), [`MR-055`](../../../../../harness/conventions.md#mr-055)
 (Symlinks). Keine `DC-*` — keine Produkt-Anforderung berührt.
 
 **Berührte Spec-Stellen:** — *(der vendierte Baseline-Baum ist kein
@@ -31,12 +31,12 @@ Spec-Stratum; `spec/` bleibt unverändert)*.
 **Ziel:** Den committet vendorten Baseline-Bestand auf
 [`v6.13.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v6.13.0)
 heben (Re-Vendor, den aktuellen Tag — nicht die vier Zwischen-Tags; das Muster
-verkörpert [`MR-072`](../../../../harness/conventions.md#mr-072)), den Pin in
+verkörpert [`MR-072`](../../../../../harness/conventions.md#mr-072)), den Pin in
 `harness/conventions.md` §Baseline fortschreiben, alle lebenden pin-gebundenen
 Referenzen retargeten und die Hebung als neuer MR-Eintrag führen — mit frozen
 Klassen und Zitat-Delta gemessen am echten Vorzustand (nach
-[`MR-070`](../../../../harness/conventions.md#mr-070),
-[`MR-039`](../../../../harness/conventions.md#mr-039)).
+[`MR-070`](../../../../../harness/conventions.md#mr-070),
+[`MR-039`](../../../../../harness/conventions.md#mr-039)).
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
@@ -65,7 +65,7 @@ Klassen und Zitat-Delta gemessen am echten Vorzustand (nach
       Versionsnennungen in lebenden Dokumenten; die 7 Alias-Symlinks unter
       `.claude/rules/` lösen gegen `v6.13.0` auf. *(gemessen 8 statt 7 —
       Abweichung in
-      [`MR-073`](../../../../harness/conventions.md#mr-073--baseline-pin-hebung-auf-v6130-fünfzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)
+      [`MR-073`](../../../../../harness/conventions.md#mr-073--baseline-pin-hebung-auf-v6130-fünfzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)
       dokumentiert)*
 - [x] `make gates` grün; `make baseline-freshness` meldet den Pin aktuell
       (Exit 0).
@@ -77,11 +77,11 @@ Klassen und Zitat-Delta gemessen am echten Vorzustand (nach
 | `.harness/baseline/{v6.9.0 → v6.13.0}/` | neu + entfernen | Re-Vendor beider Bäume + `SHA256SUMS`; alter Baum weg |
 | `harness/conventions.md` | update | §Baseline-Pin; MR-Index-Zeile für den neuen Eintrag; der MR-Vorgänger verlässt §Aktive Adaptionen |
 | neue MR-Datei unter `harness/conventions/` | neu | der Hebung-Eintrag (gemessener Delta, Frozen-Liste, Zitat-Delta) |
-| [`harness/conventions/done/MR-072-baseline-v690.md`](../../../../harness/conventions/done/MR-072-baseline-v690.md) | move | Auflösungs-Trigger („die nächste Pin-Hebung") tritt — reiner `git mv` nach `conventions/done/` |
-| `AGENTS.md`, `harness/README.md`, `harness/rules/*.md`, aktive `harness/conventions/MR-*.md`, `.claude/agents/reviewer.md`, `roadmap.md`, `planning/README.md`, `observations/README.md`, `.d-check.closure.yml` | update | lebende Token-Swaps `v6.9.0`→`v6.13.0`, je Datei einzeln (kein pauschales sed über index-tragende Dateien — die Lehre aus [`MR-072`](../../../../harness/conventions.md#mr-072)) |
-| `.claude/rules/*.md` (7 Symlinks) | update | Alias-Aliase nach [`MR-055`](../../../../harness/conventions.md#mr-055) auf `v6.13.0` umgehängt |
-| `.d-check.yml` | update | nur, falls gemessen: nächste `ignore-refs`-Stufe der Bump-Kette (nach [`MR-069`](../../../../harness/conventions.md#mr-069)) |
-| `slice-240`-Plan selbst | update | die beiden `d-check:cite`-Spannen neu geankert, sobald `modul-05` im neuen Baum liegt (nach [`MR-051`](../../../../harness/conventions.md#mr-051)) |
+| [`harness/conventions/done/MR-072-baseline-v690.md`](../../../../../harness/conventions/done/MR-072-baseline-v690.md) | move | Auflösungs-Trigger („die nächste Pin-Hebung") tritt — reiner `git mv` nach `conventions/done/` |
+| `AGENTS.md`, `harness/README.md`, `harness/rules/*.md`, aktive `harness/conventions/MR-*.md`, `.claude/agents/reviewer.md`, `roadmap.md`, `planning/README.md`, `observations/README.md`, `.d-check.closure.yml` | update | lebende Token-Swaps `v6.9.0`→`v6.13.0`, je Datei einzeln (kein pauschales sed über index-tragende Dateien — die Lehre aus [`MR-072`](../../../../../harness/conventions.md#mr-072)) |
+| `.claude/rules/*.md` (7 Symlinks) | update | Alias-Aliase nach [`MR-055`](../../../../../harness/conventions.md#mr-055) auf `v6.13.0` umgehängt |
+| `.d-check.yml` | update | nur, falls gemessen: nächste `ignore-refs`-Stufe der Bump-Kette (nach [`MR-069`](../../../../../harness/conventions.md#mr-069)) |
+| `slice-240`-Plan selbst | update | die beiden `d-check:cite`-Spannen neu geankert, sobald `modul-05` im neuen Baum liegt (nach [`MR-051`](../../../../../harness/conventions.md#mr-051)) |
 
 ## 4. Trigger
 
@@ -110,17 +110,17 @@ hier geprüft).
 
 - Eine lebende Referenz sitzt in einer Datei, die auch eine Frozen-Vergangenheits-Aussage
   trägt, und eine Ersetzung hebt sie mit (Über-Hebung, Lehre aus
-  [`MR-070`](../../../../harness/conventions.md#mr-070)). —
+  [`MR-070`](../../../../../harness/conventions.md#mr-070)). —
   **Ausgang:** *(offen)*
 - Die `d-check:cite`-Spannen verschieben sich durch den Re-Vendor
-  (`citation-mismatch`, nach [`MR-051`](../../../../harness/conventions.md#mr-051)). —
+  (`citation-mismatch`, nach [`MR-051`](../../../../../harness/conventions.md#mr-051)). —
   **Ausgang:** *(offen)*
 - Frozen-Dateien tragen Markdown-Links auf den entfernten `v6.9.0`-Baum und
-  werden `target-missing` (nach [`MR-069`](../../../../harness/conventions.md#mr-069)). —
+  werden `target-missing` (nach [`MR-069`](../../../../../harness/conventions.md#mr-069)). —
   **Ausgang:** *(offen)*
 - Eine Ersetzung trifft die Index-Tabellenzeile des MR-Vorgängers in
   `harness/conventions.md` (dieselbe Klasse wie der Fund aus
-  [`MR-072`](../../../../harness/conventions.md#mr-072)). —
+  [`MR-072`](../../../../../harness/conventions.md#mr-072)). —
   **Ausgang:** *(offen)*
 
 ## 7. Closure-Notiz
@@ -128,27 +128,27 @@ hier geprüft).
 - **Was hat funktioniert:** Messen vor Schreiben — Delta (28 von 55 Dateien
   mit Inhalt) und Spiegel-Klassen (75 Dateien / 161 Vorkommen) am echten
   Vorzustand, Frozen-Klassen per Eigenschaft statt per Verzeichnis
-  ([`MR-070`](../../../../harness/conventions.md#mr-070)); die Commit-Zerlegung
+  ([`MR-070`](../../../../../harness/conventions.md#mr-070)); die Commit-Zerlegung
   §3.3 (reiner Move, ±0 Zeilen) und der
-  [`MR-069`](../../../../harness/conventions.md#mr-069--das-ignore-refs-ventil-ist-eine-deklarierte-gate-senkung-und-es-wächst-mit-jedem-bump)-Ventil-Nachzug
+  [`MR-069`](../../../../../harness/conventions.md#mr-069--das-ignore-refs-ventil-ist-eine-deklarierte-gate-senkung-und-es-wächst-mit-jedem-bump)-Ventil-Nachzug
   (4 Einträge, messbegründet) hielten, `make gates` nach Implementierung und
   nach Review-Korrektur grün.
 - **Was ging anders als geplant:** Drei Instanzen derselben Klasse
   record-claim-vs-diff am MR-Eintrag: der Vorgänger-Swap traf
-  [`MR-072`](../../../../harness/conventions.md#mr-072--baseline-pin-hebung-auf-v690-vierzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)s
+  [`MR-072`](../../../../../harness/conventions.md#mr-072--baseline-pin-hebung-auf-v690-vierzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)s
   Index-Zeile und -Datei (Plan-Risiko 4, revertet); die erste
-  [`MR-073`](../../../../harness/conventions.md#mr-073--baseline-pin-hebung-auf-v6130-fünfzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)-Fassung
+  [`MR-073`](../../../../../harness/conventions.md#mr-073--baseline-pin-hebung-auf-v6130-fünfzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)-Fassung
   behauptete „kein cite-Neu-Ankern" (Review-R1-F-1); und die Korrektur
   15/6/9 war selbst nicht diff-genau (Verifier V-1: 14/7/7, die
-  [`MR-043`](../../../../harness/conventions.md#mr-043--der-werkzeug-einstieg-importiert-agentsmd-statt-auf-ihn-zu-verweisen)-Spanne
+  [`MR-043`](../../../../../harness/conventions.md#mr-043--der-werkzeug-einstieg-importiert-agentsmd-statt-auf-ihn-zu-verweisen)-Spanne
   fehlte). Jede Instanz klein, alle drei erst durch Zählen gegen den Diff
   gefangen.
-- **Steering-Loop-Eintrag:** [`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+- **Steering-Loop-Eintrag:** [`BEO-ALL/pin-bump-mirrors-ungated`](../../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
   — das Signal (MR-Eintrag behauptet Abwesenheit, der Diff zählt Vorkommen)
   trat in diesem Slice zweimal auf (R1-F-1, V-1) nach dem Vorgänger-Fund
   slice-224; der Ausgang bleibt „kein formgültiger", der Eintrag bleibt
   stehen.
-- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag — der
+- **Beobachtungs-Register (`../../observations/`):** kein neuer Eintrag — der
   stehende BEO-ALL/pin-bump-mirrors-ungated trägt den Vorgang.
 - **Folge-Slices:** vier inhaltliche Deltas der Hebung sind ohne Urteil
   geblieben und warten je auf einen eigenen Konventions-Slice: Trigger-Audit
@@ -180,7 +180,7 @@ Harness-Werkzeug selbst (`*`, Kürzel `ALL`); bereits deklariert.
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:**
-[`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+[`BEO-ALL/pin-bump-mirrors-ungated`](../../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
 ist die stehende Beobachtung zu genau diesem Vorgang — **7×** (slice-106,
 slice-110, slice-117, slice-148, slice-189, slice-222, slice-224), dieses
 Slice wird das 8. Auftreten. Keine weitere berührte Sub-Area mit Treffern;
@@ -199,7 +199,7 @@ notiert.
 
 - **Modus:** GF
 - **Konventionen-Dichte:** Hoch — die Prozedur ist 14-fach verkörpert
-  (Kette ab [`MR-011`](../../../../harness/conventions.md#mr-011) in
+  (Kette ab [`MR-011`](../../../../../harness/conventions.md#mr-011) in
   `harness/conventions.md` samt Template `MR-<NNN>-titel.template.md`).
 - **Phase-Reife:** Phase 3.
 - **Evidenz-/Diskrepanz-Risiko:** Niedrig — reine Pin-Fortschreibung; die
