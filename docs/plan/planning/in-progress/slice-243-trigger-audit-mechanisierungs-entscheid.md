@@ -107,7 +107,7 @@ wellenlos hier geprüft).
 - **Was hat funktioniert:** Die vier Zeilen gegen den Baum bewertet, nicht
   gegen die Beschreibung — der Carveout-Bestand (`carveouts/done/` CO-001,
   CO-002; kein offener), die Schwellen-Form (kalibrierte Konstanten),
-  die 97 ADR-Trigger-Konditionale, die §3-Trigger-Zeilen.
+  die 76 Re-Evaluierungs-Trigger-Sektionen, die §3-Trigger-Zeilen.
 - **Was ging anders als geplant:** — *(der Evaluierungs-Vollzug traf die
   Plan-Lage: keine Überraschung, keine Mechanisierungs-Lücke gefunden)*
 - **Bewertung je Klasse (DoD 1):**
@@ -119,8 +119,12 @@ wellenlos hier geprüft).
   - **bootstrap-aware Gate — n.a.** d-checks Schwellen sind kalibrierte
     Konstanten ohne Hochschalt-Trigger (V-Beleg slice-241); nichts zu
     mechanisieren.
-  - **ADR — Prosa-Verbleib.** 76 von 97 ADR-Dateien tragen eine
-    `## Re-Evaluierungs-Trigger`-Sektion (gemessen: `grep -l` über
+  - **ADR — Prosa-Verbleib.** 76 Sektionen über 96 ADR-Dateien
+    ([ADR-0001](../../../../docs/plan/adr/0001-implementierungssprache.md)
+    bis
+    [ADR-0096](../../../../docs/plan/adr/0096-agents-md-regel-auslagerung-harness-rules.md),
+    ohne Lücken) plus README-Index tragen eine
+    `## Re-Evaluierungs-Trigger`-Zeile (gemessen: `grep -l` über
     `docs/plan/adr/`); die Konditionale sind je einzigartig (Stichprobe
     [ADR-0048](../../../../docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md),
     [ADR-0066](../../../../docs/plan/adr/0066-cve-scan-gegen-das-publizierte-image.md),
@@ -128,7 +132,8 @@ wellenlos hier geprüft).
     R1-Report); „eingetreten?“ ist Urteil.
     Die Linkpflicht (ids) deckt die Erreichbarkeit, nicht die
     Bedeutungsfälle. *(R1-F-1: die erste Fassung nannte „97 Konditionale“
-    — das war die ADR-Dateizahl, keine Trigger-Zählung.)*
+    — das war die .md-Gesamtmenge inkl. README-Index, keine
+    Trigger-Zählung; V-2-Korrektur des Verifiers.)*
   - **Hard Rule — Prosa-Verbleib.** Existenz einer Trigger-Zeile wäre
     structure-Form prüfbar — kriminalisiert aber den grandfathered
     Alt-Bestand (§3.1/§3.5/§3.7/§3.9) und beantwortet doch nicht
