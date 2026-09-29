@@ -44,12 +44,12 @@ Agent-Duplikat trüge dieselbe Anweisung an zweiter Stelle.
 
 ## 2. Definition of Done
 
-- [ ] Je Rolle (6) und Command (3) eine belegte Entscheidung:
+- [x] Je Rolle (6) und Command (3) eine belegte Entscheidung:
       adoptiert (Datei in `.claude/`, an d-check angepasst) oder abgelehnt
       (Begründung, gegen Modul 8 und den d-check-Betrieb).
-- [ ] Adoptierte Rollen-Dateien tragen die Kontext-Trennung der Vorlage
+- [x] Adoptierte Rollen-Dateien tragen die Kontext-Trennung der Vorlage
       („Was du NICHT bist") und verweisen auf die d-check-Pendants.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 
 ## 3. Plan (vor Code)
 
@@ -87,15 +87,29 @@ wellenlos hier geprüft).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Je Rolle/Command eine belegte Entscheidung
+  (5 adoptiert — architect, planner, validator als Agents, plan-welle,
+  close-welle als Commands; 4 abgelehnt — implementer, reviewer, verifier,
+  implement-slice existieren in d-check-eigener Form); die Schwester-Vorlagen
+  wurden content-treu adoptiert, die ANPASSEN-Platzhalter zu Repo-Quellen
+  ausgeschrieben (R1-Negativbefunde 1–2).
+- **Was ging anders als geplant:** R1-F-1 (LOW) — die Implementer-Ablehnung
+  trug keinen benannten Grund (das Existenz-Argument trägt für sie nicht:
+  die Rolle läuft im Hauptlauf nach AGENTS.md §6 bzw. via
+  implement-slice-Command); nachgereicht. R1-F-2 (LOW) — plan-welle
+  verortete die Vorprüfungen im Plan-Kopf; korrigiert auf §8. R1-F-3
+  (LOW) — Nachtlauf-Stand nachgereicht (unten).
+- **Steering-Loop-Eintrag:** keiner.
+- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag.
+- **Folge-Slices:** keine — die Adoption ist abgeschlossen;
+  Betrieb-Erfahrungen mit den neuen Rollen sammelt die Welle-Closure.
+- **Risiken aus §6:** R1 (adoptierte Rollen bleiben unbesetzt) — offen
+  dokumentiert, der Rollen-Zweck ist je dokumentiert; R2
+  (planner/Commands setzen Wellen-Betrieb voraus) — welle-91 ist der erste
+  Betrieb.
+- **Drei Paarungen:** Lerneintrag „Rollen-Adoption: der Rollen-Achse-Absatz
+  wandert mit, die ANPASSEN-Platzhalter werden zu Repo-Quellen" —
+  Folge-Slice: keiner — Register: kein neuer Eintrag.
 - **Nachtlauf-Stand bei der Beanspruchung** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
   beide Nachtläufe grün (upstream-drift 2026-09-29, image-scan 2026-09-28).
 
