@@ -366,6 +366,26 @@ ignore-refs:
       - "docs/reviews/2026-06-28-slice-052-immutable-r2.md"
       - "docs/reviews/2026-06-29-slice-053-vcs-code-r2.md"
       - "docs/reviews/2026-06-29-slice-053-vcs-doc-first-r1.md"
+  # Tombstone der Baseline-Migration v6.9.0 -> v6.13.0 (MR-073, slice-240).
+  # Datei-skopiert statt auf docs/plan/adr/** (Praezedenz ADR-0084): gemessen
+  # tragen VIER eingefrorene Artefakte je EINEN Markdown-Link auf den
+  # entfernten v6.9.0-Baum -- ADR-0085 in seiner Geltungs-Begruendung, die
+  # drei aufgeloesten MR-Dateien MR-059/061/062 je in ihrer Begruendung. Alle
+  # vier sind Lauf-Belege bzw. Accepted-ADR-Kerntext (AGENTS.md Paragraph 3.5)
+  # -- Nachziehen wuerde ihren Stand verfaelschen (dieselbe Begruendung wie
+  # beim ADR-0084-Eintrag oben); der alte Baum liegt in der git-Historie
+  # (MR-052). Die uebrigen frozen Nennungen des alten Baums (done/-Slices,
+  # Reviews, Spec-Historie, Code-Kommentare, .d-check.closure.yml) tragen den
+  # Pfad in Inline-Code oder Prosa und feuern nicht -- Ein Verweis feuert,
+  # wenn ein Modul ihn aufloest, nicht, weil die Zeichenkette dasteht.
+  - in: docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md
+    refs: [".harness/baseline/v6.9.0/**"]
+  - in: harness/conventions/done/MR-059-wellen-archiv-stub-move.md
+    refs: [".harness/baseline/v6.9.0/**"]
+  - in: harness/conventions/done/MR-061-register-migrations-move.md
+    refs: [".harness/baseline/v6.9.0/**"]
+  - in: harness/conventions/done/MR-062-wellenloser-slice-archiv-move.md
+    refs: [".harness/baseline/v6.9.0/**"]
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.

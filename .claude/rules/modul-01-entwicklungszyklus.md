@@ -1,1 +1,1 @@
-../../.harness/baseline/v6.9.0/regelwerk/modul-01-entwicklungszyklus.md
+../../.harness/baseline/v6.13.0/regelwerk/modul-01-entwicklungszyklus.md

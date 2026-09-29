@@ -6,7 +6,7 @@
   wörtlich:
   „DoD-Häkchen und Closure-Notiz
   sind die Bedingung dafür, dass die Datei überhaupt nach `done/` darf."
-  ([`modul-05-planning-harness.md`](../../.harness/baseline/v6.9.0/regelwerk/modul-05-planning-harness.md)).
+  ([`modul-05-planning-harness.md`](../../.harness/baseline/v6.13.0/regelwerk/modul-05-planning-harness.md)).
   Der Wortlaut ist mit `v6.9.0` nicht mehr deckungsgleich — Zitat-Delta
   vermerkt in [`MR-072`](../conventions.md#mr-072) nach
   [`MR-039`](../conventions.md#mr-039); die Direktive ist deshalb entfernt,

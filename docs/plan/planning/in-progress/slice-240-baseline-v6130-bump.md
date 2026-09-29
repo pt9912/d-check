@@ -74,7 +74,7 @@ Klassen und Zitat-Delta gemessen am echten Vorzustand (nach
 | `.harness/baseline/{v6.9.0 → v6.13.0}/` | neu + entfernen | Re-Vendor beider Bäume + `SHA256SUMS`; alter Baum weg |
 | `harness/conventions.md` | update | §Baseline-Pin; MR-Index-Zeile für den neuen Eintrag; der MR-Vorgänger verlässt §Aktive Adaptionen |
 | neue MR-Datei unter `harness/conventions/` | neu | der Hebung-Eintrag (gemessener Delta, Frozen-Liste, Zitat-Delta) |
-| [`harness/conventions/MR-072-baseline-v690.md`](../../../../harness/conventions/MR-072-baseline-v690.md) | move | Auflösungs-Trigger („die nächste Pin-Hebung") tritt — reiner `git mv` nach `conventions/done/` |
+| [`harness/conventions/done/MR-072-baseline-v690.md`](../../../../harness/conventions/done/MR-072-baseline-v690.md) | move | Auflösungs-Trigger („die nächste Pin-Hebung") tritt — reiner `git mv` nach `conventions/done/` |
 | `AGENTS.md`, `harness/README.md`, `harness/rules/*.md`, aktive `harness/conventions/MR-*.md`, `.claude/agents/reviewer.md`, `roadmap.md`, `planning/README.md`, `observations/README.md`, `.d-check.closure.yml` | update | lebende Token-Swaps `v6.9.0`→`v6.13.0`, je Datei einzeln (kein pauschales sed über index-tragende Dateien — die Lehre aus [`MR-072`](../../../../harness/conventions.md#mr-072)) |
 | `.claude/rules/*.md` (7 Symlinks) | update | Alias-Aliase nach [`MR-055`](../../../../harness/conventions.md#mr-055) auf `v6.13.0` umgehängt |
 | `.d-check.yml` | update | nur, falls gemessen: nächste `ignore-refs`-Stufe der Bump-Kette (nach [`MR-069`](../../../../harness/conventions.md#mr-069)) |
@@ -134,7 +134,7 @@ hier geprüft).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
-<!-- d-check:cite .harness/baseline/v6.9.0/regelwerk/modul-05-planning-harness.md:363-364 -->
+<!-- d-check:cite .harness/baseline/v6.13.0/regelwerk/modul-05-planning-harness.md:373-374 -->
 
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
@@ -142,7 +142,7 @@ hier geprüft).
 **Vorgelagert — Sub-Area-Wahl prüfen:** Eine berührte Sub-Area: das
 Harness-Werkzeug selbst (`*`, Kürzel `ALL`); bereits deklariert.
 
-<!-- d-check:cite .harness/baseline/v6.9.0/regelwerk/modul-05-planning-harness.md:369-369 -->
+<!-- d-check:cite .harness/baseline/v6.13.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
 > **Offene Beobachtungen sichten.** Das
 
