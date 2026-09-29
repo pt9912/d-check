@@ -22,7 +22,7 @@ diesem Slice — im Lastenheft, nie per ADR (Dokumentations-Regel 3).
 (Lastenheft — das neue Delta entsteht daneben); Spezifikation, Abschnitt zu
 den situativen Range-Modulen `vcs`/`commits`.
 
-**Verantwortlich:** —.
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-09-29.
 
@@ -43,8 +43,12 @@ ungültige Range.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
-- **commits-Modul**: bricht auf leerer Range bereits laut ab (slice-245,
-  Probe B) — Bestand bleibt bewusst stehen; keine Änderung nötig.
+- **commits-Modul**: sein Range-Vertrag bleibt unverändert — still grün auf
+  einer leeren, auflösbaren Range mit vollem Fixture
+  (TestCheckCommitsEmptyRange); dass `commits` im shallow-Klon laut bricht,
+  liegt an der Shallow-Grenze des Vorfahren-Walks, nicht am Leerfall
+  (slice-245, Probe B — zitiert über deren Geltungsbereich hinaus, korrigiert
+  nach R1-M-2). Bestand bleibt bewusst stehen; keine Änderung nötig.
 - **history-range-guard**: deckt den Leerfall bereits laut (Exit 1 mit
   fetch-depth-Hinweis, slice-245, Probe D) — Bestand bleibt bewusst
   stehen; der Vorlauf-Wächter wird durch den Fix nicht überflüssig, denn
@@ -86,7 +90,7 @@ Plan **geändert**, nicht nur ergänzt.
 | `spec/lastenheft.md` | update | neue `DC-*` + Historie-Zeile ([MR-032](../../../../harness/conventions.md#mr-032)) |
 | `spec/spezifikation.md` | update | Leerfall-Grund-Code in den Abschnitt zu den situativen Range-Modulen |
 | `internal/adapter/driven/git` (Adapter hinter `vcs`) | update | leere Range statt stiller Befundlosigkeit laut abbrechen |
-| Testdatei zum Adapter | neu/update | Happy/Negative/Boundary — nach der neuen `DC-*`; Negative-Fall ist slice-245s shallow-Clone-Aufbau |
+| Testdatei zum Adapter | neu/update | Happy/Negative/Boundary — nach der neuen `DC-*`. ABWEICHUNG (R1-L-1): der Test fährt ein volles Fixture (zwei Commits in-memory), nicht slice-245s shallow-Clone-Aufbau — der shallow-Fall ist durch die deklarierte Grenze (Spec §DC-FA-VCS-002.a) und den Wächter abgedeckt, nicht automatisiert |
 
 **Ansatz:** Der Adapter kennt nach der Range-Auflösung die Commit-Zahl
 bereits — die leere Range ist dort ein eigener Zweig neben der unauflösbaren

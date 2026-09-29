@@ -1969,6 +1969,12 @@ läuft **vor** dem Tree-Vergleich (der Adapter löst beide Refs zu Commits
 auf, bevor die Pfad-Mengen gelesen werden); `--staged` vergleicht den Index
 gegen `HEAD` und löst den Range-Check nicht aus.
 
+**Grenze — der Vorfahren-Walk braucht die volle Historie:** die Erreichbar-
+keits-Prüfung wandert die Vorfahren der Basis; ein shallow-Klon mit Tiefe
+≥ 2 bricht darum auch bei **nicht-leerer** Range mit `Range-Basis-Vorfahren
+nicht lesbar` (fail-closed — vor der Einführung dieser Prüfung genügten die
+Endpunkt-Commits). Abhilfe ist ausschließlich `fetch-depth: 0`.
+
 ### DC-FA-COMMITS-001.a — Traceability-Kennung in Commit-Messages über eine Commit-Range (`commits`)
 
 Das Modul `commits`
@@ -1980,16 +1986,16 @@ trägt. Es liest die Commit-**Messages** über **denselben VCS-Port** wie
 Message-Lese-Operation. Es ist die Portierung des abgelösten Traceability-Skripts:
 
 1. **Quelle/Modus (vom CLI geliefert).**
-   - `--range <base>..<head>`: **dieselbe** Range-Semantik wie `vcs`
-     ([§DC-FA-VCS-001.a](#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
-     Schritt 1) — der `..`-Separator ist Pflicht (ohne ihn `base == head`, still
+   - `--range <base>..<head>`: die **commits-eigene** Range-Semantik — der
+     `..`-Separator ist Pflicht (ohne ihn `base == head`, still
      grün ⇒ **fail-closed** Exit 2), leere/nicht auflösbare Basis ⇒ Exit 2, fehlendes
      oder unlesbares `.git` ⇒ Exit 2. Der Port liefert die **Nicht-Merge**-Commit-
      Messages der Range (`git rev-list --no-merges`-Parität) in deterministischer
      Reihenfolge (nach Commit-SHA; die Befunde sortiert der Kern ohnehin,
      [`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
-     Eine **gültige** Range mit 0 Commits ist kein Fehler (nichts zu prüfen ⇒ Exit 0,
-     wie `vcs` ohne geänderte Datei).
+     Eine **gültige** Range mit 0 Commits ist kein Fehler (nichts zu prüfen ⇒ Exit 0)
+     — das ist der commits-Vertrag, der von `vcs` bewusst **nicht** geteilt
+     wird: dort ist der Leerfall laut ([§DC-FA-VCS-002.a](#dc-fa-vcs-002a--leere-commit-range-vcs)).
    - `--commit-msg <datei>`: **Kurzschluss-Modus** (wie `--print-config`/`--trace`;
      nach dem Optionen-Parsing, **ohne** Repo-Scan und **ohne** VCS-Port) — liest
      **eine** Message aus der Datei (`-` = stdin) und prüft nur sie. Nicht lesbare

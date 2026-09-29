@@ -2208,7 +2208,9 @@ dem `HEAD..HEAD` auflöst, aber null Commits zählt.
 unverändert; der Vorlauf-Wächter (history-range-guard) fängt den Leerfall
 eine Stufe vor beiden Modulen und wird von dieser Anforderung nicht
 berührt; ein Range-Scoping über Module hinweg (exclude-Formen, Klassen) ist
-keine Eigenschaft dieser Anforderung.
+keine Eigenschaft dieser Anforderung. **Grenze:** die Erreichbarkeits-
+Prüfung braucht die volle Historie — ein shallow-Klon bricht fail-closed
+(auch bei nicht-leerer Range); Abhilfe ist `fetch-depth: 0`.
 
 ---
 
