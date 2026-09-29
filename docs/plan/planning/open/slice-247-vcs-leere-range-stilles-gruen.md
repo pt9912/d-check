@@ -9,7 +9,7 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle as State Machine.
 keine repo-weite Beobachtung darüber hinaus (Baseline-Regelwerk
 `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht).
 
-**Bezug:** [`slice-245`](../in-progress/slice-245-werkzeuge-evaluieren.md)
+**Bezug:** [`slice-245`](../done/welle-91/slice-245-werkzeuge-evaluieren.md)
 — dessen stille-Grün-Verifikation am eigenen Adapter (shallow-Clone, Probe
 A: `HEAD..HEAD` ⇒ `0 Befund(e)`, Exit 0; Gegenprobe B: das commits-Modul
 bricht auf derselben Range laut ab, Exit 2),

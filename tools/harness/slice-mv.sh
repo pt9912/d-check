@@ -60,6 +60,11 @@
 #     Kennung (Zeichenklasse "[0-9a-z]"). Eine Slice-Kennung, die das Praefix
 #     eines vorhandenen Ankers traegt (LH-*, ADR-*, CO-*) und darum
 #     Grossbuchstaben fuehrt, bleibt unerkannt.
+# (5) Die AUSGEHEND-Ersetzung trifft nur PRAEFIXLOSE Ziele. Praefixierte
+#     ausgehende Links der bewegten Datei ("../observations/X", "../open/Y")
+#     brechen, wenn der Move die Verzeichnis-Tiefe aendert (d-check:
+#     done/<Unterordner>) — sie werden nicht beruehrt; ihr Nachzug ist Teil
+#     der manuellen Tiefen-Korrektur nach dem Move.
 set -euo pipefail
 
 PLANNING="docs/plan/planning"

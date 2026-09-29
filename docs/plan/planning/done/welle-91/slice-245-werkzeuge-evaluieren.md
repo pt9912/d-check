@@ -7,9 +7,9 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle as State Machine.
 
 **Welle:** welle-91.
 
-**Bezug:** [`welle-91`](../welle-91-adoption-ai-harness-init.md),
-[`MR-073`](../../../../harness/conventions.md#mr-073),
-[`MR-004`](../../../../harness/conventions.md#mr-004--gate-nachweis-mechanik-und-claude-hooks-nach-b-cad-vorbild)
+**Bezug:** [`welle-91`](../../welle-91-adoption-ai-harness-init.md),
+[`MR-073`](../../../../../harness/conventions.md#mr-073),
+[`MR-004`](../../../../../harness/conventions.md#mr-004--gate-nachweis-mechanik-und-claude-hooks-nach-b-cad-vorbild)
 (Gate-Nachweis-Mechanik, deren Pendants hier evaluiert werden).
 Keine `DC-*` — falls die stille-Grün-Lücke von vcs/commits einen
 Produkt-Fix ergibt, trägt der **Folge-Slice** das Anforderungs-Delta.
@@ -70,7 +70,7 @@ adoptiert (an d-check angepasst, mit `make`-Target) oder abgelehnt
 **Start** (`open` → `in-progress`): direkt beansprucht — die
 Welle-Eröffnung (welle-91, Auftraggeber 2026-09-29) ist die Beanspruchung;
 der Nachtlauf-Stand wird bei der Beanspruchung gelesen
-([`MR-053`](../../../../harness/conventions.md#mr-053)).
+([`MR-053`](../../../../../harness/conventions.md#mr-053)).
 
 **Rückführungen:** `in-progress` → `next` (zu groß): ergibt die
 stille-Grün-Verifikation einen Produkt-Fix mit eigenem
@@ -96,12 +96,12 @@ wellenlos hier geprüft).
 - **Was hat funktioniert:** Je Werkzeug eine belegte Entscheidung statt einer
   Pauschalübernahme — die fünf Entscheidungen (3 adoptiert, 2 abgelehnt)
   trägt die Tabelle des Verify-Reports
-  ([../../../../../docs/reviews/2026-09-29-slice-245-werkzeuge-verify.md](../../../../docs/reviews/2026-09-29-slice-245-werkzeuge-verify.md),
+  ([../../../../../docs/reviews/2026-09-29-slice-245-werkzeuge-verify.md](../../../../../docs/reviews/2026-09-29-slice-245-werkzeuge-verify.md),
   Vollauf von `make selbstpruefung` inklusive). Jede Verhaltens-Behauptung
   (Identity-Fallback, Unterordner-Mapping, Wächter-Exit-Codes, leere Range)
   wurde im Wegwerf-Klon gemessen, bevor sie in Doku oder Folge-Plan stand —
   die shallow-Clone-Gegenprobe machte die stille-Grün-Lücke am eigenen
-  Adapter sichtbar und schnitt [slice-247](../open/slice-247-vcs-leere-range-stilles-gruen.md).
+  Adapter sichtbar und schnitt [slice-247](../../open/slice-247-vcs-leere-range-stilles-gruen.md).
 - **Was ging anders als geplant:** Die d-check-Anpassung des slice-mv war
   unvollständig — die ausgehende Verweis-Richtung zog die Pfadtiefe nicht
   mit (R1-F-1, Repro des Reviewers), und die README-Zeilen behaupteten ein
@@ -110,22 +110,22 @@ wellenlos hier geprüft).
   (09aeb4d5, 8637f08a), bevor slice-mv produktiv eingesetzt hat.
 - **Steering-Loop-Eintrag:** keine Verkörperung — zwei Einträge sind gezählt,
   nicht verkörpert: die Klasse „Slice-Nummer im Kommentar" steht bei 2×
-  ([BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen](../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md)),
+  ([BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen](../../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md)),
   die stille-Grün-Klasse wurde neu angelegt
-  ([BEO-ALL/stilles-gruen-ueber-leerer-range](../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/state.md)).
-- **Beobachtungs-Register (`../observations/`):**
+  ([BEO-ALL/stilles-gruen-ueber-leerer-range](../../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/state.md)).
+- **Beobachtungs-Register (`../../observations/`):**
   `BEO-ALL/stilles-gruen-ueber-leerer-range/` neu angelegt, Beleg
   `evidence/slice-245.md`; `evidence/slice-245.md` in
   `BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/` ergänzt —
   Zähler steht damit bei 2×.
-- **Folge-Slices:** [slice-247](../open/slice-247-vcs-leere-range-stilles-gruen.md)
+- **Folge-Slices:** [slice-247](../../open/slice-247-vcs-leere-range-stilles-gruen.md)
   (vcs-Modul meldet stilles Grün über leerer, auflösbare Range) — ist eine
   Datei in `open/`.
 - **Risiken aus §6:** Risiko 1 (Host-bash): entfallen — die Skripte bleiben
   in der POSIX-bash-Klasse des Bestands, §3.1 gilt der Produkt-Toolchain
   (R1-Negativbefund). Risiko 2 (shallow-Clone-Mechanik): entfallen — die
   Gegenprobe lief lokal über `file://` ohne Netz und mehrfach wiederholt
-  (Verify-Report, eigene Messung). Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)): beide Läufe
+  (Verify-Report, eigene Messung). Nachtlauf-Stand ([`MR-053`](../../../../../harness/conventions.md#mr-053)): beide Läufe
   grün am 2026-09-29 (upstream-drift 06:29 UTC, image-scan 09:52 UTC) —
   nichts zu lesen.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld, nichts verkörpert,
