@@ -32,9 +32,6 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
-- [welle-91](../welle-91-adoption-ai-harness-init.md) — die Adoption aus
-  ai-harness-init (Rollen/Commands · Werkzeuge · Config-Positionen).
-
 Nichts in Arbeit.
 
 ## Nächste Wellen
@@ -94,6 +91,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 
 | Welle | Abschluss | Closure-Notiz |
 |---|---|---|
+| welle-91-adoption-ai-harness-init | 2026-09-29 | [`welle-91-results.md`](../done/welle-91-results.md) |
 | welle-90-eigenstaendige-review-archivierung | 2026-09-04 | [`welle-90-results.md`](../done/welle-90-results.md) |
 | welle-89-wellenlose-review-archivierung | 2026-09-04 | [`welle-89-results.md`](../done/welle-89-results.md) |
 | welle-88-baseline-v600-migration | 2026-09-04 | [`welle-88-results.md`](../done/welle-88-results.md) |

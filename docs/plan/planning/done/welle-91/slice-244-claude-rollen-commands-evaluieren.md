@@ -7,7 +7,7 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle as State Machine.
 
 **Welle:** welle-91.
 
-**Bezug:** [`welle-91`](../../welle-91-adoption-ai-harness-init.md),
+**Bezug:** [`welle-91`](../../done/welle-91-adoption-ai-harness-init.md),
 [`MR-073`](../../../../../harness/conventions.md#mr-073)
 (Baseline-Stand, der dem Schwester-Bootstrap zugrunde liegt).
 Keine `DC-*` — Rollen- und Command-Doku berührt kein
