@@ -82,7 +82,7 @@ der Closure-Trigger unerreichbar wird.
   Schwester-Bootstrap): eigene Telemetrie-Entscheidung, wird hier nicht
   evaluiert.
 - Die **Adoption der Evaluierungs-Ergebnisse** (matrix-Klassen `aussen` +
-  `adaptionsblock`, [slice-248](../open/slice-248-matrix-aussen-adaptionsblock.md))
+  `adaptionsblock`, [slice-248](open/slice-248-matrix-aussen-adaptionsblock.md))
   läuft wellenlos — die Welle bewertet (Schwester-Artefakte gegen den
   eigenen Betrieb), die Umsetzung trägt ein eigener Slice.
 - **Produkt-Release/Tag**: die Welle berührt keine Distributions-Fläche;
