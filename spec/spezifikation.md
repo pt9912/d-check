@@ -1955,6 +1955,20 @@ abdeckt:
    **Eingabe-Scope** ist um `.git` + Range erweitert (darum strikt opt-in und
    fail-closed ohne `.git`). Ohne `vcs` ist der Befundsatz byte-identisch.
 
+### DC-FA-VCS-002.a — Leere Commit-Range (`vcs`)
+
+Eine aufgelöste Range mit **null Commits** ist im Modul `vcs` ein **laut zu
+meldender** Zustand (Exit ≠ 0, benannte Meldung):
+[`DC-FA-VCS-002`](lastenheft.md#dc-fa-vcs-002--leere-commit-range-im-modul-vcs-ist-laut-zu-melden-opt-in).
+Leer ist die Range, wenn die Spitze von der Basis aus erreichbar ist,
+inklusive Basis = Spitze (`rev-list --count base..head` = 0) — typisch im
+shallow-Klon, in dem `HEAD..HEAD` auflöst, aber nichts zählt. Das Modul
+unterscheidet „geprüft, nichts gefunden" von „nichts wurde geprüft";
+letzteres bricht fail-closed ab, statt still grün zu färben. Die Prüfung
+läuft **vor** dem Tree-Vergleich (der Adapter löst beide Refs zu Commits
+auf, bevor die Pfad-Mengen gelesen werden); `--staged` vergleicht den Index
+gegen `HEAD` und löst den Range-Check nicht aus.
+
 ### DC-FA-COMMITS-001.a — Traceability-Kennung in Commit-Messages über eine Commit-Range (`commits`)
 
 Das Modul `commits`

@@ -314,13 +314,19 @@ func TestAllPathsUnlesbarerUnterbaum(t *testing.T) {
 	put(t, dir, "sub/b.md", "b\n")
 	base := snapshot(t, wt, "base")
 
+	// head.md hängt einen ZWEITEN Commit an — mit der leere-Range-Semantik
+	// (DC-FA-VCS-002) bricht AllPaths(base, base) bereits an der Gleichheit
+	// ab, bevor die Tree-Walk-Regression erreich wäre.
+	put(t, dir, "head.md", "h\n")
+	head := snapshot(t, wt, "head")
+
 	a, err := gitadapter.Open(dir)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// Vorbedingung: alle drei Pfade lesbar.
-	baseAll, _, err := a.AllPaths(base, base)
+	// Vorbedingung: alle Pfade an BASE lesbar.
+	baseAll, _, err := a.AllPaths(base, head)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -352,7 +358,7 @@ func TestAllPathsUnlesbarerUnterbaum(t *testing.T) {
 
 	// Kern der Regression: AllPaths bricht ab, statt den Unterbaum wortlos zu
 	// überspringen.
-	if _, _, err := a.AllPaths(base, base); err == nil {
+	if _, _, err := a.AllPaths(base, head); err == nil {
 		t.Fatal("unlesbarer Unterbaum still übersprungen — erwartet war ein Fehler")
 	}
 }
@@ -640,5 +646,45 @@ func TestAllPathsPackMitUnbrauchbaremPraefixBleibtFehlerhaft(t *testing.T) {
 	}
 	if _, _, err := a.AllPaths(first, second); err == nil {
 		t.Fatal("Pack ohne gültiges Hash-Suffix still gelesen — erwartet war ein Fehler")
+	}
+}
+
+// TestAllPathsLeereRange: eine aufgelöste, aber leere Range (Basis = Spitze,
+// oder Spitze hinter der Basis) bricht fail-closed mit benannter Meldung —
+// stills Grün über leerem Prüfbereich (shallow-Klon) wäre die behauptete
+// Prüfung ohne Gegenstand (DC-FA-VCS-002).
+func TestAllPathsLeereRange(t *testing.T) {
+	dir, wt := repoAt(t)
+	put(t, dir, "keep.md", "v1\n")
+	first := snapshot(t, wt, "first")
+	put(t, dir, "keep.md", "version zwei\n")
+	second := snapshot(t, wt, "second")
+
+	a, err := gitadapter.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Basis == Spitze: derselbe Commit, 0 Commits in der Range.
+	_, _, err = a.AllPaths(second, second)
+	if err == nil {
+		t.Fatal("leere Range (Basis = Spitze) hätte fail-closed liefern müssen")
+	}
+	if !strings.Contains(err.Error(), "Leerfall") {
+		t.Fatalf("Meldung nennt den Leerfall nicht: %v", err)
+	}
+
+	// Spitze hinter der Basis (invertiert): rev-list --count = 0, ebenfalls laut.
+	_, _, err = a.AllPaths(second, first)
+	if err == nil {
+		t.Fatal("invertierte Range (0 Commits) hätte fail-closed liefern müssen")
+	}
+	if !strings.Contains(err.Error(), "Leerfall") {
+		t.Fatalf("Meldung nennt den Leerfall nicht: %v", err)
+	}
+
+	// der Normalfall bleibt unverändert: first..second ist nicht leer.
+	if _, _, err := a.AllPaths(first, second); err != nil {
+		t.Fatalf("nicht-leere Range hätte grün bleiben müssen: %v", err)
 	}
 }

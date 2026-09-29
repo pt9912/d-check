@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.93.2
+**Version:** 0.93.3
 
 **Status:** Draft
 
@@ -2192,6 +2192,26 @@ Schreiben/Neu-Pinnen durch das Werkzeug (read-only); mehrere Hash-Algorithmen
 
 ---
 
+### DC-FA-VCS-002 — Leere Commit-Range im Modul `vcs` ist laut zu melden (opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `vcs` bricht der Lauf ab
+(Exit ≠ 0, benannte Meldung), wenn die angeforderte Commit-Range **aufgelöst,
+aber leer** ist — wenn die Spitze von der Basis aus erreichbar ist, inklusive
+Basis = Spitze (`rev-list --count base..head` = 0). Der Zustand „nichts wurde
+geprüft" ist von „geprüft, nichts gefunden" zu unterscheiden: ein Grün über
+leerem Prüfbereich behauptet eine Prüfung ohne Gegenstand — dieselbe
+fail-closed-Linie wie die unauflösbare Range, die ebenfalls Exit ≠ 0 meldet.
+Der Prüffall ist der shallow-Klon (CI-Checkout ohne `fetch-depth: 0`), in
+dem `HEAD..HEAD` auflöst, aber null Commits zählt.
+
+**Out-of-Scope:** das Modul `commits` — dessen Range-Vertrag bleibt
+unverändert; der Vorlauf-Wächter (history-range-guard) fängt den Leerfall
+eine Stufe vor beiden Modulen und wird von dieser Anforderung nicht
+berührt; ein Range-Scoping über Module hinweg (exclude-Formen, Klassen) ist
+keine Eigenschaft dieser Anforderung.
+
+---
+
 ### DC-FA-COMMITS-001 — Traceability-Kennung in Commit-Messages über eine Commit-Range (Modul `commits`, opt-in)
 
 **Beschreibung:** Bei explizit aktiviertem Modul `commits` prüft d-check, dass
@@ -3949,6 +3969,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.93.3 | 2026-09-29 | [`DC-FA-VCS-002`](#dc-fa-vcs-002--leere-commit-range-im-modul-vcs-ist-laut-zu-melden-opt-in) neu — eine aufgelöste, aber leere Commit-Range im Modul `vcs` ist laut zu melden (Exit ≠ 0): das Grün über leerem Prüfbereich behauptet eine Prüfung ohne Gegenstand (shallow-Klon, `HEAD..HEAD`). Spezifikation §DC-FA-VCS-002.a ergänzt |
 | 0.93.2 | 2026-09-27 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf (0.93.1) behauptete implizit dieselbe Titel-Abtrennung wie bei einem Inline-Link. Der Review (R1-H1, HIGH) fand: ohne echte Titel-Delimiter-Prüfung liest die Erkennung eine gewöhnliche Prosazeile wie `[TERM]: First In, First Out` fälschlich als Definition mit erfundenem Ziel „First". Die Zusage ist jetzt präzise: nach dem Ziel-Token darf nur noch optionaler Whitespace oder ein korrekt delimitierter Titel (`"…"`, `'…'`, `(…)`) folgen, sonst bleibt die ganze Zeile unerkannt |
 | 0.93.1 | 2026-09-27 | Nachzug **vor** dem ersten Test, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf (0.93.0) behauptete, ein `\]` im Label einer Referenz-Definition führe nur zu einer falschen Label-Grenze, während die Ziel-Prüfung korrekt bliebe. Eigene Verifikation der Erkennungs-Regex ergab das Gegenteil: die verankerte Regex scheitert an dieser Eingabe vollständig, die **ganze** Zeile bleibt unerkannt, keine Ziel-Prüfung läuft. Die zugesagte Form (welche Definitionen erkannt werden) ändert sich nicht, nur die Beschreibung dieser einen Grenze |
 | 0.93.0 | 2026-09-27 | [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) um die Prüfung von Link-Referenz-Definitionen (`[label]: ziel "titel"`) erweitert (additiv, standardmäßig an; Erweiterung statt neues Kürzel — dieselbe Prüfung, verengter Out-of-Scope-Satz): eine Definition mit Datei-Ziel wird von der gemeinsamen Extraktion erkannt und **unabhängig von ihrer Verwendung** geprüft — ein totes Ziel meldet `target-missing` auf der Definitions-Zeile, mit derselben Auflösung, Escape-/Symlink-Prüfung und demselben `ignore-refs`-Ventil wie ein Inline-Link. Gilt für dieselben sechs Module wie die gemeinsame `[]Line`-Extraktion, mit einer Ausnahme: das Modul `anchors` behandelt Definitionen nicht (neuer Out-of-Scope-Satz dort). Drei Grenzen bleiben benannt: kein Blockquote-/Listen-Präfix, kein Backslash-Escape im Label, kein Zeilenumbruch vor Ziel oder Titel. Zwei neue Akzeptanzkriterien (Happy, Negative); der Out-of-Scope-Satz „Reference-Style-Links" ist auf die **Verwendungs-Auflösung** verengt. Begründung in begleitender ADR. **Anlass ist ein Change Request** eines Konsumenten | — |

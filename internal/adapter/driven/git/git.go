@@ -97,6 +97,30 @@ func (a *Adapter) AllPaths(base, head string) ([]string, []string, error) {
 		}
 		return baseAll, headAll, nil
 	}
+	// DC-FA-VCS-002: der Leerfall wird VOR dem Tree-Vergleich geprüft —
+	// Basis und Spitze benennen denselben Commit, oder die Spitze ist von
+	// der Basis aus erreichbar (rev-list --count base..head = 0). Dann ist
+	// der Prüfbereich leer und das Grün wäre still: „geprüft, nichts
+	// gefunden" hätte keinen Gegenstand. --staged löst den Check nicht aus
+	// (der Index gegen HEAD braucht keine Range-Tiefe).
+	baseHash, err := a.repo.ResolveRevision(plumbing.Revision(base))
+	if err != nil {
+		return nil, nil, fmt.Errorf("Range-Basis %q nicht auflösbar: %w", base, err)
+	}
+	headHash, err := a.repo.ResolveRevision(plumbing.Revision(head))
+	if err != nil {
+		return nil, nil, fmt.Errorf("Range-Spitze %q nicht auflösbar: %w", head, err)
+	}
+	if *baseHash == *headHash {
+		return nil, nil, fmt.Errorf("Range-Leerfall %q..%q — Basis und Spitze benennen denselben Commit, es wurde nichts geprüft", base, head)
+	}
+	baseAnc, err := a.ancestors(*baseHash)
+	if err != nil {
+		return nil, nil, fmt.Errorf("Range-Basis-Vorfahren nicht lesbar: %w", err)
+	}
+	if baseAnc[*headHash] {
+		return nil, nil, fmt.Errorf("Range-Leerfall %q..%q — 0 Commits, es wurde nichts geprüft", base, head)
+	}
 	baseAll, err := a.pathsAt(base)
 	if err != nil {
 		return nil, nil, fmt.Errorf("Range-Basis %q nicht auflösbar: %w", base, err)
