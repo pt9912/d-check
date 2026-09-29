@@ -30,13 +30,11 @@
 #
 # REPO-POLITIK statt Mechanik: die Pfade, die der EINGEHEND-Nachzug ausnimmt
 # (Variable SLICE_MV_AUSGENOMMENE_PFADE unten). Die zwei Vorgaben sind
-# Ableitungen aus dem mitemittierten Regelwerk, keine Vorliebe des Werkzeugs:
+# Ableitungen aus dem Regelwerk, keine Vorliebe des Werkzeugs:
 # `.harness/baseline` ist unveraenderter Fremdtext, und eine `Accepted`-ADR
 # wird nach der Hard Rule fuer Accepted-ADRs nicht inhaltlich ueberschrieben.
-# Diese Datei wird bei jedem Bootstrap kanonisch neu geschrieben, eine Aenderung
-# an ihr ueberlebt den naechsten Lauf nicht; gesetzt wird die Variable darum von
-# aussen (dieselbe im mitemittierten Make-Fragment, s. dort) — der Ort dafuer ist
-# jede Make-Quelle oder die Umgebung des Aufrufs.
+# Gesetzt wird die Variable von aussen — der Ort dafuer ist jede Make-Quelle
+# oder die Umgebung des Aufrufs.
 #
 # GRENZEN (vier, jede mit ihrer Ursache):
 # (1) Das Werkzeug zieht PFADE nach, keine ZUSTANDSSAETZE. Eine Zeile
@@ -309,7 +307,7 @@ main() {
   echo "slice-mv ok: $base  $from/ -> $ziel/"
   echo "  Commit 1 (reiner Move): $from/$base -> $ziel/$base"
   echo "  eingehend: $in_count Datei(en) mit Verweisen nachgezogen, darin $bare_count praefixlose(r) Link(s) aus Geschwistern unter $from/"
-  echo "  ausgehend: $out_count praefixloses Ziel(e) in der bewegten Datei auf ../$from/ umgehaengt"
+  echo "  ausgehend: $out_count praefixloses Ziel(e) in der bewegten Datei auf $stufen$from/ umgehaengt"
   if [ "${#touched[@]}" -gt 0 ]; then
     echo "  Commit 2 (Inhalt, getrennt vom Move): $in_count eingehend, $out_count ausgehend, $bare_count praefixlos aus $from/"
   else
