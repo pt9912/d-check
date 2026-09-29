@@ -94,6 +94,9 @@ func FindWellePlan(root, welleID string) (string, error) {
 // CollectSlices findet alle Slice-Dateien in <root>/docs/plan/planning/done/,
 // deren **Welle:**-Feld die Kennung welleID nennt -- als eigenstaendige
 // welle-<N>-Ziffernfolge im Feldwert, unabhaengig von Link- oder Freitextform.
+// Gelesen wird flach und eine Ebene darunter: das done/ dieses Repos traegt
+// Lifecycle-Unterordner (welle-<NN>, wellenlos), deren Slices sonst unsichtbar
+// blieben; tiefer wird nicht gegriffen.
 func CollectSlices(root, welleID string) ([]string, error) {
 	dir := filepath.Join(root, "docs/plan/planning/done")
 	entries, err := os.ReadDir(dir)
@@ -101,25 +104,46 @@ func CollectSlices(root, welleID string) ([]string, error) {
 		return nil, fmt.Errorf("done-Verzeichnis lesen: %w", err)
 	}
 	var out []string
-	for _, e := range entries {
+	scan := func(sub string, e os.DirEntry) error {
 		if e.IsDir() || !strings.HasPrefix(e.Name(), "slice-") || !strings.HasSuffix(e.Name(), ".md") {
-			continue
+			return nil
 		}
-		path := filepath.Join(dir, e.Name())
+		path := filepath.Join(sub, e.Name())
 		b, err := os.ReadFile(path)
 		if err != nil {
-			return nil, fmt.Errorf("%s lesen: %w", path, err)
+			return fmt.Errorf("%s lesen: %w", path, err)
 		}
 		field := welleFieldRE.FindString(string(b))
 		if field == "" {
-			continue
+			return nil
 		}
 		m := welleIDInFieldRE.FindStringSubmatch(field)
 		if m == nil {
-			continue
+			return nil
 		}
 		if "welle-"+m[1] == welleID {
 			out = append(out, path)
+		}
+		return nil
+	}
+	for _, e := range entries {
+		if err := scan(dir, e); err != nil {
+			return nil, err
+		}
+	}
+	for _, e := range entries {
+		if !e.IsDir() {
+			continue
+		}
+		sub := filepath.Join(dir, e.Name())
+		subs, err := os.ReadDir(sub)
+		if err != nil {
+			return nil, fmt.Errorf("%s lesen: %w", sub, err)
+		}
+		for _, se := range subs {
+			if err := scan(sub, se); err != nil {
+				return nil, err
+			}
 		}
 	}
 	sort.Strings(out)

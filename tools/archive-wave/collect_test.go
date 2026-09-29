@@ -185,3 +185,35 @@ func TestSliceIDFromPath(t *testing.T) {
 		t.Fatalf("erwartet leeren String ohne slice-Kennung, got %q", got)
 	}
 }
+
+func TestCollectSlices_Unterordner(t *testing.T) {
+	root := t.TempDir()
+	// done/welle-91/ — die Lifecycle-Unterordner-Form dieses Repos.
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-91/slice-245-a.md"),
+		"# Slice slice-245: A\n\n**Welle:** welle-91.\n")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-91/slice-246-b.md"),
+		"# Slice slice-246: B\n\n**Welle:** welle-91.\n")
+	// flache Form bleibt getroffen.
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/slice-244-c.md"),
+		"# Slice slice-244: C\n\n**Welle:** welle-91.\n")
+	// zweite Ebene wird nicht gegriffen.
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-91/unter/slice-997-d.md"),
+		"# Slice slice-997: D\n\n**Welle:** welle-91.\n")
+	// fremde Welle im Unterordner bleibt draußen.
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-90/slice-996-e.md"),
+		"# Slice slice-996: E\n\n**Welle:** welle-90.\n")
+
+	got, err := CollectSlices(root, "welle-91")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got) != 3 {
+		t.Fatalf("erwartet 3 Slices, got %d: %v", len(got), got)
+	}
+	for _, p := range got {
+		base := filepath.Base(p)
+		if base != "slice-245-a.md" && base != "slice-246-b.md" && base != "slice-244-c.md" {
+			t.Errorf("unerwarteter Treffer: %s", base)
+		}
+	}
+}
