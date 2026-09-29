@@ -39,18 +39,23 @@
   75 Dateien außerhalb des vendorten Baums nannten `v6.9.0` — **161**
   Vorkommen. **36** blieb der erste Ersetzungs-Wurf ganz schuldig (Pfad-
   Verweise, `d-check:cite`-Direktiven, die Skills unter `.harness/skills/`,
-  `spec/architecture.md`); **8** trugen Mischfundstellen — lebende Verweise
+  `spec/architecture.md`); **10** trugen Mischfundstellen — lebende Verweise
   neben frozen Vergangenheits-Aussagen — und wurden zeilenweise getrennt:
   `AGENTS.md`, `harness/README.md`, `harness/conventions.md`, `roadmap.md`,
   `observations/README.md`, `MR-021`, `MR-049`, `MR-053` (je Release-/Zip-URL
-  oder bare Nennung „Baseline-Form `v6.9.0` §N" retargetet, Prosa bleibt);
-  **29** blieben ganz frozen: 13 `done/`-Slices (inkl. Stub slice-224), 2
+  oder bare Nennung „Baseline-Form `v6.9.0` §N" retargetet, Prosa bleibt),
+  `MR-056` (Baseline-Link des Zitats retargetet, der Wortlaut-Vermerk bleibt)
+  und `spec/spezifikation.md` (§Rolle-Pointer retargetet, Historie-Zeilen
+  bleiben) — die letzten beiden erst im Review-R1-Report als Mischfälle
+  erkannt, nicht in der ersten Liste;
+  **27** blieben ganz frozen: 13 `done/`-Slices (inkl. Stub slice-224), 2
   Review-Reports, 3 aufgelöste MR-Dateien, CO-002, der eingehende CR, 1
   Evidence-Datei, [ADR-0085](../../docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md)
   (Provenanz-Prosa + Link, siehe unten —
-  [`docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md`](../../docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md)), 2
-  Spec-Historie-Zeilen-Träger, 3 Code-Kommentar-Träger, `.d-check.closure.yml`
-  (2 Provenanz-Kommentare), MR-056 (Zitat-Delta-Vermerk). Dazu der
+  [`docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md`](../../docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md)), 1
+  Spec-Historie-Zeilen-Träger (`spec/lastenheft.md`), 3 Code-Kommentar-Träger,
+  `.d-check.closure.yml`
+  (2 Provenanz-Kommentare). Dazu der
   slice-240-Plan selbst (Gegenstands-Nennung) und die MR-072-Datei (Zug nach
   `conventions/done/`, byte-stabil — ihr Geltungsbereich nennt den
   `v6.9.0`-Baum als Vergangenheits-Aussage korrekt). Die 8 Baseline-Symlinks
@@ -64,9 +69,16 @@
   `target-missing` — vier neue Einträge in `.d-check.yml`
   ([`MR-069`](../conventions.md#mr-069--das-ignore-refs-ventil-ist-eine-deklarierte-gate-senkung-und-es-wächst-mit-jedem-bump)).
 
-  **Kein `d-check:cite`-Neu-Ankern, kein Zitat-Delta** — anders als beim
-  Vorgänger: die beiden im slice-240-Plan verankerten Spannen wurden schon
-  vor dem Swap auf `v6.13.0` geankert, und die wörtlichen Zitate in lebenden
+  **`d-check:cite`-Neu-Ankern, kein Zitat-Delta** — die Abwesenheits-Behauptung
+  der ersten Fassung dieses Eintrags war falsch (Review-R1-F-1, gemessen am
+  Diff statt behauptet): **15** Direktiven tragen der Hebung Rechnung, **6**
+  davon neu geankert — reine Zeilenverschiebung bei unverändertem Wortlaut
+  (`MR-005` `grundlagen-durchsetzungsschicht.md` 50→66; `MR-031`
+  `modul-09-implementierung.md` 196→203; `MR-049`
+  `modul-05-planning-harness.md` 170-171→180-181 und 160→170; die beiden
+  Spannen des slice-240-Plans 363-364→373-374 und 369→379) — und **9**
+  tag-only (Spanne identisch, nur der Baum-Pfad wechselte). Kein Zitat-Delta
+  ([`MR-039`](../conventions.md#mr-039)): die wörtlichen Zitate in lebenden
   Dokumenten (MR-056 zu `modul-05` §Lifecycle) sind im `v6.13.0`-Wortlaut
   unverändert — der Satz „…die Bedingung dafür, dass die Datei überhaupt
   nach `done/` darf…" steht zeilenidentisch (Zeile 36, im Delta nicht
