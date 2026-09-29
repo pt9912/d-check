@@ -102,7 +102,9 @@ wellenlos hier geprüft).
   1 bestätigt das unabhängig); die Delta-Treue ist voll (R1-Negativbefund
   2: alle fünf Tragflächen aus `modul-04` v6.13.0 übernommen, keine Drift);
   die bewusste Abgrenzung „PR-blockierender Satz" unzitiert gelassen
-  (R1-Negativbefund 3).
+  (R1-Negativbefund 3). Nachtlauf-Stand bei der Beanspruchung
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): beide Nachtläufe
+  grün (upstream-drift 2026-09-29, image-scan 2026-09-28).
 - **Was ging anders als geplant:** Der §3.6-Text landete zuerst im
   slice-241-Commit (Kreuz-Zuordnung, Ursache: verunreinigter Index nach
   einem am Hook gescheiterten Commit-Versuch) — Re-Split vor Push,
