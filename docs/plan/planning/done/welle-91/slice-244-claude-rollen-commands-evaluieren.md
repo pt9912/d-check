@@ -7,8 +7,8 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle as State Machine.
 
 **Welle:** welle-91.
 
-**Bezug:** [`welle-91`](../welle-91-adoption-ai-harness-init.md),
-[`MR-073`](../../../../harness/conventions.md#mr-073)
+**Bezug:** [`welle-91`](../../welle-91-adoption-ai-harness-init.md),
+[`MR-073`](../../../../../harness/conventions.md#mr-073)
 (Baseline-Stand, der dem Schwester-Bootstrap zugrunde liegt).
 Keine `DC-*` — Rollen- und Command-Doku berührt kein
 Produkt-Anforderungs-Delta.
@@ -64,7 +64,7 @@ Agent-Duplikat trüge dieselbe Anweisung an zweiter Stelle.
 **Start** (`open` → `in-progress`): direkt beansprucht — die
 Welle-Eröffnung (welle-91, Auftraggeber 2026-09-29) ist die Beanspruchung;
 der Nachtlauf-Stand wird bei der Beanspruchung gelesen
-([`MR-053`](../../../../harness/conventions.md#mr-053)).
+([`MR-053`](../../../../../harness/conventions.md#mr-053)).
 
 **Rückführungen:** `in-progress` → `next` (zu groß): fällt die Evaluierung
 je Rolle verschieden scharf aus (Adoption vs. Diskussion), wird pro Rolle
@@ -100,7 +100,7 @@ wellenlos hier geprüft).
   verortete die Vorprüfungen im Plan-Kopf; korrigiert auf §8. R1-F-3
   (LOW) — Nachtlauf-Stand nachgereicht (unten).
 - **Steering-Loop-Eintrag:** keiner.
-- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag.
+- **Beobachtungs-Register (`../../observations/`):** kein neuer Eintrag.
 - **Folge-Slices:** keine — die Adoption ist abgeschlossen;
   Betrieb-Erfahrungen mit den neuen Rollen sammelt die Welle-Closure.
 - **Risiken aus §6:** R1 (adoptierte Rollen bleiben unbesetzt) — offen
@@ -110,7 +110,7 @@ wellenlos hier geprüft).
 - **Drei Paarungen:** Lerneintrag „Rollen-Adoption: der Rollen-Achse-Absatz
   wandert mit, die ANPASSEN-Platzhalter werden zu Repo-Quellen" —
   Folge-Slice: keiner — Register: kein neuer Eintrag.
-- **Nachtlauf-Stand bei der Beanspruchung** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+- **Nachtlauf-Stand bei der Beanspruchung** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
   beide Nachtläufe grün (upstream-drift 2026-09-29, image-scan 2026-09-28).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
