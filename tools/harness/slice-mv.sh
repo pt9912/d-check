@@ -226,17 +226,25 @@ main() {
   base="$(basename "$found")"
   from="$(basename "$(dirname "$found")")"
   if [ "$from" = "$TO" ]; then
-    echo "slice-mv: '$base' liegt bereits in $TO/" >&2
+    echo "slice-mv: '$base' liegt bereits in $ziel/" >&2
     exit 2
   fi
 
   mkdir -p "$PLANNING/$ziel"
   git mv "$found" "$PLANNING/$ziel/$base"
 
+  # Identitaet-Fallback: ein frischer Klon traegt keine git-Identitaet — die
+  # Commits des Skripts bringen sie selbst mit (dieselbe Form wie die
+  # Selbstpruefung), ohne eine konfigurierte Identitaet zu ueberschreiben.
+  local -a ident=()
+  if [ -z "$(git config user.email || true)" ]; then
+    ident=(-c user.email=d-check@local -c user.name="d-check slice-mv")
+  fi
+
   # Commit 1 — reiner Move, kein Byte Inhalt veraendert: der Arbeitsbaum war
   # laut Vorpruefung sauber, `git mv` ist die einzige gestagte Aenderung, also
   # committet dieser Aufruf genau sie.
-  git commit -q -m "slice-mv: $base  $from/ -> $TO/ (reiner Move)"
+  git "${ident[@]}" commit -q -m "slice-mv: $base  $from/ -> $ziel/ (reiner Move)"
 
   # EINGEHEND, repo-weit — ausser der Liste aus eingehend_ausgenommene_pfade().
   # Zeitdokumente sind NICHT ausgenommen: `done/`, `docs/reviews/` und die
@@ -274,18 +282,18 @@ main() {
   # AUSGEHEND — nur in der bewegten Datei selbst, an ihrem NEUEN Ort.
   local out_count
   out_count="$(rewrite_outgoing_bare_in_file "$PLANNING/$ziel/$base" "$from")"
-  [ "$out_count" -gt 0 ] && touched+=("$PLANNING/$TO/$base")
+  [ "$out_count" -gt 0 ] && touched+=("$PLANNING/$ziel/$base")
 
   # Commit 2 — Inhaltsaenderung, GETRENNT vom Move, nur wenn ueberhaupt ein
   # Verweis anfiel; explizite Pfade statt `git add -A`, damit kein anderer
   # (eigentlich schon per VORAUSSETZUNG ausgeschlossener) Diff mitgenommen wird.
   if [ "${#touched[@]}" -gt 0 ]; then
     git add -- "${touched[@]}"
-    git commit -q -m "slice-mv: Verweise auf $base nach $TO/ nachgezogen ($in_count eingehend, $out_count ausgehend, $bare_count praefixlos aus $from/)"
+    git "${ident[@]}" commit -q -m "slice-mv: Verweise auf $base nach $ziel/ nachgezogen ($in_count eingehend, $out_count ausgehend, $bare_count praefixlos aus $from/)"
   fi
 
-  echo "slice-mv ok: $base  $from/ -> $TO/"
-  echo "  Commit 1 (reiner Move): $from/$base -> $TO/$base"
+  echo "slice-mv ok: $base  $from/ -> $ziel/"
+  echo "  Commit 1 (reiner Move): $from/$base -> $ziel/$base"
   echo "  eingehend: $in_count Datei(en) mit Verweisen nachgezogen, darin $bare_count praefixlose(r) Link(s) aus Geschwistern unter $from/"
   echo "  ausgehend: $out_count praefixloses Ziel(e) in der bewegten Datei auf ../$from/ umgehaengt"
   if [ "${#touched[@]}" -gt 0 ]; then
