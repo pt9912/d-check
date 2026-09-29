@@ -401,17 +401,17 @@ tidy: ## go.mod/go.sum aufräumen (go mod tidy in Docker; Dependency-Pflege).
 	    -v "$(CURDIR)":/src -w /src golang:$(GO_VERSION) \
 	    go mod tidy
 
-# SLICE_MV_DONE_UNTERORDNER — d-check-Anpassung (slice-245): d-checks done/
+# SLICE_MV_DONE_UNTERORDNER — d-check-Anpassung · seit slice-245: d-checks done/
 # traegt Lifecycle-Unterordner (welle-<NN>); der Wert wird je Aufruf mitgegeben
 # (Wellen-Slice: welle-<NN>, wellenlos: ungesetzt). Das Skript liest ihn aus der
 # Umgebung, der Aufruf reicht ihn hier durch.
-slice-mv: ## Lifecycle-Wechsel eines Slice: SLICE=slice-<Kennung> TO=<open|next|in-progress|done> — reiner Move-Commit + Verweis-Reparatur als eigener Commit. Adoptiert aus ai-harness-init (slice-245).
+slice-mv: ## Lifecycle-Wechsel eines Slice: SLICE=slice-<Kennung> TO=<open|next|in-progress|done> — reiner Move-Commit + Verweis-Reparatur als eigener Commit. Adoptiert aus ai-harness-init · seit slice-245.
 	SLICE_MV_DONE_UNTERORDNER="$(SLICE_MV_DONE_UNTERORDNER)" bash tools/harness/slice-mv.sh $(SLICE) $(TO)
 
-selbstpruefung: ## Negativ-Selbsttest des commit-msg-Hooks im Wegwerf-Klon (kein Gate). Adoptiert aus ai-harness-init (slice-245); braucht Docker.
+selbstpruefung: ## Negativ-Selbsttest des commit-msg-Hooks im Wegwerf-Klon (kein Gate). Adoptiert aus ai-harness-init · seit slice-245; braucht Docker.
 	bash tools/harness/selbstpruefung.sh
 
-history-range-guard: ## Vorlauf-Wächter der history-lesenden Targets als Einzellauf (RANGE=a..b, STAGED=1, sonst HEAD~1..HEAD). Adoptiert aus ai-harness-init (slice-245); kein Gate.
+history-range-guard: ## Vorlauf-Wächter der history-lesenden Targets als Einzellauf (RANGE=a..b, STAGED=1, sonst HEAD~1..HEAD). Adoptiert aus ai-harness-init · seit slice-245; kein Gate.
 	bash tools/harness/history-range-guard.sh $(if $(STAGED),--staged,$(if $(RANGE),$(RANGE),HEAD~1..HEAD))
 
 clean: ## Lokale Images entfernen.

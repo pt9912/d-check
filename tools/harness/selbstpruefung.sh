@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # selbstpruefung.sh — Negativ-Selbsttest des commit-msg-Hooks, adoptiert aus
-# ai-harness-init (Stand v6.13.0, slice-245). EIN KOMMANDO, KEIN GATE.
+# ai-harness-init (Stand v6.13.0) · seit slice-245. EIN KOMMANDO, KEIN GATE.
 #
 # WAS ER BELEGT. Dieses Repo klont sich selbst in ein Wegwerf-Verzeichnis,
 # stellt fest, dass der frische Klon in seiner LOKALEN Konfiguration keinen

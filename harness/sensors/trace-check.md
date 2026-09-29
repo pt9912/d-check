@@ -9,6 +9,11 @@ Ausgenommen sind Merge- und Revert-Commits.
 **Zwei Modi über dasselbe Modul:** `--range` für CI und Push, `--commit-msg -`
 für den Hook über stdin.
 
+**Vorlauf-Wächter:** dem Container-Lauf geht `history-range-guard` voraus
+(Host-bash, kein Docker) — eine angeforderte Range, die im Klon nicht
+auflösbar oder leer ist, bricht laut ab, bevor das Modul startet; stilles
+Grün über leerem Prüfbereich (shallow-Klon) kommt so nicht zustande.
+
 ## Grenze — was das Grün nicht abdeckt
 
 1. **Geprüft ist die Nennung, nicht der Bezug** — dass eine Botschaft eine

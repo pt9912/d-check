@@ -124,9 +124,9 @@ behaupten.
 | `make baseline-probe` | fährt die Alias-Auflösung von [`baseline-verify`](sensors/baseline-verify.md) gegen neun Proben | kein Gate · [`MR-055`](conventions.md#mr-055) |
 | `make trace` | gibt die Requirements-Traceability-Matrix auf stdout aus | kein Gate · [`DC-FA-CLI-009`](../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) |
 | [`make archive-wave`](sensors/archive-wave.md) | bewegt geschlossene Zeitdokumente ins Archiv und ersetzt sie durch Stubs; ohne `APPLY=1` wird nichts geschrieben | kein Gate |
-| `make slice-mv` | Lifecycle-Wechsel eines Slice: reiner Move-Commit + Verweis-Reparatur (eingehend/ausgehend) als eigener Commit — automatisiert die §3.3-Zweikommits | kein Gate · adoptiert aus ai-harness-init (slice-245) |
-| `make history-range-guard` | Vorlauf-Wächter für history-lesende Targets: angeforderte Range auflösbar und nicht leer (stilles Grün über leerem Prüfbereich, shallow-Clone) | kein Gate · adoptiert aus ai-harness-init (slice-245) |
-| `make selbstpruefung` | Negativ-Selbsttest des commit-msg-Hooks im Wegwerf-Klon: ohne Kennung fällt der Commit, mit Kennung geht er durch, `make gates` läuft im Klon | kein Gate · adoptiert aus ai-harness-init (slice-245) |
+| `make slice-mv` | Lifecycle-Wechsel eines Slice: reiner Move-Commit + Verweis-Reparatur (eingehend/ausgehend) als eigener Commit — automatisiert die §3.3-Zweikommits | kein Gate · adoptiert aus ai-harness-init |
+| `make history-range-guard` | Vorlauf-Wächter für history-lesende Targets: angeforderte Range auflösbar und nicht leer (stilles Grün über leerem Prüfbereich, shallow-Clone) | kein Gate · adoptiert aus ai-harness-init |
+| `make selbstpruefung` | Negativ-Selbsttest des commit-msg-Hooks im Wegwerf-Klon: ohne Kennung fällt der Commit, mit Kennung geht er durch, `make gates` läuft im Klon | kein Gate · adoptiert aus ai-harness-init |
 | `make tidy` | pflegt `go.mod`/`go.sum` in Docker — bewusster Akt am Dependency-Stand | kein Gate |
 | `make build` | baut das Runtime-Image — Prerequisite von `image-test` und damit von `ci`/`fullbuild` | kein Gate |
 | `make run` | Selbst-Smoke-Test des gebauten Images | kein Gate |

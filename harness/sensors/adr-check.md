@@ -14,6 +14,11 @@ und ausdrücklich **nicht** Teil des Kern-Vergleichs
 
 Eine gelöschte oder umbenannte `Accepted`-ADR ist ein **FAIL**.
 
+**Vorlauf-Wächter:** dem Container-Lauf geht `history-range-guard` voraus
+(Host-bash, kein Docker) — eine angeforderte Range, die im Klon nicht
+auflösbar oder leer ist, bricht laut ab, bevor das Modul startet; stilles
+Grün über leerem Prüfbereich (shallow-Klon) kommt so nicht zustande.
+
 ## Grenze — was das Grün nicht abdeckt
 
 1. **Zwei Modi, ein Bindepunkt-Paar** — `STAGED=1` im `pre-commit`-Hook,

@@ -96,7 +96,7 @@ psed_i() {
 # gesetzt ist.
 SLICE_MV_AUSGENOMMENE_PFADE="${SLICE_MV_AUSGENOMMENE_PFADE:-:!.harness/baseline :!docs/plan/adr}"
 
-# d-check-ANPASSUNG (slice-245): done/ traegt Lifecycle-Unterordner (wellenlos
+# d-check-ANPASSUNG · seit slice-245: done/ traegt Lifecycle-Unterordner (wellenlos
 # fuer wellenlose Slices, welle-NN fuer Wellen-Slices). Die Variable
 # SLICE_MV_DONE_UNTERORDNER mappt TO=done auf den Unterordner — gesetzt in der
 # Make-Quelle dieses Repos. Ohne sie gilt die Schwester-Form (flaches done/).
@@ -161,21 +161,25 @@ rewrite_incoming_bare_in_file() {  # $1=datei $2=base $3=to
 }
 
 # AUSGEHEND: praefixlose "](slice-…)"-Ziele INNERHALB von $file, deren Datei im
-# $from-Verzeichnis liegen geblieben ist, bekommen "../$from/" vorangestellt —
-# sonst zeigt der Verweis nach dem Wechsel ins neue (falsche) Verzeichnis.
+# $from-Verzeichnis liegen geblieben ist, bekommen die Stufen-Kette aus $3
+# ("../" je Segment) plus "$from/" vorangestellt — sonst zeigt der Verweis nach
+# dem Wechsel ins neue (falsche) Verzeichnis. Die Stufen-Kette traegt die Tiefe
+# des neuen Orts: aus "done/welle-91" heraus steigt ein Verweis mit zwei Stufen
+# ("../../in-progress/X") auf das planning-Niveau, aus "next" heraus reicht
+# eine ("../in-progress/X").
 # Nur "slice-"-Ziele (Grenze 2 im Skriptkopf); ein Ziel, das nicht (mehr) unter
 # $from liegt, bleibt unberuehrt (kein Rateversuch, welches Verzeichnis stimmt).
 # Das Fundmuster trifft eine nummerierte Kennung (slice-NNN…) ebenso wie eine
 # benannte (slice-<slug>, lowercase Kebab-Case ohne Ziffern-Praefix).
 # Gibt die Anzahl umgehaengter Ziele auf stdout aus — main() liest sie per
 # Kommando-Substitution, statt Vorher/Nachher getrennt zu zaehlen.
-rewrite_outgoing_bare_in_file() {  # $1=datei $2=from
-  local file="$1" from="$2" t esc_t count=0
+rewrite_outgoing_bare_in_file() {  # $1=datei $2=from $3=stufen
+  local file="$1" from="$2" stufen="$3" t esc_t count=0
   while IFS= read -r t; do
     [ -n "$t" ] || continue
     [ -f "$PLANNING/$from/$t" ] || continue
     esc_t="$(re_escape "$t")"
-    psed_i -E "s#\\]\\($esc_t\\)#](../$from/$t)#g" "$file"
+    psed_i -E "s#\\]\\($esc_t\\)#]($stufen$from/$t)#g" "$file"
     count=$((count + 1))
   done < <(grep -ohE '\]\(slice-[0-9a-z][^)/]*\)' "$file" 2>/dev/null \
              | sed -E 's/^\]\(//; s/\)$//' | sort -u)
@@ -226,7 +230,7 @@ main() {
   base="$(basename "$found")"
   from="$(basename "$(dirname "$found")")"
   if [ "$from" = "$TO" ]; then
-    echo "slice-mv: '$base' liegt bereits in $ziel/" >&2
+    echo "slice-mv: '$base' liegt bereits in $from/" >&2
     exit 2
   fi
 
@@ -236,6 +240,9 @@ main() {
   # Identitaet-Fallback: ein frischer Klon traegt keine git-Identitaet — die
   # Commits des Skripts bringen sie selbst mit (dieselbe Form wie die
   # Selbstpruefung), ohne eine konfigurierte Identitaet zu ueberschreiben.
+  # Die Expansion ${ident[@]+…} haelt das leere Array unter bash < 4.4 fuer
+  # `set -u` unschaedlich (dort ist die Expansion eines leeren Arrays ein
+  # unbound-variable-Fehler), auf jungen bash ist sie ohne Wirkung.
   local -a ident=()
   if [ -z "$(git config user.email || true)" ]; then
     ident=(-c user.email=d-check@local -c user.name="d-check slice-mv")
@@ -244,7 +251,7 @@ main() {
   # Commit 1 — reiner Move, kein Byte Inhalt veraendert: der Arbeitsbaum war
   # laut Vorpruefung sauber, `git mv` ist die einzige gestagte Aenderung, also
   # committet dieser Aufruf genau sie.
-  git "${ident[@]}" commit -q -m "slice-mv: $base  $from/ -> $ziel/ (reiner Move)"
+  git ${ident[@]+"${ident[@]}"} commit -q -m "slice-mv: $base  $from/ -> $ziel/ (reiner Move)"
 
   # EINGEHEND, repo-weit — ausser der Liste aus eingehend_ausgenommene_pfade().
   # Zeitdokumente sind NICHT ausgenommen: `done/`, `docs/reviews/` und die
@@ -279,9 +286,16 @@ main() {
     esac
   done < <(git grep -l -F -e "]($base" -- ":(glob)$PLANNING/$from/*.md" "${in_pathspec[@]}" 2>/dev/null || true)
 
-  # AUSGEHEND — nur in der bewegten Datei selbst, an ihrem NEUEN Ort.
-  local out_count
-  out_count="$(rewrite_outgoing_bare_in_file "$PLANNING/$ziel/$base" "$from")"
+  # AUSGEHEND — nur in der bewegten Datei selbst, an ihrem NEUEN Ort. Die
+  # Stufen-Kette ("../" je Segment von $ziel) haelt die Ersetzung relativ zum
+  # neuen Ort richtig — auch dann, wenn $ziel ein Unterordner ist
+  # (done/welle-91: zwei Stufen, ../../$from/).
+  local out_count stufen="" rest="$ziel"
+  while [ -n "$rest" ]; do
+    stufen="$stufen../"
+    case "$rest" in */*) rest="${rest#*/}" ;; *) rest="" ;; esac
+  done
+  out_count="$(rewrite_outgoing_bare_in_file "$PLANNING/$ziel/$base" "$from" "$stufen")"
   [ "$out_count" -gt 0 ] && touched+=("$PLANNING/$ziel/$base")
 
   # Commit 2 — Inhaltsaenderung, GETRENNT vom Move, nur wenn ueberhaupt ein
@@ -289,7 +303,7 @@ main() {
   # (eigentlich schon per VORAUSSETZUNG ausgeschlossener) Diff mitgenommen wird.
   if [ "${#touched[@]}" -gt 0 ]; then
     git add -- "${touched[@]}"
-    git "${ident[@]}" commit -q -m "slice-mv: Verweise auf $base nach $ziel/ nachgezogen ($in_count eingehend, $out_count ausgehend, $bare_count praefixlos aus $from/)"
+    git ${ident[@]+"${ident[@]}"} commit -q -m "slice-mv: Verweise auf $base nach $ziel/ nachgezogen ($in_count eingehend, $out_count ausgehend, $bare_count praefixlos aus $from/)"
   fi
 
   echo "slice-mv ok: $base  $from/ -> $ziel/"

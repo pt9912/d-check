@@ -7,10 +7,13 @@
 # (z. B. `HEAD..HEAD`) "0 Befund(e)", Exit 0 — das Modul unterscheidet das nicht von
 # "wirklich nichts zu melden". Das Ergebnis ist gruen ueber leerem Pruefbereich.
 #
-# GRENZE — was dieser Waechter NICHT deckt: eine UNAUFLOESBARE Basis (z. B. `HEAD~1` im
-# Klon der Tiefe 1) bricht schon ohne ihn ab (git kennt den Commit dort nicht). Ein
-# `--staged`-Lauf vergleicht den Index gegen HEAD, braucht keine Tiefe > 1 und loest den
-# Range-Check darum nicht aus; den Leerfall meldet er trotzdem.
+# GRENZE — der Fall, in dem dieser Wächter NICHTS zuträgt: eine UNAUFLOESBARE
+# Basis (z. B. `HEAD~1` im Klon der Tiefe 1) ist still-grün-frei — das Modul
+# bricht dort ohne ihn laut ab (gemessen: Exit 2), und der Wächter fängt
+# dieselbe Lage vorab selbst mit Exit 2 (s. u.). Sein ANLASS ist allein der
+# leere, aber auflösbare Fall. Ein `--staged`-Lauf vergleicht den Index gegen
+# HEAD, braucht keine Tiefe > 1 und löst den Range-Check darum nicht aus; den
+# Leerfall meldet decide_staged trotzdem.
 #
 # Kein Docker, kein Netz: bash + git. Das Doc-Gate-Fragment haengt ihn darum als
 # Vorbedingung vor die zwei Targets — er laeuft, bevor der Container startet.
