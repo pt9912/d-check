@@ -9,8 +9,8 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle as State Machine.
 repo-weites Mehr (Baseline-Regelwerk
 `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht).
 
-**Bezug:** die Adoptions-Kette [`MR-073`](../../../../harness/conventions.md#mr-073)
-(Lieferant des Deltas) und [`slice-241`](../done/wellenlos/slice-241-trigger-audit-adoption.md)
+**Bezug:** die Adoptions-Kette [`MR-073`](../../../../../harness/conventions.md#mr-073)
+(Lieferant des Deltas) und [`slice-241`](slice-241-trigger-audit-adoption.md)
 (Adoption als Prosa-Schritt); Baseline-Regelwerk `modul-06-roadmap.md`
 v6.13.0 §Closure („Erreicht dieselbe Fehlerklasse trotzdem ein **viertes**
 Mal die Schwelle, gilt die Prosa-Form als ausgeschöpft: Der neue
@@ -77,7 +77,7 @@ sinnvoll ist oder bei Bedarf folgt; beides ist ein zulässiger Ausgang.
 **Start** (`open` → `in-progress`): direkt beansprucht — die
 Auftraggeber-Anfrage (2026-09-29) ist die Beanspruchung selbst; der
 Nachtlauf-Stand wird bei der Beanspruchung gelesen
-([`MR-053`](../../../../harness/conventions.md#mr-053)).
+([`MR-053`](../../../../../harness/conventions.md#mr-053)).
 
 **Rückführungen — vorab benennen, nicht erst im Nachhinein begründen:**
 
@@ -120,15 +120,15 @@ wellenlos hier geprüft).
     Konstanten ohne Hochschalt-Trigger (V-Beleg slice-241); nichts zu
     mechanisieren.
   - **ADR — Prosa-Verbleib.** 76 Sektionen über 96 ADR-Dateien
-    ([ADR-0001](../../../../docs/plan/adr/0001-implementierungssprache.md)
+    ([ADR-0001](../../../../../docs/plan/adr/0001-implementierungssprache.md)
     bis
-    [ADR-0096](../../../../docs/plan/adr/0096-agents-md-regel-auslagerung-harness-rules.md),
+    [ADR-0096](../../../../../docs/plan/adr/0096-agents-md-regel-auslagerung-harness-rules.md),
     ohne Lücken) plus README-Index tragen eine
     `## Re-Evaluierungs-Trigger`-Zeile (gemessen: `grep -l` über
     `docs/plan/adr/`); die Konditionale sind je einzigartig (Stichprobe
-    [ADR-0048](../../../../docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md),
-    [ADR-0066](../../../../docs/plan/adr/0066-cve-scan-gegen-das-publizierte-image.md),
-    [ADR-0072](../../../../docs/plan/adr/0072-workflows-modul.md) —
+    [ADR-0048](../../../../../docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md),
+    [ADR-0066](../../../../../docs/plan/adr/0066-cve-scan-gegen-das-publizierte-image.md),
+    [ADR-0072](../../../../../docs/plan/adr/0072-workflows-modul.md) —
     R1-Report); „eingetreten?“ ist Urteil.
     Die Linkpflicht (ids) deckt die Erreichbarkeit, nicht die
     Bedeutungsfälle. *(R1-F-1: die erste Fassung nannte „97 Konditionale“
@@ -141,7 +141,7 @@ wellenlos hier geprüft).
 - **Steering-Loop-Eintrag:** keiner — die vierte-Mal-Schwelle ist nicht
   erreicht (kein Audit-Fehler bisher); der Prosa-Verbleib argumentiert
   exakt damit (DoD 2).
-- **Beobachtungs-Register (`../observations/`):** kein neuer Eintrag — der
+- **Beobachtungs-Register (`../../observations/`):** kein neuer Eintrag — der
   Audit-Schritt trägt seinen Vollzugs-Beleg in der Closure-Notiz
   (slice-241-Muster).
 - **Folge-Slices:** keine — bei der ersten Audit-Auffälligkeit kehrt die
@@ -153,7 +153,7 @@ wellenlos hier geprüft).
 - **Drei Paarungen:** Lerneintrag „der Audit hat vier Klassen, keine
   mechanisierbar ohne Anlass" — Folge-Slice: keiner — Register: kein
   neuer Eintrag.
-- **Nachtlauf-Stand bei der Beanspruchung** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+- **Nachtlauf-Stand bei der Beanspruchung** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
   beide Nachtläufe grün (upstream-drift 2026-09-29, image-scan
   2026-09-28).
 
