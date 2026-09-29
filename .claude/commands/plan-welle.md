@@ -26,8 +26,9 @@ Lies den MR-Block in `harness/conventions.md`; die planungs-relevanten:
   commit-msg-Hook verlangt zusätzlich eine slice-/MR-/ADR-/DC-ID in der Botschaft.
 - **Commit via Message-Datei** (`git commit -F <datei>`); `make gates` endet mit `record-gates`,
   jede Inhaltsänderung nach einem Gate-Lauf macht den Stempel ungültig.
-- **§8 der Slice-Pläne trägt die beiden `d-check:cite`-Spannen** ([`MR-054`](../../harness/conventions.md#mr-054)),
-  der Plan-Kopf die drei Vorprüfungen samt Nachtlauf ([`MR-053`](../../harness/conventions.md#mr-053)).
+- **§8 der Slice-Pläne trägt die beiden `d-check:cite`-Spannen** ([`MR-054`](../../harness/conventions.md#mr-054))
+  **und die drei Vorprüfungen samt Nachtlauf** ([`MR-053`](../../harness/conventions.md#mr-053)) —
+  nicht den Plan-Kopf.
 
 ## Kontext lesen
 

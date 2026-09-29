@@ -26,9 +26,12 @@ Produkt-Anforderungs-Delta.
 **Ziel:** Die sechs `.claude/agents/`-Rollen der Schwester (architect,
 implementer, planner, reviewer, validator, verifier) und die drei
 `.claude/commands/` (plan-welle, implement-slice, close-welle) sind je
-evaluiert — adoptiert (an d-check angepasst: d-check führt heute reviewer,
-verifier als Agents und implement-slice als Skill) oder abgelehnt (je mit
-Begründung gegen Modul 8 und d-checks wellenlosen/wellenlosen-Betrieb).
+evaluiert — adoptiert (an d-check angepasst: d-check führt reviewer und
+verifier bereits als Agents, implement-slice als Command unter
+`.claude/commands/`) oder abgelehnt (je mit Begründung gegen Modul 8 und
+d-checks Betrieb). Die **Implementer-Rolle ist abgelehnt**: ihre Arbeit läuft
+im Hauptlauf nach AGENTS.md §6 bzw. über den implement-slice-Command — ein
+Agent-Duplikat trüge dieselbe Anweisung an zweiter Stelle.
 
 **Ausdrücklich NICHT in diesem Slice:**
 
@@ -93,6 +96,8 @@ wellenlos hier geprüft).
 - **Folge-Slices:** —
 - **Risiken aus §6:** —
 - **Drei Paarungen:** —
+- **Nachtlauf-Stand bei der Beanspruchung** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+  beide Nachtläufe grün (upstream-drift 2026-09-29, image-scan 2026-09-28).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
