@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave
+.PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave slice-mv selbstpruefung
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -365,6 +365,7 @@ verify-closure-notes: build ## Struktur des done/-Bestands: Closure-Notizen + Re
 # Der CI-Workflow (.github/workflows/ci.yml) ruft den Range-Modus, der Hook den
 # Message-Modus. Fokus-Disable wie adr-check (nur commits läuft).
 trace-check: build ## Traceability-Gate via Modul commits (Image, dogfood): DC-/ADR-/MR-/slice-ID in Commit-Messages (RANGE=a..b für CI, MSGFILE=… für den Hook, sonst HEAD~1..HEAD). ADR-0027 (löst die Skript-Mechanik von ADR-0013 ab).
+	@bash tools/harness/history-range-guard.sh $(if $(RANGE),$(RANGE),HEAD~1..HEAD)
 	@$(if $(MSGFILE),$(DCHECK_RUN_I) --commit-msg - < $(MSGFILE),$(DCHECK_RUN) --enable commits $(FOCUS_DISABLE) --range $(if $(RANGE),$(RANGE),HEAD~1..HEAD))
 
 # FOCUS_DISABLE wählt ALLE .d-check.yml-modules ab, sodass ein fokussiertes Gate
@@ -378,6 +379,7 @@ FOCUS_DISABLE := --disable links --disable anchors --disable ids --disable matri
     --disable codepaths --disable spans --disable hostpaths --disable versions \
     --disable structure --disable diagrams --disable citations --disable file
 adr-check: build ## ADR-Immutable-Gate via Modul vcs (Image, dogfood, nur vcs): Accepted-ADRs nicht inhaltlich ändern (RANGE=a..b für CI, STAGED=1 für den Hook, sonst HEAD~1..HEAD). ADR-0024 (löst die Skript-Mechanik von ADR-0016 ab); ADR-0025 entfernt das Alt-Skript.
+	@bash tools/harness/history-range-guard.sh $(if $(STAGED),--staged,$(if $(RANGE),$(RANGE),HEAD~1..HEAD))
 	$(DCHECK_RUN) --enable vcs $(FOCUS_DISABLE) $(if $(STAGED),--staged,--range $(if $(RANGE),$(RANGE),HEAD~1..HEAD))
 
 hooks: ## git-Hooks installieren (core.hooksPath -> .githooks; commit-msg Traceability + pre-commit ADR-Immutable). ADR-0013/0016.
@@ -398,6 +400,12 @@ tidy: ## go.mod/go.sum aufräumen (go mod tidy in Docker; Dependency-Pflege).
 	    -e GOTOOLCHAIN=local -e GOFLAGS=-mod=mod \
 	    -v "$(CURDIR)":/src -w /src golang:$(GO_VERSION) \
 	    go mod tidy
+
+slice-mv: ## Lifecycle-Wechsel eines Slice: SLICE=slice-<Kennung> TO=<open|next|in-progress|done> — reiner Move-Commit + Verweis-Reparatur als eigener Commit. Adoptiert aus ai-harness-init (slice-245).
+	bash tools/harness/slice-mv.sh $(SLICE) $(TO)
+
+selbstpruefung: ## Negativ-Selbsttest des commit-msg-Hooks im Wegwerf-Klon (kein Gate). Adoptiert aus ai-harness-init (slice-245); braucht Docker.
+	bash tools/harness/selbstpruefung.sh
 
 clean: ## Lokale Images entfernen.
 	@-docker image rm \
