@@ -9,16 +9,16 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle as State Machine.
 keine repo-weite Beobachtung darüber hinaus (Baseline-Regelwerk
 `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht).
 
-**Bezug:** [`slice-245`](../done/welle-91/slice-245-werkzeuge-evaluieren.md)
+**Bezug:** [`slice-245`](../../done/welle-91/slice-245-werkzeuge-evaluieren.md)
 — dessen stille-Grün-Verifikation am eigenen Adapter (shallow-Clone, Probe
 A: `HEAD..HEAD` ⇒ `0 Befund(e)`, Exit 0; Gegenprobe B: das commits-Modul
 bricht auf derselben Range laut ab, Exit 2),
-[ADR-0024](../../adr/0024-vcs-immutable-gate.md) (Modul `vcs`),
-[`ADR-0027`](../../adr/0027-commits-traceability-modul.md) (Modul `commits`,
+[ADR-0024](../../../adr/0024-vcs-immutable-gate.md) (Modul `vcs`),
+[`ADR-0027`](../../../adr/0027-commits-traceability-modul.md) (Modul `commits`,
 als laute Vergleichsstelle). Das Anforderungs-Delta (`DC-*`) entsteht in
 diesem Slice — im Lastenheft, nie per ADR (Dokumentations-Regel 3).
 
-**Berührte Spec-Stellen:** [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
+**Berührte Spec-Stellen:** [`DC-FA-VCS-001`](../../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
 (Lastenheft — das neue Delta entsteht daneben); Spezifikation, Abschnitt zu
 den situativen Range-Modulen `vcs`/`commits`.
 
@@ -68,7 +68,7 @@ Plan **geändert**, nicht nur ergänzt.
 ## 2. Definition of Done
 
 - [x] Neue `DC-*`-Anforderung im Lastenheft (nur dort; Historie-Zeile und
-      Versions-Bump per [`MR-032`](../../../../harness/conventions.md#mr-032)),
+      Versions-Bump per [`MR-032`](../../../../../harness/conventions.md#mr-032)),
       die den Leerfall als laut zu meldenden Zustand festlegt; die
       Spezifikation trägt die Grund-Code-Form des Leerfalls.
 - [x] Der Fix ist umgesetzt: leere, auflösbare Range im vcs-Modul ⇒
@@ -87,10 +87,10 @@ Plan **geändert**, nicht nur ergänzt.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `spec/lastenheft.md` | update | neue `DC-*` + Historie-Zeile ([MR-032](../../../../harness/conventions.md#mr-032)) |
+| `spec/lastenheft.md` | update | neue `DC-*` + Historie-Zeile ([MR-032](../../../../../harness/conventions.md#mr-032)) |
 | `spec/spezifikation.md` | update | Leerfall-Grund-Code in den Abschnitt zu den situativen Range-Modulen |
 | `internal/adapter/driven/git` (Adapter hinter `vcs`) | update | leere Range statt stiller Befundlosigkeit laut abbrechen |
-| Testdatei zum Adapter | neu/update | Happy/Negative/Boundary — nach der neuen `DC-*`. ABWEICHUNG (R1-L-1): der Test fährt ein volles Fixture (zwei Commits in-memory), nicht slice-245s shallow-Clone-Aufbau — der shallow-Fall ist durch die deklarierte Grenze (Spec [§DC-FA-VCS-002.a](../../../../spec/spezifikation.md#dc-fa-vcs-002a--leere-commit-range-vcs)) und den Wächter abgedeckt, nicht automatisiert |
+| Testdatei zum Adapter | neu/update | Happy/Negative/Boundary — nach der neuen `DC-*`. ABWEICHUNG (R1-L-1): der Test fährt ein volles Fixture (zwei Commits in-memory), nicht slice-245s shallow-Clone-Aufbau — der shallow-Fall ist durch die deklarierte Grenze (Spec [§DC-FA-VCS-002.a](../../../../../spec/spezifikation.md#dc-fa-vcs-002a--leere-commit-range-vcs)) und den Wächter abgedeckt, nicht automatisiert |
 
 **Ansatz:** Der Adapter kennt nach der Range-Auflösung die Commit-Zahl
 bereits — die leere Range ist dort ein eigener Zweig neben der unauflösbaren
@@ -101,7 +101,7 @@ nachgelagerter Sonderfall.
 
 **Start** (`next` → `in-progress`): Implementer übernimmt, `Verantwortlich:`
 gesetzt; der Nachtlauf-Stand wird bei der Beanspruchung gelesen
-([`MR-053`](../../../../harness/conventions.md#mr-053)).
+([`MR-053`](../../../../../harness/conventions.md#mr-053)).
 
 **Rückführungen — vorab benennen:**
 
@@ -127,7 +127,7 @@ wellenlos hier geprüft.
 - Die neue `DC-*` ändert zugesagte Semantik (Grund-Code der
   Range-Behandlung) — die Spiegel (Spezifikation, Benutzerhandbuch-Beispiele,
   `--print-mk`-Form) werden vor dem Editieren aufgelistet
-  ([`MR-025`](../../../../harness/conventions.md#mr-025)). — **Ausgang:**
+  ([`MR-025`](../../../../../harness/conventions.md#mr-025)). — **Ausgang:**
   entfallen — Spezifikation und Nachbarn gezogen (R1-M-1: §DC-FA-COMMITS-
   001.a-Korrektur nachgezogen); Handbuch-Fehlerbilder sind Release-Prep
   (Regel 17, R1-I-1 angenommen).
@@ -135,7 +135,7 @@ wellenlos hier geprüft.
 ## 7. Closure-Notiz
 
 - **Was hat funktioniert:** die Kette Probe (slice-245) → gemessene Lücke →
-  [`DC-FA-VCS-002`](../../../../spec/lastenheft.md#dc-fa-vcs-002--leere-commit-range-im-modul-vcs-ist-laut-zu-melden-opt-in) → Fix → Bewusstes Brechen — jede Stufe mit eigenem Beleg;
+  [`DC-FA-VCS-002`](../../../../../spec/lastenheft.md#dc-fa-vcs-002--leere-commit-range-im-modul-vcs-ist-laut-zu-melden-opt-in) → Fix → Bewusstes Brechen — jede Stufe mit eigenem Beleg;
   der Verifier wiederholte den Rot-Lauf selbst (Pre-Fix-Einspielung,
   einziger Suite-Fehler an der fail-closed-Assertion).
 - **Was ging anders als geplant:** der Gleichheits-Check feuerte im Fixture
@@ -144,20 +144,20 @@ wellenlos hier geprüft.
   gegen head.md. ST1005 verlangt die bindestrich-gefügte Meldungs-Form der
   Hausnachbarn (`Range-Leerfall`, nicht Satzanfang). R1-M-1 fand den
   Semantik-Spiegel nur am Neuzugang, nicht am Nachbarn
-  ([§DC-FA-COMMITS-001](../../../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in).a — nachgezogen).
+  ([§DC-FA-COMMITS-001](../../../../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in).a — nachgezogen).
 - **Steering-Loop-Eintrag:** keine Verkörperung — die stille-Grün-Klasse
-  ([`BEO-ALL/stilles-gruen-ueber-leerer-range`](../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/state.md))
+  ([`BEO-ALL/stilles-gruen-ueber-leerer-range`](../../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/state.md))
   steht bei 1× und ist im vcs-Fall durch diesen Slice behoben; der Eintrag
   bleibt offen (weitere Range-Module).
-- **Beobachtungs-Register (`../observations/`):** keine Beobachtung
+- **Beobachtungs-Register (`../../observations/`):** keine Beobachtung
   angefallen; der Stand von `BEO-ALL/stilles-gruen-ueber-leerer-range`
   trägt die Behebung.
 - **Folge-Slices:** keine.
 - **Risiken aus §6:** Risiko 1 (shallow-Abbruch der Konsumenten): entfallen
   — die eigenen Workflows fetchen `fetch-depth: 0`, fremde Konsumenten
-  lösen ihren Klon-Boden selbst. Risiko 2 ([`MR-025`](../../../../harness/conventions.md#mr-025)-Spiegel): entfallen —
+  lösen ihren Klon-Boden selbst. Risiko 2 ([`MR-025`](../../../../../harness/conventions.md#mr-025)-Spiegel): entfallen —
   Spezifikation und Nachbarn gezogen; Handbuch-Fehlerbilder sind
-  Release-Prep (Regel 17, R1-I-1 angenommen). Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+  Release-Prep (Regel 17, R1-I-1 angenommen). Nachtlauf-Stand ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
   beide Läufe grün am 2026-09-29 — nichts zu lesen.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld, nichts verkörpert,
   die Paarung trifft nicht zu; (b) Folge-Slice — keine; (c) Register —
@@ -181,8 +181,8 @@ Produktmodul `vcs` samt Spec-Stratum (`*`, Kürzel `ALL`); bereits deklariert.
 offene Beobachtung mit Treffern für die Sub-Area. Der stille-Grün-Fund
 (selber Klasse wie der ANLASS des history-range-guard der Schwester) geht
 bei slice-245s Closure ins Beobachtungs-Register und zählt für künftige
-Planungen; [slice-220](../done/wellenlos/slice-220-vcs-pfadmenge-statt-diff.md)
-heilte die Objekt-Datenbank-Achse ([`CO-001`](../../carveouts/done/CO-001-vcs-range-stiller-skip.md)),
+Planungen; [slice-220](../../done/wellenlos/slice-220-vcs-pfadmenge-statt-diff.md)
+heilte die Objekt-Datenbank-Achse ([`CO-001`](../../../carveouts/done/CO-001-vcs-range-stiller-skip.md)),
 nicht den Leerfall.
 
 **Vorgelagert — Nachtlauf-Stand lesen** (bei der Beanspruchung):
@@ -194,8 +194,8 @@ nicht den Leerfall.
 ### Sub-Area: `*` (Produktmodul `vcs` samt Spec-Stratum)
 
 - **Modus:** GF
-- **Konventionen-Dichte:** Hoch — [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
-  und [`ADR-0024`](../../adr/0024-vcs-immutable-gate.md) tragen das
+- **Konventionen-Dichte:** Hoch — [`DC-FA-VCS-001`](../../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
+  und [`ADR-0024`](../../../adr/0024-vcs-immutable-gate.md) tragen das
   Modul; der Leerfall ist bisher ungesetzte Schärfe, kein Widerspruch.
 - **Phase-Reife:** Phase 3.
 - **Evidenz-/Diskrepanz-Risiko:** Niedrig — der Fund ist empirisch belegt
