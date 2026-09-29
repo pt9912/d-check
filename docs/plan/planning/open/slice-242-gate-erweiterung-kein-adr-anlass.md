@@ -102,7 +102,7 @@ wellenlos hier geprüft).
 - **Was hat funktioniert:** —
 - **Was ging anders als geplant:** —
 - **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../../observations/`):** —
+- **Beobachtungs-Register (`../observations/`):** —
 - **Folge-Slices:** —
 - **Risiken aus §6:** —
 - **Drei Paarungen:** —
@@ -123,7 +123,7 @@ Harness-Werkzeug selbst (`*`, Kürzel `ALL`); bereits deklariert.
 
 **Vorgelagert — offene Beobachtungen sichten:** keine berührte Sub-Area
 mit Treffern in offenen Beobachtungen; der stehende
-[`BEO-ALL/pin-bump-mirrors-ungated`](../../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+[`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
 trägt Pin-Hebungen, nicht ADR-Anlass-Fragen.
 
 **Vorgelagert — Nachtlauf-Stand lesen** (bei der Beanspruchung):
@@ -142,4 +142,4 @@ trägt Pin-Hebungen, nicht ADR-Anlass-Fragen.
 - **Evidenz-/Diskrepanz-Risiko:** Niedrig — eine Ergänzung, eine
   Gegenprobe.
 - **Reconciliation-Aufwand:** Keiner — Graduation-Trigger bleibt
-  [`BEO-ALL/pin-bump-mirrors-ungated`](../../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md).
+  [`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md).
