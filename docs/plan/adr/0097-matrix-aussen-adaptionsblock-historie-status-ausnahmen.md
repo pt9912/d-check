@@ -81,3 +81,19 @@ entfallen (die Herkunft lebt im Konventionsspeicher und in der Historie).
 - Löst die Baseline die `aussen`-First-Match-Form ab (z. B. durch ein
   je-Klasse-Scoping der `exclude-sections`), wird diese Adoption gegen den
   neuen Stand neu bewertet.
+
+## Geschichte
+
+- **2026-09-29 (R1-Nachtrag, Review slice-248):** die Zählung in §Entscheidung
+  war zu hoch behauptet — der Diff trägt **11** entfernte lebende Verweise
+  (3 MR-Provenance, 4 Agenten-Briefing, 2 Baseline-Kopf-Zitate, je 1 README- und
+  Packaging-Verweis), nicht 24. Die 17 übrigen gemessenen Links stehen in den
+  `7. Historie`-Zeiten beider Spec-Straten und sind durch die dortige Ausnahme
+  abgedeckt, nicht entfernt; das eine nacktes MR-Token liegt ebenfalls in der
+  Historie. — Diese ADR kehrt ADR-0047 (Entscheidung 1: die Spec-§7-Historie in
+  die Matrix-Prüfung) für die aussen/adaptionsblock-Lage um; die
+  ADR-0047-Form bleibt für den übrigen Bestand bestehen. Die shallow-Klon-
+  Grenze (§[`DC-FA-VCS-002`](../../../spec/lastenheft.md#dc-fa-vcs-002--leere-commit-range-im-modul-vcs-ist-laut-zu-melden-opt-in).a)
+  ist fremde Grenze und gehört nicht in die Konsequenzen dieser ADR. Der
+  `**Autor:**`-Kopf fehlt im frozen Stand (Nutzer-Vorgabe 2026-09-27,
+  ADR-0096 trägt ihn); ein Nachtragen des Körpers ist nach §3.5 unzulässig.

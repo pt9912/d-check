@@ -57,6 +57,9 @@ entschieden — beseitigt oder per ADR gesichert ausgenommen.
   (er führt superseded ADRs, das ist seine Aufgabe), CHANGELOG ×3,
   `docs/user/releasing.md` ×1 (Superseded-Referenz). Die Schwester nimmt den
   ADR-Index, `docs/reviews/**` und `done/welle-*.md` in status.exempt-paths —
+  d-checks gemessene Ausnahme ([ADR-0097](../../adr/0097-matrix-aussen-adaptionsblock-historie-status-ausnahmen.md)) ist file-weit über
+  `matrix.exempt-paths` geregelt; `docs/reviews/**` bleibt ohne Fund und
+  darum ohne Ausnahme.
 
 Was hier steht, ist die Grenze, an der ein wachsender Slice sich messen lässt:
 Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
