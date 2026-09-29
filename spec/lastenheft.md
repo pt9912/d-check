@@ -11,9 +11,8 @@
 > hinterlässt, und sie erst ab `Accepted` zu führen hieße, den Bestand bis
 > dahin spurlos wachsen zu lassen. Die Spalte **Verweis** bleibt deshalb
 > durchgehend `—`: solange die CR-Pflicht nicht begonnen hat, gibt es keinen
-> externen Vorgang, den sie nennen könnte. Als Adaption geführt in
-> [`MR-032`](../harness/conventions.md#mr-032) — dort steht auch ihr
-> Auflösungs-Trigger.
+> externen Vorgang, den sie nennen könnte. Als Adaption in der
+> Konventionsablage geführt — dort steht auch ihr Auflösungs-Trigger.
 
 **Autor:** pt9912, **Datum:** 2026-06-10.
 
@@ -2222,7 +2221,7 @@ deklariertem Muster (`commits.id-patterns` — z. B. `ADR-`-, `MR-`-, `DC-`- ode
 `slice-`-Kennungen) auf einer Inhalts-Zeile trägt. Das ist die maschinelle
 Durchsetzung der Regel „PRs/Commits **müssen** mindestens eine `DC-*`-, `ADR-*`-,
 `MR-*`- oder `slice-*`-ID nennen"
-([`harness/README.md` §Traceability rules](../harness/README.md#traceability-rules)),
+(die Traceability-Regeln im Harness-Einstieg),
 als Regelmodul verkörpert — die verteilbare Form derselben Prüfung, die zuvor ein
 kopiertes Shell-Skript leistete.
 
@@ -2296,8 +2295,8 @@ Go; in begleitender ADR festgehalten).
 (`planning.marker`, per Konvention „Keine aktive Welle") tragen, wenn **kein**
 `slice-*` (`planning.slice-glob`) im Slice-Verzeichnis liegt — und umgekehrt.
 Formal: `hasActive == hasSlices`, sonst Befund `planning-drift`. Es ist die
-maschinelle Durchsetzung der Lifecycle-/Roadmap-Kopplung aus
-[`AGENTS.md` §3.3](../AGENTS.md#33-git-mv--inhaltsänderung--zwei-commits) — als
+maschinelle Durchsetzung der Lifecycle-/Roadmap-Kopplung aus dem
+Agenten-Briefing §3.3 — als
 Regelmodul verkörpert, die verteilbare Form derselben Prüfung, die zuvor ein
 kopiertes Shell-Skript leistete.
 
@@ -2563,7 +2562,7 @@ Linkpflicht trifft: ein Vorkommen im **Linktext** ist eine Behauptung.
 `observations.dirs` nennt die Verzeichnisse, deren Markdown-Dateien zitieren
 (rekursiv; leer ⇒ das Verzeichnis des Registers), `observations.pattern` die
 Kennungs-Gestalt (Default `BEO-\d{3}`). **Das Modul verspricht nur über seine
-Scan-Menge** ([`AGENTS.md` §3.8](../AGENTS.md#38-ein-modul-verspricht-nur-über-das-was-es-scannt)):
+Scan-Menge** (Agenten-Briefing §3.8):
 eine Kennung in einem nicht gelisteten Verzeichnis wird nicht geprüft.
 
 **fail-closed an drei Rändern:** ein unlesbares Register, ein `dirs`-Eintrag,
@@ -2643,8 +2642,7 @@ widersprechen.
 **Out-of-Scope:** eine git-/VCS-basierte Lifecycle-Prüfung (rein hermetisch, nur
 Arbeitsbaum); mehr als eine Roadmap bzw. ein Slice- oder Closure-Verzeichnis pro
 Lauf; die Roadmap-Prosa jenseits des Aktiv-Status-Markers; ein `--repair`-Hunk; das
-Erzwingen der Lifecycle-Move-Commit-Bündelung selbst
-([`MR-013`](../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)
+Erzwingen der Lifecycle-Move-Commit-Bündelung selbst — die Bündelung
 bleibt Commit-Zeit-Disziplin). Für die Aktiv-Status-Invariante zählt weiterhin nur
 die **Existenz** der Slice-Dateien, nicht ihr Inhalt — Slice-Inhalt liest
 ausschließlich die opt-in Closure-Fähigkeit, und auch sie nur im
@@ -3370,8 +3368,7 @@ menschliche Entscheidung.
 - **fail-closed (malform):** Given `sources` aktiv und eine malformte `source-pin`-Direktive (kein `sha256:<hex>`) oder ein ungültiger `sources`-Config-Eintrag (unbekanntes `unpack`), when `d-check` läuft, then **Exit 2** mit Hinweis auf stderr — kein stilles Grün.
 
 **Out-of-Scope:** Currency/„neuerer Tag verfügbar" (bleibt der Bash-Helfer
-`tools/harness/fetch-baseline-cache.sh --check-latest`,
-[`MR-022`](../harness/conventions.md#mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019));
+`tools/harness/fetch-baseline-cache.sh --check-latest`, Schwester-Adoption);
 Nicht-`http`/`https`-Schemata (`file:`, `git:`, …); Authentifizierung,
 Custom-Header oder Credentials; repo-interne Ziele (Domäne `links`/`pins`);
 Verzeichnis-/Listing-Ziele ohne Archiv-Bundle; andere Archiv-Formate als `zip`
@@ -3863,7 +3860,7 @@ der Zustand nicht geraten werden muss.
 - **Boundary:** Given ein Release mit Prerelease-Suffix (`vX.Y.Z-rc1`), when die Veröffentlichung läuft, then trägt Docker Hub den Versions-Tag, und `:latest` bleibt dort unverändert auf dem letzten stabilen Release.
 - **Negative:** Given fehlende oder ungültige Docker-Hub-Zugangsdaten, when die Veröffentlichung läuft, then bricht sie **vor** dem Spiegel-Push mit einer Fehlermeldung ab, die den bereits veröffentlichten GHCR-Stand ausdrücklich benennt — kein stiller Durchlauf und keine Teil-Veröffentlichung ohne Aussage.
 
-**Out-of-Scope:** Spiegel auf weitere Registries; ein vom GHCR-Bild **abweichender** Docker-Hub-Bau (etwa andere Basis oder andere Plattform-Matrix) — die Zusage ist Inhalts-Gleichheit, nicht Parallelbau; **Gleichheit des Manifest-Digests** (registry-lokal, siehe oben); der **Inhalt** der Hub-Beschreibungsseite — er wird aus [`packaging/dockerhub/`](../packaging/dockerhub/README.md) gesetzt, ist aber nicht Teil der Distributions-Zusage: sein Fehlschlag lässt das Release grün.
+**Out-of-Scope:** Spiegel auf weitere Registries; ein vom GHCR-Bild **abweichender** Docker-Hub-Bau (etwa andere Basis oder andere Plattform-Matrix) — die Zusage ist Inhalts-Gleichheit, nicht Parallelbau; **Gleichheit des Manifest-Digests** (registry-lokal, siehe oben); der **Inhalt** der Hub-Beschreibungsseite — er wird aus der Packaging-Doku gesetzt, ist aber nicht Teil der Distributions-Zusage: sein Fehlschlag lässt das Release grün.
 
 ---
 

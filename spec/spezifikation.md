@@ -5,8 +5,8 @@
 (`DC-*`-IDs). Bei Konflikt gewinnt das Lastenheft.
 
 **Rolle:** Technik-Stratum — fortschreibbar ohne Change Request; eine ADR darf
-sie schärfen, das Lastenheft nicht. Regeln: Baseline-Regelwerk
-[`modul-03-spec.md` §Ziel-Form: Spezifikation](../.harness/baseline/v6.13.0/regelwerk/modul-03-spec.md#ziel-form-spezifikation).
+sie schärfen, das Lastenheft nicht. Regeln: Baseline-Regelwerk v6.13.0,
+modul-03-spec.md §Ziel-Form: Spezifikation.
 
 ---
 
@@ -2886,7 +2886,7 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    aufgelöste Ziel-Pfad, sonst der `uses:`-Wert.
 
 **Die Grenze dieses Moduls, ausgesprochen** (die Frage aus
-[`AGENTS.md`](../AGENTS.md) §3.8): es **scannt** die Dateien in
+(die Frage aus dem Agenten-Briefing §3.8): es **scannt** die Dateien in
 `workflows.dir` und **liest** darüber hinaus die Ziele lokaler Referenzen, auch
 außerhalb dieses Verzeichnisses. Für sie gilt **dieselbe** Zusage — sie werden
 geparst, und ein Parse-Fehler ist ein Befund. Was das Modul **nicht** deckt:
@@ -2940,7 +2940,7 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    — eine unlesbare Ziel-Menge sähe sonst identisch aus wie „alles gedeckt".
 
 **Die Grenze dieses Moduls, ausgesprochen** (die Frage aus
-[`AGENTS.md`](../AGENTS.md) §3.8): es **scannt** die unmittelbaren Einträge
+(die Frage aus dem Agenten-Briefing §3.8): es **scannt** die unmittelbaren Einträge
 von `reviews.done-dir` und `reviews.reviews-dir`, beide nicht rekursiv. Was
 das Modul **nicht** deckt: die **Qualität** eines Reports (Selbstauskunft, wie
 der DoD-Haken selbst); jede Review-Zusage-Formulierung außer der einen
