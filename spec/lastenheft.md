@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.93.3
+**Version:** 0.93.4
 
 **Status:** Draft
 
@@ -3968,6 +3968,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.93.4 | 2026-10-05 | Verweis-Nachzug ohne Anforderungs-Änderung: die Referenz-Richtung verbietet den Straten jetzt auch Verweise in den Harness-Bestand (Agenten-Briefing, Konventionsspeicher, Harness-Einstieg, Packaging, vendorte Baseline); die lebenden Verweise dieser Art sind entfernt bzw. als Text-Form mit Version gesetzt, die Historie bleibt Zeitdokument. Keine `DC-*`-Semantik berührt | — |
 | 0.93.3 | 2026-09-29 | [`DC-FA-VCS-002`](#dc-fa-vcs-002--leere-commit-range-im-modul-vcs-ist-laut-zu-melden-opt-in) neu — eine aufgelöste, aber leere Commit-Range im Modul `vcs` ist laut zu melden (Exit ≠ 0): das Grün über leerem Prüfbereich behauptet eine Prüfung ohne Gegenstand (shallow-Klon, `HEAD..HEAD`). Spezifikation §DC-FA-VCS-002.a ergänzt |
 | 0.93.2 | 2026-09-27 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf (0.93.1) behauptete implizit dieselbe Titel-Abtrennung wie bei einem Inline-Link. Der Review (R1-H1, HIGH) fand: ohne echte Titel-Delimiter-Prüfung liest die Erkennung eine gewöhnliche Prosazeile wie `[TERM]: First In, First Out` fälschlich als Definition mit erfundenem Ziel „First". Die Zusage ist jetzt präzise: nach dem Ziel-Token darf nur noch optionaler Whitespace oder ein korrekt delimitierter Titel (`"…"`, `'…'`, `(…)`) folgen, sonst bleibt die ganze Zeile unerkannt |
 | 0.93.1 | 2026-09-27 | Nachzug **vor** dem ersten Test, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf (0.93.0) behauptete, ein `\]` im Label einer Referenz-Definition führe nur zu einer falschen Label-Grenze, während die Ziel-Prüfung korrekt bliebe. Eigene Verifikation der Erkennungs-Regex ergab das Gegenteil: die verankerte Regex scheitert an dieser Eingabe vollständig, die **ganze** Zeile bleibt unerkannt, keine Ziel-Prüfung läuft. Die zugesagte Form (welche Definitionen erkannt werden) ändert sich nicht, nur die Beschreibung dieser einen Grenze |

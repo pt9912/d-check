@@ -19,7 +19,7 @@ in diesem Slice, falls der Umfang es verlangt — nie per ADR.
 **Berührte Spec-Stellen:** — *(Config- und Bestands-Arbeit ist kein
 Spec-Stratum; entstehende Anforderungen trägt das Lastenheft)*.
 
-**Verantwortlich:** —.
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-09-29.
 
@@ -67,19 +67,19 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] Beide Klassen samt Regeln stehen in `.d-check.yml` — `aussen` als
+- [x] Beide Klassen samt Regeln stehen in `.d-check.yml` — `aussen` als
       letzte Klasse, `adaptionsblock` davor; die Straten- und Sicht-Regeln
       tragen jede eine Begründung am eigenen Bestand.
-- [ ] Jeder der in slice-246 gemessenen Befunde ist entschieden — beseitigt
+- [x] Jeder der in slice-246 gemessenen Befunde ist entschieden — beseitigt
       (Link/Token entfernt oder umgestellt) oder per ADR gesichert
       ausgenommen; die Differenz zum Vorher-Lauf ist notiert und der Lauf
       über der Restmenge grün.
-- [ ] Der Status-Seiteneffekt ist geklärt — jede nötige Ausnahme trägt
+- [x] Der Status-Seiteneffekt ist geklärt — jede nötige Ausnahme trägt
       eine ADR, oder der gemessene Fall ist auf andere Weise entschieden.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
       Rollenwechsel nach Schritt 8, kein Self-Review.
-- [ ] Closure-Notiz mit Lerneintrag; jedes Risiko aus §6 mit Ausgang.
+- [x] Closure-Notiz mit Lerneintrag; jedes Risiko aus §6 mit Ausgang.
 
 ## 3. Plan (vor Code)
 
@@ -119,21 +119,60 @@ wellenlos hier geprüft.
 - Die Baseline-Zitate aus den Straten
   (Zitate in den `.harness/baseline`-Baum) stehen im Spannungsfeld: sie sind
   Zitat (citations/`d-check:cite`-Mechanik), aber `aussen`-Links. Entfernen
-  bricht die Zitat-Mechanik; ausnehmen braucht eine ADR. — **Ausgang:** *(offen)*
+  bricht die Zitat-Mechanik; ausnehmen braucht eine ADR. — **Ausgang:** entfallen — die beiden Stellen waren Kopf-Verweise, keine `d-check:cite`-Spannen; als Text-Form mit Version gesetzt (§7).
 - Die Link-Entfernung in den Spec-Straten berührt das Lastenheft
-  (abnahmebindend, [`MR-032`](../../../../harness/conventions.md#mr-032)-Pflichten bei Änderung). — **Ausgang:** *(offen)*
+  (abnahmebindend, [`MR-032`](../../../../harness/conventions.md#mr-032)-Pflichten bei Änderung). — **Ausgang:** entfallen — der verfehlte Bump ist im Closure-Commit als Lastenheft 0.93.4 nachgeholt (§7).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** die Klassen-Ordnung aus der slice-246-Lektion
+  (First-Match, `aussen` zuletzt) trug ohne Nacharbeit; alle 40 gemessenen
+  Befunde sind entschieden — 11 lebende Verweise entfernt, 17 Historie-Links
+  plus 1 nacktes Token über die `7. Historie`-Ausnahme
+  ([`MR-0098`](../../../../harness/conventions.md#mr-0098)), 11 Status-Fälle
+  file-weit per [ADR-0097](../../adr/0097-matrix-aussen-adaptionsblock-historie-status-ausnahmen.md).
+  Der Verifier belegte beide Ausnahmen mit Bewusstem Brechen (Vorher-Baum ⇒
+  11 `matrix-forbidden`; ohne exempt-paths ⇒ 11 `matrix-inactive`).
+- **Was ging anders als geplant:** die Buchführung, nicht die Mechanik.
+  Commit-Botschaft und die neue ADR verbuchten 24 Entfernungen, wo 11 entfernt
+  und 17 ausgenommen waren (R1-M-1); sie kehrte [ADR-0047](../../adr/0047-matrix-spec-historie-nicht-provenance-exempt.md) um, ohne sie
+  zu nennen (R1-M-2), und die Historie-Ausnahme war eine undeklarierte
+  Baseline-Abweichung (R1-M-3). Alle drei lagen in einer bereits
+  `Accepted` eingefrorenen ADR — korrigierbar nur über den Geschichte-Anhang.
+  Die Index-Zeile der neuen Adaption zerbrach dann an einer sed-Kette (V-1) und wurde
+  vor der Closure wiederhergestellt.
+- **Steering-Loop-Eintrag:** keine neue Verkörperung — R1-M-1 ist ein
+  weiteres Auftreten der bereits verkörperten Klasse
+  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+  (Hard Rule `AGENTS.md` §5 Regel 15); die Regel stand und wurde trotzdem
+  verfehlt, der Stand bleibt offen wie dort begründet.
+- **Beobachtungs-Register (`../observations/`):** eine Evidence-Datei
+  `slice-248` unter `BEO-ALL/commit-message-overclaims-work`. R1-M-2/M-3
+  (ADR-Nachfolger ohne Vorgeschichte, undeklarierte Baseline-Abweichung)
+  sind je einmal aufgetreten und im selben Vorgang behoben — benannt, nicht
+  gezählt.
+- **Folge-Slices:** keine.
+- **Risiken aus §6:** Risiko 1 (Baseline-Zitate als `aussen`-Links):
+  entfallen — die beiden betroffenen Stellen waren Kopf-Verweise, keine
+  `d-check:cite`-Spannen (die Cite-Direktiven sind HTML-Kommentare und
+  keine Links); sie stehen jetzt als Text-Form mit Version, die
+  Zitat-Mechanik ist unberührt. Risiko 2 (Lastenheft-Berührung,
+  [`MR-032`](../../../../harness/conventions.md#mr-032)): entfallen — der
+  Nachzug entfernte nur Verweise ohne Anforderungs-Änderung, verfehlte aber
+  deren Pflicht (kein Bump, keine Historie-Zeile im Feat-Commit); beim
+  Schreiben dieser Notiz gefunden und im Closure-Commit als Lastenheft
+  0.93.4 nachgeholt. Trigger-Audit: kein Carveout, kein
+  bootstrap-aware Gate berührt; die neue ADR mit eigenen
+  Re-Evaluierungs-Triggern, die Vorgängerin über deren Geschichte-Anhang bezogen; keine
+  Hard Rule mit eingetretenem Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)), gelesen am
+  2026-10-05: `image-scan` grün; `upstream-drift` rot mit drei
+  Fremd-Meldungen (Baseline v6.14.0 verfügbar, semgrep 1.179.0, golang-Digest
+  unter 1.27.1 neu gebaut) — keine berührt diesen Slice, je eigener
+  Pin-Vorgang.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld, nichts verkörpert;
+  (b) Folge-Slice — keine; (c) Register — die zitierte Beobachtung existiert
+  und trägt Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
