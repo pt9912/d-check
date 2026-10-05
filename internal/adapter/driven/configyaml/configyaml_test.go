@@ -221,7 +221,7 @@ func TestDecode_HostpathsTildeUndExemptTargets(t *testing.T) {
 			t.Fatalf("hostpaths.prefixes %q: err = %v (Ablehnung „enthält ~“ erwartet)", p, err)
 		}
 	}
-	for _, g := range []string{"\"\"", "\"~/[x/**\""} {
+	for _, g := range []string{"\"\"", "\"~/[x/**\"", "Library/**"} {
 		if _, err := configyaml.Decode([]byte("hostpaths:\n  exempt-targets: [" + g + "]\n")); err == nil ||
 			!strings.Contains(err.Error(), "hostpaths.exempt-targets") {
 			t.Fatalf("hostpaths.exempt-targets %s: err = %v (Ablehnung erwartet)", g, err)

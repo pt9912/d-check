@@ -75,10 +75,10 @@ modules: [links, anchors]
 #   exempt-paths: [CHANGELOG.md, "docs/reviews/**"]   # Globs: Dateien ohne codepath-Prüfung (datei-weit, wie ids)
 #   ignore-refs: ["tools/altes-skript.sh"]            # Globs: Ziel-Pfade ohne Existenz-Prüfung (referenz-weit; Tombstones entfernter Artefakte)
 
-# --- hostpaths: host-lokale absolute Pfade (Maschinen-Layout-Leaks) ---
+# --- hostpaths: host-lokale absolute und Home-relative Pfade (Maschinen-Layout-Leaks) ---
 # hostpaths:
 #   prefixes: [home, mnt]          # ersetzt die Default-Präfixliste (Namen ohne / und ~)
-#   exempt-targets: ["~/Library/**"]   # Globs über den gefundenen Pfad (Unix- und Tilde-Funde, nicht Windows/UNC); ~/.<name> ist ohnehin still
+#   exempt-targets: ["~/Library/**"]   # Globs über den gefundenen Pfad, beginnen mit / oder ~ (Unix- und Tilde-Funde, nicht Windows/UNC); ~/.<name> ist ohnehin still
 
 # --- spans: Markdown-Span-Artefakte (ungeschlossene Code-Spans u. a.) ---
 #   (keine eigenen Optionen; über modules aktivieren)

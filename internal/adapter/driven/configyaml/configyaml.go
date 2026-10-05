@@ -1818,7 +1818,7 @@ func validRefGlob(g string) error {
 // Präfixe sind nicht-leere Verzeichnisnamen ohne '/' und ohne '~' (ein
 // Tilde-Präfix würde zu `/~/` und träfe nie, was gemeint ist — Home-relative
 // Pfade erkennt das Modul selbst); exempt-targets sind segmentweise gültige
-// Globs.
+// Globs, die mit / oder ~ beginnen (sonst träfen sie keinen gemeldeten Pfad).
 func applyHostpaths(r *raw, cfg *model.Config) error {
 	if r.Hostpaths == nil {
 		return nil
@@ -1836,6 +1836,11 @@ func applyHostpaths(r *raw, cfg *model.Config) error {
 	}
 	if err := validateSegmentGlobs("hostpaths.exempt-targets", r.Hostpaths.ExemptTargets); err != nil {
 		return err
+	}
+	for _, g := range r.Hostpaths.ExemptTargets {
+		if !strings.HasPrefix(g, "/") && !strings.HasPrefix(g, "~") {
+			return fmt.Errorf("%s: hostpaths.exempt-targets %q beginnt weder mit '/' noch mit '~' — ein gemeldeter Pfad tut immer eins von beiden, das Glob träfe nie", FileName, g)
+		}
 	}
 	cfg.Hostpaths = model.HostpathsConfig{
 		Prefixes:      r.Hostpaths.Prefixes,

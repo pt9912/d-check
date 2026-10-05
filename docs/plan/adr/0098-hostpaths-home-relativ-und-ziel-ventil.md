@@ -55,13 +55,17 @@ weil der Config-Rand nur den Schrägstrich ablehnte.
    (host-gebunden) ohne Liste. Die Tilde mit Benutzername, die nackte
    Tilde mit Schrägstrich und Variablen-Formen bleiben außen vor —
    benannte Grenzen im Lastenheft.
-2. **Das Unix-Muster sperrt die Tilde als Vorgänger.** Ein Home-relativer
-   Pfad wird genau einmal und in voller Form gemeldet. Das ändert für
-   bestehende Konsumenten den gemeldeten Pfad dieser Fälle (mit Tilde
-   statt ohne) — die Fundstelle bleibt dieselbe.
+2. **Ein Unix-Treffer innerhalb eines Home-relativen Treffers entfällt —
+   kein anderer.** Ein Home-relativer Pfad wird genau einmal und in voller
+   Form gemeldet; für bestehende Konsumenten ändert sich bei diesen Fällen
+   der gemeldete Pfad (mit Tilde statt ohne), die Fundstelle bleibt. Eine
+   pauschale Tilde-Sperre im Unix-Muster wäre einfacher, nimmt aber Funde
+   weg, die keine Home-Verweise sind (durchgestrichener Pfad, am Wort
+   klebender Pfad) — Messung im Review des Vorgangs.
 3. **Ausnahmen trägt ein Ziel-Ventil `hostpaths.exempt-targets`, kein
    Zeilen-Marker.** Globs über den gemeldeten Pfad, `matchGlob` wie
-   `scan.ignore`, segmentweise am Config-Rand validiert. Es gilt für Unix-
+   `scan.ignore`, segmentweise am Config-Rand validiert; ein Glob, das
+   weder mit `/` noch mit `~` beginnt, ist Exit 2 (es träfe nie). Es gilt für Unix-
    und Home-relative Funde, nicht für Windows/UNC — dort ist der
    Backslash im Glob das Escape-Zeichen. Der Satz „keinen
    Opt-out-Marker" wird auf den **Zeilen-Marker** präzisiert: eine
@@ -96,6 +100,7 @@ für den neuen Schlüssel, **nicht** für das neue Muster — das ist der Zweck.
 | Tooling | Regel | Make-Target |
 |---|---|---|
 | Go-Test `TestHostpathsTilde` | Home-relativ einmal, voll; Punkt-Segment, nackte Tilde, Benutzername, URL, Fence still | `make test` |
+| Go-Test `TestHostpathsTildeOhneUnixVerlust` | durchgestrichener und am Wort klebender absoluter Host-Pfad bleiben gemeldet | `make test` |
 | Go-Test `TestHostpathsExemptTargets` | Ventil nimmt Unix-/Home-relative Funde aus, Windows bleibt | `make test` |
 | Go-Test `TestDecode_HostpathsTildeUndExemptTargets` | Präfix mit Tilde und ungültiges Glob ⇒ Fehler | `make test` |
 | `d-check` (Dogfooding, `hostpaths` aktiv) | der eigene Bestand bleibt grün | `make doc-check` / `make gates` |
@@ -112,3 +117,4 @@ das: permanent.
 | Datum | Ereignis |
 |---|---|
 | 2026-10-05 | Angelegt als `Proposed`; `Accepted` erst mit der Closure des Vorgangs, nach Review und Verifikation |
+| 2026-10-05 | Nach R1 (HIGH): Entscheidung 2 von der pauschalen Tilde-Sperre auf den Treffer-in-Treffer-Ausschluss umgestellt; Ventil-Globs müssen mit `/` oder `~` beginnen. Noch `Proposed`, Körper daher geändert statt angehängt |

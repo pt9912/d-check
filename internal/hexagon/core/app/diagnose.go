@@ -131,7 +131,7 @@ func reasonTexts() map[string]string {
 		model.ReasonSpanUnclosed:       "Ungeschlossene Code-Span-Öffnung (klebt an Nicht-Whitespace)",
 		model.ReasonFenceUnclosed:      "Fenced-Code-Block ohne Schluss bis zum Dateiende — mindestens ein Modul überspringt alles dahinter",
 		model.ReasonSpanNestedLink:     "Verschachtelte Link-Syntax im Linktext (rendert zerrissen)",
-		model.ReasonHostpathForbidden:  "Host-lokaler absoluter Pfad (Maschinen-Layout-Leak)",
+		model.ReasonHostpathForbidden:  "Host-lokaler absoluter oder Home-relativer Pfad (Maschinen-Layout-Leak)",
 		model.ReasonDiagramIDUndefined: "Kennung im Diagramm-Fence ohne Definition in ihrer defined-in-Quelle",
 		model.ReasonVersionStale:       "Versions-Pin weicht von der aktuellen Version ab",
 		model.ReasonLinkStale:          "Ziel-Inhalt eines gepinnten Links weicht vom hinterlegten Content-Pin ab",

@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.94.0
+**Version:** 0.94.1
 
 **Status:** Draft
 
@@ -1731,8 +1731,8 @@ Geprüft werden Prosa-Zeilen **einschließlich Inline-Code** (dort
 leben solche Pfade typischerweise); Fenced-Code-Blöcke sind
 ausgenommen — Beispiel- und Lehrinhalte mit bewussten Host-Pfaden
 gehören in Fences. Vorbedingung ist eine Wortgrenze (kein
-unmittelbar vorangehendes URL-, Pfad- oder Wortzeichen und keine
-Tilde); schließende Satzzeichen werden vom gemeldeten Pfad
+unmittelbar vorangehendes URL-, Pfad- oder Wortzeichen, vor einem
+Home-relativen Pfad auch keine Tilde); schließende Satzzeichen werden vom gemeldeten Pfad
 abgetrennt. Grund-Code `hostpath-forbidden` mit Datei, Zeile und
 gefundenem Pfad. Es gibt **keinen Zeilen-Marker** (der Zeilen-Marker
 `d-check:ignore` bleibt auf andere Module beschränkt,
@@ -1744,8 +1744,9 @@ und ein **Ziel-Ventil** für repo-spezifische Sonderfälle:
 Glob trifft, entfällt. Für Windows- und UNC-Funde gilt das Ventil
 nicht — beide Muster bleiben fest. Ohne den Schlüssel ist der
 Befundsatz byte-identisch
-([`DC-QA-02`](#dc-qa-02--determinismus)); ein leeres oder ungültiges
-Glob ist ein Konfigurationsfehler.
+([`DC-QA-02`](#dc-qa-02--determinismus)); ein leeres, ungültiges oder
+weder mit Schrägstrich noch mit Tilde beginnendes Glob ist ein
+Konfigurationsfehler.
 
 **Akzeptanzkriterien:**
 
@@ -1754,6 +1755,7 @@ Glob ist ein Konfigurationsfehler.
 - **Negative:** Given eine Prosa-Zeile oder ein Inline-Code-Span mit einem Pfad unterhalb eines deklarierten Host-Präfixes, when das Modul läuft, then ein Befund `hostpath-forbidden` mit Datei, Zeile, Pfad und Grund, Exit-Code 1.
 - **Home-relativ (Negative):** Given eine Prosa-Zeile mit Tilde, Schrägstrich und einem Segment ohne führenden Punkt, when das Modul läuft, then genau ein Befund `hostpath-forbidden` mit dem vollständigen Pfad samt Tilde.
 - **Home-relativ (Boundary):** Given eine Tilde vor einem Punkt-Segment, eine nackte Tilde mit Schrägstrich, eine Tilde mit Benutzername, eine Tilde als „ungefähr" oder eine Tilde in einem URL-Pfad, when das Modul läuft, then kein Befund.
+- **Home-relativ (kein Verlust):** Given ein absoluter Host-Pfad, dem eine Tilde unmittelbar vorausgeht, ohne selbst Teil eines Home-relativen Pfads zu sein (durchgestrichen, an einem Wort klebend), when das Modul läuft, then wird er gemeldet wie ohne die Erweiterung.
 - **Ziel-Ventil:** Given `hostpaths.exempt-targets` mit einem Glob, das einen gefundenen Unix- oder Home-relativen Pfad trifft, when das Modul läuft, then entfällt genau dieser Befund; ein Windows- oder UNC-Fund bleibt bestehen.
 - **Config-Rand:** Given ein `hostpaths.prefixes`-Eintrag mit Tilde oder ein leeres bzw. ungültiges `hostpaths.exempt-targets`-Glob, when d-check die Konfiguration lädt, then Exit 2.
 
@@ -3987,6 +3989,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.94.1 | 2026-10-05 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-HOST-001`](#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) präzisiert (Begründung in begleitender ADR). Der Erstentwurf (0.94.0) sperrte die Tilde pauschal als Vorgänger eines Unix-Treffers — der Review (R1-H-1, HIGH) zeigte, dass damit ein durchgestrichener und ein am Wort klebender absoluter Host-Pfad, die bisher gemeldet wurden, still verschwanden. Die Zusage ist jetzt: nur ein Unix-Treffer **innerhalb** eines Home-relativen Treffers entfällt; neues Akzeptanzkriterium „kein Verlust". Ein Ventil-Glob, das weder mit Schrägstrich noch mit Tilde beginnt, ist ein Konfigurationsfehler (es träfe nie) | — |
 | 0.94.0 | 2026-10-05 | [`DC-FA-HOST-001`](#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) erweitert (Erweiterung statt neues Kürzel — Einzelmodul-Frage): **Home-relative Pfade** (Tilde, Schrägstrich, erstes Segment ohne führenden Punkt) werden erkannt und in voller Form genau einmal gemeldet; bisher traf das Unix-Muster eine Tilde-Angabe nur zufällig und abgeschnitten, wenn ihr erstes Segment ein Präfix-Name war, sonst gar nicht. Punkt-Segmente (Werkzeug-Konventionen) bleiben still. Neues **Ziel-Ventil** `hostpaths.exempt-targets` (Globs über den gemeldeten Pfad, Unix- und Home-relative Funde; ohne Schlüssel byte-identisch); ein Präfix-Name mit Tilde ist ein Konfigurationsfehler. Der Satz „keinen Opt-out-Marker" ist auf den **Zeilen-Marker** präzisiert. Die Erkennung **schärft**: Dokumente mit Home-relativen Layout-Pfaden in Prosa werden rot. Vier neue Akzeptanzkriterien; Out-of-Scope um Benutzername-Tilde, Variablen-Formen und ein Windows-/UNC-Ventil ergänzt. Begründung in begleitender ADR | — |
 | 0.93.4 | 2026-10-05 | Verweis-Nachzug ohne Anforderungs-Änderung: die Referenz-Richtung verbietet den Straten jetzt auch Verweise in den Harness-Bestand (Agenten-Briefing, Konventionsspeicher, Harness-Einstieg, Packaging, vendorte Baseline); die lebenden Verweise dieser Art sind entfernt bzw. als Text-Form mit Version gesetzt, die Historie bleibt Zeitdokument. Keine `DC-*`-Semantik berührt | — |
 | 0.93.3 | 2026-09-29 | [`DC-FA-VCS-002`](#dc-fa-vcs-002--leere-commit-range-im-modul-vcs-ist-laut-zu-melden-opt-in) neu — eine aufgelöste, aber leere Commit-Range im Modul `vcs` ist laut zu melden (Exit ≠ 0): das Grün über leerem Prüfbereich behauptet eine Prüfung ohne Gegenstand (shallow-Klon, `HEAD..HEAD`). Spezifikation §DC-FA-VCS-002.a ergänzt |

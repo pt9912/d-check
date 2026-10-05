@@ -125,3 +125,24 @@ func TestHostpathsExemptTargets(t *testing.T) {
 		t.Fatalf("Targets = %q\nwant   %q", got, want)
 	}
 }
+
+// DC-FA-HOST-001: die Tilde-Erkennung nimmt dem Unix-Muster keine Funde —
+// eine Strikethrough-Tilde und ein am Wort klebender Präfix-Pfad werden
+// weiter gemeldet (Rand-Zeichen der Hervorhebung bleiben benannte Grenze).
+func TestHostpathsTildeOhneUnixVerlust(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"docs/s.md": "~~/" + "home/alice/x~~ durchgestrichen\nwort~/" + "home/alice/y klebt\n",
+	})
+	res, err := Run(m, nil, model.Config{Roots: []string{"docs"}}, []string{"hostpaths"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, f := range res.Findings {
+		got = append(got, f.Target)
+	}
+	want := []string{"/" + "home/alice/x~~", "/" + "home/alice/y"}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("Targets = %q\nwant   %q", got, want)
+	}
+}
