@@ -7,7 +7,7 @@
 **Autor:** pt9912
 
 **Bezug:** [`DC-FA-HOST-001`](../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in)
-(erweitert, Lastenheft 0.94.0); Schnitt-Kriterium (Einzelmodul-Frage ⇒
+(erweitert, Lastenheft 0.94.0, nach Review präzisiert in 0.94.1); Schnitt-Kriterium (Einzelmodul-Frage ⇒
 bestehende Anforderung ändern) aus
 [ADR-0044](0044-geteiltes-referenz-ventil-quell-skopus.md); Form der
 Konfigurations-Weitung wie
