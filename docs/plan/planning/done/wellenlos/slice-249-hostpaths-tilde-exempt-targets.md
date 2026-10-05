@@ -8,16 +8,16 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst; das
 Release danach ist ein Meilenstein-Vorgang, keine Wellen-Bedingung.
 
-**Bezug:** [`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in)
+**Bezug:** [`DC-FA-HOST-001`](../../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in)
 (Scope — die Anforderung wird erweitert, kein neues Kürzel: Einzelmodul-Frage
-nach dem Schnitt-Kriterium von [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md));
-[`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)
+nach dem Schnitt-Kriterium von [ADR-0044](../../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md));
+[`DC-QA-02`](../../../../../spec/lastenheft.md#dc-qa-02--determinismus)
 (Byte-Identität ohne den neuen Schlüssel — gilt für das Ventil, **nicht** für
 die Tilde-Erkennung, die bewusst schärft); Vorbild der Konfigurations-Weitung
-[ADR-0058](../../adr/0058-konfigurations-flaechen-additiv-weiten.md).
+[ADR-0058](../../../adr/0058-konfigurations-flaechen-additiv-weiten.md).
 
-**Berührte Spec-Stellen:** `spezifikation.md` [§DC-FA-HOST-001.a](../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung) (Muster,
-Ventil), [`SPEC-005`](../../../../spec/spezifikation.md#spec-005--d-checkyml)
+**Berührte Spec-Stellen:** `spezifikation.md` [§DC-FA-HOST-001.a](../../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung) (Muster,
+Ventil), [`SPEC-005`](../../../../../spec/spezifikation.md#spec-005--d-checkyml)
 (Schema-Zeilen `hostpaths.*`).
 
 **Verantwortlich:** pt9912.
@@ -71,8 +71,8 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 Liefer-Punkte (3):
 
 - [x] Tilde-Erkennung: Lastenheft (Erweiterung, Versions-Bump +
-      Historie-Zeile nach [`MR-032`](../../../../harness/conventions.md#mr-032)),
-      Spezifikation [§DC-FA-HOST-001.a](../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung), Kern-Regel; Tests Happy (`~/.claude/…`
+      Historie-Zeile nach [`MR-032`](../../../../../harness/conventions.md#mr-032)),
+      Spezifikation [§DC-FA-HOST-001.a](../../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung), Kern-Regel; Tests Happy (`~/.claude/…`
       still), Negative (Tilde vor einem Nicht-Punkt-Segment gemeldet, in voller Form statt des heute abgeschnittenen Präfix-Treffers), Boundary (`~/` allein,
       `~user/`, URL-Tilde, Fence) — der Negative-Test lief ohne die Änderung
       aus dem richtigen Grund rot (Bewusstes Brechen, Modul 11).
@@ -102,7 +102,7 @@ Liefer-Punkte (3):
 | `internal/hexagon/core/rules/hostpaths_test.go`, `configyaml_test.go` | update | Happy/Negative/Boundary nach den Akzeptanzkriterien der Anforderung |
 | `docs/plan/adr/0098-…`, `docs/plan/adr/README.md` | neu / update | Entscheidungen |
 
-**Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025)):
+**Spiegel vor dem Editieren** ([`MR-025`](../../../../../harness/conventions.md#mr-025)):
 Lastenheft (die Anforderung aus dem Bezug); Spezifikation (Host-Pfad-Erkennung), Schema-Zeile
 `hostpaths.prefixes`, Grund-Code-Zeile `hostpath-forbidden`;
 `--print-config`-Gerüst; Benutzerhandbuch §5/§6 und `operations.md`
@@ -157,12 +157,12 @@ wellenlos hier geprüft.
   R1-Korrektur ging dadurch in den Körper statt in einen Anhang (Lehre
   aus slice-248, dort war sie frozen).
 - **Steering-Loop-Eintrag:** keine Verkörperung —
-  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
   steht mit diesem Vorgang bei 2× (unter der Schwelle);
-  [`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md)
-  ist bereits als [`MR-025`](../../../../harness/conventions.md#mr-025)
+  [`BEO-ALL/semantic-change-body-only-edges-stale`](../../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md)
+  ist bereits als [`MR-025`](../../../../../harness/conventions.md#mr-025)
   verkörpert und bleibt offen wie dort begründet.
-- **Beobachtungs-Register (`../observations/`):** je eine Evidence-Datei
+- **Beobachtungs-Register (`../../observations/`):** je eine Evidence-Datei
   `slice-249` unter den beiden genannten Einträgen.
 - **Folge-Slices:** keine. Benannte, nicht geschnittene Punkte: die
   pauschale Vorbedingungs-Formulierung des Lastenhefts gilt nicht für
@@ -171,9 +171,9 @@ wellenlos hier geprüft.
   entfallen — Zweck, Ankündigung in der Release-Prep v0.80.0. Risiko 2
   (Tilde als „ungefähr"): entfallen — getestet und black-box bestätigt.
   Trigger-Audit: kein Carveout, kein bootstrap-aware Gate berührt;
-  [ADR-0098](../../adr/0098-hostpaths-home-relativ-und-ziel-ventil.md) neu
+  [ADR-0098](../../../adr/0098-hostpaths-home-relativ-und-ziel-ventil.md) neu
   `Accepted` mit eigenem Re-Evaluierungs-Trigger; keine Hard Rule mit
-  eingetretenem Trigger. Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+  eingetretenem Trigger. Nachtlauf-Stand ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
   wie in §8 gelesen, unverändert.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld, nichts
   verkörpert; (b) Folge-Slice — keine; (c) Register — beide zitierten
@@ -195,13 +195,13 @@ samt Spec-Stratum (`*`, Kürzel `ALL`); bereits deklariert.
 
 **Vorgelagert — offene Beobachtungen sichten:** zwei offene Einträge der
 Sub-Area treffen den Gegenstand —
-[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
 (ein neues Muster braucht Negativfälle: `~5 %`, `~user/`, URL-Tilde — in
 §2 als Boundary aufgenommen) und
-[`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md)
+[`BEO-ALL/semantic-change-body-only-edges-stale`](../../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md)
 (die Spiegel in §3 vorab gelistet).
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-05 — `image-scan` grün; `upstream-drift` rot mit drei
 Fremd-Meldungen (Baseline v6.14.0 verfügbar, semgrep 1.179.0, golang-Digest
 unter 1.27.1 neu gebaut). Keine berührt diesen Gegenstand; je eigener
