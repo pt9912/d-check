@@ -70,23 +70,23 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 Liefer-Punkte (3):
 
-- [ ] Tilde-Erkennung: Lastenheft (Erweiterung, Versions-Bump +
+- [x] Tilde-Erkennung: Lastenheft (Erweiterung, Versions-Bump +
       Historie-Zeile nach [`MR-032`](../../../../harness/conventions.md#mr-032)),
       Spezifikation [§DC-FA-HOST-001.a](../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung), Kern-Regel; Tests Happy (`~/.claude/…`
       still), Negative (Tilde vor einem Nicht-Punkt-Segment gemeldet, in voller Form statt des heute abgeschnittenen Präfix-Treffers), Boundary (`~/` allein,
       `~user/`, URL-Tilde, Fence) — der Negative-Test lief ohne die Änderung
       aus dem richtigen Grund rot (Bewusstes Brechen, Modul 11).
-- [ ] Ziel-Ventil `hostpaths.exempt-targets`: Schema-Zeile, Validierung am
+- [x] Ziel-Ventil `hostpaths.exempt-targets`: Schema-Zeile, Validierung am
       Config-Rand (leeres/ungültiges Glob ⇒ Exit 2), Kern-Prüfung, `--print-config`-Gerüst;
       ohne den Schlüssel byte-identischer Befundsatz für Unix-Funde.
-- [ ] `hostpaths.prefixes`-Eintrag mit `~` ⇒ Exit 2 mit Hinweis auf die
+- [x] `hostpaths.prefixes`-Eintrag mit `~` ⇒ Exit 2 mit Hinweis auf die
       eigene Tilde-Erkennung (heute still wirkungslos: er würde zu `/~/`).
-- [ ] ADR für die Entscheidungen (Punkt-Regel, Ventil auf das Ziel statt
+- [x] ADR für die Entscheidungen (Punkt-Regel, Ventil auf das Ziel statt
       Zeilen-Marker, Schärfung ohne Byte-Identität); ADR-Index ergänzt.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
       Rollenwechsel nach Schritt 8, kein Self-Review.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -132,22 +132,52 @@ wellenlos hier geprüft.
 - Die Tilde-Erkennung schärft ein bestehendes Modul: Konsumenten mit
   `~/<Verzeichnis>/…` in Prosa werden nach dem Update rot. Das ist der
   Zweck, aber kein additiver Schritt — CHANGELOG und Handbuch müssen es
-  sagen (Release-Prep). — **Ausgang:** *(offen)*
+  sagen (Release-Prep). — **Ausgang:** entfallen — der Rot-Effekt ist der Zweck; die Ankündigung trägt die Release-Prep v0.80.0 (CHANGELOG, Handbuch), nicht dieser Slice.
 - Die Wortgrenze der Tilde: `~` steht in Prosa auch als „ungefähr"
   (`~5 %`). Ohne folgenden `/` greift das Muster nicht, die Tests müssen den
-  Fall dennoch tragen. — **Ausgang:** *(offen)*
+  Fall dennoch tragen. — **Ausgang:** entfallen — `TestHostpathsTilde` trägt `~5 %` und bleibt still; der Verifier bestätigte es black-box.
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Rot-Belege vor jedem Fix — die Tests liefen
+  gegen den Vorher-Stand aus dem richtigen Grund rot, der Verifier
+  wiederholte acht Mutationen selbst und fuhr das Vorher-Image
+  black-box gegen das neue (Unix-Korpus ohne neuen Schlüssel per `cmp`
+  byte-identisch). Der Dogfooding-Lauf über den eigenen Plan deckte die
+  Ausgangslage auf: der abgeschnittene Präfix-Treffer, den die erste
+  Analyse übersehen hatte.
+- **Was ging anders als geplant:** die Ausgangslage selbst — die
+  Erstanalyse behauptete, eine Tilde-Angabe werde gar nicht erkannt; tatsächlich
+  traf das Unix-Muster sie abgeschnitten, wenn ihr erstes Segment ein
+  Präfix-Name war. Der Fix dafür war zuerst zu breit: die pauschale
+  Tilde-Sperre nahm dem Unix-Muster zwei bisher gemeldete Fälle
+  (R1-H-1); ersetzt durch den Treffer-in-Treffer-Ausschluss, Lastenheft
+  0.94.1. Zwei Spiegel der Semantik-Änderung blieben trotz vorab gelisteter Spiegel
+  stehen (R1-M-1). Die ADR blieb bis hierher `Proposed` — die
+  R1-Korrektur ging dadurch in den Körper statt in einen Anhang (Lehre
+  aus slice-248, dort war sie frozen).
+- **Steering-Loop-Eintrag:** keine Verkörperung —
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+  steht mit diesem Vorgang bei 2× (unter der Schwelle);
+  [`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md)
+  ist bereits als [`MR-025`](../../../../harness/conventions.md#mr-025)
+  verkörpert und bleibt offen wie dort begründet.
+- **Beobachtungs-Register (`../observations/`):** je eine Evidence-Datei
+  `slice-249` unter den beiden genannten Einträgen.
+- **Folge-Slices:** keine. Benannte, nicht geschnittene Punkte: die
+  pauschale Vorbedingungs-Formulierung des Lastenhefts gilt nicht für
+  Windows/UNC (Bestand, Verifier V-I-3; die Spezifikation ist präzise).
+- **Risiken aus §6:** Risiko 1 (Schärfung macht Konsumenten rot):
+  entfallen — Zweck, Ankündigung in der Release-Prep v0.80.0. Risiko 2
+  (Tilde als „ungefähr"): entfallen — getestet und black-box bestätigt.
+  Trigger-Audit: kein Carveout, kein bootstrap-aware Gate berührt;
+  [ADR-0098](../../adr/0098-hostpaths-home-relativ-und-ziel-ventil.md) neu
+  `Accepted` mit eigenem Re-Evaluierungs-Trigger; keine Hard Rule mit
+  eingetretenem Trigger. Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+  wie in §8 gelesen, unverändert.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld, nichts
+  verkörpert; (b) Folge-Slice — keine; (c) Register — beide zitierten
+  Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

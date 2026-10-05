@@ -1,6 +1,6 @@
 # ADR-0098: `hostpaths` erkennt Home-relative Pfade mit Punkt-Ausnahme und trägt ein Ziel-Ventil statt eines Zeilen-Markers
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-05
 
@@ -118,3 +118,4 @@ das: permanent.
 |---|---|
 | 2026-10-05 | Angelegt als `Proposed`; `Accepted` erst mit der Closure des Vorgangs, nach Review und Verifikation |
 | 2026-10-05 | Nach R1 (HIGH): Entscheidung 2 von der pauschalen Tilde-Sperre auf den Treffer-in-Treffer-Ausschluss umgestellt; Ventil-Globs müssen mit `/` oder `~` beginnen. Noch `Proposed`, Körper daher geändert statt angehängt |
+| 2026-10-05 | `Accepted` mit der Closure des Vorgangs, nach Review (R1) und Verifikation |
