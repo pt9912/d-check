@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.78 · **Software-Version:** [v0.79.0](../../version.md#v0.79.0) ·
-**Stand:** 2026-09-27 · **Autor:** pt9912
+**Handbuch-Version:** 1.79 · **Software-Version:** [v0.80.0](../../version.md#v0.80.0) ·
+**Stand:** 2026-10-05 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -64,7 +64,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.79.0
+docker pull ghcr.io/pt9912/d-check:v0.80.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -79,12 +79,12 @@ jeweiligen Registrys; wer per Digest pinnt, nimmt den Digest **der Registry, aus
 der er zieht**. GHCR bleibt die Quelle; Docker Hub folgt ihr.
 
 ```bash
-docker pull pt9912/d-check:v0.79.0
+docker pull pt9912/d-check:v0.80.0
 ```
 
 ### Versionen und Tags
 
-- `:v0.79.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.80.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
@@ -113,7 +113,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -172,7 +172,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -191,7 +191,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.79.0
+  ghcr.io/pt9912/d-check:v0.80.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -210,7 +210,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.79.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.80.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -229,7 +229,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -249,7 +249,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -258,7 +258,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -277,7 +277,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -305,7 +305,7 @@ und `ai-harness-init` lesen das Lastenheft dafür nicht.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
   --enable ids --disable anchors
 ```
 
@@ -326,7 +326,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
   --enable ids
 ```
 
@@ -347,7 +347,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
   --enable matrix
 ```
 
@@ -448,7 +448,7 @@ unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
   --enable external
 ```
 
@@ -470,7 +470,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
   --enable ids --doctor
 ```
 
@@ -505,7 +505,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
   --enable ids --doctor --json
 ```
 
@@ -553,7 +553,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -589,7 +589,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
     --enable ids --repair | git apply
   ```
 
@@ -606,7 +606,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -626,7 +626,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -688,7 +688,7 @@ Zeile) sind **Konfiguration**; die Felder, Regeln und Fehlerbilder stehen in §5
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -826,7 +826,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -871,7 +871,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.79.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.80.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -889,7 +889,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und dreizehn
 # Benutzerhandbuch (aufgabenorientiert, deutsch):
 #   https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md
 #   https://raw.githubusercontent.com/pt9912/d-check/refs/heads/main/docs/user/benutzerhandbuch.md  (roh, für Werkzeuge/Agenten)
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.79.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.80.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -954,7 +954,7 @@ planning:
 ```
 
 ```bash
-docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
   --config .d-check.closure.yml --enable planning
 ```
 
@@ -1167,7 +1167,7 @@ planning:
 ```
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0 \
   --enable planning
 ```
 
@@ -1473,7 +1473,8 @@ codepaths:
   exempt-paths: ["docs/reviews/**"] # Dateien ganz ausnehmen (Glob, wie ids)
   ignore-refs: ["tools/altes-skript.sh"] # Alias des geteilten ignore-refs (nur codepaths)
 hostpaths:
-  prefixes: [home, Users]       # Verzeichnisnamen OHNE / (führender /… ⇒ Exit 2)
+  prefixes: [home, Users]       # Verzeichnisnamen OHNE / und ~ (sonst Exit 2)
+  exempt-targets: ["~/Library/**"] # Globs über den gemeldeten Pfad; beginnen mit / oder ~
 external:
   timeout-seconds: 10
 diagrams:                      # Kennungen in Diagramm-Fences prüfen
@@ -1833,6 +1834,18 @@ gültiges Hash-Suffix oder ohne passenden Index betrifft diese Prüfung noch.
 > irgendein Pfad klassifiziert wird. Solange Sie `v0.76.0` oder älter
 > pinnen, prüfen Sie einmalig mit `ls .git/objects/pack/`, dass jede
 > `.pack`-Datei mit `pack-` beginnt.
+
+**Eine leere Range ist kein grüner Lauf.** Löst die Range auf, enthält aber
+keinen einzigen Commit — Basis und Spitze benennen denselben Commit, oder die
+Spitze ist von der Basis aus schon erreichbar —, bricht `vcs` mit **Exit 2**
+ab: `Range-Leerfall "<base>".."<head>" — … es wurde nichts geprüft`. „Nichts
+geprüft" ist etwas anderes als „geprüft, nichts gefunden". Der typische Fall
+ist ein CI-Checkout ohne volle Historie, in dem `HEAD..HEAD` auflöst und null
+Commits zählt. Die Erreichbarkeits-Prüfung braucht die **volle Historie**: in
+einem shallow-Klon bricht der Lauf auch bei nicht-leerer Range ab
+(`Range-Basis-Vorfahren nicht lesbar`). **Abhilfe:** im CI mit
+`fetch-depth: 0` auschecken. `--staged` ist davon nicht betroffen, und das
+Modul `commits` behält sein bisheriges Range-Verhalten.
 
 **`commits` (unten) war von dem stillen Fall nie betroffen** und bricht ab —
 gemessen, nicht angenommen. **`tracked` ist gar nicht betroffen**, weil es den
@@ -2620,7 +2633,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `codepaths` | opt-in        | explizite Pfade in Inline-Code existieren; opt-in `check-lines`: `datei:<von>-<bis>`-Zeilen-Referenzen verifizieren | `codepath-missing`, `citation-out-of-range`, `citation-inverted-range` |
 | `citations` | opt-in        | **keine feine Ventil-Achse** (kein `exempt-paths`, kein `ignore-refs`, kein Zeilen-Marker; grob wirken `scan.ignore` und `citations.scope`) — wortgleiche Zitate: `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (`>`-Block oder inline `„…"`/`"…"`; Leerzeilen dazwischen sind unschädlich, ein Code-Block dazwischen trennt), das ein whitespace-normalisierter **Teilstring** der Quell-Spanne sein muss; fail-closed bei malformter Direktive | `citation-mismatch`, `citation-out-of-range`, `citation-inverted-range` |
 | `spans`     | opt-in        | ungeschlossene Code-Spans, verschachtelte Links, unbalancierte Fences                    | `span-unclosed`, `span-nested-link`, `fence-unclosed`       |
-| `hostpaths` | opt-in        | host-lokale absolute Pfade (Maschinen-Layout-Leak)                                       | `hostpath-forbidden`                                        |
+| `hostpaths` | opt-in        | host-lokale absolute Pfade und Home-relative Pfade (Tilde vor einem Segment ohne führenden Punkt — `~/.config` u. ä. bleiben als Werkzeug-Konvention still), Maschinen-Layout-Leak. Ventil `exempt-targets` (Globs über den gemeldeten Pfad, nur Unix-/Home-relative Funde; kein Zeilen-Marker) | `hostpath-forbidden`                                        |
 | `diagrams`  | opt-in        | Kennungen in Diagramm-Fences (Default `mermaid`) existieren in ihrer `defined-in`-Quelle. **Beide Ventile** wie `ids`/`codepaths`: `exempt-paths` (datei-weit) und der Zeilen-Marker `d-check:ignore` — hier als **Token** statt HTML-Kommentar, und auf der **Öffnungszeile** des Fence für den ganzen Block | `diagram-id-undefined`                                      |
 | `versions`  | opt-in        | gepinnte `ghcr`-Image-Verweise tragen die aktuelle Version (aus `version.md#aktuell`), auch in Fences. **Mehrere Muster-Quellen-Paare** über `versions.patterns` (eigenes Release **und** ein fremder gepinnter Stand); die Kurzform `pin-pattern`/`current-from` **ist** die einelementige Liste, beide Schreibweisen zugleich ⇒ Exit 2. Ausnahmen sind paar-lokal, der Zeilen-Marker ist es nicht | `version-stale`                                             |
 | `pins`      | opt-in        | Content-Pin (`<!-- dpin: … -->`): Ziel-Span eines Links unverändert seit dem Verlinken | `link-stale`                                                |
@@ -2847,3 +2860,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.76             | v0.77.0          | 2026-09-18 | **`matrix` bekommt eine Instanz-Identitäts-Ausnahme für die Token-Form** (§4.7, Modul `matrix`, [`DC-FA-MTX-003`](../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix), [ADR-0087](../plan/adr/0087-matrix-instanz-identitaets-ausnahme.md)). Neues Regel-Feld `matrix.rules[].allow-if-same-id`: nimmt eine sonst verbotene Token-Referenz aus, wenn Quell- und Ziel-Datei über das bereits vorhandene `token`-Regex dieselbe Instanz-ID tragen (z. B. ein Slice, der seinen eigenen Review-Report zitiert). Wirkt ausschließlich auf die Token-Form von `matrix-forbidden`; fail-closed am Config-Rand ohne `token` mit genau einer Capture-Gruppe auf beiden beteiligten Klassen (Exit 2). Ohne den Schlüssel byte-identisches Verhalten |
 | 1.77             | v0.78.0          | 2026-09-27 | **Neues Modul `file`** (§6, [`DC-FA-FILE-001`](../../spec/lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in), [ADR-0088](../plan/adr/0088-file-modul-groessengrenzen.md)): Zeilen-/Byte-Obergrenzen einer **ganzen** Datei, unabhängig von Dateiart — `max-lines` (wie `wc -l`), `max-bytes` (roh), mindestens eine Pflicht. **`structure` bekommt eine zwölfte Bedingung `max-lines`** (§5, [`DC-FA-STRUCT-001`](../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), [ADR-0089](../plan/adr/0089-structure-max-lines-zwoelfte-bedingung.md)): Zeilenbudget des **bereinigten** Abschnittstexts (Fenced-Code zählt nicht mit) ⇒ `section-lines-exceeded`; Abgrenzung zu `file.max-lines` (roh, ganze Datei). **`--suggest-config ai-harness` erkennt die Randbedingungs-Reihe `RB`** (§4.4, [`DC-FA-CLI-006`](../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten), [ADR-0090](../plan/adr/0090-suggest-config-rb-bedingt.md)): `<PREFIX>-RB-<NN>` fließt in die Präfix-Ableitung ein und — nur bei tatsächlichem Fund im selben Ableitungs-Durchlauf — ins erzeugte Anforderungs-Muster; ohne `-RB-`-Kennung bleibt die Ausgabe byte-gleich |
 | 1.78             | v0.79.0          | 2026-09-27 | **`links` erkennt zwei neue Formen, beide standardmäßig an** ([`DC-FA-LINK-001`](../../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)). Erstens: eine Zieladresse, die unmittelbar hinter `](` einen **einzigen** Zeilenumbruch trägt, wird erkannt — nur die Adress-Klammer darf um die Folgezeile verlängert werden, die Linktext-Klammer bleibt strikt zeilenlokal, damit kein unbalanciertes `[` in gewöhnlicher Prosa mit einer späteren, unabhängigen `](…)`-Sequenz zu einem erfundenen Link verschmilzt ([ADR-0092](../plan/adr/0092-links-zeilenumbruch-begrenzter-lookahead.md)). Zweitens: eine Link-Referenz-Definition (`[label]: ziel "titel"`) wird unabhängig davon geprüft, ob sie im Dokument verwendet wird — ein totes Ziel meldet `target-missing` auf der Definitions-Zeile, mit derselben Auflösung wie ein Inline-Link; das Modul `anchors` behandelt Definitionen nicht ([ADR-0095](../plan/adr/0095-links-referenz-definitionen-titel-delimiter-pflicht.md)). Beide Formen gelten für dieselben Module wie die gemeinsame Link-Extraktion (`links`, `links.resolve-from`, `matrix`, `external`, `tracked`; Definitionen zusätzlich mit Ausnahme `anchors`) |
+| 1.79             | v0.80.0          | 2026-10-05 | **`hostpaths` erkennt Home-relative Pfade — eine Schärfung** ([`DC-FA-HOST-001`](../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in), §6-Modultabelle, §5-Beispiel). Tilde, Schrägstrich und ein erstes Segment ohne führenden Punkt werden als `hostpath-forbidden` in voller Form gemeldet; Werkzeug-Konventionen wie `~/.config` bleiben still. Bisher traf das Modul eine solche Angabe nur, wenn ihr erstes Segment ein Präfix-Name war — und meldete dann den Rest ohne Tilde. **Ein bisher grüner Lauf kann rot werden**, wenn Prosa oder Inline-Code ein persönliches Verzeichnis-Layout unter dem Home-Verzeichnis nennt. Neues Ventil `hostpaths.exempt-targets` (Globs über den gemeldeten Pfad, nur Unix- und Home-relative Funde; beginnen mit `/` oder `~`); ein `prefixes`-Eintrag mit `~` ist Exit 2. Außerdem: **`vcs` bricht bei einer leeren Commit-Range mit Exit 2 ab** ([`DC-FA-VCS-002`](../../spec/lastenheft.md#dc-fa-vcs-002--leere-commit-range-im-modul-vcs-ist-laut-zu-melden-opt-in), siehe [„Immutabilität über eine Commit-Range prüfen"](#immutabilität-über-eine-commit-range-prüfen-modul-vcs)) — CI-Checkouts brauchen `fetch-depth: 0` |

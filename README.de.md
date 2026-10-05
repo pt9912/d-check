@@ -56,7 +56,8 @@ Dokuments:
 - `spans` — Markdown-Span-Artefakte (ungeschlossene Code-Spans,
   verschachtelte Links), opt-in
   ([`DC-FA-SPAN-001`](spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in))
-- `hostpaths` — host-lokale absolute Pfade (Maschinen-Layout-Leaks),
+- `hostpaths` — host-lokale absolute und Home-relative Pfade
+  (Maschinen-Layout-Leaks; `~/.config` u. ä. bleiben still),
   opt-in
   ([`DC-FA-HOST-001`](spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in))
 - `diagrams` — Kennungs-Existenz in Diagramm-Fences (z. B. `mermaid`): jede
@@ -313,7 +314,7 @@ Registry, aus der man zieht)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.79.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

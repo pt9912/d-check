@@ -4,6 +4,48 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.80.0] — 2026-10-05
+
+### Added
+
+- slice-249 — **Ventil `hostpaths.exempt-targets`**: Globs über den
+  gemeldeten Pfad nehmen Unix- und Home-relative Funde aus; Windows- und
+  UNC-Funde bleiben fest. Ein Glob muss mit `/` oder `~` beginnen, ein
+  `hostpaths.prefixes`-Eintrag darf keine Tilde enthalten — beides sonst
+  Exit 2. Ohne den Schlüssel ist der Befundsatz byte-identisch.
+
+### Changed
+
+- slice-249 — **`hostpaths` erkennt Home-relative Pfade — eine Schärfung**
+  ([`DC-FA-HOST-001`](spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in),
+  [ADR-0098](docs/plan/adr/0098-hostpaths-home-relativ-und-ziel-ventil.md)).
+  Tilde, Schrägstrich und ein erstes Segment ohne führenden Punkt werden als
+  `hostpath-forbidden` gemeldet, in voller Form und genau einmal.
+  Werkzeug-Konventionen wie `~/.config` bleiben still, ebenso die nackte
+  Tilde, die Tilde mit Benutzername, eine Tilde in einem URL-Pfad und alles in
+  Fences. Bisher traf das Modul eine solche Angabe nur, wenn ihr erstes
+  Segment ein Präfix-Name war, und meldete dann den Rest ohne Tilde. **Ein
+  bisher grüner Lauf kann rot werden**, wenn Prosa oder Inline-Code ein
+  persönliches Verzeichnis-Layout unter dem Home-Verzeichnis nennt.
+  Absolute Pfade hinter einer Tilde, die selbst kein Home-Verweis ist
+  (durchgestrichen, am Wort klebend), werden weiter gemeldet wie bisher.
+- slice-247 — **`vcs` bricht bei einer leeren Commit-Range mit Exit 2 ab**
+  ([`DC-FA-VCS-002`](spec/lastenheft.md#dc-fa-vcs-002--leere-commit-range-im-modul-vcs-ist-laut-zu-melden-opt-in)).
+  Eine Range, die auflöst, aber keinen Commit enthält (Basis = Spitze oder
+  Spitze schon erreichbar, typisch `HEAD..HEAD` in einem shallow-Klon),
+  meldete bisher `0 Befund(e)`, Exit 0. Die Erreichbarkeits-Prüfung braucht
+  die volle Historie: ein shallow-Klon bricht auch bei nicht-leerer Range ab.
+  Abhilfe im CI: `fetch-depth: 0`. `commits` und `--staged` sind unverändert.
+- Abhängigkeiten: `github.com/ProtonMail/go-crypto` gehoben (Dependabot,
+  [ADR-0067](docs/plan/adr/0067-dependabot-als-hebender-kanal.md)); die
+  Sprachversion in `go.mod` folgt der Toolchain auf 1.27.1.
+- Harness dieses Repos, **nicht** das Prüf-Verhalten des Werkzeugs:
+  Baseline-Pin auf `v6.13.0` (slice-240), `AGENTS.md` auf unter 400 Zeilen
+  mit Auslagerung nach `harness/rules/` (slice-239), Werkzeuge und Rollen aus
+  `ai-harness-init` adoptiert (welle-91), Referenz-Richtung der Spec-Straten
+  um Verweise nach außen und in den Konventionsspeicher verschärft
+  (slice-248).
+
 ## [0.79.0] — 2026-09-27
 
 ### Added
