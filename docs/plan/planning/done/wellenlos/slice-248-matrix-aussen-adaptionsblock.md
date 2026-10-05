@@ -7,12 +7,12 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
-**Bezug:** [`slice-246`](../done/welle-91/slice-246-dcheck-yml-positionen-evaluieren.md)
+**Bezug:** [`slice-246`](../welle-91/slice-246-dcheck-yml-positionen-evaluieren.md)
 (dessen Probe: 29 Befunde gemessen, Kandidaten-Konfiguration nach dem
 Snapshot `/tmp/aih-v6.13.0`),
-[`MR-006`](../../../../harness/conventions.md#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs)
+[`MR-006`](../../../../../harness/conventions.md#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs)
 (Referenz-Richtung — der Grundsatz, den die Klassen mechanisieren),
-[`MR-034`](../../../../harness/conventions.md#mr-034--die-referenzmatrix-bewacht-auch-die-kante-adr--welle)
+[`MR-034`](../../../../../harness/conventions.md#mr-034--die-referenzmatrix-bewacht-auch-die-kante-adr--welle)
 (Vorbild-Form für die welle-Kante). Das Anforderungs-Delta (`DC-*`) entsteht
 in diesem Slice, falls der Umfang es verlangt — nie per ADR.
 
@@ -57,7 +57,7 @@ entschieden — beseitigt oder per ADR gesichert ausgenommen.
   (er führt superseded ADRs, das ist seine Aufgabe), CHANGELOG ×3,
   `docs/user/releasing.md` ×1 (Superseded-Referenz). Die Schwester nimmt den
   ADR-Index, `docs/reviews/**` und `done/welle-*.md` in status.exempt-paths —
-  d-checks gemessene Ausnahme ([ADR-0097](../../adr/0097-matrix-aussen-adaptionsblock-historie-status-ausnahmen.md)) ist file-weit über
+  d-checks gemessene Ausnahme ([ADR-0097](../../../adr/0097-matrix-aussen-adaptionsblock-historie-status-ausnahmen.md)) ist file-weit über
   `matrix.exempt-paths` geregelt; `docs/reviews/**` bleibt ohne Fund und
   darum ohne Ausnahme.
 
@@ -99,7 +99,7 @@ nicht), dann je Befund die Fallentscheidung dokumentieren.
 
 **Start** (`next` → `in-progress`): Implementer übernimmt,
 `Verantwortlich:` gesetzt; der Nachtlauf-Stand wird bei der Beanspruchung
-gelesen ([`MR-053`](../../../../harness/conventions.md#mr-053)).
+gelesen ([`MR-053`](../../../../../harness/conventions.md#mr-053)).
 
 **Rückführungen — vorab benennen:**
 
@@ -121,7 +121,7 @@ wellenlos hier geprüft.
   Zitat (citations/`d-check:cite`-Mechanik), aber `aussen`-Links. Entfernen
   bricht die Zitat-Mechanik; ausnehmen braucht eine ADR. — **Ausgang:** entfallen — die beiden Stellen waren Kopf-Verweise, keine `d-check:cite`-Spannen; als Text-Form mit Version gesetzt (§7).
 - Die Link-Entfernung in den Spec-Straten berührt das Lastenheft
-  (abnahmebindend, [`MR-032`](../../../../harness/conventions.md#mr-032)-Pflichten bei Änderung). — **Ausgang:** entfallen — der verfehlte Bump ist im Closure-Commit als Lastenheft 0.93.4 nachgeholt (§7).
+  (abnahmebindend, [`MR-032`](../../../../../harness/conventions.md#mr-032)-Pflichten bei Änderung). — **Ausgang:** entfallen — der verfehlte Bump ist im Closure-Commit als Lastenheft 0.93.4 nachgeholt (§7).
 
 ## 7. Closure-Notiz
 
@@ -129,13 +129,13 @@ wellenlos hier geprüft.
   (First-Match, `aussen` zuletzt) trug ohne Nacharbeit; alle 40 gemessenen
   Befunde sind entschieden — 11 lebende Verweise entfernt, 17 Historie-Links
   plus 1 nacktes Token über die `7. Historie`-Ausnahme
-  ([`MR-0098`](../../../../harness/conventions.md#mr-0098)), 11 Status-Fälle
-  file-weit per [ADR-0097](../../adr/0097-matrix-aussen-adaptionsblock-historie-status-ausnahmen.md).
+  ([`MR-0098`](../../../../../harness/conventions.md#mr-0098)), 11 Status-Fälle
+  file-weit per [ADR-0097](../../../adr/0097-matrix-aussen-adaptionsblock-historie-status-ausnahmen.md).
   Der Verifier belegte beide Ausnahmen mit Bewusstem Brechen (Vorher-Baum ⇒
   11 `matrix-forbidden`; ohne exempt-paths ⇒ 11 `matrix-inactive`).
 - **Was ging anders als geplant:** die Buchführung, nicht die Mechanik.
   Commit-Botschaft und die neue ADR verbuchten 24 Entfernungen, wo 11 entfernt
-  und 17 ausgenommen waren (R1-M-1); sie kehrte [ADR-0047](../../adr/0047-matrix-spec-historie-nicht-provenance-exempt.md) um, ohne sie
+  und 17 ausgenommen waren (R1-M-1); sie kehrte [ADR-0047](../../../adr/0047-matrix-spec-historie-nicht-provenance-exempt.md) um, ohne sie
   zu nennen (R1-M-2), und die Historie-Ausnahme war eine undeklarierte
   Baseline-Abweichung (R1-M-3). Alle drei lagen in einer bereits
   `Accepted` eingefrorenen ADR — korrigierbar nur über den Geschichte-Anhang.
@@ -143,10 +143,10 @@ wellenlos hier geprüft.
   vor der Closure wiederhergestellt.
 - **Steering-Loop-Eintrag:** keine neue Verkörperung — R1-M-1 ist ein
   weiteres Auftreten der bereits verkörperten Klasse
-  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+  [`BEO-ALL/commit-message-overclaims-work`](../../observations/BEO-ALL/commit-message-overclaims-work/state.md)
   (Hard Rule `AGENTS.md` §5 Regel 15); die Regel stand und wurde trotzdem
   verfehlt, der Stand bleibt offen wie dort begründet.
-- **Beobachtungs-Register (`../observations/`):** eine Evidence-Datei
+- **Beobachtungs-Register (`../../observations/`):** eine Evidence-Datei
   `slice-248` unter `BEO-ALL/commit-message-overclaims-work`. R1-M-2/M-3
   (ADR-Nachfolger ohne Vorgeschichte, undeklarierte Baseline-Abweichung)
   sind je einmal aufgetreten und im selben Vorgang behoben — benannt, nicht
@@ -157,7 +157,7 @@ wellenlos hier geprüft.
   `d-check:cite`-Spannen (die Cite-Direktiven sind HTML-Kommentare und
   keine Links); sie stehen jetzt als Text-Form mit Version, die
   Zitat-Mechanik ist unberührt. Risiko 2 (Lastenheft-Berührung,
-  [`MR-032`](../../../../harness/conventions.md#mr-032)): entfallen — der
+  [`MR-032`](../../../../../harness/conventions.md#mr-032)): entfallen — der
   Nachzug entfernte nur Verweise ohne Anforderungs-Änderung, verfehlte aber
   deren Pflicht (kein Bump, keine Historie-Zeile im Feat-Commit); beim
   Schreiben dieser Notiz gefunden und im Closure-Commit als Lastenheft
@@ -165,7 +165,7 @@ wellenlos hier geprüft.
   bootstrap-aware Gate berührt; die neue ADR mit eigenen
   Re-Evaluierungs-Triggern, die Vorgängerin über deren Geschichte-Anhang bezogen; keine
   Hard Rule mit eingetretenem Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)), gelesen am
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)), gelesen am
   2026-10-05: `image-scan` grün; `upstream-drift` rot mit drei
   Fremd-Meldungen (Baseline v6.14.0 verfügbar, semgrep 1.179.0, golang-Digest
   unter 1.27.1 neu gebaut) — keine berührt diesen Slice, je eigener
@@ -200,7 +200,7 @@ mit Treffern in offenen Beobachtungen.
 ### Sub-Area: `*` (Harness-Werkzeug samt Spec-Stratum)
 
 - **Modus:** GF
-- **Konventionen-Dichte:** Hoch — [`MR-006`](../../../../harness/conventions.md#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs)/[`MR-034`](../../../../harness/conventions.md#mr-034--die-referenzmatrix-bewacht-auch-die-kante-adr--welle) tragen die
+- **Konventionen-Dichte:** Hoch — [`MR-006`](../../../../../harness/conventions.md#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs)/[`MR-034`](../../../../../harness/conventions.md#mr-034--die-referenzmatrix-bewacht-auch-die-kante-adr--welle) tragen die
   Referenz-Richtung; die Klassen sind am Schwester-Stand belegt.
 - **Phase-Reife:** Phase 3.
 - **Evidenz-/Diskrepanz-Risiko:** Niedrig — der Bestands-Umfang ist
