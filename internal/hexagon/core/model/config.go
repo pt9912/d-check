@@ -258,9 +258,11 @@ type CodepathsConfig struct {
 type CitationsConfig struct{}
 
 // HostpathsConfig sind die Parameter des Moduls hostpaths
-// (DC-FA-HOST-001); Prefixes nil = Default-Liste.
+// (DC-FA-HOST-001); Prefixes nil = Default-Liste; ExemptTargets sind
+// Globs über den normalisierten Fund-Pfad (Unix- und Tilde-Funde).
 type HostpathsConfig struct {
-	Prefixes []string
+	Prefixes      []string
+	ExemptTargets []string
 }
 
 // DiagramPattern ist ein Kennungs-Muster des Moduls diagrams

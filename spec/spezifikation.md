@@ -1539,8 +1539,8 @@ weitere Konfiguration existiert nicht.
    [`DC-FA-HOST-001`](lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in)).
 2. **Muster** (jeweils mit Wortgrenzen-Vorbedingung — dem Treffer
    darf kein Buchstabe, keine Ziffer und keines der Zeichen
-   Unterstrich, Punkt, Doppelpunkt, Schrägstrich oder Bindestrich
-   unmittelbar vorausgehen; URL-Pfade hinter Schemata sind damit
+   Unterstrich, Punkt, Doppelpunkt, Schrägstrich, Bindestrich oder
+   Tilde unmittelbar vorausgehen; URL-Pfade hinter Schemata sind damit
    ausgenommen):
    - **Unix:** Schrägstrich + Präfix-Verzeichnisname + Schrägstrich
      + Restpfad (Zeichen bis Whitespace bzw. `<`, `>`, `)`, `]`,
@@ -1548,7 +1548,14 @@ weitere Konfiguration existiert nicht.
      nicht zum Pfad). Die Präfixliste ist konfigurierbar
      (`hostpaths.prefixes`, **ersetzt** den Default); Default-Namen:
      Development, home, Users, Volumes, mnt, media (tmp bewusst
-     nicht — Lastenheft 0.7.2).
+     nicht — Lastenheft 0.7.2). Die Tilde in der Vorbedingung
+     überlässt einen Home-relativen Pfad dem nächsten Muster — ohne sie
+     träfe das Unix-Muster dessen Rest ab dem zweiten Schrägstrich.
+   - **Home-relativ:** Tilde + Schrägstrich + erstes Zeichen, das
+     weder Punkt noch Schrägstrich noch ein Restpfad-Endzeichen ist,
+     + Restpfad (Endzeichen wie Unix). Ein Punkt-Segment
+     (Werkzeug-Konvention), die nackte Tilde mit Schrägstrich und die
+     Tilde mit Benutzername treffen damit nicht.
    - **Windows-Laufwerk:** Buchstabe + Doppelpunkt + Backslash +
      Restpfad (Vorbedingung hier: kein Wortzeichen davor).
    - **UNC:** doppelter Backslash + Servername + Backslash +
@@ -1557,15 +1564,26 @@ weitere Konfiguration existiert nicht.
      wie escapte Punkt-Folgen matchen damit nicht).
 3. **Normalisierung:** schließende Satzzeichen (`.`, `,`, `;`, `:`)
    werden vom gemeldeten Pfad abgetrennt (wie
-   `codepaths`-Normalisierung). Befund `hostpath-forbidden` mit
-   Datei, Zeile und dem normalisierten Pfad; kein Opt-out-Marker,
-   das Modul akzeptiert den generischen Schlüssel `hostpaths.scope`
+   `codepaths`-Normalisierung).
+4. **Ziel-Ventil:** trifft ein `hostpaths.exempt-targets`-Glob
+   (`matchGlob`, segmentweise wie `scan.ignore`) den normalisierten
+   Pfad eines Unix- oder Home-relativen Funds, entfällt der Befund.
+   Windows- und UNC-Funde prüft das Ventil nicht — der Backslash ist im
+   Glob das Escape-Zeichen, eine eigene Lexik wäre nötig. Ohne den
+   Schlüssel ist der Befundsatz byte-identisch
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
+5. **Befund:** `hostpath-forbidden` mit Datei, Zeile und dem
+   normalisierten Pfad; kein Zeilen-Marker, das Modul akzeptiert den
+   generischen Schlüssel `hostpaths.scope`
    ([§DC-FA-CONF-002.a](#dc-fa-conf-002a--effektiver-scan-scope-pro-modul)).
 
 **Bekannte Grenze:** ein Repo-Wurzel-relatives Linkziel, dessen
 erstes Segment zufällig ein Präfix-Name ist (etwa ein Verzeichnis
 `home/` im Repo), wird gemeldet — Ausweg ist die konfigurierbare
-Präfixliste; konservativer Default vor Vollständigkeit.
+Präfixliste oder das Ziel-Ventil; konservativer Default vor
+Vollständigkeit. Ebenso: ein Home-relativer Pfad, dessen erstes Segment
+nur zufällig kein Punkt-Segment ist, aber eine host-unabhängige
+Konvention meint, wird gemeldet — Ausweg ist das Ziel-Ventil.
 
 ### DC-FA-CONF-002.a — Effektiver Scan-Scope pro Modul
 
@@ -3276,7 +3294,8 @@ Exit 2 ohne Prüfung
 | `modules` | string[] | `DEFAULT_MODULES` | nur gültige Modulnamen |
 | `<modul>.scope.roots` | string[] | — (globaler Scope) | Pflicht, wenn `scope` gesetzt ist; Constraints wie `scan.roots` (Existenz, kein Repo-Escape, `"."` = Repo-Wurzel, leere Liste = nichts) |
 | `<modul>.scope.ignore` | string[] | leer | wie `scan.ignore` (Glob, Abstiegs-Pruning) |
-| `hostpaths.prefixes` | string[] | Development, home, Users, Volumes, mnt, media | ersetzt die Default-Liste; Einträge sind nicht-leere Verzeichnisnamen ohne `/` (Exit 2) |
+| `hostpaths.prefixes` | string[] | Development, home, Users, Volumes, mnt, media | ersetzt die Default-Liste; Einträge sind nicht-leere Verzeichnisnamen ohne `/` und ohne `~` (Exit 2) |
+| `hostpaths.exempt-targets` | string[] | `[]` | Globs über den normalisierten Fund-Pfad (Unix- und Home-relative Funde, nicht Windows/UNC); leeres oder ungültiges Glob ⇒ Exit 2 |
 | `ids.patterns[].regex` | string | — | muss kompilieren und darf den Leerstring nicht matchen (Exit 2) |
 | `ids.patterns[].target` | string | — | muss existieren und innerhalb der Repo-Wurzel liegen |
 | `ids.patterns[].link-policy` | string | `prose` | nur `prose` oder `always` (Exit 2); `always` macht auch Inline-Code-Vorkommen linkpflichtig |
@@ -3466,7 +3485,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-024` | `citation-out-of-range` | codepaths, citations | Zeilen-Referenz (`datei:<von>-<bis>`) hinter dem Datei-Ende — oder (bei `citations`) die Zieldatei fehlt; nur bei `codepaths.check-lines` bzw. `d-check:cite` |
 | `SPEC-025` | `citation-inverted-range` | codepaths, citations | Zeilen-Referenz invertiert (`<von> > <bis>`) |
 | `SPEC-026` | `citation-mismatch` | citations | per `d-check:cite` markiertes Zitat ist kein zusammenhängender Teilstring der whitespace-normalisierten Quell-Spanne (Zitat-Fäule) |
-| `SPEC-027` | `hostpath-forbidden` | hostpaths | host-lokaler absoluter Pfad (Maschinen-Layout-Leak) in Prosa oder Inline-Code |
+| `SPEC-027` | `hostpath-forbidden` | hostpaths | host-lokaler absoluter oder Home-relativer Pfad (Maschinen-Layout-Leak) in Prosa oder Inline-Code |
 | `SPEC-028` | `diagram-id-undefined` | diagrams | Kennung in einem geöffneten Diagramm-Fence ohne Definition in ihrer `defined-in`-Quelle |
 | `SPEC-029` | `span-unclosed` | spans | ungeschlossene Code-Span-Öffnung klebt an Nicht-Whitespace (Absatz-Parität gekippt) |
 | `SPEC-030` | `fence-unclosed` | spans | Fenced-Code-Block ohne Schluss bis zum **Dateiende** (nicht Absatz-Ende — ein Fence *ist* eine Absatzgrenze): mindestens eine der beiden Fence-Lesarten endet offen, und jedes Modul, das ihr folgt, überspringt alles dahinter. Befund an der Öffnungszeile — eine **Fundstelle**, nicht zwingend die Reparaturstelle —, genau einer je Datei |
@@ -3546,6 +3565,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-05 | §[`DC-FA-HOST-001.a`](spezifikation.md#dc-fa-host-001a--host-pfad-erkennung) um das **Home-relative** Muster (Tilde, Schrägstrich, erstes Segment ohne führenden Punkt) und das **Ziel-Ventil** `hostpaths.exempt-targets` (Schritt 4, nur Unix- und Home-relative Funde) erweitert; die Wortgrenzen-Vorbedingung des Unix-Musters sperrt jetzt auch die Tilde (sonst Doppel- bzw. abgeschnittener Treffer); Schema-Zeilen `hostpaths.prefixes` (ohne `~`) und `hostpaths.exempt-targets`, Grund-Code-Zeile ergänzt; bekannte Grenze um Home-relative Konventionen ohne Punkt erweitert |
 | 2026-09-27 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3 präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf behauptete, Ziel-Normalisierung UND Titel-Abtrennung einer Definition seien „dieselben wie bei einem Inline-Link" — der Review (R1-H1, HIGH) zeigte am Testfall `[TERM]: First In, First Out`, dass der naive Whitespace-Schnitt eine gewöhnliche Prosazeile fälschlich als Definition mit erfundenem Ziel liest. Die Zusage ist jetzt präzise: das Ziel-Token trägt keinen eingebetteten Whitespace, danach folgt nur optionaler Whitespace oder ein korrekt delimitierter Titel (`"…"`, `'…'`, `(…)`), sonst bleibt die ganze Zeile unerkannt |
 | 2026-09-27 | Nachzug **vor** dem ersten Test, **vor** der ersten Closure dieser Erweiterung: §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3 präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf beschrieb einen `\]` im Label als „beendet die Label-Erkennung wie ein unescaptes `]`" — die eigene Verifikation der Erkennungs-Regex vor dem ersten Test ergab: die verankerte Regex scheitert an dieser Eingabe vollständig, die **ganze** Zeile bleibt unerkannt, statt nur die Label-Grenze zu verschieben. Die zugesagte Form ändert sich nicht, nur die Beschreibung dieser einen Grenze |
 | 2026-09-27 | §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3 um die Erkennung von Link-Referenz-Definitionen (`[label]: ziel "titel"`) erweitert ([`DC-FA-LINK-001`](lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) 0.93.0, additiv, Begründung in begleitender ADR): dieselbe gemeinsame Extraktion (`ExtractLinks`) erkennt eine Definition unabhängig von ihrer Verwendung und ordnet den Fund ihrer Zeile zu; Ziel-Normalisierung und Titel-Abtrennung sind dieselben wie bei einem Inline-Link. Drei benannte Grenzen: kein Blockquote-/Listen-Präfix, keine Backslash-Escapes im Label, kein Zeilenumbruch vor Ziel oder Titel — die Definition ist strukturell einzeilig. Fünf der sechs Konsumenten behandeln eine Definition wie jeden anderen `LinkRef`; das Modul `anchors` überspringt sie vollständig (neuer Out-of-Scope-Satz in [`DC-FA-ANCH-001`](lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors)). **Anlass ist ein Change Request** eines Konsumenten |

@@ -20,18 +20,29 @@ var (
 	windowsUNCRE   = regexp.MustCompile(`(^|[^A-Za-z0-9_])(\\\\[A-Za-z0-9][A-Za-z0-9_.-]*\\[^\s<>)\]"'` + "`" + `]*)`)
 )
 
-// CheckHostpaths meldet host-lokale absolute Pfade in Prosa und
-// Inline-Code (DC-FA-HOST-001, spec/spezifikation.md
+// tildeRE erkennt Home-relative Pfade: `~/` + erstes Segment, das nicht
+// mit `.` beginnt (Werkzeug-Konventionen wie ~/.config bleiben still).
+// Die Vorbedingung ist die des Unix-Musters plus `~`; `~user/` trifft
+// nicht, weil `/` unmittelbar auf die Tilde folgen muss.
+var tildeRE = regexp.MustCompile(`(^|[^A-Za-z0-9_.:/~-])(~/[^.\s<>)\]"'/` + "`" + `][^\s<>)\]"'` + "`" + `]*)`)
+
+// CheckHostpaths meldet host-lokale absolute und Home-relative Pfade in
+// Prosa und Inline-Code (DC-FA-HOST-001, spec/spezifikation.md
 // §DC-FA-HOST-001.a). Fenced-Code-Blöcke sind ausgenommen — dort
-// gehören bewusste Beispiel-Pfade hin; es gibt keinen Opt-out-Marker.
+// gehören bewusste Beispiel-Pfade hin; es gibt keinen Zeilen-Marker.
+// exempt-targets greift für Unix- und Tilde-Funde, nicht für die festen
+// Windows-/UNC-Muster.
 func CheckHostpaths(file string, content []byte, cfg model.HostpathsConfig) []model.Finding {
 	unixRE := unixHostpathRE(cfg)
 	var findings []model.Finding
 	for _, pl := range proseLines(content) {
-		for _, re := range []*regexp.Regexp{unixRE, windowsDriveRE, windowsUNCRE} {
+		for _, re := range []*regexp.Regexp{unixRE, tildeRE, windowsDriveRE, windowsUNCRE} {
 			for _, m := range re.FindAllStringSubmatch(pl.raw, -1) {
 				path := strings.TrimRight(m[2], ".,;:")
 				if path == "" {
+					continue
+				}
+				if (re == unixRE || re == tildeRE) && exemptTarget(path, cfg.ExemptTargets) {
 					continue
 				}
 				findings = append(findings, model.Finding{
@@ -46,8 +57,9 @@ func CheckHostpaths(file string, content []byte, cfg model.HostpathsConfig) []mo
 
 // unixHostpathRE baut das Unix-Muster aus der (konfigurierbaren)
 // Präfixliste; die Wortgrenzen-Vorbedingung schließt Buchstaben,
-// Ziffern, `_`, `.`, `:`, `/`, `-` aus — URL-Pfade hinter Schemata
-// matchen damit nicht.
+// Ziffern, `_`, `.`, `:`, `/`, `-` und `~` aus — URL-Pfade hinter
+// Schemata matchen damit nicht, und ein Home-relativer Pfad gehört dem
+// Tilde-Muster.
 func unixHostpathRE(cfg model.HostpathsConfig) *regexp.Regexp {
 	prefixes := cfg.Prefixes
 	if prefixes == nil {
@@ -58,5 +70,5 @@ func unixHostpathRE(cfg model.HostpathsConfig) *regexp.Regexp {
 		quoted[i] = regexp.QuoteMeta(p)
 	}
 	return regexp.MustCompile(
-		`(^|[^A-Za-z0-9_.:/-])(/(?:` + strings.Join(quoted, "|") + `)/[^\s<>)\]"'` + "`" + `]*)`)
+		`(^|[^A-Za-z0-9_.:/~-])(/(?:` + strings.Join(quoted, "|") + `)/[^\s<>)\]"'` + "`" + `]*)`)
 }

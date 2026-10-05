@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.93.4
+**Version:** 0.94.0
 
 **Status:** Draft
 
@@ -1705,17 +1705,25 @@ bleibt auf das Modul `codepaths` beschränkt
 ### DC-FA-HOST-001 — Host-lokale absolute Pfade (Modul `hostpaths`, opt-in)
 
 **Beschreibung:** Bei explizit aktiviertem Modul `hostpaths` werden
-absolute Pfade gemeldet, die ein Maschinen-Layout statt einer
-Repo-Struktur beschreiben — sie funktionieren nur auf einem konkreten
-Host und leaken dessen Verzeichnis-Aufbau. Erkannt werden, jeweils
-als erstes Segment eines absoluten Pfads:
+Pfade gemeldet, die ein Maschinen-Layout statt einer Repo-Struktur
+beschreiben — sie funktionieren nur auf einem konkreten Host und leaken
+dessen Verzeichnis-Aufbau. Erkannt werden:
 
-1. **Unix-Host-Präfixe** (Default-Liste, als Wurzel-Verzeichnisnamen
-   deklariert: Development, home, Users, Volumes, mnt, media;
-   per `hostpaths.prefixes` ersetzbar — tmp gehört bewusst nicht
-   dazu: ein POSIX-Standard-Laufzeitort, dessen Erwähnung legitime
-   Betriebs-Doku ist),
-2. **Windows-Laufwerkspfade** (Laufwerksbuchstabe, Doppelpunkt,
+1. **Unix-Host-Präfixe** als erstes Segment eines absoluten Pfads
+   (Default-Liste, als Wurzel-Verzeichnisnamen deklariert:
+   Development, home, Users, Volumes, mnt, media; per
+   `hostpaths.prefixes` ersetzbar — tmp gehört bewusst nicht dazu: ein
+   POSIX-Standard-Laufzeitort, dessen Erwähnung legitime Betriebs-Doku
+   ist; ein Präfix-Name mit Schrägstrich oder Tilde ist ein
+   Konfigurationsfehler),
+2. **Home-relative Pfade** — Tilde, Schrägstrich und ein erstes
+   Segment, das **nicht** mit einem Punkt beginnt. Das Verzeichnis-Layout
+   unterhalb des Home-Verzeichnisses wählt jede Person selbst; Segmente
+   mit führendem Punkt sind dagegen Werkzeug-Konventionen (etwa
+   `~/.config`), die auf jedem Host gleich lauten, und bleiben still. Ein
+   Home-relativer Pfad wird in voller Form und genau einmal gemeldet,
+   auch wenn sein erstes Segment zugleich ein Unix-Präfix-Name ist,
+3. **Windows-Laufwerkspfade** (Laufwerksbuchstabe, Doppelpunkt,
    Backslash) und **UNC-Pfade** (doppelter Backslash plus
    Servername) — beide immer, nicht konfigurierbar.
 
@@ -1723,22 +1731,33 @@ Geprüft werden Prosa-Zeilen **einschließlich Inline-Code** (dort
 leben solche Pfade typischerweise); Fenced-Code-Blöcke sind
 ausgenommen — Beispiel- und Lehrinhalte mit bewussten Host-Pfaden
 gehören in Fences. Vorbedingung ist eine Wortgrenze (kein
-unmittelbar vorangehendes URL-, Pfad- oder Wortzeichen); schließende
-Satzzeichen werden vom gemeldeten Pfad abgetrennt. Grund-Code
-`hostpath-forbidden` mit Datei, Zeile und gefundenem Pfad. Es gibt
-**keinen Opt-out-Marker** (der Zeilen-Marker `d-check:ignore` bleibt
-auf das Modul `codepaths` beschränkt,
+unmittelbar vorangehendes URL-, Pfad- oder Wortzeichen und keine
+Tilde); schließende Satzzeichen werden vom gemeldeten Pfad
+abgetrennt. Grund-Code `hostpath-forbidden` mit Datei, Zeile und
+gefundenem Pfad. Es gibt **keinen Zeilen-Marker** (der Zeilen-Marker
+`d-check:ignore` bleibt auf andere Module beschränkt,
 [`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)) —
-die Auswege sind Fences für beabsichtigte Beispiele und die
-Präfixliste für repo-spezifische Sonderfälle.
+die Auswege sind Fences für beabsichtigte Beispiele, die Präfixliste
+und ein **Ziel-Ventil** für repo-spezifische Sonderfälle:
+`hostpaths.exempt-targets` ist eine Glob-Liste über den gemeldeten
+(normalisierten) Pfad; ein Unix- oder Home-relativer Fund, den ein
+Glob trifft, entfällt. Für Windows- und UNC-Funde gilt das Ventil
+nicht — beide Muster bleiben fest. Ohne den Schlüssel ist der
+Befundsatz byte-identisch
+([`DC-QA-02`](#dc-qa-02--determinismus)); ein leeres oder ungültiges
+Glob ist ein Konfigurationsfehler.
 
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given Dokumentation, deren Pfad-Angaben relativ oder Repo-Wurzel-absolut sind, when das Modul `hostpaths` läuft, then kein Befund.
 - **Boundary:** Given ein host-lokaler absoluter Pfad innerhalb eines Fenced-Code-Blocks, when das Modul läuft, then kein Befund.
 - **Negative:** Given eine Prosa-Zeile oder ein Inline-Code-Span mit einem Pfad unterhalb eines deklarierten Host-Präfixes, when das Modul läuft, then ein Befund `hostpath-forbidden` mit Datei, Zeile, Pfad und Grund, Exit-Code 1.
+- **Home-relativ (Negative):** Given eine Prosa-Zeile mit Tilde, Schrägstrich und einem Segment ohne führenden Punkt, when das Modul läuft, then genau ein Befund `hostpath-forbidden` mit dem vollständigen Pfad samt Tilde.
+- **Home-relativ (Boundary):** Given eine Tilde vor einem Punkt-Segment, eine nackte Tilde mit Schrägstrich, eine Tilde mit Benutzername, eine Tilde als „ungefähr" oder eine Tilde in einem URL-Pfad, when das Modul läuft, then kein Befund.
+- **Ziel-Ventil:** Given `hostpaths.exempt-targets` mit einem Glob, das einen gefundenen Unix- oder Home-relativen Pfad trifft, when das Modul läuft, then entfällt genau dieser Befund; ein Windows- oder UNC-Fund bleibt bestehen.
+- **Config-Rand:** Given ein `hostpaths.prefixes`-Eintrag mit Tilde oder ein leeres bzw. ungültiges `hostpaths.exempt-targets`-Glob, when d-check die Konfiguration lädt, then Exit 2.
 
-**Out-of-Scope:** Erkennung relativer Pfade (Aufgabe von `links`/`codepaths`); URL-Pfade hinter Schemata; Pfade in Fenced-Code-Blöcken; ein Opt-out-Marker für dieses Modul; automatische Umschreibung.
+**Out-of-Scope:** Erkennung relativer Pfade (Aufgabe von `links`/`codepaths`); URL-Pfade hinter Schemata; Pfade in Fenced-Code-Blöcken; ein Zeilen-Marker für dieses Modul; die Tilde mit Benutzername (in Prosa nicht verlässlich von anderer Tilde-Verwendung zu trennen — benannte Grenze); Variablen-Formen des Home-Verzeichnisses (Umgebungsvariablen in Unix- oder Windows-Schreibweise); ein Ventil für Windows- und UNC-Funde; automatische Umschreibung.
 
 ---
 
@@ -3968,6 +3987,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.94.0 | 2026-10-05 | [`DC-FA-HOST-001`](#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) erweitert (Erweiterung statt neues Kürzel — Einzelmodul-Frage): **Home-relative Pfade** (Tilde, Schrägstrich, erstes Segment ohne führenden Punkt) werden erkannt und in voller Form genau einmal gemeldet; bisher traf das Unix-Muster eine Tilde-Angabe nur zufällig und abgeschnitten, wenn ihr erstes Segment ein Präfix-Name war, sonst gar nicht. Punkt-Segmente (Werkzeug-Konventionen) bleiben still. Neues **Ziel-Ventil** `hostpaths.exempt-targets` (Globs über den gemeldeten Pfad, Unix- und Home-relative Funde; ohne Schlüssel byte-identisch); ein Präfix-Name mit Tilde ist ein Konfigurationsfehler. Der Satz „keinen Opt-out-Marker" ist auf den **Zeilen-Marker** präzisiert. Die Erkennung **schärft**: Dokumente mit Home-relativen Layout-Pfaden in Prosa werden rot. Vier neue Akzeptanzkriterien; Out-of-Scope um Benutzername-Tilde, Variablen-Formen und ein Windows-/UNC-Ventil ergänzt. Begründung in begleitender ADR | — |
 | 0.93.4 | 2026-10-05 | Verweis-Nachzug ohne Anforderungs-Änderung: die Referenz-Richtung verbietet den Straten jetzt auch Verweise in den Harness-Bestand (Agenten-Briefing, Konventionsspeicher, Harness-Einstieg, Packaging, vendorte Baseline); die lebenden Verweise dieser Art sind entfernt bzw. als Text-Form mit Version gesetzt, die Historie bleibt Zeitdokument. Keine `DC-*`-Semantik berührt | — |
 | 0.93.3 | 2026-09-29 | [`DC-FA-VCS-002`](#dc-fa-vcs-002--leere-commit-range-im-modul-vcs-ist-laut-zu-melden-opt-in) neu — eine aufgelöste, aber leere Commit-Range im Modul `vcs` ist laut zu melden (Exit ≠ 0): das Grün über leerem Prüfbereich behauptet eine Prüfung ohne Gegenstand (shallow-Klon, `HEAD..HEAD`). Spezifikation §DC-FA-VCS-002.a ergänzt |
 | 0.93.2 | 2026-09-27 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf (0.93.1) behauptete implizit dieselbe Titel-Abtrennung wie bei einem Inline-Link. Der Review (R1-H1, HIGH) fand: ohne echte Titel-Delimiter-Prüfung liest die Erkennung eine gewöhnliche Prosazeile wie `[TERM]: First In, First Out` fälschlich als Definition mit erfundenem Ziel „First". Die Zusage ist jetzt präzise: nach dem Ziel-Token darf nur noch optionaler Whitespace oder ein korrekt delimitierter Titel (`"…"`, `'…'`, `(…)`) folgen, sonst bleibt die ganze Zeile unerkannt |

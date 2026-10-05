@@ -211,6 +211,32 @@ func TestDecode_HostpathsPrefixesFehler(t *testing.T) {
 	}
 }
 
+// TestDecode_HostpathsTildeUndExemptTargets: ein Präfix mit '~' ist ein
+// Konfigurationsfehler (er träfe als `/~/` nie das Gemeinte); exempt-targets
+// werden segmentweise validiert und in den Kern durchgereicht.
+func TestDecode_HostpathsTildeUndExemptTargets(t *testing.T) {
+	for _, p := range []string{"~", "~alice"} {
+		if _, err := configyaml.Decode([]byte("hostpaths:\n  prefixes: [\"" + p + "\"]\n")); err == nil ||
+			!strings.Contains(err.Error(), "enthält '~'") {
+			t.Fatalf("hostpaths.prefixes %q: err = %v (Ablehnung „enthält ~“ erwartet)", p, err)
+		}
+	}
+	for _, g := range []string{"\"\"", "\"~/[x/**\""} {
+		if _, err := configyaml.Decode([]byte("hostpaths:\n  exempt-targets: [" + g + "]\n")); err == nil ||
+			!strings.Contains(err.Error(), "hostpaths.exempt-targets") {
+			t.Fatalf("hostpaths.exempt-targets %s: err = %v (Ablehnung erwartet)", g, err)
+		}
+	}
+	cfg, err := configyaml.Decode([]byte("hostpaths:\n  exempt-targets: [\"~/Library/**\"]\n"))
+	if err != nil {
+		t.Fatalf("gültige hostpaths.exempt-targets abgelehnt: %v", err)
+	}
+	if len(cfg.Hostpaths.ExemptTargets) != 1 || cfg.Hostpaths.ExemptTargets[0] != "~/Library/**" ||
+		cfg.Hostpaths.Prefixes != nil {
+		t.Fatalf("hostpaths.exempt-targets nicht durchgereicht: %+v", cfg.Hostpaths)
+	}
+}
+
 // TestDecode_HostpathsPrefixesHappy: bare Verzeichnisnamen (ohne /) werden
 // akzeptiert und in den Kern durchgereicht (der positive Gegenpol; zugleich die
 // korrekte Form des Handbuch-Beispiels `prefixes: [home, Users]`).

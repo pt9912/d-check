@@ -748,8 +748,9 @@ type raw struct {
 	Spans     *rawScopeOnly `yaml:"spans"`
 	Pins      *rawScopeOnly `yaml:"pins"`
 	Hostpaths *struct {
-		Scope    *rawScope `yaml:"scope"`
-		Prefixes []string  `yaml:"prefixes"`
+		Scope         *rawScope `yaml:"scope"`
+		Prefixes      []string  `yaml:"prefixes"`
+		ExemptTargets []string  `yaml:"exempt-targets"`
 	} `yaml:"hostpaths"`
 	IDs       *rawIDs       `yaml:"ids"`
 	Matrix    *rawMatrix    `yaml:"matrix"`
@@ -1813,8 +1814,11 @@ func validRefGlob(g string) error {
 	return nil
 }
 
-// applyHostpaths validiert die hostpaths-Präfixliste (DC-FA-HOST-001:
-// nicht-leere Verzeichnisnamen ohne '/').
+// applyHostpaths validiert die hostpaths-Parameter (DC-FA-HOST-001):
+// Präfixe sind nicht-leere Verzeichnisnamen ohne '/' und ohne '~' (ein
+// Tilde-Präfix würde zu `/~/` und träfe nie, was gemeint ist — Home-relative
+// Pfade erkennt das Modul selbst); exempt-targets sind segmentweise gültige
+// Globs.
 func applyHostpaths(r *raw, cfg *model.Config) error {
 	if r.Hostpaths == nil {
 		return nil
@@ -1826,8 +1830,17 @@ func applyHostpaths(r *raw, cfg *model.Config) error {
 		if strings.Contains(p, "/") {
 			return fmt.Errorf("%s: hostpaths.prefixes-Eintrag %q muss ein Verzeichnisname ohne '/' sein", FileName, p)
 		}
+		if strings.Contains(p, "~") {
+			return fmt.Errorf("%s: hostpaths.prefixes-Eintrag %q enthält '~' — Home-relative Pfade (~/…) erkennt das Modul selbst; Ausnahmen über hostpaths.exempt-targets", FileName, p)
+		}
 	}
-	cfg.Hostpaths = model.HostpathsConfig{Prefixes: r.Hostpaths.Prefixes}
+	if err := validateSegmentGlobs("hostpaths.exempt-targets", r.Hostpaths.ExemptTargets); err != nil {
+		return err
+	}
+	cfg.Hostpaths = model.HostpathsConfig{
+		Prefixes:      r.Hostpaths.Prefixes,
+		ExemptTargets: r.Hostpaths.ExemptTargets,
+	}
 	return nil
 }
 
@@ -2056,8 +2069,9 @@ func scopeOfExternal(v *rawExternal) *rawScope {
 }
 
 func scopeOfHostpaths(v *struct {
-	Scope    *rawScope `yaml:"scope"`
-	Prefixes []string  `yaml:"prefixes"`
+	Scope         *rawScope `yaml:"scope"`
+	Prefixes      []string  `yaml:"prefixes"`
+	ExemptTargets []string  `yaml:"exempt-targets"`
 }) *rawScope {
 	if v == nil {
 		return nil
