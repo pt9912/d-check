@@ -2713,7 +2713,23 @@ scannt, sondern **deklarierte** Dateien liest:
    **Richtung 1** (Schritt 4) läuft nur bei nicht-leerem `targets.doc-tables`,
    **Richtung 2** (Schritt 5) nur bei nicht-leerem `targets.authority` — die
    beiden Richtungen sind voneinander unabhängig.
-2. **Makefile-Regelmenge.** Aus jeder `targets.makefiles`-Datei werden die
+1a. **Makefile-Quellen auflösen.** Ein `targets.makefiles`-Eintrag ohne
+   Glob-Zeichen (`*`, `?`, `[`) ist ein wörtlicher Pfad. Ein Eintrag mit
+   Glob-Zeichen ist ein Muster: gewandert wird ab seinem **festen
+   Verzeichnis-Präfix** (die führenden Segmente ohne Glob-Zeichen, ohne das
+   letzte Segment; leer ⇒ Repo-Wurzel) über **alle** Dateien, unterhalb des
+   Präfixes mit denselben SKIP_DIRS wie das Modul `file`; ein Pfad trifft,
+   wenn `matchGlob` (segmentweise, `**` für beliebig viele Segmente, wie
+   `scan.ignore`) ihn akzeptiert. Fehlt das Präfix-Verzeichnis oder ist es
+   ein Symlink, gibt es keine Treffer; Symlinks darunter werden nicht
+   verfolgt. Die Treffer eines Musters werden
+   lexikographisch sortiert; die aufgelöste Liste folgt der
+   Konfigurations-Reihenfolge, eine Datei steht nur bei ihrer **ersten**
+   Nennung (wörtlich oder per Muster). Ein Muster **ohne Treffer** ⇒
+   **Exit 2** mit stderr-Hinweis auf das Muster. Die Auflösung ist
+   unabhängig von `scan.roots`/`scan.ignore`. Ohne Glob-Eintrag ist die
+   Liste identisch mit der Konfiguration.
+2. **Makefile-Regelmenge.** Aus jeder aufgelösten Makefile-Datei (Schritt 1a) werden die
    Regelnamen extrahiert: eine Zeile, die am **Zeilenanfang** mit einem oder
    mehreren durch Leerzeichen getrennten Namen (`[A-Za-z][A-Za-z0-9_-]*`)
    gefolgt von `:` beginnt, wobei nach dem `:` **kein** `=` folgt (Zuweisungen
@@ -3410,7 +3426,7 @@ Exit 2 ohne Prüfung
 | `mentions.documents` | Liste von Globs | leer (aus) | **Ist-Menge**: die Dokumente, in denen gesucht wird — als **Vereinigung** gelesen. Ein Block ist **ein** Paar: zwei unabhängige Invarianten in einem Block halten keine von beiden. Ohne `mentions.artifacts` ⇒ Exit 2; Treffermenge leer ⇒ Exit 2 |
 | `mentions.match` | `path` \| `basename` | `path` | Erkennungsform: der '/'-relative Pfad oder nur der Dateiname. Gesucht wird als **eigenständige Nennung** (Grenz-Prüfung links und rechts; links unter `basename` ist `/` ausgenommen). Ein anderer Wert ⇒ Exit 2 |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
-| `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien, aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
+| `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien **oder Glob-Muster** (Eintrag mit `*`/`?`/`[`, `matchGlob`, `**` erlaubt), aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei, ein Glob ohne Treffer oder ein ungültiges Glob ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
 | `targets.authority` | string | leer | Wurzel-relative Doku-Datei; **jede** nicht-exempte Makefile-Regel muss dort als `make X`-Tabellenzeile stehen (Richtung 2 `gate-undocumented`); leer ⇒ Richtung 2 entfällt; fehlende Datei ⇒ Exit 2 |
 | `targets.exempt-targets` | string[] | leer | Regelnamen (**exakt**-Vergleich, **kein** Glob — anders als `tracked.exempt-targets`, das Pfad-Globs matcht), die von der Doku-Pflicht (Richtung 2) ausgenommen sind (Utility-Targets); ohne Eintrag prüft Richtung 2 jede Regel |
@@ -3575,6 +3591,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-06 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) um Schritt 1a erweitert: `targets.makefiles`-Einträge mit Glob-Zeichen expandieren ab ihrem festen Verzeichnis-Präfix per `matchGlob` (SKIP_DIRS wie `file`, keine Symlinks, unabhängig von `scan.*`), Treffer sortiert, erste Nennung gewinnt, Muster ohne Treffer ⇒ Exit 2; Schema-Zeile `targets.makefiles` nachgezogen |
 | 2026-10-05 | §[`DC-FA-HOST-001.a`](spezifikation.md#dc-fa-host-001a--host-pfad-erkennung) um das **Home-relative** Muster (Tilde, Schrägstrich, erstes Segment ohne führenden Punkt) und das **Ziel-Ventil** `hostpaths.exempt-targets` (Schritt 4, nur Unix- und Home-relative Funde) erweitert; ein Unix-Treffer, der innerhalb eines Home-relativen Treffers beginnt, entfällt (sonst Doppel- bzw. abgeschnittener Treffer), jeder andere bleibt; Schema-Zeilen `hostpaths.prefixes` (ohne `~`) und `hostpaths.exempt-targets`, Grund-Code-Zeile ergänzt; bekannte Grenze um Home-relative Konventionen ohne Punkt und Markdown-Hervorhebung am Pfadrand erweitert |
 | 2026-09-27 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3 präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf behauptete, Ziel-Normalisierung UND Titel-Abtrennung einer Definition seien „dieselben wie bei einem Inline-Link" — der Review (R1-H1, HIGH) zeigte am Testfall `[TERM]: First In, First Out`, dass der naive Whitespace-Schnitt eine gewöhnliche Prosazeile fälschlich als Definition mit erfundenem Ziel liest. Die Zusage ist jetzt präzise: das Ziel-Token trägt keinen eingebetteten Whitespace, danach folgt nur optionaler Whitespace oder ein korrekt delimitierter Titel (`"…"`, `'…'`, `(…)`), sonst bleibt die ganze Zeile unerkannt |
 | 2026-09-27 | Nachzug **vor** dem ersten Test, **vor** der ersten Closure dieser Erweiterung: §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3 präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf beschrieb einen `\]` im Label als „beendet die Label-Erkennung wie ein unescaptes `]`" — die eigene Verifikation der Erkennungs-Regex vor dem ersten Test ergab: die verankerte Regex scheitert an dieser Eingabe vollständig, die **ganze** Zeile bleibt unerkannt, statt nur die Label-Grenze zu verschieben. Die zugesagte Form ändert sich nicht, nur die Beschreibung dieser einen Grenze |

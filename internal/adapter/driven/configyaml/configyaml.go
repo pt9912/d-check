@@ -1662,6 +1662,17 @@ func applyTargets(r *raw, cfg *model.Config) error {
 			return fmt.Errorf("%s: targets-Pfad %q muss relativ zur Repo-Wurzel liegen (kein '/', kein '..')", FileName, p)
 		}
 	}
+	// Glob-Einträge in makefiles werden segmentweise validiert — sonst
+	// schluckte matchGlob den ErrBadPattern und der Glob träfe still nichts.
+	var globs []string
+	for _, m := range t.Makefiles {
+		if strings.ContainsAny(m, "*?[") {
+			globs = append(globs, m)
+		}
+	}
+	if err := validateSegmentGlobs("targets.makefiles", globs); err != nil {
+		return err
+	}
 	cfg.Targets = model.TargetsConfig{
 		Makefiles: t.Makefiles, DocTables: t.DocTables,
 		Authority: t.Authority, ExemptTargets: t.ExemptTargets,

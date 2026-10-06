@@ -3,6 +3,7 @@ package rules
 import (
 	"fmt"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
@@ -63,11 +64,16 @@ func CheckTargets(fsys driven.Filesystem, cfg model.TargetsConfig) ([]model.Find
 }
 
 // collectMakefileRules extrahiert die Regelnamen (mit Fundstelle) aus allen
-// konfigurierten Makefile-Quellen. fail-closed bei fehlender/unlesbarer Datei.
+// konfigurierten Makefile-Quellen. fail-closed bei fehlender/unlesbarer Datei
+// und bei einem Glob ohne Treffer.
 func collectMakefileRules(fsys driven.Filesystem, makefiles []string) ([]targetRef, map[string]bool, error) {
+	files, err := expandMakefiles(fsys, makefiles)
+	if err != nil {
+		return nil, nil, err
+	}
 	var refs []targetRef
 	set := map[string]bool{}
-	for _, mf := range makefiles {
+	for _, mf := range files {
 		content, err := fsys.ReadFile(mf)
 		if err != nil {
 			return nil, nil, fmt.Errorf("das Modul targets kann das Makefile %q nicht lesen (DC-FA-TGT-001, fail-closed): %w", mf, err)
@@ -162,4 +168,69 @@ func extractDocTargets(fsys driven.Filesystem, file string) ([]targetRef, error)
 		}
 	}
 	return out, nil
+}
+
+// expandMakefiles löst die makefiles-Einträge zu Dateipfaden auf
+// (DC-FA-TGT-001): ein Eintrag ohne Glob-Zeichen bleibt wörtlich, ein
+// Glob-Eintrag expandiert über makefileGlobHits. Eine Datei, die mehrfach
+// erfasst wird, steht einmal (erste Nennung gewinnt).
+func expandMakefiles(fsys driven.Filesystem, entries []string) ([]string, error) {
+	var out []string
+	seen := map[string]bool{}
+	for _, e := range entries {
+		paths := []string{e}
+		if strings.ContainsAny(e, "*?[") {
+			hits, err := makefileGlobHits(fsys, e)
+			if err != nil {
+				return nil, err
+			}
+			paths = hits
+		}
+		for _, p := range paths {
+			if !seen[p] {
+				seen[p] = true
+				out = append(out, p)
+			}
+		}
+	}
+	return out, nil
+}
+
+// makefileGlobHits expandiert ein Glob per matchGlob gegen die Repo-Wurzel —
+// gewandert wird ab seinem festen Präfix-Verzeichnis, SKIP_DIRS gelten
+// darunter wie beim Modul file. Treffer sortiert; ein Glob ohne Treffer ist
+// fail-closed, sonst prüfte das Modul unbemerkt nichts.
+func makefileGlobHits(fsys driven.Filesystem, pattern string) ([]string, error) {
+	dir := globBaseDir(pattern)
+	var all []string
+	if kind, err := fsys.Kind(dir); dir == "" || (err == nil && kind == driven.KindDir) {
+		if err := walkAllFiles(fsys, dir, &all); err != nil {
+			return nil, fmt.Errorf("das Modul targets kann das Verzeichnis %q zum Makefile-Glob %q nicht lesen (DC-FA-TGT-001, fail-closed): %w", dir, pattern, err)
+		}
+	}
+	var hits []string
+	for _, f := range all {
+		if matchGlob(pattern, f) {
+			hits = append(hits, f)
+		}
+	}
+	if len(hits) == 0 {
+		return nil, fmt.Errorf("das Modul targets findet zum Makefile-Glob %q keine Datei (DC-FA-TGT-001, fail-closed): ein Glob ohne Treffer prüfte nichts", pattern)
+	}
+	sort.Strings(hits)
+	return hits, nil
+}
+
+// globBaseDir ist der feste Verzeichnis-Präfix eines Glob-Musters: die
+// führenden Segmente ohne Glob-Zeichen, ohne das letzte Segment.
+func globBaseDir(pattern string) string {
+	segs := strings.Split(pattern, "/")
+	var fixed []string
+	for _, s := range segs[:len(segs)-1] {
+		if strings.ContainsAny(s, "*?[") {
+			break
+		}
+		fixed = append(fixed, s)
+	}
+	return strings.Join(fixed, "/")
 }

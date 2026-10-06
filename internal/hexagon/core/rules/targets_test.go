@@ -217,3 +217,59 @@ func TestTargetsTabellenzeileImFenceDokumentiertNicht(t *testing.T) {
 		t.Fatalf("die Makefile-Regel geist ist NICHT dokumentiert (nur im Fence) → 1 gate-undocumented, got %d (%+v)", undoc, got)
 	}
 }
+
+// TestCheckTargetsMakefileGlob: ein Glob-Eintrag expandiert gegen die
+// Repo-Wurzel; eine Regel in einer per Glob erfassten Datei ohne Doku-Zeile
+// meldet gate-undocumented an DIESER Datei; eine wörtlich UND per Glob
+// erfasste Datei zählt einmal (genau ein Befund je Regelzeile); `*` bleibt
+// in seinem Segment (das Unterverzeichnis trifft es nicht).
+func TestCheckTargetsMakefileGlob(t *testing.T) {
+	files := map[string]string{
+		tgtMakefile:              "help:\n\techo\n",
+		"harness/mk/a.mk":        "alpha:\n\techo\ndelta:\n\techo\n",
+		"harness/mk/b.mk":        "beta:\n\techo\n",
+		"harness/mk/sub/c.mk":    "gamma:\n\techo\n",
+		"harness/mk/readme.txt":  "omega:\n",
+		tgtDoc:                   tgtDocTable("help", "alpha", "beta"),
+	}
+	cfg := tgtCfg()
+	cfg.Makefiles = []string{tgtMakefile, "harness/mk/*.mk", "harness/mk/a.mk"}
+	f := mustCheck(t, files, cfg)
+	if len(f) != 1 || f[0].Reason != ReasonGateUndocumented || f[0].Target != "delta" ||
+		f[0].File != "harness/mk/a.mk" || f[0].Line != 3 {
+		t.Fatalf("erwartet genau gate-undocumented delta @ harness/mk/a.mk:3, bekam %+v", f)
+	}
+}
+
+// TestCheckTargetsMakefileGlobDoppelstern: `**` erfasst Fragmente in
+// Unterverzeichnissen.
+func TestCheckTargetsMakefileGlobDoppelstern(t *testing.T) {
+	files := map[string]string{
+		tgtMakefile:           "help:\n\techo\n",
+		"harness/mk/sub/c.mk": "gamma:\n\techo\n",
+		tgtDoc:                tgtDocTable("help"),
+	}
+	cfg := tgtCfg()
+	cfg.Makefiles = []string{tgtMakefile, "harness/**/*.mk"}
+	f := mustCheck(t, files, cfg)
+	if len(f) != 1 || f[0].Target != "gamma" || f[0].File != "harness/mk/sub/c.mk" {
+		t.Fatalf("erwartet gate-undocumented gamma @ harness/mk/sub/c.mk, bekam %+v", f)
+	}
+}
+
+// TestCheckTargetsMakefileGlobLeer: ein Glob ohne Treffer ist kein stilles
+// Grün — fail-closed wie eine fehlende wörtliche Datei, auch wenn das
+// Verzeichnis existiert oder fehlt.
+func TestCheckTargetsMakefileGlobLeer(t *testing.T) {
+	for _, files := range []map[string]string{
+		{tgtMakefile: "help:\n\techo\n", tgtDoc: tgtDocTable("help")},
+		{tgtMakefile: "help:\n\techo\n", "harness/mk/x.txt": "x", tgtDoc: tgtDocTable("help")},
+	} {
+		cfg := tgtCfg()
+		cfg.Makefiles = []string{tgtMakefile, "harness/mk/*.mk"}
+		_, err := CheckTargets(coretest.NewMemFS(files), cfg)
+		if err == nil || !strings.Contains(err.Error(), "harness/mk/*.mk") || !strings.Contains(err.Error(), "keine Datei") {
+			t.Fatalf("leerer Glob ⇒ fail-closed mit Muster und „keine Datei“ erwartet, bekam %v", err)
+		}
+	}
+}

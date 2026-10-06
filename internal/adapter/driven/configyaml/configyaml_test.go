@@ -1270,3 +1270,25 @@ func TestDecode_ObservationsDirHappy(t *testing.T) {
 		t.Fatalf("Default-Muster im Verzeichnis-Modus = %q, want %q", o.EffectivePattern(), model.DefaultObservationDirPattern)
 	}
 }
+
+// TestDecode_TargetsMakefilesGlob: ein Glob-Eintrag in targets.makefiles
+// passiert den Config-Rand und wird durchgereicht; ein ungültiges Glob und
+// ein Muster, das aus der Wurzel führt, sind Konfigurationsfehler.
+func TestDecode_TargetsMakefilesGlob(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte("targets:\n  makefiles: [Makefile, \"harness/mk/*.mk\"]\n"))
+	if err != nil {
+		t.Fatalf("gültiger Makefile-Glob abgelehnt: %v", err)
+	}
+	if len(cfg.Targets.Makefiles) != 2 || cfg.Targets.Makefiles[1] != "harness/mk/*.mk" {
+		t.Fatalf("targets.makefiles nicht durchgereicht: %+v", cfg.Targets)
+	}
+	for _, g := range []string{"harness/mk/[x.mk", "/abs/*.mk", "../*.mk"} {
+		if _, err := configyaml.Decode([]byte("targets:\n  makefiles: [\"" + g + "\"]\n")); err == nil {
+			t.Fatalf("targets.makefiles %q: Konfigurationsfehler erwartet", g)
+		}
+	}
+	if _, err := configyaml.Decode([]byte("targets:\n  makefiles: [\"harness/mk/[x.mk\"]\n")); err == nil ||
+		!strings.Contains(err.Error(), "kein gültiges Glob") {
+		t.Fatalf("ungültiges Glob: Fehler „kein gültiges Glob“ erwartet, bekam %v", err)
+	}
+}

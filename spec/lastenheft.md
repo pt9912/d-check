@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.94.1
+**Version:** 0.95.0
 
 **Status:** Draft
 
@@ -3293,6 +3293,26 @@ voneinander unabhängig.
 ([`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)) — Doku- bzw. Makefile-Edit
 ist eine menschliche Entscheidung.
 
+**Makefile-Quellen als Glob:** Ein `targets.makefiles`-Eintrag mit
+Glob-Zeichen (Stern, Fragezeichen, öffnende eckige Klammer) ist ein
+Muster und expandiert gegen die Repo-Wurzel — mit derselben segmentweisen
+Glob-Semantik wie die übrigen Glob-Schlüssel, Doppelstern für beliebig
+viele Verzeichnisse. Jede Treffer-Datei wird wie ein wörtlicher Eintrag
+gelesen, Befunde nennen den echten Dateipfad. Eine Datei, die wörtlich und
+per Glob (oder von zwei Globs) erfasst wird, zählt ihre Regeln einmal. Ein
+Glob **ohne Treffer** bricht mit **Exit 2** ab — wie eine fehlende wörtliche
+Datei; ein leerer Glob prüfte sonst unbemerkt nichts. Ein ungültiges Muster
+ist beim Laden ein Konfigurationsfehler, und Glob-Einträge unterliegen
+derselben Pfad-Regel wie wörtliche (relativ, kein führender Schrägstrich,
+keine Elternverweise). **Grenzen:** Die Expansion ist von `scan.roots` und
+`scan.ignore` unabhängig — wie ein wörtlicher Eintrag, denn Makefiles
+gehören nicht zur Markdown-Scan-Menge; unterhalb des festen
+Verzeichnis-Präfixes eines Musters gelten die fest übersprungenen
+Verzeichnisse (etwa `build`, `vendor`) wie beim Modul `file`, und
+symbolische Links werden nicht verfolgt. Einträge ohne Glob-Zeichen
+verhalten sich unverändert, ohne Glob-Eintrag ist der Befundsatz
+byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
+
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given `targets` aktiv, eine Doku-Tabellenzeile mit ` `make foo` `, ein Makefile mit der Regel `foo:` und ein Eintrag ` `make foo` ` in der Autoritäts-Doku, when `d-check --enable targets` läuft, then kein Befund, Exit 0.
@@ -3302,6 +3322,10 @@ ist eine menschliche Entscheidung.
 - **Negative (undokumentiert):** Given `targets` aktiv und eine Makefile-Regel `secret:` (nicht in `targets.exempt-targets`), die in der Autoritäts-Doku fehlt, when `d-check --enable targets` läuft, then ein Befund `gate-undocumented` (Makefile, Zeile, Target `secret`), Exit 1.
 - **Boundary (exempt):** Given `targets` aktiv und eine Makefile-Regel `clean:`, die in `targets.exempt-targets` steht und in der Autoritäts-Doku **fehlt**, when `d-check --enable targets` läuft, then **kein** `gate-undocumented` für `clean` (Utility-Regeln sind von der Doku-Pflicht ausgenommen).
 - **fail-closed (fehlende Datei):** Given `targets` aktiv und eine konfigurierte Makefile-/Doku-Datei existiert nicht, when `d-check --enable targets` läuft, then **Exit 2** mit Hinweis auf stderr — kein stilles Grün.
+- **Glob (Expansion):** Given `targets` aktiv, `targets.makefiles` mit dem Makefile und einem Glob über ein Fragment-Verzeichnis, und eine Regel in einem der Fragmente ohne Doku-Zeile, when `d-check --enable targets` läuft, then ein Befund `gate-undocumented` mit Fundstelle in **diesem Fragment**, Exit 1.
+- **Glob (Dublette):** Given eine Datei, die wörtlich **und** per Glob in `targets.makefiles` steht, when `d-check --enable targets` läuft, then je Regelzeile höchstens **ein** Befund.
+- **Glob (leer):** Given ein Glob-Eintrag ohne Treffer, when `d-check --enable targets` läuft, then **Exit 2** mit Hinweis auf das Muster — kein stilles Grün.
+- **Glob (Config-Rand):** Given ein ungültiges Glob-Muster oder ein Glob mit führendem Schrägstrich oder Elternverweis in `targets.makefiles`, when d-check die Konfiguration lädt, then Exit 2.
 
 **Out-of-Scope:** Ausführen des Makefile oder Auflösen von `include`-Direktiven,
 Variablen- oder Pattern-Rule-Targets (rein statische Zeilen-Heuristik, identisch
@@ -3311,7 +3335,8 @@ optionaler `authority`-Section-Anker bleibt spätere Anforderung); die
 `.d-check.yml`-Modul-Listen-Selbstkonsistenz des netzlosen doc-check
 (repo-spezifische Prüfung der Netzlos-Gate-Config, **kein** cross-repo-Kern,
 verbleibt im repo-lokalen Rest von `gate-consistency.sh`); Nicht-Make-Build-
-Systeme; ein Auto-Fix (`--repair`).
+Systeme; ein Auto-Fix (`--repair`); Glob-Muster für `targets.doc-tables` und
+`targets.authority` (dort bleiben Einträge wörtliche Pfade).
 
 ---
 
@@ -3989,6 +4014,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.95.0 | 2026-10-06 | [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) erweitert (Erweiterung statt neues Kürzel — Einzelmodul-Frage): ein `targets.makefiles`-Eintrag mit Glob-Zeichen expandiert gegen die Repo-Wurzel (segmentweise, Doppelstern erlaubt); Treffer werden wie wörtliche Einträge gelesen, eine mehrfach erfasste Datei zählt einmal, ein Glob ohne Treffer ist Exit 2, ein ungültiges Muster ein Konfigurationsfehler. Benannte Grenzen: unabhängig von `scan.roots`/`scan.ignore`, fest übersprungene Verzeichnisse unterhalb des Präfixes, keine Symlinks. Vier neue Akzeptanzkriterien; Out-of-Scope um Globs für `doc-tables`/`authority` ergänzt. Ohne Glob-Eintrag byte-identisch. Begründung in begleitender ADR. **Anlass ist ein Change Request** des Adopters `ai-harness-init` | [CR `ai-harness-init` 2026-10-06](../docs/plan/cr/2026-10-06-cr-eingehend-ai-harness-init-targets-makefiles-glob.md) |
 | 0.94.1 | 2026-10-05 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-HOST-001`](#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) präzisiert (Begründung in begleitender ADR). Der Erstentwurf (0.94.0) sperrte die Tilde pauschal als Vorgänger eines Unix-Treffers — der Review zeigte, dass damit ein durchgestrichener und ein am Wort klebender absoluter Host-Pfad, die bisher gemeldet wurden, still verschwanden. Die Zusage ist jetzt: nur ein Unix-Treffer **innerhalb** eines Home-relativen Treffers entfällt; neues Akzeptanzkriterium „kein Verlust". Ein Ventil-Glob, das weder mit Schrägstrich noch mit Tilde beginnt, ist ein Konfigurationsfehler (es träfe nie) | — |
 | 0.94.0 | 2026-10-05 | [`DC-FA-HOST-001`](#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) erweitert (Erweiterung statt neues Kürzel — Einzelmodul-Frage): **Home-relative Pfade** (Tilde, Schrägstrich, erstes Segment ohne führenden Punkt) werden erkannt und in voller Form genau einmal gemeldet; bisher traf das Unix-Muster eine Tilde-Angabe nur zufällig und abgeschnitten, wenn ihr erstes Segment ein Präfix-Name war, sonst gar nicht. Punkt-Segmente (Werkzeug-Konventionen) bleiben still. Neues **Ziel-Ventil** `hostpaths.exempt-targets` (Globs über den gemeldeten Pfad, Unix- und Home-relative Funde; ohne Schlüssel byte-identisch); ein Präfix-Name mit Tilde ist ein Konfigurationsfehler. Der Satz „keinen Opt-out-Marker" ist auf den **Zeilen-Marker** präzisiert. Die Erkennung **schärft**: Dokumente mit Home-relativen Layout-Pfaden in Prosa werden rot. Vier neue Akzeptanzkriterien; Out-of-Scope um Benutzername-Tilde, Variablen-Formen und ein Windows-/UNC-Ventil ergänzt. Begründung in begleitender ADR | — |
 | 0.93.4 | 2026-10-05 | Verweis-Nachzug ohne Anforderungs-Änderung: die Referenz-Richtung verbietet den Straten jetzt auch Verweise in den Harness-Bestand (Agenten-Briefing, Konventionsspeicher, Harness-Einstieg, Packaging, vendorte Baseline); die lebenden Verweise dieser Art sind entfernt bzw. als Text-Form mit Version gesetzt, die Historie bleibt Zeitdokument. Keine `DC-*`-Semantik berührt | — |

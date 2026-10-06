@@ -251,7 +251,7 @@ modules: [links, anchors]
 # --- targets: Deklarations-Konsistenz Doku ↔ Build-Targets — hermetisch (kein git), opt-in ---
 #   (Aufruf über das make-Target gate-consistency bzw. --enable targets. NICHT in modules: oben.)
 # targets:
-#   makefiles: [Makefile]                        # Regelnamen-Quelle(n)
+#   makefiles: [Makefile, "harness/mk/*.mk"]     # Regelnamen-Quelle(n); Pfad oder Glob (matchGlob, ** erlaubt) — Glob ohne Treffer ⇒ Exit 2
 #   doc-tables: [AGENTS.md, harness/README.md]   # Dateien mit make-X-Tabellen (Richtung 1 ⇒ gate-phantom)
 #   authority: AGENTS.md                         # Vollständigkeits-Quelle (Richtung 2 ⇒ gate-undocumented)
 #   exempt-targets: []                           # Regelnamen EXAKT (kein Glob, anders als tracked) — Utility-Targets ohne Doku-Pflicht
