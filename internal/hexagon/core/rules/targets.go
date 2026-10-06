@@ -2,6 +2,7 @@ package rules
 
 import (
 	"fmt"
+	"path"
 	"regexp"
 	"sort"
 	"strings"
@@ -173,7 +174,8 @@ func extractDocTargets(fsys driven.Filesystem, file string) ([]targetRef, error)
 // expandMakefiles löst die makefiles-Einträge zu Dateipfaden auf
 // (DC-FA-TGT-001): ein Eintrag ohne Glob-Zeichen bleibt wörtlich, ein
 // Glob-Eintrag expandiert über makefileGlobHits. Eine Datei, die mehrfach
-// erfasst wird, steht einmal (erste Nennung gewinnt).
+// erfasst wird, steht einmal — verglichen über den bereinigten Pfad, gelesen
+// und gemeldet in der Form ihrer ersten Nennung.
 func expandMakefiles(fsys driven.Filesystem, entries []string) ([]string, error) {
 	var out []string
 	seen := map[string]bool{}
@@ -187,8 +189,8 @@ func expandMakefiles(fsys driven.Filesystem, entries []string) ([]string, error)
 			paths = hits
 		}
 		for _, p := range paths {
-			if !seen[p] {
-				seen[p] = true
+			if key := path.Clean(p); !seen[key] {
+				seen[key] = true
 				out = append(out, p)
 			}
 		}
@@ -196,22 +198,24 @@ func expandMakefiles(fsys driven.Filesystem, entries []string) ([]string, error)
 	return out, nil
 }
 
-// makefileGlobHits expandiert ein Glob per matchGlob gegen die Repo-Wurzel —
-// gewandert wird ab seinem festen Präfix-Verzeichnis, SKIP_DIRS gelten
-// darunter wie beim Modul file. Treffer sortiert; ein Glob ohne Treffer ist
-// fail-closed, sonst prüfte das Modul unbemerkt nichts.
+// makefileGlobHits expandiert ein Glob per matchGlob gegen die Repo-Wurzel
+// (spec/spezifikation.md §DC-FA-TGT-001.a Schritt 1a). Gewandert wird ab dem
+// festen Präfix-Verzeichnis — nur, wenn jede seiner Komponenten ein echtes
+// Verzeichnis ist (kein Symlink, der aus der Wurzel führen könnte). Unterhalb
+// des Präfixes werden SKIP_DIRS nicht betreten und Symlinks nicht verfolgt;
+// ein Symlink, den das Muster trifft, ist fail-closed statt still
+// übergangen. Treffer sortiert; ein Glob ohne Treffer ist fail-closed, sonst
+// prüfte das Modul unbemerkt nichts.
 func makefileGlobHits(fsys driven.Filesystem, pattern string) ([]string, error) {
 	dir := globBaseDir(pattern)
-	var all []string
-	if kind, err := fsys.Kind(dir); dir == "" || (err == nil && kind == driven.KindDir) {
-		if err := walkAllFiles(fsys, dir, &all); err != nil {
-			return nil, fmt.Errorf("das Modul targets kann das Verzeichnis %q zum Makefile-Glob %q nicht lesen (DC-FA-TGT-001, fail-closed): %w", dir, pattern, err)
-		}
+	ok, err := realDirChain(fsys, dir)
+	if err != nil {
+		return nil, fmt.Errorf("das Modul targets kann das Präfix %q zum Makefile-Glob %q nicht prüfen (DC-FA-TGT-001, fail-closed): %w", dir, pattern, err)
 	}
 	var hits []string
-	for _, f := range all {
-		if matchGlob(pattern, f) {
-			hits = append(hits, f)
+	if ok {
+		if err := walkMakefileGlob(fsys, dir, pattern, &hits); err != nil {
+			return nil, err
 		}
 	}
 	if len(hits) == 0 {
@@ -219,6 +223,57 @@ func makefileGlobHits(fsys driven.Filesystem, pattern string) ([]string, error) 
 	}
 	sort.Strings(hits)
 	return hits, nil
+}
+
+// realDirChain prüft jede Komponente des Präfixes einzeln: true nur, wenn
+// alle echte Verzeichnisse sind (die Wurzel "" ist es immer).
+func realDirChain(fsys driven.Filesystem, dir string) (bool, error) {
+	if dir == "" {
+		return true, nil
+	}
+	segs := strings.Split(dir, "/")
+	for i := range segs {
+		kind, err := fsys.Kind(strings.Join(segs[:i+1], "/"))
+		if err != nil {
+			return false, err
+		}
+		if kind != driven.KindDir {
+			return false, nil
+		}
+	}
+	return true, nil
+}
+
+// walkMakefileGlob sammelt die Dateien unter dir, die das Muster trifft.
+func walkMakefileGlob(fsys driven.Filesystem, dir, pattern string, hits *[]string) error {
+	entries, err := fsys.List(dir)
+	if err != nil {
+		return fmt.Errorf("das Modul targets kann das Verzeichnis %q zum Makefile-Glob %q nicht lesen (DC-FA-TGT-001, fail-closed): %w", dir, pattern, err)
+	}
+	for _, e := range entries {
+		rel := e.Name
+		if dir != "" {
+			rel = dir + "/" + e.Name
+		}
+		switch e.Kind {
+		case driven.KindDir:
+			if isSkipDir(e.Name) {
+				continue
+			}
+			if err := walkMakefileGlob(fsys, rel, pattern, hits); err != nil {
+				return err
+			}
+		case driven.KindFile:
+			if matchGlob(pattern, rel) {
+				*hits = append(*hits, rel)
+			}
+		case driven.KindSymlink:
+			if matchGlob(pattern, rel) {
+				return fmt.Errorf("das Modul targets folgt dem Symlink %q zum Makefile-Glob %q nicht (DC-FA-TGT-001, fail-closed): wörtlich in targets.makefiles eintragen", rel, pattern)
+			}
+		}
+	}
+	return nil
 }
 
 // globBaseDir ist der feste Verzeichnis-Präfix eines Glob-Musters: die

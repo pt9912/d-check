@@ -7,7 +7,7 @@
 **Autor:** pt9912
 
 **Bezug:** [`DC-FA-TGT-001`](../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
-(erweitert, Lastenheft 0.95.0); Anlass ist der eingehende
+(erweitert, Lastenheft 0.95.0, nach Review präzisiert in 0.95.1); Anlass ist der eingehende
 [CR von `ai-harness-init`](../cr/2026-10-06-cr-eingehend-ai-harness-init-targets-makefiles-glob.md);
 Schnitt-Kriterium (Einzelmodul-Frage ⇒ bestehende Anforderung ändern) aus
 [ADR-0044](0044-geteiltes-referenz-ventil-quell-skopus.md); Form der
@@ -54,11 +54,17 @@ Das Repo kennt zwei Vorbilder für eine Glob-Menge ohne Treffer: das Modul
 3. **Eine mehrfach erfasste Datei zählt einmal** — erste Nennung in
    Konfigurations-Reihenfolge, Treffer je Muster sortiert. Das hält den
    Befundsatz deterministisch und verhindert doppelte Befunde je Regelzeile.
-4. **Gewandert wird ab dem festen Verzeichnis-Präfix des Musters**, mit
-   denselben übersprungenen Verzeichnissen wie das Modul `file`;
-   Symlinks werden nicht verfolgt. Die Auflösung ist unabhängig von
+4. **Gewandert wird ab dem festen Verzeichnis-Präfix des Musters — und nur,
+   wenn jede Präfix-Komponente ein echtes Verzeichnis ist.** Ein Symlink
+   im Präfix könnte aus der Repo-Wurzel führen; er ergibt keine Treffer
+   (Exit 2). Unterhalb des Präfixes werden SKIP_DIRS-Namen nicht betreten.
+   Ein **Symlink, den das Muster trifft, ist Exit 2** mit dem Hinweis,
+   ihn wörtlich einzutragen: still übergehen wäre die Lücke „Fragment
+   ungeprüft", die der CR schließen will, und verfolgen hieße, aus der
+   Wurzel lesen zu können. Die Auflösung ist unabhängig von
    `scan.roots`/`scan.ignore` — wie ein wörtlicher Eintrag; die Grenze steht
-   in der Anforderung (`AGENTS.md` §3.8).
+   in der Anforderung (`AGENTS.md` §3.8). Dubletten werden über den
+   bereinigten Pfad erkannt.
 5. **Ein ungültiges Muster ist beim Laden Exit 2** (segmentweise Prüfung
    wie bei `tracked.exempt-targets`); die bisherige Pfad-Regel (relativ,
    kein `..`) gilt unverändert auch für Muster.
@@ -77,7 +83,8 @@ Das Repo kennt zwei Vorbilder für eine Glob-Menge ohne Treffer: das Modul
 - `targets.makefiles` trägt Pfade und Muster; die Schema-Zeile und das
   `--print-config`-Gerüst nennen beides.
 - Ein Adopter mit Fragment-Verzeichnis listet ein Muster statt jeder Datei.
-- Ein Muster wie `**/*.mk` sieht in fest übersprungene Verzeichnisse
+- Ein Muster wie `**/*.mk` sieht in fest übersprungene Verzeichnisse unterhalb
+  des Präfixes
   (`build`, `vendor`, …) nicht hinein — benannte Grenze.
 
 ## Fitness Function (falls maschinell prüfbar)
@@ -87,6 +94,7 @@ Das Repo kennt zwei Vorbilder für eine Glob-Menge ohne Treffer: das Modul
 | Go-Test `TestCheckTargetsMakefileGlob` | Expansion, Fundstelle im Fragment, Dublette einmal, `*` bleibt im Segment | `make test` |
 | Go-Test `TestCheckTargetsMakefileGlobDoppelstern` | `**` erfasst Unterverzeichnisse | `make test` |
 | Go-Test `TestCheckTargetsMakefileGlobLeer` | Glob ohne Treffer ⇒ Fehler (Exit 2) | `make test` |
+| Go-Test `TestCheckTargetsMakefileGlobGrenzen` | Symlink im Präfix und als Treffer, SKIP_DIRS unter/im Präfix, Präfix-Datei, erstes Segment, `?`/`[`, Dubletten | `make test` |
 | Go-Test `TestDecode_TargetsMakefilesGlob` | ungültiges Muster, führender `/`, `..` ⇒ Konfigurationsfehler | `make test` |
 
 ## Re-Evaluierungs-Trigger
@@ -100,3 +108,4 @@ wird. Ohne das: permanent.
 | Datum | Ereignis |
 |---|---|
 | 2026-10-06 | Angelegt als `Proposed`; `Accepted` erst mit der Closure des Vorgangs, nach Review und Verifikation |
+| 2026-10-06 | Nach R1 (3 MEDIUM): Entscheidung 4 präzisiert — Symlink-Kette im Präfix, passender Symlink ist Exit 2, SKIP_DIRS nur unterhalb; Dubletten über den bereinigten Pfad. Noch `Proposed`, Körper daher geändert statt angehängt |

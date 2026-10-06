@@ -273,3 +273,87 @@ func TestCheckTargetsMakefileGlobLeer(t *testing.T) {
 		}
 	}
 }
+
+// TestCheckTargetsMakefileGlobGrenzen: die Grenzen aus Schritt 1a, je Fall
+// die beobachtbare Folge — gemeldete Fundstellen (Datei:Ziel) oder ein
+// fail-closed-Fehler mit dem erwarteten Wortlaut-Fragment.
+func TestCheckTargetsMakefileGlobGrenzen(t *testing.T) {
+	cases := []struct {
+		name      string
+		files     map[string]string
+		symlinks  []string
+		makefiles []string
+		want      []string // "datei:ziel" je Befund
+		wantErr   string
+	}{
+		{name: "SKIP_DIR unter dem Präfix wird nicht betreten",
+			files:     map[string]string{"harness/build/x.mk": "skipped:\n", "harness/mk/a.mk": "alpha:\n"},
+			makefiles: []string{"harness/**/*.mk"},
+			want:      []string{"harness/mk/a.mk:alpha"}},
+		{name: "SKIP_DIR-Name im festen Präfix wird betreten",
+			files:     map[string]string{"build/x.mk": "built:\n"},
+			makefiles: []string{"build/*.mk"},
+			want:      []string{"build/x.mk:built"}},
+		{name: "Symlink im Präfix wird nicht verfolgt",
+			files:     map[string]string{"harness/mk/a.mk": "alpha:\n"},
+			symlinks:  []string{"harness"},
+			makefiles: []string{"harness/mk/*.mk"},
+			wantErr:   "keine Datei"},
+		{name: "Symlink-Treffer ist laut",
+			files:     map[string]string{"harness/mk/a.mk": "alpha:\n"},
+			symlinks:  []string{"harness/mk/link.mk"},
+			makefiles: []string{"harness/mk/*.mk"},
+			wantErr:   "Symlink"},
+		{name: "Präfix ist eine Datei",
+			files:     map[string]string{"harness": "x"},
+			makefiles: []string{"harness/*.mk"},
+			wantErr:   "keine Datei"},
+		{name: "Glob im ersten Segment",
+			files:     map[string]string{"x.mk": "root:\n", "sub/y.mk": "nested:\n"},
+			makefiles: []string{"*.mk"},
+			want:      []string{"x.mk:root"}},
+		{name: "Fragezeichen und Klasse",
+			files:     map[string]string{"harness/mk/a.mk": "alpha:\n", "harness/mk/b.mk": "beta:\n", "harness/mk/cc.mk": "gamma:\n"},
+			makefiles: []string{"harness/mk/?.mk", "harness/mk/[ab].mk"},
+			want:      []string{"harness/mk/a.mk:alpha", "harness/mk/b.mk:beta"}},
+		{name: "Dublette aus zwei Globs",
+			files:     map[string]string{"harness/mk/a.mk": "alpha:\n"},
+			makefiles: []string{"harness/mk/*.mk", "harness/mk/a*.mk"},
+			want:      []string{"harness/mk/a.mk:alpha"}},
+		{name: "Dublette über bereinigten Pfad, erste Nennung gewinnt",
+			files:     map[string]string{"Makefile": "top:\n"},
+			makefiles: []string{"Make*", "./Makefile"},
+			want:      []string{"Makefile:top"}},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			files := map[string]string{tgtDoc: tgtDocTable()}
+			for k, v := range c.files {
+				files[k] = v
+			}
+			m := coretest.NewMemFS(files)
+			for _, s := range c.symlinks {
+				m.AddSymlink(s)
+			}
+			cfg := tgtCfg()
+			cfg.Makefiles = c.makefiles
+			f, err := CheckTargets(m, cfg)
+			if c.wantErr != "" {
+				if err == nil || !strings.Contains(err.Error(), c.wantErr) {
+					t.Fatalf("fail-closed mit %q erwartet, bekam err=%v, befunde=%+v", c.wantErr, err, f)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("unerwarteter Fehler: %v", err)
+			}
+			var got []string
+			for _, x := range f {
+				got = append(got, x.File+":"+x.Target)
+			}
+			if strings.Join(got, ",") != strings.Join(c.want, ",") {
+				t.Fatalf("Befunde = %q, want %q", got, c.want)
+			}
+		})
+	}
+}

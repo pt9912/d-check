@@ -2715,20 +2715,24 @@ scannt, sondern **deklarierte** Dateien liest:
    beiden Richtungen sind voneinander unabhängig.
 1a. **Makefile-Quellen auflösen.** Ein `targets.makefiles`-Eintrag ohne
    Glob-Zeichen (`*`, `?`, `[`) ist ein wörtlicher Pfad. Ein Eintrag mit
-   Glob-Zeichen ist ein Muster: gewandert wird ab seinem **festen
-   Verzeichnis-Präfix** (die führenden Segmente ohne Glob-Zeichen, ohne das
-   letzte Segment; leer ⇒ Repo-Wurzel) über **alle** Dateien, unterhalb des
-   Präfixes mit denselben SKIP_DIRS wie das Modul `file`; ein Pfad trifft,
-   wenn `matchGlob` (segmentweise, `**` für beliebig viele Segmente, wie
-   `scan.ignore`) ihn akzeptiert. Fehlt das Präfix-Verzeichnis oder ist es
-   ein Symlink, gibt es keine Treffer; Symlinks darunter werden nicht
-   verfolgt. Die Treffer eines Musters werden
-   lexikographisch sortiert; die aufgelöste Liste folgt der
-   Konfigurations-Reihenfolge, eine Datei steht nur bei ihrer **ersten**
-   Nennung (wörtlich oder per Muster). Ein Muster **ohne Treffer** ⇒
-   **Exit 2** mit stderr-Hinweis auf das Muster. Die Auflösung ist
-   unabhängig von `scan.roots`/`scan.ignore`. Ohne Glob-Eintrag ist die
-   Liste identisch mit der Konfiguration.
+   Glob-Zeichen ist ein Muster. Sein **festes Verzeichnis-Präfix** sind die
+   führenden Segmente ohne Glob-Zeichen, ohne das letzte Segment (leer ⇒
+   Repo-Wurzel). Gesucht wird nur, wenn **jede** Komponente des Präfixes
+   einzeln ein echtes Verzeichnis ist (`Kind` je Komponente); ist eine davon
+   ein Symlink, eine Datei oder fehlt sie, gibt es keine Treffer. Ab dem
+   Präfix wird rekursiv gewandert: ein Unterverzeichnis mit SKIP_DIRS-Namen
+   wird nicht betreten (auch wenn das Muster den Namen nennt — im Präfix
+   selbst gilt das nicht), ein Symlink-Verzeichnis ebenso wenig. Eine Datei
+   trifft, wenn `matchGlob` (segmentweise, `**` für beliebig viele Segmente,
+   wie `scan.ignore`) ihren Pfad akzeptiert; ein **Symlink**, den das Muster
+   trifft, ist **Exit 2** mit dem Hinweis, ihn wörtlich einzutragen. Die
+   Treffer eines Musters werden lexikographisch sortiert; die aufgelöste
+   Liste folgt der Konfigurations-Reihenfolge, eine Datei steht nur bei
+   ihrer **ersten** Nennung — verglichen über den bereinigten Pfad
+   (`path.Clean`), gelesen und gemeldet in der Form der ersten Nennung. Ein
+   Muster **ohne Treffer** ⇒ **Exit 2** mit stderr-Hinweis auf das Muster;
+   ein Lesefehler beim Prüfen des Präfixes oder beim Wandern ⇒ Exit 2 mit
+   seiner Ursache. Die Auflösung ist unabhängig von `scan.roots`/`scan.ignore`.
 2. **Makefile-Regelmenge.** Aus jeder aufgelösten Makefile-Datei (Schritt 1a) werden die
    Regelnamen extrahiert: eine Zeile, die am **Zeilenanfang** mit einem oder
    mehreren durch Leerzeichen getrennten Namen (`[A-Za-z][A-Za-z0-9_-]*`)
@@ -3591,6 +3595,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-06 | Nachzug nach Review: §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 1a präzisiert — jede Präfix-Komponente muss ein echtes Verzeichnis sein, ein passender Symlink ist Exit 2, SKIP_DIRS gelten nur unterhalb des Präfixes, Dubletten über den bereinigten Pfad, Lesefehler mit Ursache |
 | 2026-10-06 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) um Schritt 1a erweitert: `targets.makefiles`-Einträge mit Glob-Zeichen expandieren ab ihrem festen Verzeichnis-Präfix per `matchGlob` (SKIP_DIRS wie `file`, keine Symlinks, unabhängig von `scan.*`), Treffer sortiert, erste Nennung gewinnt, Muster ohne Treffer ⇒ Exit 2; Schema-Zeile `targets.makefiles` nachgezogen |
 | 2026-10-05 | §[`DC-FA-HOST-001.a`](spezifikation.md#dc-fa-host-001a--host-pfad-erkennung) um das **Home-relative** Muster (Tilde, Schrägstrich, erstes Segment ohne führenden Punkt) und das **Ziel-Ventil** `hostpaths.exempt-targets` (Schritt 4, nur Unix- und Home-relative Funde) erweitert; ein Unix-Treffer, der innerhalb eines Home-relativen Treffers beginnt, entfällt (sonst Doppel- bzw. abgeschnittener Treffer), jeder andere bleibt; Schema-Zeilen `hostpaths.prefixes` (ohne `~`) und `hostpaths.exempt-targets`, Grund-Code-Zeile ergänzt; bekannte Grenze um Home-relative Konventionen ohne Punkt und Markdown-Hervorhebung am Pfadrand erweitert |
 | 2026-09-27 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3 präzisiert (Begründung in begleitender ADR, supersedet eine vorherige). Der Erstentwurf behauptete, Ziel-Normalisierung UND Titel-Abtrennung einer Definition seien „dieselben wie bei einem Inline-Link" — der Review (R1-H1, HIGH) zeigte am Testfall `[TERM]: First In, First Out`, dass der naive Whitespace-Schnitt eine gewöhnliche Prosazeile fälschlich als Definition mit erfundenem Ziel liest. Die Zusage ist jetzt präzise: das Ziel-Token trägt keinen eingebetteten Whitespace, danach folgt nur optionaler Whitespace oder ein korrekt delimitierter Titel (`"…"`, `'…'`, `(…)`), sonst bleibt die ganze Zeile unerkannt |

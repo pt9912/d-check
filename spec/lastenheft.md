@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.95.0
+**Version:** 0.95.1
 
 **Status:** Draft
 
@@ -3306,11 +3306,22 @@ ist beim Laden ein Konfigurationsfehler, und Glob-Einträge unterliegen
 derselben Pfad-Regel wie wörtliche (relativ, kein führender Schrägstrich,
 keine Elternverweise). **Grenzen:** Die Expansion ist von `scan.roots` und
 `scan.ignore` unabhängig — wie ein wörtlicher Eintrag, denn Makefiles
-gehören nicht zur Markdown-Scan-Menge; unterhalb des festen
-Verzeichnis-Präfixes eines Musters gelten die fest übersprungenen
-Verzeichnisse (etwa `build`, `vendor`) wie beim Modul `file`, und
-symbolische Links werden nicht verfolgt. Einträge ohne Glob-Zeichen
-verhalten sich unverändert, ohne Glob-Eintrag ist der Befundsatz
+gehören nicht zur Markdown-Scan-Menge. Gesucht wird ab dem festen
+Verzeichnis-Präfix eines Musters (die führenden Segmente ohne
+Glob-Zeichen) und nur, wenn jede Komponente dieses Präfixes ein echtes
+Verzeichnis ist — ein symbolischer Link im Präfix ergibt keine Treffer und
+damit Exit 2. **Unterhalb** des Präfixes werden die fest übersprungenen
+Verzeichnisnamen (etwa `build`, `vendor`) nicht betreten, auch wenn das
+Muster sie ausdrücklich nennt; im Präfix selbst gilt das nicht. Ein
+symbolischer Link unterhalb, den das Muster trifft, bricht mit Exit 2 ab
+(Hinweis: wörtlich eintragen), statt still übergangen zu werden; ein
+symbolisch verlinktes Verzeichnis unterhalb wird nicht betreten. Ob zwei
+Nennungen dieselbe Datei meinen, entscheidet der bereinigte Pfad (etwa
+mit und ohne führendes `./`); gelesen und gemeldet wird die Form der
+ersten Nennung. Einträge ohne Glob-Zeichen
+verhalten sich unverändert, ohne Glob-Eintrag ist der Befundsatz — bis auf
+eine wörtlich doppelt, in zwei Schreibweisen genannte Datei, die jetzt
+einmal zählt —
 byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 
 **Akzeptanzkriterien:**
@@ -4014,6 +4025,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.95.1 | 2026-10-06 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) präzisiert (Begründung in begleitender ADR). Der Erstentwurf (0.95.0) sagte „keine Symlinks" und übersprungene Verzeichnisse „wie beim Modul `file`" zu — der Review zeigte, dass ein Symlink im Präfix verfolgt, ein passender Symlink darunter still übergangen und ein ausdrücklich genannter übersprungener Verzeichnisname anders behandelt wurde als beschrieben. Die Zusage ist jetzt: jede Präfix-Komponente muss ein echtes Verzeichnis sein, ein passender Symlink darunter ist Exit 2, übersprungene Namen werden nur unterhalb des Präfixes nicht betreten; Dubletten werden über den bereinigten Pfad erkannt | — |
 | 0.95.0 | 2026-10-06 | [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) erweitert (Erweiterung statt neues Kürzel — Einzelmodul-Frage): ein `targets.makefiles`-Eintrag mit Glob-Zeichen expandiert gegen die Repo-Wurzel (segmentweise, Doppelstern erlaubt); Treffer werden wie wörtliche Einträge gelesen, eine mehrfach erfasste Datei zählt einmal, ein Glob ohne Treffer ist Exit 2, ein ungültiges Muster ein Konfigurationsfehler. Benannte Grenzen: unabhängig von `scan.roots`/`scan.ignore`, fest übersprungene Verzeichnisse unterhalb des Präfixes, keine Symlinks. Vier neue Akzeptanzkriterien; Out-of-Scope um Globs für `doc-tables`/`authority` ergänzt. Ohne Glob-Eintrag byte-identisch. Begründung in begleitender ADR. **Anlass ist ein Change Request** des Adopters `ai-harness-init` | [CR `ai-harness-init` 2026-10-06](../docs/plan/cr/2026-10-06-cr-eingehend-ai-harness-init-targets-makefiles-glob.md) |
 | 0.94.1 | 2026-10-05 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-HOST-001`](#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) präzisiert (Begründung in begleitender ADR). Der Erstentwurf (0.94.0) sperrte die Tilde pauschal als Vorgänger eines Unix-Treffers — der Review zeigte, dass damit ein durchgestrichener und ein am Wort klebender absoluter Host-Pfad, die bisher gemeldet wurden, still verschwanden. Die Zusage ist jetzt: nur ein Unix-Treffer **innerhalb** eines Home-relativen Treffers entfällt; neues Akzeptanzkriterium „kein Verlust". Ein Ventil-Glob, das weder mit Schrägstrich noch mit Tilde beginnt, ist ein Konfigurationsfehler (es träfe nie) | — |
 | 0.94.0 | 2026-10-05 | [`DC-FA-HOST-001`](#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) erweitert (Erweiterung statt neues Kürzel — Einzelmodul-Frage): **Home-relative Pfade** (Tilde, Schrägstrich, erstes Segment ohne führenden Punkt) werden erkannt und in voller Form genau einmal gemeldet; bisher traf das Unix-Muster eine Tilde-Angabe nur zufällig und abgeschnitten, wenn ihr erstes Segment ein Präfix-Name war, sonst gar nicht. Punkt-Segmente (Werkzeug-Konventionen) bleiben still. Neues **Ziel-Ventil** `hostpaths.exempt-targets` (Globs über den gemeldeten Pfad, Unix- und Home-relative Funde; ohne Schlüssel byte-identisch); ein Präfix-Name mit Tilde ist ein Konfigurationsfehler. Der Satz „keinen Opt-out-Marker" ist auf den **Zeilen-Marker** präzisiert. Die Erkennung **schärft**: Dokumente mit Home-relativen Layout-Pfaden in Prosa werden rot. Vier neue Akzeptanzkriterien; Out-of-Scope um Benutzername-Tilde, Variablen-Formen und ein Windows-/UNC-Ventil ergänzt. Begründung in begleitender ADR | — |
