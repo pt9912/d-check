@@ -62,22 +62,22 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 Liefer-Punkte (3):
 
-- [ ] Glob-Expansion im Kern: Treffer sortiert, Dubletten (wörtlich + Glob,
+- [x] Glob-Expansion im Kern: Treffer sortiert, Dubletten (wörtlich + Glob,
       zwei Globs) einmal gelesen, Fundstelle = echter Dateipfad; Glob ohne
       Treffer ⇒ Exit 2; Tests nach den sechs CR-Akzeptanzkriterien,
       darunter das rote Gegenbeispiel (`gate-undocumented` in einer per Glob
       erfassten Datei) — die Tests liefen ohne die Änderung aus dem
       richtigen Grund rot (Bewusstes Brechen, Modul 11).
-- [ ] Config-Rand: Glob-Einträge segmentweise validiert (ungültiges Glob ⇒
+- [x] Config-Rand: Glob-Einträge segmentweise validiert (ungültiges Glob ⇒
       Exit 2), bestehende Pfad-Regel unverändert; `--print-config`-Gerüst mit
       Glob-Beispiel.
-- [ ] Lastenheft (Erweiterung, Bump + Historie nach
+- [x] Lastenheft (Erweiterung, Bump + Historie nach
       [`MR-032`](../../../../harness/conventions.md#mr-032)), Spezifikation,
       Schema; ADR; Antwort-Vermerk im CR.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
       Rollenwechsel nach Schritt 8, kein Self-Review.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -121,21 +121,52 @@ wellenlos hier geprüft.
 - Ein Glob wie `**/*.mk` würde über die festen Überspring-Verzeichnisse
   (`build`, `vendor`, …) hinwegsehen — dieselbe Grenze wie beim Modul
   `file`; sie muss in der Anforderung stehen, nicht nur im Code. —
-  **Ausgang:** *(offen)*
+  **Ausgang:** entfallen — die Grenze steht in Lastenheft 0.95.1 und Spezifikation Schritt 1a, gegen den Code geprüft und getestet (nach R1-L2 präzisiert: nur unterhalb des Präfixes).
 - Exit 2 bei leerem Glob kann einen Adopter in der Bootstrap-Phase treffen,
-  in der das Fragment-Verzeichnis noch leer ist. — **Ausgang:** *(offen)*
+  in der das Fragment-Verzeichnis noch leer ist. — **Ausgang:** entfallen — laut statt still ist die ausdrückliche Bitte des Absenders (CR-Akzeptanzkriterium 3); tritt die Blockade bei einem Adopter auf, ist das ein neuer Vorgang, und die begleitende ADR trägt ihn als Re-Evaluierungs-Trigger.
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Die Kern-Erweiterung blieb klein, weil das Repo
+  die Bausteine schon führte (`matchGlob`, `validateSegmentGlobs`,
+  SKIP_DIRS); die Tests nach den sechs CR-Akzeptanzkriterien liefen vorher
+  aus dem richtigen Grund rot. Der Verifier fuhr 18 Black-Box-Fixtures gegen
+  ein Vorher-Image: ohne Glob-Eintrag byte-identisch, mit der einen im
+  Lastenheft benannten Ausnahme (wörtliche Dublette in zwei Schreibweisen).
+- **Was ging anders als geplant:** die Grenzen. Der Erstentwurf schrieb
+  „keine Symlinks" und „SKIP_DIRS wie `file`" aus der Beschreibung, nicht
+  aus dem Code — ein Symlink im Präfix wurde verfolgt (auch aus der Wurzel
+  hinaus), ein passender Symlink darunter still übergangen (R1, drei
+  MEDIUM). Behoben durch die Präfix-Kette und einen lauten Symlink-Treffer,
+  Lastenheft 0.95.1. Danach zeigte der Verifier, dass ein Testfall die
+  `path.Clean`-Mutation nur über ein Ersatz-Symptom fing, weil die
+  Test-Attrappe `./`-Pfade nicht kannte (V1) — die Attrappe löst die
+  Schreibweise jetzt wie das echte Dateisystem auf.
+- **Steering-Loop-Eintrag:** keine neue Verkörperung. Beide berührten
+  Klassen sind verkörpert und wurden trotzdem verfehlt:
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+  (`AGENTS.md` §5 Regel 13 — Grenzen gegen den Gegenstand prüfen) und
+  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+  (Regel 15). Gefangen hat beide der fremde Leser, wie die Regeln es
+  vorsehen.
+- **Beobachtungs-Register (`../observations/`):** je eine Evidence-Datei
+  `slice-250` unter den beiden genannten Einträgen.
+- **Folge-Slices:** keine. Benannt, nicht geschnitten: ein wörtlicher
+  `makefiles`-Eintrag, der ein Symlink ist, wird weiterhin gelesen (Bestand
+  vor dem Slice, außerhalb des Gegenstands).
+- **Risiken aus §6:** Risiko 1 (übersprungene Verzeichnisse): entfallen —
+  Grenze in Anforderung und Spezifikation, gegen den Code geprüft und
+  getestet. Risiko 2 (Bootstrap mit leerem Fragment-Verzeichnis): entfallen —
+  laut ist die Bitte des Absenders; ein Auftreten wäre ein neuer Vorgang,
+  [ADR-0099](../../adr/0099-targets-makefiles-glob.md) trägt ihn als
+  Re-Evaluierungs-Trigger. Trigger-Audit: kein Carveout, kein
+  bootstrap-aware Gate berührt; die ADR neu `Accepted`; keine Hard Rule mit
+  eingetretenem Trigger. Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+  wie in §8 gelesen. Antwort an den Absender: Entscheidung im
+  [CR-Dokument](../../cr/2026-10-06-cr-eingehend-ai-harness-init-targets-makefiles-glob.md).
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld, nichts verkörpert;
+  (b) Folge-Slice — keine; (c) Register — beide zitierten Beobachtungen
+  existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

@@ -5,7 +5,9 @@
 **Ziel-Dokument:** [`spec/lastenheft.md`](../../../spec/lastenheft.md)
 **Berührt:** [`DC-FA-TGT-001`](../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
 (Modul `targets`, Schlüssel `targets.makefiles`)
-**Stand:** **eingegangen**; Entscheidung und Umsetzung trägt `slice-250`.
+**Stand:** **angenommen und umgesetzt am 2026-10-06** — alle sechs
+Akzeptanzkriterien erfüllt, die beiden offenen Fragen beantwortet (unten);
+Träger `slice-250`, Lastenheft 0.95.1.
 
 **Ablage-Hinweis.** Ein **eingehender** CR ist die dritte Klasse neben
 [`MR-035`](../../../harness/conventions.md#mr-035) (ausgehend) und
@@ -97,3 +99,41 @@ stehen und nicht nur im Vorgang. Im Wortlaut sind Kennungen verlinkt
 > 1. Leerer Glob: Befund (mit welchem Grund-Code) oder Abbruch mit Exit 2?
 > 2. Soll --print-config bzw. die Konfig-Vorlage (config_template.go:254,
 >    heute makefiles: [Makefile]) ein Glob-Beispiel tragen?
+
+## Entscheidung
+
+**Angenommen.** `targets.makefiles` nimmt neben wörtlichen Pfaden Glob-Muster
+an (Eintrag mit `*`, `?` oder `[`), mit derselben segmentweisen Semantik wie
+die übrigen Glob-Schlüssel, `**` eingeschlossen. Die Abgrenzung des CR ist
+übernommen: `doc-tables` und `authority` bleiben wörtlich, Regel-Erkennung und
+`exempt-targets` unverändert, keine `include`-Auflösung. Begründung in
+begleitender [ADR-0099](../adr/0099-targets-makefiles-glob.md).
+
+**Antworten auf die offenen Fragen:**
+
+1. **Leerer Glob: Abbruch mit Exit 2, kein Befund.** Maßgeblich ist das Modul
+   selbst: eine fehlende wörtliche Makefile-Datei ist in `targets` seit jeher
+   Exit 2, und ein Glob ist dieselbe Behauptung mit mehreren Kandidaten. Ein
+   Befund bräuchte einen neuen Grund-Code und sähe aus wie ein Doku-Mangel.
+   Die Meldung nennt das Muster; nennt es einen fest übersprungenen
+   Verzeichnisnamen unterhalb seines Präfixes, sagt sie auch das.
+2. **`--print-config`: ja.** Das Gerüst zeigt
+   `makefiles: [Makefile, "harness/mk/*.mk"]` mit Kommentar zur
+   Glob-Semantik und zum Exit 2 bei leerem Glob.
+
+**Vom CR nicht benannte Festlegungen, die der Absender kennen sollte:**
+
+- Die Expansion ist von `scan.roots`/`scan.ignore` unabhängig, wie ein
+  wörtlicher Eintrag.
+- Gesucht wird ab dem festen Verzeichnis-Präfix des Musters, und nur, wenn
+  jede Präfix-Komponente ein echtes Verzeichnis ist. Ein symbolischer Link im
+  Präfix ergibt keine Treffer (Exit 2).
+- Ein symbolischer Link unterhalb des Präfixes, den das Muster trifft, ist
+  Exit 2 mit dem Hinweis, ihn wörtlich einzutragen. Ein Fragment, das als
+  Symlink eingebunden ist, fällt also nicht still weg.
+- Fest übersprungene Verzeichnisnamen (etwa `build`, `vendor`) werden
+  unterhalb des Präfixes nicht betreten, auch wenn das Muster sie nennt.
+- Ob zwei Nennungen dieselbe Datei meinen, entscheidet der bereinigte Pfad
+  (mit und ohne führendes `./`); gemeldet wird die Form der ersten Nennung.
+
+**Verfügbar ab:** d-check `v0.81.0`.

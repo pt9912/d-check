@@ -1,6 +1,6 @@
 # ADR-0099: `targets.makefiles` nimmt Glob-Muster an; ein Glob ohne Treffer ist Exit 2
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-06
 
@@ -109,3 +109,4 @@ wird. Ohne das: permanent.
 |---|---|
 | 2026-10-06 | Angelegt als `Proposed`; `Accepted` erst mit der Closure des Vorgangs, nach Review und Verifikation |
 | 2026-10-06 | Nach R1 (3 MEDIUM): Entscheidung 4 präzisiert — Symlink-Kette im Präfix, passender Symlink ist Exit 2, SKIP_DIRS nur unterhalb; Dubletten über den bereinigten Pfad. Noch `Proposed`, Körper daher geändert statt angehängt |
+| 2026-10-06 | `Accepted` mit der Closure des Vorgangs, nach Review (R1) und Verifikation |
