@@ -123,7 +123,8 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
 - `targets` — declaration consistency between docs and build targets: a `make X`
   claimed in a doc **table row** without a Makefile rule (`gate-phantom`), or a
   Makefile rule without an entry in the authority doc (`gate-undocumented`);
-  **hermetic** (no git, no Makefile execution), fail-closed, opt-in
+  **hermetic** (no git, no Makefile execution), fail-closed, opt-in; Makefile
+  sources may also be globs (e.g. fragments under an `mk` directory)
   ([`DC-FA-TGT-001`](spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in))
 - `citations` — verbatim quote verification: the directive
   `<!-- d-check:cite <path>:<from>-<to> -->` marks the following quote (a `>`-blockquote or
@@ -311,7 +312,7 @@ you pull from)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.80.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.81.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

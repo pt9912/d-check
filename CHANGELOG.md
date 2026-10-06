@@ -4,6 +4,29 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.81.0] — 2026-10-06
+
+### Added
+
+- slice-250 — **`targets.makefiles` nimmt Glob-Muster an**
+  ([`DC-FA-TGT-001`](spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in),
+  [ADR-0099](docs/plan/adr/0099-targets-makefiles-glob.md)). Ein Eintrag mit
+  `*`, `?` oder `[` expandiert gegen die Repo-Wurzel, mit derselben
+  segmentweisen Semantik wie die übrigen Glob-Schlüssel (`**` für beliebig
+  viele Verzeichnisse). Jede Treffer-Datei wird wie ein wörtlicher Eintrag
+  gelesen, Befunde nennen die echte Fragment-Datei. Ein Glob **ohne Treffer
+  ist Exit 2**, wie eine fehlende wörtliche Datei; eine mehrfach erfasste
+  Datei zählt einmal (verglichen über den bereinigten Pfad); ein ungültiges
+  Muster ist beim Laden ein Konfigurationsfehler. Grenzen: unabhängig von
+  `scan.roots`/`scan.ignore`; gesucht wird nur, wenn jede Komponente des
+  festen Muster-Präfixes ein echtes Verzeichnis ist; ein symbolischer Link,
+  den das Muster trifft, ist Exit 2 (wörtlich eintragen); fest übersprungene
+  Verzeichnisse wie `build` und `vendor` werden unterhalb des Präfixes nicht
+  betreten. `doc-tables` und `authority` bleiben wörtliche Pfade. Ohne
+  Glob-Eintrag ist der Befundsatz byte-identisch — bis auf eine wörtlich
+  doppelt, in zwei Schreibweisen genannte Datei, die jetzt einmal zählt.
+  Anlass ist ein Change Request des Adopters `ai-harness-init`.
+
 ## [0.80.0] — 2026-10-05
 
 ### Added
