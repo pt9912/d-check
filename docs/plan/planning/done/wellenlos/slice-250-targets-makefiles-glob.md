@@ -7,18 +7,18 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
-**Bezug:** [`DC-FA-TGT-001`](../../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
+**Bezug:** [`DC-FA-TGT-001`](../../../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
 (Scope — erweitert, kein neues Kürzel: Einzelmodul-Frage nach
-[ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md));
+[ADR-0044](../../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md));
 Anlass ist der eingehende
-[CR von `ai-harness-init`](../../cr/2026-10-06-cr-eingehend-ai-harness-init-targets-makefiles-glob.md);
+[CR von `ai-harness-init`](../../../cr/2026-10-06-cr-eingehend-ai-harness-init-targets-makefiles-glob.md);
 Vorbild der Konfigurations-Weitung
-[ADR-0058](../../adr/0058-konfigurations-flaechen-additiv-weiten.md);
-[`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)
+[ADR-0058](../../../adr/0058-konfigurations-flaechen-additiv-weiten.md);
+[`DC-QA-02`](../../../../../spec/lastenheft.md#dc-qa-02--determinismus)
 (ohne Glob-Eintrag byte-identisch).
 
-**Berührte Spec-Stellen:** [§DC-FA-TGT-001.a](../../../../spec/spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
-(Schritte 1 und 2), [`SPEC-005`](../../../../spec/spezifikation.md#spec-005--d-checkyml)
+**Berührte Spec-Stellen:** [§DC-FA-TGT-001.a](../../../../../spec/spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
+(Schritte 1 und 2), [`SPEC-005`](../../../../../spec/spezifikation.md#spec-005--d-checkyml)
 (Schema-Zeile `targets.makefiles`).
 
 **Verantwortlich:** pt9912.
@@ -72,7 +72,7 @@ Liefer-Punkte (3):
       Exit 2), bestehende Pfad-Regel unverändert; `--print-config`-Gerüst mit
       Glob-Beispiel.
 - [x] Lastenheft (Erweiterung, Bump + Historie nach
-      [`MR-032`](../../../../harness/conventions.md#mr-032)), Spezifikation,
+      [`MR-032`](../../../../../harness/conventions.md#mr-032)), Spezifikation,
       Schema; ADR; Antwort-Vermerk im CR.
 - [x] `make gates` grün.
 - [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
@@ -92,7 +92,7 @@ Liefer-Punkte (3):
 | `internal/hexagon/core/rules/targets_test.go`, `configyaml_test.go` | update | Akzeptanzkriterien 1–6 des CR |
 | `docs/plan/adr/0099-…`, `docs/plan/adr/README.md` | neu / update | Entscheidungen |
 
-**Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025)):
+**Spiegel vor dem Editieren** ([`MR-025`](../../../../../harness/conventions.md#mr-025)):
 Lastenheft (Beschreibung „fail-closed" und Out-of-Scope der Anforderung),
 Spezifikation (Schritte 1/2, Schema-Zeile `targets.makefiles`),
 `--print-config`-Gerüst, `--doctor`-Klartexte (betroffen nur, falls eine
@@ -144,12 +144,12 @@ wellenlos hier geprüft.
   Schreibweise jetzt wie das echte Dateisystem auf.
 - **Steering-Loop-Eintrag:** keine neue Verkörperung. Beide berührten
   Klassen sind verkörpert und wurden trotzdem verfehlt:
-  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
   (`AGENTS.md` §5 Regel 13 — Grenzen gegen den Gegenstand prüfen) und
-  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+  [`BEO-ALL/commit-message-overclaims-work`](../../observations/BEO-ALL/commit-message-overclaims-work/state.md)
   (Regel 15). Gefangen hat beide der fremde Leser, wie die Regeln es
   vorsehen.
-- **Beobachtungs-Register (`../observations/`):** je eine Evidence-Datei
+- **Beobachtungs-Register (`../../observations/`):** je eine Evidence-Datei
   `slice-250` unter den beiden genannten Einträgen.
 - **Folge-Slices:** keine. Benannt, nicht geschnitten: ein wörtlicher
   `makefiles`-Eintrag, der ein Symlink ist, wird weiterhin gelesen (Bestand
@@ -158,12 +158,12 @@ wellenlos hier geprüft.
   Grenze in Anforderung und Spezifikation, gegen den Code geprüft und
   getestet. Risiko 2 (Bootstrap mit leerem Fragment-Verzeichnis): entfallen —
   laut ist die Bitte des Absenders; ein Auftreten wäre ein neuer Vorgang,
-  [ADR-0099](../../adr/0099-targets-makefiles-glob.md) trägt ihn als
+  [ADR-0099](../../../adr/0099-targets-makefiles-glob.md) trägt ihn als
   Re-Evaluierungs-Trigger. Trigger-Audit: kein Carveout, kein
   bootstrap-aware Gate berührt; die ADR neu `Accepted`; keine Hard Rule mit
-  eingetretenem Trigger. Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+  eingetretenem Trigger. Nachtlauf-Stand ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
   wie in §8 gelesen. Antwort an den Absender: Entscheidung im
-  [CR-Dokument](../../cr/2026-10-06-cr-eingehend-ai-harness-init-targets-makefiles-glob.md).
+  [CR-Dokument](../../../cr/2026-10-06-cr-eingehend-ai-harness-init-targets-makefiles-glob.md).
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld, nichts verkörpert;
   (b) Folge-Slice — keine; (c) Register — beide zitierten Beobachtungen
   existieren und tragen Belege.
@@ -184,16 +184,16 @@ samt Spec-Stratum (`*`, Kürzel `ALL`); bereits deklariert.
 
 **Vorgelagert — offene Beobachtungen sichten:** drei offene Einträge der
 Sub-Area treffen den Gegenstand —
-[`BEO-ALL/stilles-gruen-ueber-leerer-range`](../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/state.md)
+[`BEO-ALL/stilles-gruen-ueber-leerer-range`](../../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/state.md)
 (ein leerer Glob ist dieselbe Klasse: Prüfung ohne Gegenstand — deshalb
 Exit 2),
-[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
 (2× — die Tests tragen die Nachbar-Fälle: wörtliche Einträge unverändert,
 Dubletten) und
-[`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md)
+[`BEO-ALL/semantic-change-body-only-edges-stale`](../../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md)
 (Spiegel in §3 vorab gelistet).
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-06 — `image-scan` grün; `upstream-drift` rot mit denselben
 drei Fremd-Meldungen wie am Vortag (Baseline-Release, semgrep-Version,
 golang-Basis-Digest). Keine berührt diesen Gegenstand.
