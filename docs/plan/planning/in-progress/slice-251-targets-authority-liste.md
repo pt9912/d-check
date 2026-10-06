@@ -63,23 +63,23 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 Liefer-Punkte (3):
 
-- [ ] Kern: Vereinigung über alle Autoritäts-Dateien, Meldung nennt bei einer
+- [x] Kern: Vereinigung über alle Autoritäts-Dateien, Meldung nennt bei einer
       Datei den heutigen Wortlaut und bei mehreren alle; Dokument-Dubletten
       einmal gelesen; Tests nach den CR-Akzeptanzkriterien 1–6, darunter das
       rote Gegenbeispiel — rot ohne die Änderung aus dem richtigen Grund
       (Bewusstes Brechen, Modul 11).
-- [ ] Config-Rand: String oder Liste; leerer, Null- oder Nicht-Skalar-Listeneintrag
+- [x] Config-Rand: String oder Liste; leerer, Null- oder Nicht-Skalar-Listeneintrag
       ⇒ Exit 2, Pfad-Regel je Eintrag; die String-Form dekodiert wie zuvor;
       `--print-config`-Gerüst mit Listen-Beispiel. *(Plan-Änderung nach R1:
       die ursprünglich geplante Ablehnung von Glob-Zeichen entfällt — sie
       brach die zugesagte Byte-Identität eines wörtlichen Pfads mit `[`.)*
-- [ ] Lastenheft (Erweiterung, Bump + Historie nach
+- [x] Lastenheft (Erweiterung, Bump + Historie nach
       [`MR-032`](../../../../harness/conventions.md#mr-032)), Spezifikation,
       Schema; ADR; Antwort im CR-Dokument samt Folgeschritt-Vermerk.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
       Rollenwechsel nach Schritt 8, kein Self-Review.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -123,21 +123,55 @@ wellenlos hier geprüft.
 
 - Ein Konsument, der den Meldungstext von `gate-undocumented` auswertet,
   sähe bei einer Liste einen anderen Wortlaut. Die String-Form muss ihn
-  byte-identisch lassen. — **Ausgang:** *(offen)*
+  byte-identisch lassen. — **Ausgang:** entfallen — der Meldungstext der String-Form ist byte-identisch, vom Verifier black-box gegen ein Vorher-Image gemessen (auch `--json`, `--doctor`).
 - Nimmt der Kurs die Disjunktheits-Regel an, entsteht eine Lücke, die dieser
-  Slice bewusst offen lässt. — **Ausgang:** *(offen)*
+  Slice bewusst offen lässt. — **Ausgang:** weiter offen — ins Register als `BEO-ALL/disjunktheit-geteilter-gate-index-ungeprueft`, mit dem Auslöser als Zustand.
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Der Kern blieb eine kleine Schleife über die
+  bestehende Doku-Extraktion. Der Verifier maß die String-Form black-box
+  gegen ein Vorher-Image über rund zwanzig YAML-Formen (`null`, `~`, Alias,
+  Pfad mit `[`, `--json`, `--doctor`) — byte-identisch, einzige Abweichung
+  die gewollte Zeilenangabe bei einer Abbildung.
+- **Was ging anders als geplant:** Zum dritten Mal in Folge am Rand dieses
+  Moduls standen Grenzen in Lastenheft und ADR, die der Code nicht trug —
+  diesmal im Dekodier-Verhalten der YAML-Bibliothek: Null-Listenelemente
+  verschwanden still (R1-H1), die Ablehnung von Glob-Zeichen brach die
+  Byte-Identität (R1-M1). Die geplante Ablehnung entfiel deshalb
+  (Plan-Änderung in §2 vermerkt). Danach fand der Verifier eine doppelte
+  Verneinung, die die Definition von `gate-undocumented` im Lastenheft
+  umkehrte (V1), und zwei ungeschützte Schutzprüfungen (V2, V3). Zwei
+  eigene Commit-Botschaften behaupteten mehr, als gemessen war — vor dem
+  Push korrigiert.
+- **Steering-Loop-Eintrag:** Lese-Schritt für
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md):
+  verkörpert als `AGENTS.md` §5 Regel 13 und trotzdem in slice-250 und
+  slice-251 hintereinander verfehlt (dazu slice-249 in der verwandten Klasse
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)).
+  Nach Modul 6 ist die Prosa-Form damit als ausgeschöpft zu werten. **Benannter
+  Sensor-Kandidat**, nicht geschnitten (Entscheidung des Auftraggebers): eine
+  Vorher-/Nachher-Black-Box-Probe als make-Target, Pflicht für jeden Slice,
+  der Byte-Identität zusagt. Alle drei Funde dieser Klasse hat genau diese
+  Probe gemacht, keiner der Unit-Tests.
+- **Beobachtungs-Register (`../observations/`):** Evidence `slice-251` unter
+  `grenzen-liste-wird-als-vollstaendig-gelesen` und
+  `commit-message-overclaims-work`; neu
+  [`BEO-ALL/disjunktheit-geteilter-gate-index-ungeprueft`](../observations/BEO-ALL/disjunktheit-geteilter-gate-index-ungeprueft/state.md)
+  (Risiko 2).
+- **Folge-Slices:** keine geschnitten. Benannt: der Sensor-Kandidat oben;
+  Null-Elemente in `targets.makefiles`/`doc-tables` verschwinden ebenso still
+  (Bestand, R1-I2, außerhalb des Gegenstands).
+- **Risiken aus §6:** Risiko 1 (Meldungstext): entfallen — byte-identisch,
+  black-box gemessen. Risiko 2 (Disjunktheit): weiter offen — im Register,
+  Auslöser ist die Baseline-Entscheidung. Trigger-Audit: kein Carveout, kein
+  bootstrap-aware Gate; die begleitende ADR neu `Accepted`; keine Hard Rule
+  mit eingetretenem Auflösungs-Trigger. Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+  wie in §8. Antwort an den Absender im
+  [CR-Dokument](../../cr/2026-10-06-cr-eingehend-ai-harness-init-targets-authority-liste.md).
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld, nichts verkörpert;
+  (b) Folge-Slice — keine; (c) Register — alle zitierten Beobachtungen
+  existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

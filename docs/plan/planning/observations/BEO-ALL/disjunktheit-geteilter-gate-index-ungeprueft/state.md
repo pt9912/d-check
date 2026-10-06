@@ -1,0 +1,1 @@
+**Stand:** offen — benannte Lücke, Auslöser: die Kurs-Baseline nimmt die Disjunktheits-Regel an; dann opt-in-Prüfung mit eigenem Grund-Code (Re-Evaluierungs-Trigger von [ADR-0100](../../../../adr/0100-targets-authority-liste.md)).
