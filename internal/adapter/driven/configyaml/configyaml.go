@@ -589,15 +589,16 @@ type rawTracked struct {
 
 // rawTargets trägt die Parameter des Moduls targets (DC-FA-TGT-001): makefiles
 // (Regelnamen-Quellen), doc-tables (make-X-Tabellen für Richtung 1), authority
-// (Vollständigkeits-Quelle für Richtung 2), exempt-targets (Utility-Regeln ohne
+// (Vollständigkeits-Quelle(n) für Richtung 2 — String oder Liste, daher
+// yaml.Node), exempt-targets (Utility-Regeln ohne
 // Doku-Pflicht). **Keine** scope — targets ist ein Post-Pass ohne Datei-Scan
 // (wie planning; ein targets.scope wäre wirkungslos, der strikte Decoder lehnt
 // es ab).
 type rawTargets struct {
-	Makefiles     []string `yaml:"makefiles"`
-	DocTables     []string `yaml:"doc-tables"`
-	Authority     string   `yaml:"authority"`
-	ExemptTargets []string `yaml:"exempt-targets"`
+	Makefiles     []string  `yaml:"makefiles"`
+	DocTables     []string  `yaml:"doc-tables"`
+	Authority     yaml.Node `yaml:"authority"`
+	ExemptTargets []string  `yaml:"exempt-targets"`
 }
 
 // rawCommits trägt scope und die Parameter des Moduls commits
@@ -1653,7 +1654,11 @@ func applyTargets(r *raw, cfg *model.Config) error {
 		return nil
 	}
 	t := r.Targets
-	paths := append(append(append([]string{}, t.Makefiles...), t.DocTables...), t.Authority)
+	authority, err := decodeTargetsAuthority(&t.Authority)
+	if err != nil {
+		return err
+	}
+	paths := append(append(append([]string{}, t.Makefiles...), t.DocTables...), authority...)
 	for _, p := range paths {
 		if p == "" {
 			continue
@@ -1675,9 +1680,45 @@ func applyTargets(r *raw, cfg *model.Config) error {
 	}
 	cfg.Targets = model.TargetsConfig{
 		Makefiles: t.Makefiles, DocTables: t.DocTables,
-		Authority: t.Authority, ExemptTargets: t.ExemptTargets,
+		Authority: authority, ExemptTargets: t.ExemptTargets,
 	}
 	return nil
+}
+
+// decodeTargetsAuthority liest targets.authority als String oder Liste
+// wörtlicher Pfade (DC-FA-TGT-001). Ein leerer String und eine leere Liste
+// lassen Richtung 2 entfallen (wie doc-tables: [] Richtung 1); ein leerer
+// Listeneintrag und ein Eintrag mit Glob-Zeichen sind Konfigurationsfehler —
+// authority nimmt keine Muster an, ein Glob würde zur Laufzeit als
+// Dateiname scheitern.
+func decodeTargetsAuthority(n *yaml.Node) ([]string, error) {
+	var out []string
+	switch n.Kind {
+	case 0:
+		return nil, nil
+	case yaml.ScalarNode:
+		if n.Value == "" {
+			return nil, nil
+		}
+		out = []string{n.Value}
+	case yaml.SequenceNode:
+		if err := n.Decode(&out); err != nil {
+			return nil, fmt.Errorf("%s: targets.authority ist keine Liste von Pfaden: %v", FileName, err)
+		}
+		for _, a := range out {
+			if strings.TrimSpace(a) == "" {
+				return nil, fmt.Errorf("%s: targets.authority enthält einen leeren Eintrag", FileName)
+			}
+		}
+	default:
+		return nil, fmt.Errorf("%s: targets.authority muss ein Pfad oder eine Liste von Pfaden sein", FileName)
+	}
+	for _, a := range out {
+		if strings.ContainsAny(a, "*?[") {
+			return nil, fmt.Errorf("%s: targets.authority-Eintrag %q ist ein Muster — authority nimmt nur wörtliche Pfade an", FileName, a)
+		}
+	}
+	return out, nil
 }
 
 // applySources validiert die Config-Pins des Moduls sources (DC-FA-SRC-001):

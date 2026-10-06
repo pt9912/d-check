@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.95.1
+**Version:** 0.96.0
 
 **Status:** Draft
 
@@ -3259,7 +3259,7 @@ gegen Harness-Lügen). Zwei Richtungen mit je eigenem Grund-Code:
   Doku behauptet ein Gate, das es nicht gibt (Befund an Datei:Zeile der
   Doku-Behauptung).
 - **Undeklariertes Gate (`gate-undocumented`):** eine Makefile-Regel (minus
-  `targets.exempt-targets`), die in der Autoritäts-Doku (`targets.authority`)
+  `targets.exempt-targets`), die in keiner Autoritäts-Doku (`targets.authority`)
   **nicht** als ` `make X` ` steht — ein Gate ohne Deklaration (Befund an
   Datei:Zeile der Makefile-Regel).
 
@@ -3324,6 +3324,18 @@ eine wörtlich doppelt, in zwei Schreibweisen genannte Datei, die jetzt
 einmal zählt —
 byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 
+**Mehrere Autoritäts-Dateien:** `targets.authority` ist ein Pfad oder eine
+**Liste** wörtlicher Pfade. Eine Regel gilt als dokumentiert, wenn sie in
+**mindestens einer** dieser Dateien als Tabellenzeile steht (Vereinigung);
+steht sie in mehreren, ist das **kein** Befund. Jede Datei der Liste muss
+existieren, sonst **Exit 2**; ein leerer Eintrag oder ein Eintrag mit
+Glob-Zeichen ist ein Konfigurationsfehler, und jeder Eintrag unterliegt
+derselben Pfad-Regel wie `makefiles`. Ein leerer Pfad und eine leere Liste
+lassen Richtung 2 entfallen. Mit **einer** Datei — als String oder als
+einelementige Liste — ist der Befundsatz samt Meldungstext byte-identisch
+zur bisherigen String-Form ([`DC-QA-02`](#dc-qa-02--determinismus)); mit
+mehreren nennt die Meldung alle Autoritäts-Dateien.
+
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given `targets` aktiv, eine Doku-Tabellenzeile mit ` `make foo` `, ein Makefile mit der Regel `foo:` und ein Eintrag ` `make foo` ` in der Autoritäts-Doku, when `d-check --enable targets` läuft, then kein Befund, Exit 0.
@@ -3337,6 +3349,9 @@ byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 - **Glob (Dublette):** Given eine Datei, die wörtlich **und** per Glob in `targets.makefiles` steht, when `d-check --enable targets` läuft, then je Regelzeile höchstens **ein** Befund.
 - **Glob (leer):** Given ein Glob-Eintrag ohne Treffer, when `d-check --enable targets` läuft, then **Exit 2** mit Hinweis auf das Muster — kein stilles Grün.
 - **Glob (Config-Rand):** Given ein ungültiges Glob-Muster oder ein Glob mit führendem Schrägstrich oder Elternverweis in `targets.makefiles`, when d-check die Konfiguration lädt, then Exit 2.
+- **Autorität (Liste):** Given `targets` aktiv, `targets.authority` als Liste zweier Dateien, ein Target nur in der zweiten, eines in beiden und eines in keiner, when `d-check --enable targets` läuft, then genau ein Befund `gate-undocumented` für das Target in keiner Datei, mit Fundstelle an seiner Regelzeile und allen Autoritäts-Dateien in der Meldung, Exit 1.
+- **Autorität (fehlender Eintrag):** Given `targets.authority` als Liste mit einer nicht existierenden Datei, when `d-check --enable targets` läuft, then **Exit 2** mit dem Namen dieser Datei.
+- **Autorität (String unverändert):** Given `targets.authority` als einzelner Pfad, when `d-check --enable targets` läuft, then Befundsatz und Meldungstext wie vor dieser Erweiterung.
 
 **Out-of-Scope:** Ausführen des Makefile oder Auflösen von `include`-Direktiven,
 Variablen- oder Pattern-Rule-Targets (rein statische Zeilen-Heuristik, identisch
@@ -3347,7 +3362,9 @@ optionaler `authority`-Section-Anker bleibt spätere Anforderung); die
 (repo-spezifische Prüfung der Netzlos-Gate-Config, **kein** cross-repo-Kern,
 verbleibt im repo-lokalen Rest von `gate-consistency.sh`); Nicht-Make-Build-
 Systeme; ein Auto-Fix (`--repair`); Glob-Muster für `targets.doc-tables` und
-`targets.authority` (dort bleiben Einträge wörtliche Pfade).
+`targets.authority` (dort bleiben Einträge wörtliche Pfade); eine Prüfung, dass ein
+Target in höchstens einer Autoritäts-Datei steht (Disjunktheit mehrerer
+Teile eines Gate-Index — eine Regel, die die gepinnte Baseline nicht kennt).
 
 ---
 
@@ -4025,6 +4042,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.96.0 | 2026-10-06 | [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) erweitert (Erweiterung statt neues Kürzel — Einzelmodul-Frage): `targets.authority` nimmt neben einem Pfad eine **Liste** wörtlicher Pfade an; `gate-undocumented` misst gegen die Vereinigung, eine Doppelnennung ist kein Befund, eine fehlende Datei Exit 2, ein leerer Eintrag oder ein Muster ein Konfigurationsfehler. Mit einer Datei byte-identisch samt Meldungstext. Drei neue Akzeptanzkriterien; Out-of-Scope um die Disjunktheits-Prüfung ergänzt (Regel nur in einem offenen CR an den Kurs). Begründung in begleitender ADR. **Anlass ist ein Change Request** des Adopters `ai-harness-init` | [CR `ai-harness-init` 2026-10-06](../docs/plan/cr/2026-10-06-cr-eingehend-ai-harness-init-targets-authority-liste.md) |
 | 0.95.1 | 2026-10-06 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) präzisiert (Begründung in begleitender ADR). Der Erstentwurf (0.95.0) sagte „keine Symlinks" und übersprungene Verzeichnisse „wie beim Modul `file`" zu — der Review zeigte, dass ein Symlink im Präfix verfolgt, ein passender Symlink darunter still übergangen und ein ausdrücklich genannter übersprungener Verzeichnisname anders behandelt wurde als beschrieben. Die Zusage ist jetzt: jede Präfix-Komponente muss ein echtes Verzeichnis sein, ein passender Symlink darunter ist Exit 2, übersprungene Namen werden nur unterhalb des Präfixes nicht betreten; Dubletten werden über den bereinigten Pfad erkannt | — |
 | 0.95.0 | 2026-10-06 | [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) erweitert (Erweiterung statt neues Kürzel — Einzelmodul-Frage): ein `targets.makefiles`-Eintrag mit Glob-Zeichen expandiert gegen die Repo-Wurzel (segmentweise, Doppelstern erlaubt); Treffer werden wie wörtliche Einträge gelesen, eine mehrfach erfasste Datei zählt einmal, ein Glob ohne Treffer ist Exit 2, ein ungültiges Muster ein Konfigurationsfehler. Benannte Grenzen: unabhängig von `scan.roots`/`scan.ignore`, fest übersprungene Verzeichnisse unterhalb des Präfixes, keine Symlinks. Vier neue Akzeptanzkriterien; Out-of-Scope um Globs für `doc-tables`/`authority` ergänzt. Ohne Glob-Eintrag byte-identisch. Begründung in begleitender ADR. **Anlass ist ein Change Request** des Adopters `ai-harness-init` | [CR `ai-harness-init` 2026-10-06](../docs/plan/cr/2026-10-06-cr-eingehend-ai-harness-init-targets-makefiles-glob.md) |
 | 0.94.1 | 2026-10-05 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-HOST-001`](#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) präzisiert (Begründung in begleitender ADR). Der Erstentwurf (0.94.0) sperrte die Tilde pauschal als Vorgänger eines Unix-Treffers — der Review zeigte, dass damit ein durchgestrichener und ein am Wort klebender absoluter Host-Pfad, die bisher gemeldet wurden, still verschwanden. Die Zusage ist jetzt: nur ein Unix-Treffer **innerhalb** eines Home-relativen Treffers entfällt; neues Akzeptanzkriterium „kein Verlust". Ein Ventil-Glob, das weder mit Schrägstrich noch mit Tilde beginnt, ist ein Konfigurationsfehler (es träfe nie) | — |

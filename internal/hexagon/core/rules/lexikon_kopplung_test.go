@@ -143,7 +143,7 @@ func targetsKenntZeile(t *testing.T, wrap func(string) string) bool {
 		"docs/x.md": "# D\n\n" + wrap("| `make ghost` | x |"),
 	}
 	cfg := model.TargetsConfig{
-		Makefiles: []string{"Makefile"}, DocTables: []string{"docs/x.md"}, Authority: "docs/x.md",
+		Makefiles: []string{"Makefile"}, DocTables: []string{"docs/x.md"}, Authority: []string{"docs/x.md"},
 	}
 	f, err := CheckTargets(coretest.NewMemFS(files), cfg)
 	if err != nil {

@@ -846,14 +846,15 @@ type TrackedConfig struct {
 // per statischer Zeilen-Heuristik extrahiert werden (leer ⇒ Modul inert);
 // DocTables sind die Doku-Dateien, deren `make X`-Tabellenzeilen gegen die
 // Regelmenge geprüft werden (Richtung 1, gate-phantom; leer ⇒ Richtung 1
-// entfällt); Authority ist die Doku-Datei, in der jede nicht-exempte Regel als
+// entfällt); Authority sind die Doku-Dateien (wörtlich), in deren Vereinigung
+// jede nicht-exempte Regel als
 // `make X`-Tabellenzeile stehen muss (Richtung 2, gate-undocumented; leer ⇒
 // Richtung 2 entfällt); ExemptTargets nimmt Regelnamen (exakt) von der
 // Doku-Pflicht aus (Utility-Targets). Hermetisch — nur der Filesystem-Port.
 type TargetsConfig struct {
 	Makefiles     []string
 	DocTables     []string
-	Authority     string
+	Authority     []string
 	ExemptTargets []string
 }
 

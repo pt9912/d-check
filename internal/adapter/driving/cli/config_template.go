@@ -253,7 +253,8 @@ modules: [links, anchors]
 # targets:
 #   makefiles: [Makefile, "harness/mk/*.mk"]     # Regelnamen-Quelle(n); Pfad oder Glob (matchGlob, ** erlaubt) — Glob ohne Treffer ⇒ Exit 2
 #   doc-tables: [AGENTS.md, harness/README.md]   # Dateien mit make-X-Tabellen (Richtung 1 ⇒ gate-phantom)
-#   authority: AGENTS.md                         # Vollständigkeits-Quelle (Richtung 2 ⇒ gate-undocumented)
+#   authority: AGENTS.md                         # Vollständigkeits-Quelle (Richtung 2 ⇒ gate-undocumented); auch Liste wörtlicher Pfade,
+#   # z. B. [harness/README.md, harness/targets.md] — ein Target gilt als dokumentiert, wenn es in einer davon steht
 #   exempt-targets: []                           # Regelnamen EXAKT (kein Glob, anders als tracked) — Utility-Targets ohne Doku-Pflicht
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---

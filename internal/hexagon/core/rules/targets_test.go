@@ -28,7 +28,7 @@ func tgtDocTable(names ...string) string {
 // tgtCfg: makefiles+doc-tables+authority = derselbe Doc (beide Richtungen aktiv).
 func tgtCfg() model.TargetsConfig {
 	return model.TargetsConfig{
-		Makefiles: []string{tgtMakefile}, DocTables: []string{tgtDoc}, Authority: tgtDoc,
+		Makefiles: []string{tgtMakefile}, DocTables: []string{tgtDoc}, Authority: []string{tgtDoc},
 	}
 }
 
@@ -182,7 +182,7 @@ func TestCheckTargetsDirectionDecoupling(t *testing.T) {
 		tgtDoc:      tgtDocTable("build", "ghost"), // ghost=Phantom, secret=undokumentiert
 	}
 	// Nur Richtung 2 (kein doc-tables): nur gate-undocumented (secret), kein Phantom.
-	cfg2 := model.TargetsConfig{Makefiles: []string{tgtMakefile}, Authority: tgtDoc}
+	cfg2 := model.TargetsConfig{Makefiles: []string{tgtMakefile}, Authority: []string{tgtDoc}}
 	f := mustCheck(t, files, cfg2)
 	if len(f) != 1 || f[0].Reason != ReasonGateUndocumented || f[0].Target != "secret" {
 		t.Fatalf("nur Richtung 2 erwartet (secret undokumentiert), bekam %+v", f)
@@ -363,5 +363,62 @@ func TestCheckTargetsMakefileGlobGrenzen(t *testing.T) {
 				t.Fatalf("Befunde = %q, want %q", got, c.want)
 			}
 		})
+	}
+}
+
+// TestCheckTargetsAuthorityListe: gate-undocumented misst gegen die
+// Vereinigung aller Autoritäts-Dateien — ein Target in einer davon gilt als
+// dokumentiert, eines in beiden ergibt keinen Befund, eines in keiner meldet
+// an der Regelzeile im Fragment und nennt alle Autoritäts-Dateien.
+func TestCheckTargetsAuthorityListe(t *testing.T) {
+	files := map[string]string{
+		tgtMakefile:       "own:\n\techo\n",
+		"harness/mk/a.mk": "tool:\n\techo\nboth:\n\techo\nghost:\n\techo\n",
+		"harness/README.md":  tgtDocTable("own", "both"),
+		"harness/targets.md": tgtDocTable("tool", "both"),
+	}
+	cfg := model.TargetsConfig{
+		Makefiles: []string{tgtMakefile, "harness/mk/a.mk"},
+		Authority: []string{"harness/README.md", "harness/targets.md"},
+	}
+	f := mustCheck(t, files, cfg)
+	if len(f) != 1 || f[0].Reason != ReasonGateUndocumented || f[0].Target != "ghost" ||
+		f[0].File != "harness/mk/a.mk" || f[0].Line != 5 {
+		t.Fatalf("genau gate-undocumented ghost @ harness/mk/a.mk:5 erwartet, bekam %+v", f)
+	}
+	want := "Makefile-Regel `ghost` ohne Deklaration in einer der Autoritäts-Dokus harness/README.md, harness/targets.md"
+	if f[0].Message != want {
+		t.Fatalf("Message = %q\nwant      %q", f[0].Message, want)
+	}
+}
+
+// TestCheckTargetsAuthorityEinzelnWortlaut: eine einzelne Autoritäts-Datei
+// behält den bisherigen Meldungstext (byte-identisch zur String-Form).
+func TestCheckTargetsAuthorityEinzelnWortlaut(t *testing.T) {
+	files := map[string]string{
+		tgtMakefile: "build:\n\techo\nsecret:\n\techo\n",
+		tgtDoc:      tgtDocTable("build"),
+	}
+	f := mustCheck(t, files, tgtCfg())
+	want := "Makefile-Regel `secret` ohne Deklaration in der Autoritäts-Doku " + tgtDoc
+	if len(f) != 1 || f[0].Message != want {
+		t.Fatalf("Message = %+v\nwant %q", f, want)
+	}
+}
+
+// TestCheckTargetsAuthorityListeFehlend: ein fehlender Listeneintrag ist
+// fail-closed, auch wenn der andere existiert.
+func TestCheckTargetsAuthorityListeFehlend(t *testing.T) {
+	files := map[string]string{
+		tgtMakefile:         "own:\n\techo\n",
+		"harness/README.md": tgtDocTable("own"),
+	}
+	cfg := model.TargetsConfig{
+		Makefiles: []string{tgtMakefile},
+		Authority: []string{"harness/README.md", "harness/targets.md"},
+	}
+	if _, err := CheckTargets(coretest.NewMemFS(files), cfg); err == nil ||
+		!strings.Contains(err.Error(), "harness/targets.md") {
+		t.Fatalf("fehlende Autoritäts-Datei ⇒ fail-closed mit ihrem Namen erwartet, bekam %v", err)
 	}
 }

@@ -2754,12 +2754,20 @@ scannt, sondern **deklarierte** Dateien liest:
    (Schritt 2) ist ⇒ Grund-Code `gate-phantom`. Befund: `file`/`line` =
    Doku-Datei/Tabellenzeile, `target` = `X`, `message` = dokumentiertes Target
    ohne Makefile-Regel.
-5. **Richtung 2 (undokumentiert).** Jede Makefile-Regel `X` (Schritt 2), die
-   **nicht** in `targets.exempt-targets` steht und **nicht** in der aus
-   `targets.authority` (Tabellen-Scoping) gewonnenen Menge enthalten ist ⇒
-   Grund-Code `gate-undocumented`. Befund: `file`/`line` = Makefile/Regelzeile,
-   `target` = `X`, `message` = Makefile-Regel ohne Doku-Deklaration. Leeres
-   `targets.authority` ⇒ Richtung 2 entfällt.
+5. **Richtung 2 (undokumentiert).** `targets.authority` ist ein Pfad oder
+   eine Liste wörtlicher Pfade (ein leerer Pfad bzw. eine leere Liste ⇒
+   Richtung 2 entfällt; ein leerer Eintrag oder ein Eintrag mit
+   Glob-Zeichen ⇒ Exit 2 beim Laden). Jede Datei wird gelesen — eine
+   fehlende ⇒ Exit 2 —, eine doppelt genannte (gleicher bereinigter Pfad)
+   einmal; die dokumentierte Menge ist die **Vereinigung** ihrer
+   Tabellen-Targets (Schritt 3). Jede Makefile-Regel `X` (Schritt 2), die
+   **nicht** in `targets.exempt-targets` steht und **nicht** in dieser
+   Vereinigung enthalten ist ⇒ Grund-Code `gate-undocumented`; ein Target in
+   mehreren Autoritäts-Dateien ist kein Befund. Befund: `file`/`line` =
+   Makefile/Regelzeile, `target` = `X`, `message` = „Makefile-Regel `X` ohne
+   Deklaration in der Autoritäts-Doku `<datei>`" bei **einer** Datei (Wortlaut
+   der bisherigen String-Form), „… in einer der Autoritäts-Dokus `<a>, <b>`"
+   bei mehreren (Konfigurations-Reihenfolge).
 6. **Diagnose-only / Determinismus / Read-only.** Kein `--repair`-Hunk;
    identischer Arbeitsbaum ⇒ identischer Befundsatz
    ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)), nur lesend, netzlos,
@@ -3432,7 +3440,7 @@ Exit 2 ohne Prüfung
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien **oder Glob-Muster** (Eintrag mit `*`/`?`/`[`, `matchGlob`, `**` erlaubt), aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei, ein Glob ohne Treffer oder ein ungültiges Glob ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
-| `targets.authority` | string | leer | Wurzel-relative Doku-Datei; **jede** nicht-exempte Makefile-Regel muss dort als `make X`-Tabellenzeile stehen (Richtung 2 `gate-undocumented`); leer ⇒ Richtung 2 entfällt; fehlende Datei ⇒ Exit 2 |
+| `targets.authority` | string \| string[] | leer | Wurzel-relative Doku-Datei oder Liste wörtlicher Doku-Dateien; **jede** nicht-exempte Makefile-Regel muss in **mindestens einer** als `make X`-Tabellenzeile stehen (Richtung 2 `gate-undocumented`); leer (String oder Liste) ⇒ Richtung 2 entfällt; fehlende Datei, leerer Eintrag oder Glob-Zeichen ⇒ Exit 2 |
 | `targets.exempt-targets` | string[] | leer | Regelnamen (**exakt**-Vergleich, **kein** Glob — anders als `tracked.exempt-targets`, das Pfad-Globs matcht), die von der Doku-Pflicht (Richtung 2) ausgenommen sind (Utility-Targets); ohne Eintrag prüft Richtung 2 jede Regel |
 | `trace.requirements.source` | string | `spec/lastenheft.md` | Wurzel-relative Anforderungsdatei; muss innerhalb der Repo-Wurzel liegen; leer/abwesend ⇒ Default und aktiviert keinen Strict-Guard. Ein **nichtleerer expliziter** Wert aktiviert fail-closed bei fehlender Quelle/null erkannten Anforderungen ([`DC-FA-REQ-001`](lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)) |
 | `trace.requirements.id-pattern` | string | `[A-Z][A-Z0-9]*-(?:FA-[A-Z]+\|QA)-\d+[A-Za-z]?` | Regex; erkennt eine Anforderungs-Kennung als **Ganz-Token** im Heading bzw. **Ganzzelle** der ID-Spalte und als Vorkommen in ADR-/Slice-Dateien; muss kompilieren (sonst Exit 2); leer ⇒ Default |
@@ -3570,7 +3578,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-069` | `section-column-missing` | structure | die über `table.column[].name` benannte Spalte ist nicht adressierbar: keine Tabelle des Abschnitts bindet sie (`line` = Abschnitts-Überschrift), der Name kommt in einer Kopfzeile mehrfach vor (`line` = Kopfzeile) oder eine Datenzeile reicht nicht bis zur Spalte (`line` = diese Zeile) |
 | `SPEC-059` | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `SPEC-060` | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
-| `SPEC-061` | `gate-undocumented` | targets | Makefile-Regel (nicht in `targets.exempt-targets`) ohne Deklaration als `make X` in der `targets.authority`-Doku (undokumentiertes Gate) |
+| `SPEC-061` | `gate-undocumented` | targets | Makefile-Regel (nicht in `targets.exempt-targets`) ohne Deklaration als `make X` in einer der `targets.authority`-Dokus (undokumentiertes Gate) |
 | `SPEC-062` | `source-drift` | sources | gepinnte externe Quelle (Marker `source-pin` oder Config `sources[]`) inhaltlich gedriftet — Content-Hash der Roh-Bytes bzw. des `unpack: zip`-Content-Manifests weicht vom hinterlegten `sha256` ab; die Meldung trägt den vollen Ist-`sha256` (Re-Pin-Vorlage) |
 | `SPEC-063` | `source-unreachable` | sources | gepinnte externe Quelle nicht materialisierbar (Netzfehler, HTTP-Status ≥ 400, Timeout, > `REDIRECT_MAX` Redirects, Body-/Entpack-Limit oder unter `unpack: zip` kein gültiges Zip) — bewusst getrennt von `source-drift` |
 
@@ -3595,6 +3603,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-06 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 5: `targets.authority` als Pfad oder Liste wörtlicher Pfade, Vereinigung der Tabellen-Targets, Doppelnennung kein Befund, Meldungstext bei einer Datei unverändert; Schema-Zeile `targets.authority` und Grund-Code-Zeile `gate-undocumented` nachgezogen |
 | 2026-10-06 | Nachzug nach Review: §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 1a präzisiert — jede Präfix-Komponente muss ein echtes Verzeichnis sein, ein passender Symlink ist Exit 2, SKIP_DIRS gelten nur unterhalb des Präfixes, Dubletten über den bereinigten Pfad, Lesefehler mit Ursache |
 | 2026-10-06 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) um Schritt 1a erweitert: `targets.makefiles`-Einträge mit Glob-Zeichen expandieren ab ihrem festen Verzeichnis-Präfix per `matchGlob` (SKIP_DIRS wie `file`, keine Symlinks, unabhängig von `scan.*`), Treffer sortiert, erste Nennung gewinnt, Muster ohne Treffer ⇒ Exit 2; Schema-Zeile `targets.makefiles` nachgezogen |
 | 2026-10-05 | §[`DC-FA-HOST-001.a`](spezifikation.md#dc-fa-host-001a--host-pfad-erkennung) um das **Home-relative** Muster (Tilde, Schrägstrich, erstes Segment ohne führenden Punkt) und das **Ziel-Ventil** `hostpaths.exempt-targets` (Schritt 4, nur Unix- und Home-relative Funde) erweitert; ein Unix-Treffer, der innerhalb eines Home-relativen Treffers beginnt, entfällt (sonst Doppel- bzw. abgeschnittener Treffer), jeder andere bleibt; Schema-Zeilen `hostpaths.prefixes` (ohne `~`) und `hostpaths.exempt-targets`, Grund-Code-Zeile ergänzt; bekannte Grenze um Home-relative Konventionen ohne Punkt und Markdown-Hervorhebung am Pfadrand erweitert |

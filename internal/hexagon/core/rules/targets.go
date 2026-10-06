@@ -117,19 +117,34 @@ func phantomFindings(fsys driven.Filesystem, docTables []string, ruleSet map[str
 }
 
 // undocumentedFindings ist Richtung 2: jede nicht-exempte Makefile-Regel ohne
-// Eintrag in der Autoritäts-Doku ⇒ gate-undocumented. Leere authority ⇒ Richtung
+// Eintrag in einer der Autoritäts-Dokus (Vereinigung; eine Datei, die doppelt
+// genannt ist, wird einmal gelesen) ⇒ gate-undocumented. Leere authority ⇒ Richtung
 // 2 entfällt (kein Befund).
-func undocumentedFindings(fsys driven.Filesystem, authority string, exemptTargets []string, ruleRefs []targetRef) ([]model.Finding, error) {
-	if authority == "" {
+func undocumentedFindings(fsys driven.Filesystem, authority []string, exemptTargets []string, ruleRefs []targetRef) ([]model.Finding, error) {
+	if len(authority) == 0 {
 		return nil, nil
 	}
-	authDocs, err := extractDocTargets(fsys, authority)
-	if err != nil {
-		return nil, err
-	}
 	authSet := map[string]bool{}
-	for _, d := range authDocs {
-		authSet[d.name] = true
+	var docs []string
+	seenDoc := map[string]bool{}
+	for _, a := range authority {
+		key := path.Clean(a)
+		if seenDoc[key] {
+			continue
+		}
+		seenDoc[key] = true
+		docs = append(docs, a)
+		authDocs, err := extractDocTargets(fsys, a)
+		if err != nil {
+			return nil, err
+		}
+		for _, d := range authDocs {
+			authSet[d.name] = true
+		}
+	}
+	where := "in der Autoritäts-Doku " + docs[0]
+	if len(docs) > 1 {
+		where = "in einer der Autoritäts-Dokus " + strings.Join(docs, ", ")
 	}
 	exempt := map[string]bool{}
 	for _, e := range exemptTargets {
@@ -143,7 +158,7 @@ func undocumentedFindings(fsys driven.Filesystem, authority string, exemptTarget
 		out = append(out, model.Finding{
 			File: r.file, Line: r.line, Rule: "targets", Target: r.name,
 			Reason:  ReasonGateUndocumented,
-			Message: "Makefile-Regel `" + r.name + "` ohne Deklaration in der Autoritäts-Doku " + authority,
+			Message: "Makefile-Regel `" + r.name + "` ohne Deklaration " + where,
 		})
 	}
 	return out, nil
