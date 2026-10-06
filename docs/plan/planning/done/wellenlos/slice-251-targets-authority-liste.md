@@ -7,18 +7,18 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
-**Bezug:** [`DC-FA-TGT-001`](../../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
+**Bezug:** [`DC-FA-TGT-001`](../../../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
 (Scope — erweitert, kein neues Kürzel: Einzelmodul-Frage nach
-[ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md));
+[ADR-0044](../../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md));
 Anlass ist der eingehende
-[CR von `ai-harness-init`](../../cr/2026-10-06-cr-eingehend-ai-harness-init-targets-authority-liste.md);
-Vorgänger am selben Modul [ADR-0099](../../adr/0099-targets-makefiles-glob.md)
+[CR von `ai-harness-init`](../../../cr/2026-10-06-cr-eingehend-ai-harness-init-targets-authority-liste.md);
+Vorgänger am selben Modul [ADR-0099](../../../adr/0099-targets-makefiles-glob.md)
 (hält `authority` wörtlich — bleibt so);
-[`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)
+[`DC-QA-02`](../../../../../spec/lastenheft.md#dc-qa-02--determinismus)
 (String-Form byte-identisch).
 
-**Berührte Spec-Stellen:** [§DC-FA-TGT-001.a](../../../../spec/spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
-(Schritte 1 und 5), [`SPEC-005`](../../../../spec/spezifikation.md#spec-005--d-checkyml)
+**Berührte Spec-Stellen:** [§DC-FA-TGT-001.a](../../../../../spec/spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
+(Schritte 1 und 5), [`SPEC-005`](../../../../../spec/spezifikation.md#spec-005--d-checkyml)
 (Schema-Zeile `targets.authority`).
 
 **Verantwortlich:** pt9912.
@@ -74,7 +74,7 @@ Liefer-Punkte (3):
       die ursprünglich geplante Ablehnung von Glob-Zeichen entfällt — sie
       brach die zugesagte Byte-Identität eines wörtlichen Pfads mit `[`.)*
 - [x] Lastenheft (Erweiterung, Bump + Historie nach
-      [`MR-032`](../../../../harness/conventions.md#mr-032)), Spezifikation,
+      [`MR-032`](../../../../../harness/conventions.md#mr-032)), Spezifikation,
       Schema; ADR; Antwort im CR-Dokument samt Folgeschritt-Vermerk.
 - [x] `make gates` grün.
 - [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
@@ -95,7 +95,7 @@ Liefer-Punkte (3):
 | `internal/hexagon/core/rules/targets_test.go`, `configyaml_test.go` | update | CR-Akzeptanzkriterien 1–6 |
 | `docs/plan/adr/0100-…`, `docs/plan/adr/README.md` | neu / update | Entscheidungen |
 
-**Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025)):
+**Spiegel vor dem Editieren** ([`MR-025`](../../../../../harness/conventions.md#mr-025)):
 Lastenheft (Beschreibung, fail-closed-Satz, Out-of-Scope), Spezifikation
 (Schritte 1 und 5, Schema-Zeile `targets.authority`), `--print-config`-Gerüst,
 Meldungstext von `gate-undocumented`, `--doctor`-Klartext von
@@ -145,19 +145,19 @@ wellenlos hier geprüft.
   eigene Commit-Botschaften behaupteten mehr, als gemessen war — vor dem
   Push korrigiert.
 - **Steering-Loop-Eintrag:** Lese-Schritt für
-  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md):
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md):
   verkörpert als `AGENTS.md` §5 Regel 13 und trotzdem in slice-250 und
   slice-251 hintereinander verfehlt (dazu slice-249 in der verwandten Klasse
-  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)).
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)).
   Nach Modul 6 ist die Prosa-Form damit als ausgeschöpft zu werten. **Benannter
   Sensor-Kandidat**, nicht geschnitten (Entscheidung des Auftraggebers): eine
   Vorher-/Nachher-Black-Box-Probe als make-Target, Pflicht für jeden Slice,
   der Byte-Identität zusagt. Alle drei Funde dieser Klasse hat genau diese
   Probe gemacht, keiner der Unit-Tests.
-- **Beobachtungs-Register (`../observations/`):** Evidence `slice-251` unter
+- **Beobachtungs-Register (`../../observations/`):** Evidence `slice-251` unter
   `grenzen-liste-wird-als-vollstaendig-gelesen` und
   `commit-message-overclaims-work`; neu
-  [`BEO-ALL/disjunktheit-geteilter-gate-index-ungeprueft`](../observations/BEO-ALL/disjunktheit-geteilter-gate-index-ungeprueft/state.md)
+  [`BEO-ALL/disjunktheit-geteilter-gate-index-ungeprueft`](../../observations/BEO-ALL/disjunktheit-geteilter-gate-index-ungeprueft/state.md)
   (Risiko 2).
 - **Folge-Slices:** keine geschnitten. Benannt: der Sensor-Kandidat oben;
   Null-Elemente in `targets.makefiles`/`doc-tables` verschwinden ebenso still
@@ -166,9 +166,9 @@ wellenlos hier geprüft.
   black-box gemessen. Risiko 2 (Disjunktheit): weiter offen — im Register,
   Auslöser ist die Baseline-Entscheidung. Trigger-Audit: kein Carveout, kein
   bootstrap-aware Gate; die begleitende ADR neu `Accepted`; keine Hard Rule
-  mit eingetretenem Auflösungs-Trigger. Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+  mit eingetretenem Auflösungs-Trigger. Nachtlauf-Stand ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
   wie in §8. Antwort an den Absender im
-  [CR-Dokument](../../cr/2026-10-06-cr-eingehend-ai-harness-init-targets-authority-liste.md).
+  [CR-Dokument](../../../cr/2026-10-06-cr-eingehend-ai-harness-init-targets-authority-liste.md).
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld, nichts verkörpert;
   (b) Folge-Slice — keine; (c) Register — alle zitierten Beobachtungen
   existieren und tragen Belege.
@@ -189,15 +189,15 @@ samt Spec-Stratum (`*`, Kürzel `ALL`); bereits deklariert.
 
 **Vorgelagert — offene Beobachtungen sichten:** drei Einträge der Sub-Area
 treffen den Gegenstand —
-[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
 (zuletzt in slice-250: jede Grenze dieses Slice wird gegen den Code geprüft,
 nicht gegen die Beschreibung),
-[`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+[`BEO-ALL/commit-message-overclaims-work`](../../observations/BEO-ALL/commit-message-overclaims-work/state.md)
 (Rot-Gründe in Botschaften nur, wie der Test sie zeigt) und
-[`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md)
+[`BEO-ALL/semantic-change-body-only-edges-stale`](../../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md)
 (Spiegel in §3 vorab gelistet, einschließlich `--doctor`-Klartext).
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-06 — unverändert gegenüber slice-250 (`image-scan` grün;
 `upstream-drift` rot mit drei Fremd-Meldungen). Keine berührt diesen
 Gegenstand.
