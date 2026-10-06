@@ -7,6 +7,7 @@ package coretest
 
 import (
 	"fmt"
+	"path"
 	"sort"
 	"strings"
 
@@ -62,8 +63,9 @@ func (m *MemFS) Kind(rel string) (driven.EntryKind, error) {
 }
 
 // ReadFile erfüllt den driven.Filesystem-Port.
+// Wie das echte Dateisystem löst es die Pfad-Schreibweise auf (`./x` = `x`).
 func (m *MemFS) ReadFile(rel string) ([]byte, error) {
-	if c, ok := m.files[rel]; ok {
+	if c, ok := m.files[path.Clean(rel)]; ok {
 		return []byte(c), nil
 	}
 	return nil, fmt.Errorf("not found: %s", rel)

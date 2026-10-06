@@ -5,6 +5,7 @@ import (
 	"path"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
@@ -219,10 +220,24 @@ func makefileGlobHits(fsys driven.Filesystem, pattern string) ([]string, error) 
 		}
 	}
 	if len(hits) == 0 {
-		return nil, fmt.Errorf("das Modul targets findet zum Makefile-Glob %q keine Datei (DC-FA-TGT-001, fail-closed): ein Glob ohne Treffer prüfte nichts", pattern)
+		return nil, fmt.Errorf("das Modul targets findet zum Makefile-Glob %q keine Datei (DC-FA-TGT-001, fail-closed): ein Glob ohne Treffer prüfte nichts%s", pattern, skipDirHint(pattern, dir))
 	}
 	sort.Strings(hits)
 	return hits, nil
+}
+
+// skipDirHint benennt einen übersprungenen Verzeichnisnamen, den das Muster
+// unterhalb seines Präfixes nennt — der wahrscheinliche Grund eines leeren
+// Globs, der sonst nur als „keine Datei" erschiene.
+func skipDirHint(pattern, dir string) string {
+	rest := strings.TrimPrefix(strings.TrimPrefix(pattern, dir), "/")
+	segs := strings.Split(rest, "/")
+	for _, s := range segs[:len(segs)-1] {
+		if isSkipDir(s) {
+			return " — das Verzeichnis " + strconv.Quote(s) + " unterhalb des Präfixes wird grundsätzlich übersprungen"
+		}
+	}
+	return ""
 }
 
 // realDirChain prüft jede Komponente des Präfixes einzeln: true nur, wenn
