@@ -1309,6 +1309,7 @@ func TestDecode_TargetsAuthority(t *testing.T) {
 		"targets:\n  makefiles: [Makefile]\n":                              nil,
 		"targets:\n  authority: \"harness/[b].md\"\n":                      {"harness/[b].md"},
 		"targets:\n  doc-tables: [&a harness/README.md]\n  authority: *a\n": {"harness/README.md"},
+		"targets:\n  doc-tables: &l [a.md, b.md]\n  authority: *l\n":       {"a.md", "b.md"},
 	}
 	for in, want := range ok {
 		cfg, err := configyaml.Decode([]byte(in))

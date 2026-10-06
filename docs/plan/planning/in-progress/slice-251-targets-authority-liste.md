@@ -68,7 +68,7 @@ Liefer-Punkte (3):
       einmal gelesen; Tests nach den CR-Akzeptanzkriterien 1–6, darunter das
       rote Gegenbeispiel — rot ohne die Änderung aus dem richtigen Grund
       (Bewusstes Brechen, Modul 11).
-- [ ] Config-Rand: String oder Liste; leerer, Null- oder Nicht-Pfad-Listeneintrag
+- [ ] Config-Rand: String oder Liste; leerer, Null- oder Nicht-Skalar-Listeneintrag
       ⇒ Exit 2, Pfad-Regel je Eintrag; die String-Form dekodiert wie zuvor;
       `--print-config`-Gerüst mit Listen-Beispiel. *(Plan-Änderung nach R1:
       die ursprünglich geplante Ablehnung von Glob-Zeichen entfällt — sie

@@ -422,3 +422,22 @@ func TestCheckTargetsAuthorityListeFehlend(t *testing.T) {
 		t.Fatalf("fehlende Autoritäts-Datei ⇒ fail-closed mit ihrem Namen erwartet, bekam %v", err)
 	}
 }
+
+// TestCheckTargetsAuthorityDublette: dieselbe Datei in zwei Schreibweisen ist
+// EINE Autoritäts-Datei — gelesen einmal, gemeldet im Singular-Wortlaut der
+// String-Form.
+func TestCheckTargetsAuthorityDublette(t *testing.T) {
+	files := map[string]string{
+		tgtMakefile:         "own:\n\techo\nghost:\n\techo\n",
+		"harness/README.md": tgtDocTable("own"),
+	}
+	cfg := model.TargetsConfig{
+		Makefiles: []string{tgtMakefile},
+		Authority: []string{"harness/README.md", "./harness/README.md"},
+	}
+	f := mustCheck(t, files, cfg)
+	want := "Makefile-Regel `ghost` ohne Deklaration in der Autoritäts-Doku harness/README.md"
+	if len(f) != 1 || f[0].Message != want {
+		t.Fatalf("Message = %+v\nwant %q", f, want)
+	}
+}

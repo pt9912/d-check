@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.96.1
+**Version:** 0.96.2
 
 **Status:** Draft
 
@@ -3260,7 +3260,7 @@ gegen Harness-Lügen). Zwei Richtungen mit je eigenem Grund-Code:
   Doku-Behauptung).
 - **Undeklariertes Gate (`gate-undocumented`):** eine Makefile-Regel (minus
   `targets.exempt-targets`), die in keiner Autoritäts-Doku (`targets.authority`)
-  **nicht** als ` `make X` ` steht — ein Gate ohne Deklaration (Befund an
+  als ` `make X` ` steht — ein Gate ohne Deklaration (Befund an
   Datei:Zeile der Makefile-Regel).
 
 **Tabellen-Scoping (Erkennungs-Vertrag):** ` `make X` ` gilt **nur in
@@ -3329,7 +3329,7 @@ byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 **mindestens einer** dieser Dateien als Tabellenzeile steht (Vereinigung);
 steht sie in mehreren, ist das **kein** Befund. Jede Datei der Liste muss
 existieren, sonst **Exit 2**. Einträge sind wörtliche Pfade, auch wenn sie
-Glob-Zeichen enthalten. Ein leerer, Null- oder Nicht-Pfad-Listeneintrag ist
+Glob-Zeichen enthalten. Ein leerer, Null- oder Nicht-Skalar-Listeneintrag (Liste, Abbildung) ist
 ein Konfigurationsfehler, und jeder Eintrag unterliegt derselben Pfad-Regel
 wie `makefiles`. Ein leerer oder Null-Pfad und eine leere Liste
 lassen Richtung 2 entfallen. Mit **einer** Datei — als String oder als
@@ -4044,6 +4044,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.96.2 | 2026-10-06 | Nachzug nach Verifikation, **vor** der ersten Closure dieser Erweiterung: in [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) kehrte eine doppelte Verneinung die Definition von `gate-undocumented` um (eine Regel, die „in keiner Autoritäts-Doku nicht" steht) — gestrichen. „Nicht-Pfad-Listeneintrag" auf „Nicht-Skalar-Listeneintrag" präzisiert: ein Skalar wie eine Zahl wird als Pfad gelesen und scheitert erst zur Laufzeit. Keine Verhaltensänderung | — |
 | 0.96.1 | 2026-10-06 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) präzisiert (Begründung in begleitender ADR). Der Erstentwurf (0.96.0) sagte „leerer Eintrag ⇒ Konfigurationsfehler" zu, aber ein Null-Element einer Liste verschwand beim Dekodieren still und ließ Richtung 2 unbemerkt entfallen; zugleich lehnte er Einträge mit Glob-Zeichen ab und brach damit die zugesagte Byte-Identität der String-Form (ein wörtlicher Pfad mit eckiger Klammer, ein Null-Wert, ein Alias verhielten sich anders als zuvor). Die Zusage ist jetzt: Einträge sind wörtlich auch mit Glob-Zeichen, die String-Form dekodiert wie zuvor, ein leerer, Null- oder Nicht-Pfad-Listeneintrag ist Exit 2; neues Akzeptanzkriterium „leerer Listeneintrag" | — |
 | 0.96.0 | 2026-10-06 | [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) erweitert (Erweiterung statt neues Kürzel — Einzelmodul-Frage): `targets.authority` nimmt neben einem Pfad eine **Liste** wörtlicher Pfade an; `gate-undocumented` misst gegen die Vereinigung, eine Doppelnennung ist kein Befund, eine fehlende Datei Exit 2, ein leerer Eintrag oder ein Muster ein Konfigurationsfehler. Mit einer Datei byte-identisch samt Meldungstext. Drei neue Akzeptanzkriterien; Out-of-Scope um die Disjunktheits-Prüfung ergänzt (Regel nur in einem offenen CR an den Kurs). Begründung in begleitender ADR. **Anlass ist ein Change Request** des Adopters `ai-harness-init` | [CR `ai-harness-init` 2026-10-06](../docs/plan/cr/2026-10-06-cr-eingehend-ai-harness-init-targets-authority-liste.md) |
 | 0.95.1 | 2026-10-06 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) präzisiert (Begründung in begleitender ADR). Der Erstentwurf (0.95.0) sagte „keine Symlinks" und übersprungene Verzeichnisse „wie beim Modul `file`" zu — der Review zeigte, dass ein Symlink im Präfix verfolgt, ein passender Symlink darunter still übergangen und ein ausdrücklich genannter übersprungener Verzeichnisname anders behandelt wurde als beschrieben. Die Zusage ist jetzt: jede Präfix-Komponente muss ein echtes Verzeichnis sein, ein passender Symlink darunter ist Exit 2, übersprungene Namen werden nur unterhalb des Präfixes nicht betreten; Dubletten werden über den bereinigten Pfad erkannt | — |

@@ -59,7 +59,7 @@ diese Regel nicht; dort gibt es genau eine Autoritäts-Doku.
 4. **Leer heißt entfällt — aber nur auf oberster Ebene.** Die String-Form
    dekodiert wie zuvor (ein leerer oder Null-Pfad lässt Richtung 2 entfallen,
    ein Alias wird aufgelöst); eine leere Liste entfällt wie `doc-tables: []`.
-   Ein leeres, Null- oder Nicht-Pfad-**Element** einer Liste ist dagegen ein
+   Ein leeres, Null- oder Nicht-Skalar-**Element** einer Liste ist dagegen ein
    Konfigurationsfehler — geprüft je YAML-Knoten, weil der Decoder
    Null-Elemente beim Dekodieren in eine String-Liste still verwirft.
 5. **Der `--doctor`-Klartext bleibt im Singular** („in der Autoritäts-Doku").
@@ -90,7 +90,7 @@ diese Regel nicht; dort gibt es genau eine Autoritäts-Doku.
 | Go-Test `TestCheckTargetsAuthorityListe` | Vereinigung, Doppelnennung still, Befund im Fragment mit allen Dateien | `make test` |
 | Go-Test `TestCheckTargetsAuthorityEinzelnWortlaut` | eine Datei: Meldungstext unverändert | `make test` |
 | Go-Test `TestCheckTargetsAuthorityListeFehlend` | fehlender Listeneintrag ⇒ Fehler (Exit 2) | `make test` |
-| Go-Test `TestDecode_TargetsAuthority` | String/Null/Alias/Liste/leer wie zuvor, Pfad mit Glob-Zeichen wörtlich; leeres/Null-/Nicht-Pfad-Element, Abbildung, Wurzel-Flucht ⇒ Konfigurationsfehler | `make test` |
+| Go-Test `TestDecode_TargetsAuthority` | String/Null/Alias/Liste/leer wie zuvor, Pfad mit Glob-Zeichen wörtlich; leeres/Null-/Nicht-Skalar-Element, Abbildung, Wurzel-Flucht ⇒ Konfigurationsfehler | `make test` |
 
 ## Re-Evaluierungs-Trigger
 
