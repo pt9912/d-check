@@ -1686,39 +1686,41 @@ func applyTargets(r *raw, cfg *model.Config) error {
 }
 
 // decodeTargetsAuthority liest targets.authority als String oder Liste
-// wörtlicher Pfade (DC-FA-TGT-001). Ein leerer String und eine leere Liste
-// lassen Richtung 2 entfallen (wie doc-tables: [] Richtung 1); ein leerer
-// Listeneintrag und ein Eintrag mit Glob-Zeichen sind Konfigurationsfehler —
-// authority nimmt keine Muster an, ein Glob würde zur Laufzeit als
-// Dateiname scheitern.
+// wörtlicher Pfade (DC-FA-TGT-001). Die String-Form dekodiert wie zuvor als
+// string (null ⇒ leer, Alias aufgelöst) — ein leerer Pfad lässt Richtung 2
+// entfallen. Eine Liste wird je Element geprüft, weil yaml.v3 Null-Elemente
+// beim Dekodieren in []string still verwirft: ein Null-, leerer oder
+// Nicht-Skalar-Eintrag ist ein Konfigurationsfehler; eine leere Liste lässt
+// Richtung 2 entfallen (wie doc-tables: [] Richtung 1).
 func decodeTargetsAuthority(n *yaml.Node) ([]string, error) {
-	var out []string
+	if n.Kind == yaml.AliasNode && n.Alias != nil {
+		n = n.Alias
+	}
 	switch n.Kind {
 	case 0:
 		return nil, nil
-	case yaml.ScalarNode:
-		if n.Value == "" {
+	case yaml.SequenceNode:
+		out := make([]string, 0, len(n.Content))
+		for _, el := range n.Content {
+			if el.Kind == yaml.AliasNode && el.Alias != nil {
+				el = el.Alias
+			}
+			if el.Kind != yaml.ScalarNode || el.Tag == "!!null" || strings.TrimSpace(el.Value) == "" {
+				return nil, fmt.Errorf("%s: line %d: targets.authority enthält einen leeren oder ungültigen Eintrag (erwartet: Pfad)", FileName, el.Line)
+			}
+			out = append(out, el.Value)
+		}
+		return out, nil
+	default:
+		var s string
+		if err := n.Decode(&s); err != nil {
+			return nil, fmt.Errorf("%s: line %d: targets.authority muss ein Pfad oder eine Liste von Pfaden sein: %v", FileName, n.Line, err)
+		}
+		if s == "" {
 			return nil, nil
 		}
-		out = []string{n.Value}
-	case yaml.SequenceNode:
-		if err := n.Decode(&out); err != nil {
-			return nil, fmt.Errorf("%s: targets.authority ist keine Liste von Pfaden: %v", FileName, err)
-		}
-		for _, a := range out {
-			if strings.TrimSpace(a) == "" {
-				return nil, fmt.Errorf("%s: targets.authority enthält einen leeren Eintrag", FileName)
-			}
-		}
-	default:
-		return nil, fmt.Errorf("%s: targets.authority muss ein Pfad oder eine Liste von Pfaden sein", FileName)
+		return []string{s}, nil
 	}
-	for _, a := range out {
-		if strings.ContainsAny(a, "*?[") {
-			return nil, fmt.Errorf("%s: targets.authority-Eintrag %q ist ein Muster — authority nimmt nur wörtliche Pfade an", FileName, a)
-		}
-	}
-	return out, nil
 }
 
 // applySources validiert die Config-Pins des Moduls sources (DC-FA-SRC-001):

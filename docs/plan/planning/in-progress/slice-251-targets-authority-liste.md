@@ -68,9 +68,11 @@ Liefer-Punkte (3):
       einmal gelesen; Tests nach den CR-Akzeptanzkriterien 1–6, darunter das
       rote Gegenbeispiel — rot ohne die Änderung aus dem richtigen Grund
       (Bewusstes Brechen, Modul 11).
-- [ ] Config-Rand: String oder Liste; leerer Eintrag ⇒ Exit 2, Pfad-Regel je
-      Eintrag; ein Eintrag mit Glob-Zeichen ⇒ Exit 2 (wörtlich, kein stiller
-      Fehlversuch zur Laufzeit); `--print-config`-Gerüst mit Listen-Beispiel.
+- [ ] Config-Rand: String oder Liste; leerer, Null- oder Nicht-Pfad-Listeneintrag
+      ⇒ Exit 2, Pfad-Regel je Eintrag; die String-Form dekodiert wie zuvor;
+      `--print-config`-Gerüst mit Listen-Beispiel. *(Plan-Änderung nach R1:
+      die ursprünglich geplante Ablehnung von Glob-Zeichen entfällt — sie
+      brach die zugesagte Byte-Identität eines wörtlichen Pfads mit `[`.)*
 - [ ] Lastenheft (Erweiterung, Bump + Historie nach
       [`MR-032`](../../../../harness/conventions.md#mr-032)), Spezifikation,
       Schema; ADR; Antwort im CR-Dokument samt Folgeschritt-Vermerk.

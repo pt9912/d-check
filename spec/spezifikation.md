@@ -2755,9 +2755,12 @@ scannt, sondern **deklarierte** Dateien liest:
    Doku-Datei/Tabellenzeile, `target` = `X`, `message` = dokumentiertes Target
    ohne Makefile-Regel.
 5. **Richtung 2 (undokumentiert).** `targets.authority` ist ein Pfad oder
-   eine Liste wörtlicher Pfade (ein leerer Pfad bzw. eine leere Liste ⇒
-   Richtung 2 entfällt; ein leerer Eintrag oder ein Eintrag mit
-   Glob-Zeichen ⇒ Exit 2 beim Laden). Jede Datei wird gelesen — eine
+   eine Liste wörtlicher Pfade, auch mit Glob-Zeichen. Die String-Form
+   dekodiert als String (Null ⇒ leer, Alias aufgelöst); ein leerer Pfad
+   bzw. eine leere Liste ⇒ Richtung 2 entfällt. Listenelemente werden je
+   Knoten geprüft (der YAML-Decoder verwirft Null-Elemente sonst still): ein
+   leeres, Null- oder Nicht-Skalar-Element ⇒ Exit 2 beim Laden, mit Zeile.
+   Jede Datei wird gelesen — eine
    fehlende ⇒ Exit 2 —, eine doppelt genannte (gleicher bereinigter Pfad)
    einmal; die dokumentierte Menge ist die **Vereinigung** ihrer
    Tabellen-Targets (Schritt 3). Jede Makefile-Regel `X` (Schritt 2), die
@@ -3440,7 +3443,7 @@ Exit 2 ohne Prüfung
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien **oder Glob-Muster** (Eintrag mit `*`/`?`/`[`, `matchGlob`, `**` erlaubt), aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei, ein Glob ohne Treffer oder ein ungültiges Glob ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
-| `targets.authority` | string \| string[] | leer | Wurzel-relative Doku-Datei oder Liste wörtlicher Doku-Dateien; **jede** nicht-exempte Makefile-Regel muss in **mindestens einer** als `make X`-Tabellenzeile stehen (Richtung 2 `gate-undocumented`); leer (String oder Liste) ⇒ Richtung 2 entfällt; fehlende Datei, leerer Eintrag oder Glob-Zeichen ⇒ Exit 2 |
+| `targets.authority` | string \| string[] | leer | Wurzel-relative Doku-Datei oder Liste wörtlicher Doku-Dateien; **jede** nicht-exempte Makefile-Regel muss in **mindestens einer** als `make X`-Tabellenzeile stehen (Richtung 2 `gate-undocumented`); leer (String, Null oder Liste) ⇒ Richtung 2 entfällt; Einträge wörtlich, auch mit Glob-Zeichen; fehlende Datei oder leerer/Null-/Nicht-Pfad-Listeneintrag ⇒ Exit 2 |
 | `targets.exempt-targets` | string[] | leer | Regelnamen (**exakt**-Vergleich, **kein** Glob — anders als `tracked.exempt-targets`, das Pfad-Globs matcht), die von der Doku-Pflicht (Richtung 2) ausgenommen sind (Utility-Targets); ohne Eintrag prüft Richtung 2 jede Regel |
 | `trace.requirements.source` | string | `spec/lastenheft.md` | Wurzel-relative Anforderungsdatei; muss innerhalb der Repo-Wurzel liegen; leer/abwesend ⇒ Default und aktiviert keinen Strict-Guard. Ein **nichtleerer expliziter** Wert aktiviert fail-closed bei fehlender Quelle/null erkannten Anforderungen ([`DC-FA-REQ-001`](lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)) |
 | `trace.requirements.id-pattern` | string | `[A-Z][A-Z0-9]*-(?:FA-[A-Z]+\|QA)-\d+[A-Za-z]?` | Regex; erkennt eine Anforderungs-Kennung als **Ganz-Token** im Heading bzw. **Ganzzelle** der ID-Spalte und als Vorkommen in ADR-/Slice-Dateien; muss kompilieren (sonst Exit 2); leer ⇒ Default |
@@ -3603,6 +3606,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-06 | Nachzug nach Review: §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 5 — Listenelemente je Knoten geprüft (Null-Element ⇒ Exit 2 statt still verworfen), String-Form dekodiert wie zuvor, keine Ablehnung von Glob-Zeichen (Einträge wörtlich); Schema-Zeile nachgezogen |
 | 2026-10-06 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 5: `targets.authority` als Pfad oder Liste wörtlicher Pfade, Vereinigung der Tabellen-Targets, Doppelnennung kein Befund, Meldungstext bei einer Datei unverändert; Schema-Zeile `targets.authority` und Grund-Code-Zeile `gate-undocumented` nachgezogen |
 | 2026-10-06 | Nachzug nach Review: §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 1a präzisiert — jede Präfix-Komponente muss ein echtes Verzeichnis sein, ein passender Symlink ist Exit 2, SKIP_DIRS gelten nur unterhalb des Präfixes, Dubletten über den bereinigten Pfad, Lesefehler mit Ursache |
 | 2026-10-06 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) um Schritt 1a erweitert: `targets.makefiles`-Einträge mit Glob-Zeichen expandieren ab ihrem festen Verzeichnis-Präfix per `matchGlob` (SKIP_DIRS wie `file`, keine Symlinks, unabhängig von `scan.*`), Treffer sortiert, erste Nennung gewinnt, Muster ohne Treffer ⇒ Exit 2; Schema-Zeile `targets.makefiles` nachgezogen |

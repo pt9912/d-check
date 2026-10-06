@@ -42,7 +42,7 @@ type targetRef struct {
 // Makefile) die Deklarations-Konsistenz Doku ↔ Build-Targets. Zwei Richtungen:
 // ein in einer Doku-**Tabellenzeile** als `make X` behauptetes Target ohne
 // Makefile-Regel ⇒ gate-phantom (Richtung 1); eine Makefile-Regel (minus
-// exempt-targets) ohne Eintrag in der Autoritäts-Doku ⇒ gate-undocumented
+// exempt-targets) ohne Eintrag in einer der Autoritäts-Dokus ⇒ gate-undocumented
 // (Richtung 2). **fail-closed:** eine fehlende/unlesbare konfigurierte Datei ⇒
 // error (Exit 2). Leeres Makefiles ⇒ inert; die Richtungen sind an ihre
 // jeweilige Doku-Quelle gekoppelt und voneinander unabhängig. Diagnose-only.

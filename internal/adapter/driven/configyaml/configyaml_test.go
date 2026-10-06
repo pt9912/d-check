@@ -1294,35 +1294,44 @@ func TestDecode_TargetsMakefilesGlob(t *testing.T) {
 }
 
 // TestDecode_TargetsAuthority: targets.authority nimmt einen String oder eine
-// Liste wörtlicher Pfade an; leerer String und leere Liste lassen Richtung 2
-// entfallen, leerer Eintrag, Muster, Abbildung und Wurzel-Flucht sind
-// Konfigurationsfehler.
+// Liste wörtlicher Pfade an. Die String-Form dekodiert wie zuvor (null ⇒
+// entfällt, Alias aufgelöst, Pfad mit Glob-Zeichen bleibt wörtlich); leere
+// Liste ⇒ entfällt. Ein Null-, leerer oder Nicht-Skalar-Listeneintrag, eine
+// Abbildung und eine Wurzel-Flucht sind Konfigurationsfehler.
 func TestDecode_TargetsAuthority(t *testing.T) {
 	ok := map[string][]string{
-		"targets:\n  authority: harness/README.md\n":                           {"harness/README.md"},
-		"targets:\n  authority: [harness/README.md, harness/targets.md]\n":     {"harness/README.md", "harness/targets.md"},
-		"targets:\n  authority: \"\"\n":                                        nil,
-		"targets:\n  authority: []\n":                                          nil,
-		"targets:\n  makefiles: [Makefile]\n":                                  nil,
+		"targets:\n  authority: harness/README.md\n":                       {"harness/README.md"},
+		"targets:\n  authority: [harness/README.md, harness/targets.md]\n": {"harness/README.md", "harness/targets.md"},
+		"targets:\n  authority: \"\"\n":                                    nil,
+		"targets:\n  authority: []\n":                                      nil,
+		"targets:\n  authority: null\n":                                    nil,
+		"targets:\n  authority: ~\n":                                       nil,
+		"targets:\n  makefiles: [Makefile]\n":                              nil,
+		"targets:\n  authority: \"harness/[b].md\"\n":                      {"harness/[b].md"},
+		"targets:\n  doc-tables: [&a harness/README.md]\n  authority: *a\n": {"harness/README.md"},
 	}
 	for in, want := range ok {
 		cfg, err := configyaml.Decode([]byte(in))
 		if err != nil {
-			t.Fatalf("%q abgelehnt: %v", in, err)
+			t.Errorf("%q abgelehnt: %v", in, err)
+			continue
 		}
 		if strings.Join(cfg.Targets.Authority, ",") != strings.Join(want, ",") {
-			t.Fatalf("%q: Authority = %q, want %q", in, cfg.Targets.Authority, want)
+			t.Errorf("%q: Authority = %q, want %q", in, cfg.Targets.Authority, want)
 		}
 	}
 	bad := map[string]string{
-		"targets:\n  authority: [harness/README.md, \"\"]\n": "leeren Eintrag",
-		"targets:\n  authority: [\"harness/*.md\"]\n":       "ist ein Muster",
-		"targets:\n  authority: {a: b}\n":                   "Pfad oder eine Liste",
-		"targets:\n  authority: [../x.md]\n":                "relativ zur Repo-Wurzel",
+		"targets:\n  authority: [harness/README.md, \"\"]\n":   "leeren oder ungültigen Eintrag",
+		"targets:\n  authority:\n    -\n":                      "leeren oder ungültigen Eintrag",
+		"targets:\n  authority: [~]\n":                         "leeren oder ungültigen Eintrag",
+		"targets:\n  authority: [harness/README.md, null]\n":   "leeren oder ungültigen Eintrag",
+		"targets:\n  authority: [[a.md]]\n":                    "leeren oder ungültigen Eintrag",
+		"targets:\n  authority: {a: b}\n":                      "line 2: targets.authority muss ein Pfad",
+		"targets:\n  authority: [../x.md]\n":                   "relativ zur Repo-Wurzel",
 	}
 	for in, frag := range bad {
 		if _, err := configyaml.Decode([]byte(in)); err == nil || !strings.Contains(err.Error(), frag) {
-			t.Fatalf("%q: Fehler mit %q erwartet, bekam %v", in, frag, err)
+			t.Errorf("%q: Fehler mit %q erwartet, bekam %v", in, frag, err)
 		}
 	}
 }

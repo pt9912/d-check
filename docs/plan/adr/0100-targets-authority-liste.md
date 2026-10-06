@@ -7,7 +7,7 @@
 **Autor:** pt9912
 
 **Bezug:** [`DC-FA-TGT-001`](../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
-(erweitert, Lastenheft 0.96.0); Anlass ist der eingehende
+(erweitert, Lastenheft 0.96.0, nach Review präzisiert in 0.96.1); Anlass ist der eingehende
 [CR von `ai-harness-init`](../cr/2026-10-06-cr-eingehend-ai-harness-init-targets-authority-liste.md);
 Vorgängerin am selben Modul [ADR-0099](0099-targets-makefiles-glob.md)
 (`authority` bleibt wörtlich — hier bestätigt); Schnitt-Kriterium aus
@@ -51,13 +51,21 @@ diese Regel nicht; dort gibt es genau eine Autoritäts-Doku.
    Konsumenten rot zu machen, deren Baseline sie nicht verlangt. Nimmt der Kurs
    die Regel an, ist ein opt-in-Schlüssel mit eigenem Grund-Code der
    Folgeschritt (Re-Evaluierungs-Trigger unten).
-3. **Kein Glob für `authority`** — die Entscheidung der Vorgängerin bleibt.
-   Die Autoritäts-Menge ist klein und fest; ein Eintrag mit Glob-Zeichen ist
-   beim Laden ein Konfigurationsfehler statt ein Dateiname, der zur Laufzeit
-   scheitert.
-4. **Leer heißt entfällt.** Ein leerer Pfad und eine leere Liste lassen
-   Richtung 2 entfallen — wie `doc-tables: []` Richtung 1. Ein leerer
-   **Eintrag** in einer Liste ist dagegen ein Konfigurationsfehler.
+3. **Kein Glob für `authority`, und keine Ablehnung von Glob-Zeichen** — die
+   Entscheidung der Vorgängerin bleibt: Einträge sind wörtliche Pfade, auch
+   mit Glob-Zeichen. Ein Muster, das als Datei nicht existiert, scheitert
+   laut zur Laufzeit (Exit 2). Eine Ablehnung beim Laden hätte einen
+   bisher gültigen wörtlichen Pfad mit eckiger Klammer gebrochen.
+4. **Leer heißt entfällt — aber nur auf oberster Ebene.** Die String-Form
+   dekodiert wie zuvor (ein leerer oder Null-Pfad lässt Richtung 2 entfallen,
+   ein Alias wird aufgelöst); eine leere Liste entfällt wie `doc-tables: []`.
+   Ein leeres, Null- oder Nicht-Pfad-**Element** einer Liste ist dagegen ein
+   Konfigurationsfehler — geprüft je YAML-Knoten, weil der Decoder
+   Null-Elemente beim Dekodieren in eine String-Liste still verwirft.
+5. **Der `--doctor`-Klartext bleibt im Singular** („in der Autoritäts-Doku").
+   Er beschreibt den Grund-Code, nicht den Befund; die Befund-Meldung nennt
+   bei mehreren Dateien alle. Eine Änderung verschöbe den Klartext für jeden
+   Konsumenten, auch für die unveränderte String-Form.
 
 ## Verglichene Alternativen
 
@@ -82,7 +90,7 @@ diese Regel nicht; dort gibt es genau eine Autoritäts-Doku.
 | Go-Test `TestCheckTargetsAuthorityListe` | Vereinigung, Doppelnennung still, Befund im Fragment mit allen Dateien | `make test` |
 | Go-Test `TestCheckTargetsAuthorityEinzelnWortlaut` | eine Datei: Meldungstext unverändert | `make test` |
 | Go-Test `TestCheckTargetsAuthorityListeFehlend` | fehlender Listeneintrag ⇒ Fehler (Exit 2) | `make test` |
-| Go-Test `TestDecode_TargetsAuthority` | String/Liste/leer; leerer Eintrag, Muster, Abbildung, Wurzel-Flucht ⇒ Konfigurationsfehler | `make test` |
+| Go-Test `TestDecode_TargetsAuthority` | String/Null/Alias/Liste/leer wie zuvor, Pfad mit Glob-Zeichen wörtlich; leeres/Null-/Nicht-Pfad-Element, Abbildung, Wurzel-Flucht ⇒ Konfigurationsfehler | `make test` |
 
 ## Re-Evaluierungs-Trigger
 
@@ -96,3 +104,4 @@ einen Glob nötig.
 | Datum | Ereignis |
 |---|---|
 | 2026-10-06 | Angelegt als `Proposed`; `Accepted` erst mit der Closure des Vorgangs, nach Review und Verifikation |
+| 2026-10-06 | Nach R1 (HIGH, MEDIUM): Entscheidung 3 auf „keine Ablehnung von Glob-Zeichen" umgestellt, Entscheidung 4 auf Knoten-Prüfung der Listenelemente (Null-Elemente verschwanden still), Entscheidung 5 (`--doctor`-Klartext) ergänzt. Noch `Proposed`, Körper daher geändert statt angehängt |
