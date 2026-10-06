@@ -4,6 +4,24 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.82.0] — 2026-10-06
+
+### Added
+
+- slice-251 — **`targets.authority` nimmt eine Liste an**
+  ([`DC-FA-TGT-001`](spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in),
+  [ADR-0100](docs/plan/adr/0100-targets-authority-liste.md)). Neben einem Pfad
+  eine Liste wörtlicher Pfade; `gate-undocumented` misst gegen die Vereinigung
+  der dort dokumentierten Targets. Eine Regel gilt als dokumentiert, wenn sie
+  in mindestens einer Datei steht; eine Doppelnennung ist kein Befund. Eine
+  fehlende Datei ist Exit 2, ebenso ein leerer, Null- oder Nicht-Skalar-
+  Listeneintrag; eine leere Liste lässt die Prüfung entfallen wie
+  `doc-tables: []`. Einträge bleiben wörtliche Pfade, auch mit
+  Glob-Zeichen. Mit einer Datei — als String oder einelementige Liste — ist
+  die Ausgabe byte-identisch, auch im Meldungstext und mit `--json` und
+  `--doctor`; mit mehreren nennt die Meldung alle Dateien. Anlass ist ein
+  Change Request des Adopters `ai-harness-init`.
+
 ## [0.81.0] — 2026-10-06
 
 ### Added

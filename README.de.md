@@ -125,7 +125,8 @@ Dokuments:
   Makefile-Regel (`gate-phantom`), oder eine Makefile-Regel ohne Eintrag in der
   Autoritäts-Doku (`gate-undocumented`); **hermetisch** (kein git, kein
   Makefile-Ausführen), fail-closed, opt-in; Makefile-Quellen auch als Glob
-  (etwa Fragmente unter einem `mk`-Verzeichnis)
+  (etwa Fragmente unter einem `mk`-Verzeichnis), Autoritäts-Doku auch als
+  Liste mehrerer Dateien
   ([`DC-FA-TGT-001`](spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in))
 - `citations` — Verbatim-Zitat-Verifikation: die Direktive
   `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (ein
@@ -315,7 +316,7 @@ Registry, aus der man zieht)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.81.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.82.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
