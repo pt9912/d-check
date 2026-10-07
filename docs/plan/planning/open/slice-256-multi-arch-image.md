@@ -21,7 +21,7 @@ Emulation wählt).
 [`DC-FA-DIST-002`](../../../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel),
 [`SPEC-066`](../../../../spec/spezifikation.md#6-externe-verträge) (Runtime-Basis-Zeile).
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-10-07.
 
