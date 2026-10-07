@@ -222,13 +222,15 @@ Die Pipeline (`release.yml`) läuft bei jedem `v*`-Tag-Push:
    `org.opencontainers.image.version` muss exakt der Tag-Version entsprechen
    (Version-Drift shippt nicht).
 5. **Push** (`make image-publish`) — ein **Index** aus `linux/amd64` und
-   `linux/arm64` nach `ghcr.io/pt9912/d-check:v<version>`; `:latest`
-   **nur** für stabile Releases (kein Prerelease-Suffix) —
-   [ADR-0014](../plan/adr/0014-latest-tag-fuer-stabile-releases.md).
-   Danach die Gegenprobe am **gepushten** Index: genau die zwei Plattformen,
-   Labels je Plattform, und je Plattform ist das Binary sha256-gleich zu dem
-   aus Schritt 2 bzw. 3 geprüften
+   `linux/arm64`, zuerst **ohne Tag** nach `ghcr.io/pt9912/d-check`. Dann die
+   Gegenprobe am **gepushten** Index: genau die zwei Plattformen, Labels je
+   Plattform, und je Plattform ist das Binary sha256-gleich zu dem aus
+   Schritt 2 bzw. 3 geprüften. Erst danach zeigen `v<version>` und — **nur**
+   für stabile Releases (kein Prerelease-Suffix,
+   [ADR-0014](../plan/adr/0014-latest-tag-fuer-stabile-releases.md)) —
+   `:latest` auf diesen Digest
    ([ADR-0102](../plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)).
+   Fällt die Gegenprobe, bleibt jeder Tag unberührt.
 6. **Docker-Hub-Spiegel** — der GHCR-Index wird samt Blobs nach
    `docker.io/pt9912/d-check` **kopiert** (`docker buildx imagetools create`),
    dieselbe Tag-Disziplin wie Schritt 5. Danach vergleicht der Schritt die

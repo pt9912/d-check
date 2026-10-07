@@ -11,12 +11,13 @@
 #       buildx-Aufrufe, und erst dieser Vergleich macht das veröffentlichte
 #       Binary zum geprüften.
 #
-# Gelesen wird aus der Registry, nicht aus dem lokalen Daemon (ADR-0065
-# Punkt 3, fortgeführt in ADR-0102). Jeder Abweichung folgt Exit 1; eine
+# Gelesen wird aus der Registry, nicht aus dem lokalen Daemon (ADR-0102):
+# zwei aus demselben lokalen Bild abgeleitete Werte wären trivial gleich.
+# Jeder Abweichung folgt Exit 1; eine
 # Antwort, die sich nicht lesen lässt, ist ebenfalls Exit 1 — ungeprüft ist
 # nicht bestätigt.
 #
-# Eingaben: REF (gepushte Referenz, z. B. ghcr.io/pt9912/d-check:v1.2.3),
+# Eingaben: REF (gepushte Referenz, Tag oder `<repo>@<digest>`),
 # VERSION, TESTED_AMD64 und TESTED_ARM64 (lokale, geprüfte Bilder).
 set -euo pipefail
 
@@ -69,10 +70,20 @@ binary_sha() {
   docker rm "$cid" > /dev/null
   sha256sum "$WORK/bin" | cut -d' ' -f1
 }
+# Gezogen wird je Plattform über ihren Manifest-Digest aus dem Index: der
+# Daemon bindet eine Index-Referenz an genau ein lokales Bild, ein zweites
+# Ziehen derselben Referenz für die andere Plattform scheitert.
+case "$REF" in *@*) repo="${REF%%@*}" ;; *) repo="${REF%:*}" ;; esac
+docker buildx imagetools inspect "$REF" \
+  --format '{{range .Manifest.Manifests}}{{.Platform.OS}}/{{.Platform.Architecture}} {{.Digest}}{{"\n"}}{{end}}' \
+  > "$WORK/manifests" || fail "Manifeste von $REF nicht lesbar"
 for pair in "linux/amd64=$TESTED_AMD64" "linux/arm64=$TESTED_ARM64"; do
   plat="${pair%%=*}" tested="${pair#*=}"
-  docker pull -q --platform "$plat" "$REF" > /dev/null || fail "$REF ($plat) nicht ziehbar"
-  pushed_sha="$(binary_sha "$plat" "$REF")" || fail "Binary aus $REF ($plat) nicht lesbar"
+  mdigest="$(awk -v p="$plat" '$1==p { print $2 }' "$WORK/manifests")"
+  [ -n "$mdigest" ] || fail "kein Manifest für $plat in $REF"
+  pushed="$repo@$mdigest"
+  docker pull -q --platform "$plat" "$pushed" > /dev/null || fail "$pushed ($plat) nicht ziehbar"
+  pushed_sha="$(binary_sha "$plat" "$pushed")" || fail "Binary aus $pushed ($plat) nicht lesbar"
   tested_sha="$(binary_sha "$plat" "$tested")" || fail "Binary aus $tested ($plat) nicht lesbar"
   [ "$pushed_sha" = "$tested_sha" ] \
     || fail "$plat: Binary im gepushten Index ($pushed_sha) ist nicht das geprüfte aus $tested ($tested_sha)"
@@ -81,4 +92,4 @@ done
 
 digest="$(docker buildx imagetools inspect "$REF" --format '{{.Manifest.Digest}}')" \
   || fail "Index-Digest von $REF nicht lesbar"
-echo "image-verify-published: OK — ${REF%:*}@$digest"
+echo "image-verify-published: OK — $REF (Index $digest)"

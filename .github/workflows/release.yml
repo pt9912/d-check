@@ -77,14 +77,19 @@ jobs:
 
       # Die zweite Plattform des Index (DC-FA-DIST-001, ADR-0102): QEMU fuer
       # den arm64-Test (Binary und Container), buildx fuer den Index-Build.
-      # Gebaut wird per Cross-Compile, emuliert wird nur der Test.
+      # Gebaut wird per Cross-Compile, emuliert wird nur der Test. Die Images,
+      # die beide Actions ziehen, sind digest-gepinnt wie jedes Fremd-Image
+      # (ADR-0011): der buildkit-Builder baut das ausgelieferte Binary.
       - name: Set up QEMU
         uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
         with:
+          image: tonistiigi/binfmt:qemu-v10.2.3@sha256:400a4873b838d1b89194d982c45e5fb3cda4593fbfd7e08a02e76b03b21166f0
           platforms: arm64
 
       - name: Set up Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+        with:
+          driver-opts: image=moby/buildkit:v0.33.1@sha256:cec9f139f45e93c5c69c60f8b07cfad9f43f4ef6b6a6cd917527fea5ff2e3dea
 
       - name: Image-Integrationstests linux/arm64 (make image-test-arm64)
         env:
@@ -133,10 +138,11 @@ jobs:
             echo "$REF org.opencontainers.image.version=$IMAGE_VERSION (matcht Tag)"
           done
 
-      # Index-Build und Push, danach die Gegenprobe gegen den GEPUSHTEN Index
-      # (Plattformen, Labels je Plattform, Binary je Plattform gleich dem
-      # geprueften) — make image-publish, ADR-0102. Der Konsumenten-Pin ist
-      # der Index-Digest.
+      # make image-publish (ADR-0102): Index ohne Tag pushen, Gegenprobe am
+      # GEPUSHTEN Index (Plattformen, Labels und Binary je Plattform gleich dem
+      # geprueften), erst dann v<version> (+ :latest) setzen — unter keinem Tag
+      # liegt eine ungepruefte Variante. Der Konsumenten-Pin ist der
+      # Index-Digest aus der letzten Ausgabezeile, auf seine Form geprueft.
       - name: Push to GHCR
         id: push
         env:
@@ -144,11 +150,15 @@ jobs:
           IS_STABLE: ${{ steps.tag.outputs.is_stable }}
         run: |
           set -euo pipefail
-          trap 'echo "::error::Index-Push oder Gegenprobe fehlgeschlagen. Unter $REGISTRY/$IMAGE_NAME:v$VERSION kann bereits ein Index liegen — vor einem erneuten Lauf pruefen."' ERR
+          trap 'echo "::error::Index-Push, Gegenprobe oder Tagging fehlgeschlagen — die Meldung von image-publish oben nennt den Stand."' ERR
           make image-publish VERSION="$VERSION" \
-            PUBLISH_REPO="$REGISTRY/$IMAGE_NAME" PUBLISH_LATEST="$IS_STABLE"
-          INDEX="$(docker buildx imagetools inspect --format '{{.Manifest.Digest}}' "$REGISTRY/$IMAGE_NAME:v$VERSION")"
-          DIGEST="$REGISTRY/$IMAGE_NAME@$INDEX"
+            PUBLISH_REPO="$REGISTRY/$IMAGE_NAME" PUBLISH_LATEST="$IS_STABLE" \
+            | tee "$RUNNER_TEMP/publish.log"
+          DIGEST="$(sed -n "s|^image-publish: \($REGISTRY/$IMAGE_NAME@sha256:[0-9a-f]\{64\}\)\$|\1|p" "$RUNNER_TEMP/publish.log" | tail -n 1)"
+          if [[ -z "$DIGEST" ]]; then
+            echo "::error::Digest-Pin nicht aus der Ausgabe von image-publish lesbar."
+            exit 1
+          fi
           echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
           {
             echo "### d-check v$VERSION"
@@ -208,9 +218,10 @@ jobs:
           # Gelesen wird aus den REGISTRIES: zwei aus derselben Quelle
           # abgeleitete Werte waeren trivial gleich, und ein Vergleich, der
           # nicht fehlschlagen kann, ist ein stiller Gruen-Pfad. Eine leere
-          # Antwort ist UNGEPRUEFT, nicht bestaetigt.
+          # Antwort ist UNGEPRUEFT, nicht bestaetigt — `|| true` haelt den
+          # ERR-Trap davon ab, vor dieser Diagnose abzubrechen.
           index_digest() {
-            docker buildx imagetools inspect --format '{{.Manifest.Digest}}' "$1" 2>/dev/null \
+            { docker buildx imagetools inspect --format '{{.Manifest.Digest}}' "$1" 2>/dev/null || true; } \
               | sed -n 's/^\(sha256:[0-9a-f]\{64\}\)$/\1/p'
           }
           GHCR_IDX="$(index_digest "$REGISTRY/$IMAGE_NAME:v$VERSION")"

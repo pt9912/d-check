@@ -55,7 +55,7 @@ TRIVY_DIGEST="${TRIVY_DIGEST:-sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018
 # den Nachtlauf ab dem ersten Tag rot gemacht.
 #
 # GEMESSEN vor der Aufnahme, statt angenommen: beide Refs melden denselben
-# Befundsatz. Das ist zu erwarten -- gleicher Config-Digest, gleicher Inhalt --,
+# Befundsatz. Das ist zu erwarten -- gleicher Index-Digest (ADR-0102), gleicher Inhalt --,
 # war aber ungeprueft. Zugleich ist es eine zweite, vom Digest UNABHAENGIGE
 # Bestaetigung der Inhalts-Gleichheit.
 IMAGE_SCAN_REFS="${IMAGE_SCAN_REFS:-ghcr.io/pt9912/d-check:latest pt9912/d-check:latest}"

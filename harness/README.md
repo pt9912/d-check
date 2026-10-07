@@ -128,7 +128,7 @@ behaupten.
 | `make slice-mv` | Lifecycle-Wechsel eines Slice: reiner Move-Commit + Verweis-Reparatur (eingehend/ausgehend) als eigener Commit — automatisiert die §3.3-Zweikommits | kein Gate · adoptiert aus ai-harness-init |
 | `make history-range-guard` | Vorlauf-Wächter für history-lesende Targets: angeforderte Range auflösbar und nicht leer (stilles Grün über leerem Prüfbereich, shallow-Clone) | kein Gate · adoptiert aus ai-harness-init |
 | `make selbstpruefung` | Negativ-Selbsttest des commit-msg-Hooks im Wegwerf-Klon: ohne Kennung fällt der Commit, mit Kennung geht er durch, `make gates` läuft im Klon | kein Gate · adoptiert aus ai-harness-init |
-| `make image-publish` | baut den Index `linux/amd64` + `linux/arm64`, pusht ihn nach `PUBLISH_REPO` und prüft den **gepushten** gegen die geprüften Bilder (Plattformen, Labels, Binary je Plattform). **Netz**, Release-Pfad | kein Gate · [ADR-0102](../docs/plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md) |
+| `make image-publish` | pusht den Index beider Plattformen ohne Tag, prüft ihn gegen die geprüften Bilder und taggt erst dann; **Netz**, Release-Pfad | kein Gate · [ADR-0102](../docs/plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md) |
 | `make tidy` | pflegt `go.mod`/`go.sum` in Docker — bewusster Akt am Dependency-Stand | kein Gate |
 | `make build` | baut das Runtime-Image — Prerequisite von `image-test` und damit von `ci`/`fullbuild` | kein Gate |
 | `make run` | Selbst-Smoke-Test des gebauten Images | kein Gate |

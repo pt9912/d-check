@@ -118,6 +118,10 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `harness/README.md`, `harness/sensors/image-test.md` | update | Index-Zeile, Grenze |
 | `.github/workflows/release.yml` | update | Index-Build, Prüfung vor Push, Spiegel, Digest |
 | `docs/user/releasing.md` | update | Pipeline-Schritte (Betriebs-Doku des Release-Pfads, kein Release-Prep-Gegenstand) |
+| `tools/image-publish.sh`, `tools/image-verify-published.sh` | neu | Push ohne Tag, Gegenprobe, dann Tags |
+| `.github/dependabot.yml`, `tools/image-scan.sh` | update | Kommentare, die die alte FROM-Form bzw. den Config-Digest nannten |
+
+*(Plan-Änderung im Lauf: die beiden Skripte, die Kommentar-Spiegel in `dependabot.yml` und `tools/image-scan.sh` sowie die awk-Extraktion von `image-digest-axis` im `Makefile` — die FROM-Zeile mit `--platform` hätte `go-base-digest` sonst still auf SKIP gesetzt; nach R1 die Reihenfolge Push ohne Tag → Gegenprobe → Tags und die Digest-Pins der Builder-Images.)*
 
 **Reihenfolge im Release-Pfad** (Entwurf, die ADR legt fest): `make ci`
 (Gates + `amd64`-image-test wie heute) → QEMU/buildx einrichten → je
@@ -167,6 +171,10 @@ Closure-Bedingung.
 - **Ein zweiter Bau zwischen Prüfung und Push** — `--load` je Plattform und
   `--push` des Index sind getrennte buildx-Aufrufe; die Gegenprobe auf das
   gepushte Binary schließt die Lücke nur, wenn sie fail-closed ist. —
+  **Ausgang:** *(offen)*
+- **Builder-Images ohne Frische-Achse** — `moby/buildkit` und
+  `tonistiigi/binfmt` sind in `release.yml` digest-gepinnt, aber weder
+  Dependabot noch der Nachtlauf melden einen neueren Stand. —
   **Ausgang:** *(offen)*
 
 ## 7. Closure-Notiz

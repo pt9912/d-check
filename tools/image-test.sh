@@ -65,8 +65,11 @@ printf 'ziel\n' > "$WORK/fixture/docs/b.md"
 # --- (1) Happy: nativ vs. Container byte-identisch ------------------
 native_exit=0
 "$WORK/d-check" "$WORK/fixture" > "$WORK/native.out" 2> "$WORK/native.err" || native_exit=$?
-[ "$native_exit" -ne 126 ] \
-  || fail "Binary für $want_arch auf diesem Host nicht ausführbar — binfmt/QEMU für $want_arch fehlt"
+if [ "$native_exit" -eq 126 ]; then
+  [ "$(uname -s)" = Linux ] \
+    || fail "Host ist $(uname -s), kein Linux — das Linux-Binary läuft hier nicht nativ (Wrapper: docs/user/releasing.md)"
+  fail "Binary für $want_arch auf diesem Host nicht ausführbar — binfmt/QEMU für $want_arch fehlt"
+fi
 container_exit=0
 docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none -v "$WORK/fixture":/repo:ro "$REF" \
   > "$WORK/container.out" 2> "$WORK/container.err" || container_exit=$?

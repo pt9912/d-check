@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave slice-mv selbstpruefung history-range-guard
+.PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test image-test-arm64 image-publish semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave slice-mv selbstpruefung history-range-guard
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -94,25 +94,21 @@ image-test-arm64: ## DC-FA-DIST-001-Akzeptanzkriterien gegen die linux/arm64-Var
 	$(DOCKER_BUILD) --platform linux/arm64 --load --build-arg VERSION=$(VERSION) --target runtime -t $(IMAGE):arm64 .
 	@IMAGE_REF=$(IMAGE):arm64 PLATFORM=linux/arm64 bash tools/image-test.sh
 
-# Release-Pfad (ADR-0102): baut den Index beider Plattformen, pusht ihn unter
-# v$(VERSION) — und :latest nur mit PUBLISH_LATEST=true (ADR-0014) — und prueft
-# danach den GEPUSHTEN Index gegen die geprueften lokalen Bilder
-# $(IMAGE):latest (amd64) und $(IMAGE):arm64. Setzt einen buildx-Builder mit
-# Multi-Plattform-Faehigkeit und eine angemeldete Registry voraus.
+# Release-Pfad (ADR-0102): baut den Index beider Plattformen, pusht ihn zuerst
+# OHNE Tag, prueft den gepushten Index gegen die geprueften lokalen Bilder
+# $(IMAGE):latest (amd64) und $(IMAGE):arm64 und setzt erst danach v$(VERSION)
+# — und :latest nur mit PUBLISH_LATEST=true (ADR-0014). Setzt einen
+# buildx-Builder mit Multi-Plattform-Faehigkeit und eine angemeldete Registry
+# voraus.
 PUBLISH_REPO   ?=
 PUBLISH_LATEST ?= false
-image-publish: ## Index linux/amd64+linux/arm64 bauen, nach PUBLISH_REPO pushen und gegen die geprueften Bilder pruefen (Netz, Release-Pfad; ADR-0102).
+image-publish: ## Index linux/amd64+linux/arm64 ohne Tag pushen, gegen die geprueften Bilder pruefen, dann taggen (Netz, Release-Pfad; ADR-0102).
 	@test -n "$(PUBLISH_REPO)" || { echo "image-publish: PUBLISH_REPO fehlt (z. B. ghcr.io/pt9912/d-check)" >&2; exit 2; }
-	docker buildx build $(PROGRESS_FLAG) --platform linux/amd64,linux/arm64 \
-	  --provenance=false --sbom=false \
-	  --build-arg GO_VERSION=$(GO_VERSION) \
-	  --build-arg GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION) \
-	  --build-arg VERSION=$(VERSION) --target runtime \
-	  -t $(PUBLISH_REPO):v$(VERSION) $(if $(filter true,$(PUBLISH_LATEST)),-t $(PUBLISH_REPO):latest) \
-	  --push .
-	@REF=$(PUBLISH_REPO):v$(VERSION) VERSION=$(VERSION) \
+	@PUBLISH_REPO=$(PUBLISH_REPO) PUBLISH_LATEST=$(PUBLISH_LATEST) VERSION=$(VERSION) \
+	  GO_VERSION=$(GO_VERSION) GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION) \
+	  PROGRESS_FLAG=$(PROGRESS_FLAG) \
 	  TESTED_AMD64=$(IMAGE):latest TESTED_ARM64=$(IMAGE):arm64 \
-	  bash tools/image-verify-published.sh
+	  bash tools/image-publish.sh
 
 image-scan: ## CVE-Scan gegen die PUBLIZIERTEN Images (Netz, NICHT in gates, Trivy digest-gepinnt; ADR-0066). Exit 1 = behebbare CRITICAL/HIGH, 2 = Scan gescheitert.
 	@bash tools/image-scan.sh

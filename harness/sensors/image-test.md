@@ -30,6 +30,16 @@ falsche ([ADR-0102](../../docs/plan/adr/0102-multi-arch-index-und-spiegel-per-in
    Fehlt es, bricht der Lauf mit Hinweis ab (Exit 1), statt still zu
    überspringen. Die Release-Pipeline richtet es ein; lokal ist es Sache des
    Hosts.
+3. **`make image-test-arm64` belegt die arm64-Variante, nicht einen
+   arm64-Host.** Auf dem amd64-Runner laufen Binary und Container unter
+   **demselben** QEMU, und die Plattform ist per `--platform` erzwungen. Dass
+   ein echter arm64-Host die Variante **selbst** wählt (Kriterium „Boundary
+   (Plattform)" von
+   [`DC-FA-DIST-001`](../../spec/lastenheft.md#dc-fa-dist-001--docker-image)),
+   ist die Index-Auflösung der Container-Laufzeit; belegt ist davon nur die
+   Vorbedingung — der gepushte Index trägt ein `linux/arm64`-Manifest
+   (`make image-publish`). Ein Fehler, der nur auf echter arm64-Hardware
+   auftritt und unter QEMU nicht, bleibt unentdeckt.
 
 ## Ausgabe und Ausgänge
 

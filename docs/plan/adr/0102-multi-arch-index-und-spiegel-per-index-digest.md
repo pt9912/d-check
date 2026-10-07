@@ -75,10 +75,15 @@ vor dem Push geprüft sind und der nach Docker Hub als Index kopiert wird**.
    die `arm64`-Variante, Binary und Container unter QEMU/binfmt. Das Skript
    prüft dabei die ELF-Architektur des extrahierten Binaries — sonst prüfte ein
    Lauf, der still die Host-Variante zieht, die falsche Plattform.
-3. **Das veröffentlichte Binary ist das geprüfte.** Prüfung und Push sind
-   getrennte buildx-Aufrufe. Nach dem Push wird deshalb je Plattform das Binary
-   aus dem **gepushten** Index gezogen und gegen das geprüfte verglichen
-   (sha256); weicht eines ab, bricht das Release ab, bevor gespiegelt wird.
+3. **Das veröffentlichte Binary ist das geprüfte — und erst dann gibt es einen
+   Tag.** Prüfung und Push sind getrennte buildx-Aufrufe. Der Index wird
+   deshalb zuerst **ohne Tag** gepusht (`push-by-digest`), dann wird je
+   Plattform das Binary aus dem **gepushten** Index gezogen und gegen das
+   geprüfte verglichen (sha256), und erst danach zeigen `v<version>` und
+   gegebenenfalls `:latest` per `imagetools create` auf genau diesen Digest.
+   Weicht ein Binary ab, bleibt jeder Tag unberührt; in der Registry liegt
+   dann nur der ungetaggte Index, erreichbar über den Digest, den die Meldung
+   nennt.
 4. **Der Index trägt nur Plattform-Manifeste** (`--provenance=false`,
    `--sbom=false`). Attestations-Einträge (`unknown/unknown`) würden von der
    Plattform-Prüfung als dritte Variante gesehen.
@@ -92,7 +97,14 @@ vor dem Push geprüft sind und der nach Docker Hub als Index kopiert wird**.
 7. **Der Konsumenten-Pin ist der Index-Digest** und damit auf beiden Registries
    derselbe. Die registry-lokale Ausnahme aus ADR-0065 Punkt 2 entfällt; die
    Doku sagt das in der Release-Prep.
-8. **Unverändert übernommen aus [ADR-0065](0065-spiegel-gleichheit-ist-der-config-digest.md):**
+8. **Die Images der Build-Actions sind digest-gepinnt.** Der buildkit-Builder
+   (`setup-buildx-action`) baut das ausgelieferte Binary, das binfmt-Image
+   (`setup-qemu-action`) trägt den arm64-Test; beide bezögen sonst einen
+   beweglichen Tag. Die Gegenprobe sähe eine Änderung im Builder nicht, weil
+   geprüftes und gepushtes Binary aus demselben Builder kommen — dieselbe
+   Pin-Pflicht wie für jedes Fremd-Image
+   ([ADR-0011](0011-digest-pins-build-gate-images.md)).
+9. **Unverändert übernommen aus [ADR-0065](0065-spiegel-gleichheit-ist-der-config-digest.md):**
    Punkte 3 bis 7 — aus den Registries lesen; Zugangsdaten vor dem Verbrauch
    prüfen, Login als `run`-Schritt; die Darstellung macht das Release nicht rot;
    Zeichen statt Bytes; kopieren statt neu bauen, fail-closed mit Nennung des
@@ -111,7 +123,7 @@ tun" ist eine davon (Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR
 | C — Index, Build emuliert (ohne `--platform=$BUILDPLATFORM`) | kein Dockerfile-Umbau | die Go-Stufen liefen unter QEMU — um ein Vielfaches langsamer, das 30-min-Budget des Release-Jobs wäre gefährdet |
 | D — Index, Spiegel weiter per Config-Digest je Plattform | bewährte Größe | N Vergleiche statt einem, und ein neu gepushter Index hätte wieder registry-lokale Digests — zwei Pins für denselben Inhalt |
 | E — Index, arm64 nur nach dem Push prüfen | einfacher Ablauf | eine ungeprüfte Variante läge bereits unter dem Versions-Tag, wenn die Prüfung fällt |
-| **F — Cross-Compile-Index, beide Plattformen vor dem Push geprüft, Gegenprobe auf das gepushte Binary, Spiegel als Index-Kopie (gewählt)** | gemessene Eigenschaften; ein Pin für beide Registries; keine ungeprüfte Variante unter dem Tag | zwei Builds (Prüfung, Push) brauchen die Gegenprobe; QEMU-Laufzeit für den arm64-Test im Release-Job |
+| **F — Cross-Compile-Index, beide Plattformen vor dem Push geprüft, Index ohne Tag gepusht und gegengeprüft, erst dann getaggt, Spiegel als Index-Kopie (gewählt)** | gemessene Eigenschaften; ein Pin für beide Registries; keine ungeprüfte Variante unter einem Tag | zwei Builds (Prüfung, Push) brauchen die Gegenprobe; fällt sie, bleibt ein ungetaggter Index in der Registry; QEMU-Laufzeit für den arm64-Test im Release-Job |
 
 ## Konsequenzen
 
@@ -119,7 +131,11 @@ tun" ist eine davon (Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR
 - **Positiv:** die Gegenprobe macht die byte-gleiche Reproduktion des Binaries
   zu einer geprüften Eigenschaft statt einer Annahme.
 - **Negativ:** der Release-Job braucht QEMU und einen buildx-Builder — zwei
-  neue Actions, SHA-gepinnt und über Dependabot gehoben.
+  neue Actions, SHA-gepinnt und über Dependabot gehoben. Ihre Images
+  (`moby/buildkit`, `tonistiigi/binfmt`) sind digest-gepinnt, haben aber
+  **keine** Frische-Achse: Dependabot liest `with:`-Eingaben nicht, und der
+  Nachtlauf kennt die beiden Pins nicht — eine benannte Lücke: gehoben werden
+  sie von Hand.
 - **Negativ:** der lokale `make image-test-arm64` braucht binfmt für `arm64` auf
   dem Host; ohne bricht er fail-closed mit Hinweis ab.
 - **Offen:** `make image-scan` scannt bis zum Folge-Vorgang nur die
@@ -133,7 +149,7 @@ tun" ist eine davon (Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR
 | Tooling | Regel | Make-Target |
 |---|---|---|
 | `tools/image-test.sh` mit `PLATFORM=linux/arm64` | arm64-Binary (ELF-Maschine geprüft) und arm64-Container liefern byte-gleiche Ausgabe und gleichen Exit-Code | `make image-test-arm64` |
-| `tools/image-verify-published.sh` | der Index trägt genau `linux/amd64` und `linux/arm64`; je Plattform ist das Binary im gepushten Index sha256-gleich zum geprüften; Labels je Plattform gesetzt, `version` = Tag | `make image-publish` (Release-Pfad) |
+| `tools/image-publish.sh` mit `tools/image-verify-published.sh` | Index erst ohne Tag gepusht, Tags erst nach grüner Gegenprobe; der Index trägt genau `linux/amd64` und `linux/arm64`; je Plattform ist das Binary im gepushten Index sha256-gleich zum geprüften; Labels je Plattform gesetzt, `version` = Tag | `make image-publish` (Release-Pfad) |
 | `release.yml`, Schritt *Mirror to Docker Hub* | Index-Digest von `docker.io/…:v<version>` und `ghcr.io/…:v<version>`, aus den Registries gelesen, sind gleich — sonst Abbruch mit Nennung des GHCR-Stands | — (Tag-Push) |
 
 ## Re-Evaluierungs-Trigger
@@ -149,3 +165,4 @@ tun" ist eine davon (Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR
 | Datum | Ereignis |
 |---|---|
 | 2026-10-07 | Angelegt als `Proposed`; `Accepted` erst mit der Closure des Vorgangs, nach Review, Verifikation und dem Prerelease-Lauf |
+| 2026-10-07 | Nach R1 (vier MEDIUM): Entscheidung 3 auf „ohne Tag pushen, prüfen, dann taggen" umgestellt, Entscheidung 8 (Builder-Images digest-gepinnt) ergänzt, Option F und Konsequenzen nachgezogen. Noch `Proposed`, Körper daher geändert statt angehängt |
