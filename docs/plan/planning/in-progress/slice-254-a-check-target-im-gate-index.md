@@ -58,19 +58,19 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] `harness/README.md` §Sensors führt `make a-check` in der Zeile von
+- [x] `harness/README.md` §Sensors führt `make a-check` in der Zeile von
       `make arch-check`, mit Vertrag (Rezept aus dem Fragment, `arch-check`
       delegiert dorthin) und unveränderter Bindung.
-- [ ] `.d-check.yml` `targets.makefiles` liest `a-check.mk`; der Kommentar
+- [x] `.d-check.yml` `targets.makefiles` liest `a-check.mk`; der Kommentar
       sagt gemessen, was der Index deckt. *(Plan-Änderung: statt einer Zahl,
       die schon vor dem Slice veraltet war, die Aussage — nach R1-F-2.)*
       Bewusstes Brechen: ohne die
       Index-Zeile meldet `make gate-consistency` `gate-undocumented` für
       `a-check` aus dem Fragment.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
       Rollenwechsel nach Schritt 8, kein Self-Review.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -105,19 +105,38 @@ wellenlos hier geprüft.
 
 - Ein künftiges `--print-mk`-Fragment bringt weitere Targets; ohne Index-Zeile
   meldet der Sensor sie — gewollt, aber bei der nächsten a-check-Hebung zu
-  beachten. — **Ausgang:** *(offen)*
+  beachten. — **Ausgang:** entfallen — gewollt laut: ein neues Fragment-Target ohne Index-Zeile meldet `gate-undocumented` (Brech-Probe des Verifiers); die a-check-Hebung prüft es ohnehin mit `--print-mk` gegen das Fragment.
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Der Rot-Beleg ging der Änderung voraus: nur die
+  Konfiguration erweitert, und `make gate-consistency` meldete
+  `a-check.mk:57 a-check gate-undocumented`; mit der Index-Zeile 0 Befunde.
+  Der Verifier brach in drei Richtungen (Zeile weg, erfundenes Target, alte
+  Konfiguration ⇒ `gate-phantom`) und bestätigte jede Aussage gegen den Code.
+- **Was ging anders als geplant:** Der Plan wollte die Target-Zahl im
+  Kommentar „gemessen" nachziehen — gemessen war sie schon vorher falsch (54
+  statt 57); sie ist durch eine Aussage ersetzt (Plan-Änderung nach R1-F-2).
+  Und der neu geschriebene Kommentar belegte sich zunächst mit dem gekürzten
+  Vorlagen-Zitat, dessen ausgelassene Mitte in `v6.17.0` das Gegenteil sagt
+  (R1-F-1) — dieselbe Klasse wie im Hebung-Slice (R1-F-3), jetzt im eigenen
+  neuen Text. `harness/sensors/arch-check.md` blieb unverändert, weil er
+  `a-check.mk` bereits nennt (R1-F-5).
+- **Steering-Loop-Eintrag:** keine neue Verkörperung —
+  [`BEO-ALL/citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/state.md)
+  (ein Zitat trägt mehr, als sein Geltungsbereich hergibt) bekommt einen
+  Beleg.
+- **Beobachtungs-Register (`../observations/`):** Evidence `slice-254` unter
+  dem genannten Eintrag.
+- **Folge-Slices:** keine.
+- **Risiken aus §6:** entfallen — ein neues Fragment-Target ohne Index-Zeile
+  meldet laut, die nächste a-check-Hebung prüft das Fragment ohnehin.
+  Trigger-Audit: kein Carveout, kein bootstrap-aware Gate, keine ADR und keine
+  Hard Rule mit eingetretenem Trigger; [MR-074](../../../../harness/conventions.md#mr-074) Bewegung 1 als eingelöst
+  vermerkt. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice —
+  keine; (c) Register — die zitierte Beobachtung existiert und trägt Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

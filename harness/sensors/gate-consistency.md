@@ -20,8 +20,10 @@ Richtungen** — läuft via Modul `targets` (Image, dogfood). Der
    Target trägt sie nicht mehr.
 3. **Es folgt keinem `include`** — gelesen werden genau die Dateien in
    `targets.makefiles` (heute `Makefile` und das Fragment `a-check.mk`). Ein
-   weiteres eingebundenes Fragment bliebe ohne Befund, bis es dort eingetragen
-   ist; die Liste der `include`-Zeilen im `Makefile` zeigt, was gelesen werden
+   Target eines weiteren eingebundenen, nicht gelisteten Fragments bliebe ohne
+   `gate-undocumented`, bis das Fragment dort eingetragen
+   ist (die Gegenrichtung meldet laut: eine Index-Zeile für ein solches Target
+   ergibt `gate-phantom`); die Liste der `include`-Zeilen im `Makefile` zeigt, was gelesen werden
    müsste.
 
 ## Bindung

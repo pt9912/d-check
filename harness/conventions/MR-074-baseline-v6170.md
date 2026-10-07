@@ -35,9 +35,11 @@
      dessen einziges Target `a-check` steht bisher weder im Index noch in
      einem Werkzeug-Teil (gemessen). Die Frage, ob d-check einen Werkzeug-Teil
      für `a-check.mk` führt, ist ein Kandidat für einen Folge-Slice.
-     **Eingelöst durch slice-254:** kein Werkzeug-Teil (a-check schreibt keinen),
-     das Target steht in der `arch-check`-Zeile von `harness/README.md`
-     §Sensors, und `targets.makefiles` liest das Fragment mit.
+     **Eingelöst durch slice-254:** kein Werkzeug-Teil — die Regel gilt
+     Fragmenten unter dem Werkzeug-Verzeichnis, die ein Werkzeug selbst erzeugt;
+     `a-check.mk` liegt im Wurzelverzeichnis und ist an die Repo-Politik
+     angepasst. Das Target steht in der `arch-check`-Zeile von
+     `harness/README.md` §Sensors, und `targets.makefiles` liest das Fragment mit.
   2. **Festlegungen der Harness-Werkzeuge gehören in die Spezifikation**, nicht
      in ein viertes Stratum — `grundlagen-referenz-richtung.md`,
      `modul-03-spec.md`, dazu die Spec-Anteile von
@@ -116,13 +118,11 @@
   **Zitat-Delta** ([`MR-039`](../conventions.md#mr-039)): die wörtlichen
   Zitate ohne Direktive in Markdown (`AGENTS.md` „Halluzinierte Gates …" aus
   `modul-13`, `MR-056` zu `modul-05` §Lifecycle) stehen im `v6.17.0`-Wortlaut
-  unverändert. **Ein Zitat hat ein Delta:** der Kommentar zum
-  `targets`-Block in `.d-check.yml` zitiert `templates/AGENTS.template.md` §4
-  mit Auslassung („Der Gate-Index steht einmal ... Diese Datei fuehrt die
-  Liste nicht."); genau die ausgelassene Mitte trägt in `v6.17.0` den Satz,
-  dass Targets aus Werkzeug-Fragmenten im Teil des Werkzeugs stehen. Der
-  zitierende Kommentar blieb nach MR-039 zunächst unverändert; **slice-254
-  hat ihn neu geschrieben**, das gekürzte Zitat ist entfallen.
+  unverändert. **Ein Zitat hatte ein Delta:** der Kommentar zum
+  `targets`-Block in `.d-check.yml` zitierte `templates/AGENTS.template.md` §4
+  mit Auslassung; die ausgelassene Mitte trägt in `v6.17.0` den Satz, dass
+  Targets aus Werkzeug-Fragmenten im Teil des Werkzeugs stehen. Der Kommentar
+  ist inzwischen neu geschrieben und zitiert nicht mehr (slice-254).
 - **Begründung:** Der Nachtlauf meldete neuere Tags (`make
   baseline-freshness`); das Release `v6.17.0` lag vor. Die Hebung ist eine
   reine Fortschreibung; die inhaltlichen Bewegungen (oben) warten auf eigene
