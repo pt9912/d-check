@@ -856,7 +856,8 @@ type TargetsConfig struct {
 	DocTables         []string
 	Authority         []string
 	// AuthorityDisjoint schaltet die Prüfung ein, dass kein Target in mehr
-	// als einer Authority-Datei steht (gate-declared-twice, DC-FA-TGT-001).
+	// als einer Authority-Datei in der ersten Zelle einer Tabellenzeile
+	// geführt wird (gate-declared-twice, DC-FA-TGT-001).
 	AuthorityDisjoint bool
 	ExemptTargets     []string
 }

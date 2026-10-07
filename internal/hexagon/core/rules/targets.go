@@ -247,7 +247,12 @@ func extractDocTargets(fsys driven.Filesystem, file string) ([]targetRef, error)
 			continue // ein Tabellen-Beispiel im Fence dokumentiert kein Target
 		}
 		lead := map[string]bool{}
-		for _, m := range docTargetRe.FindAllStringSubmatch(tableCells(line)[0], -1) {
+		cells := tableCells(line)
+		first := ""
+		if len(cells) > 0 {
+			first = cells[0]
+		}
+		for _, m := range docTargetRe.FindAllStringSubmatch(first, -1) {
 			lead[m[1]] = true
 		}
 		for _, m := range docTargetRe.FindAllStringSubmatch(line, -1) {

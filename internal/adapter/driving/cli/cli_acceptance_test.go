@@ -807,7 +807,8 @@ func TestCLI005_PrintConfig(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
 	}
-	if stdout == "" || !strings.Contains(stdout, "link-policy") || !strings.Contains(stdout, "modules:") {
+	if stdout == "" || !strings.Contains(stdout, "link-policy") || !strings.Contains(stdout, "modules:") ||
+		!strings.Contains(stdout, "authority-disjoint:") {
 		t.Fatalf("Gerüst unvollständig: %q", stdout)
 	}
 	if _, err := configyaml.Decode([]byte(stdout)); err != nil {

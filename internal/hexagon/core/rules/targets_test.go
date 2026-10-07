@@ -543,3 +543,31 @@ func TestCheckTargetsAuthorityDisjunktOhneMakefiles(t *testing.T) {
 		t.Fatalf("gate-declared-twice ohne makefiles erwartet, bekam %+v", f)
 	}
 }
+
+// TestCheckTargetsLeereTabellenzeile: eine Tabellenzeile ohne Zellen (nur
+// `|`) ist kein Absturz — ohne Schalter bleibt der Lauf wie zuvor.
+func TestCheckTargetsLeereTabellenzeile(t *testing.T) {
+	files := map[string]string{
+		tgtMakefile: "build:\n\techo\n",
+		tgtDoc:      "| Target |\n|---|\n|\n| `make build` |\n",
+	}
+	if f := mustCheck(t, files, tgtCfg()); len(f) != 0 {
+		t.Fatalf("kein Befund erwartet, bekam %+v", f)
+	}
+}
+
+// TestCheckTargetsAuthorityDisjunktNurInnerhalbEinerDatei: zwei
+// Autoritäts-Dateien, die Doppelung steht nur in der ersten — kein Befund.
+func TestCheckTargetsAuthorityDisjunktNurInnerhalbEinerDatei(t *testing.T) {
+	files := map[string]string{
+		"harness/README.md":  tgtDocTable("both", "both"),
+		"harness/targets.md": tgtDocTable("tool"),
+	}
+	cfg := model.TargetsConfig{
+		Authority:         []string{"harness/README.md", "harness/targets.md"},
+		AuthorityDisjoint: true,
+	}
+	if f := mustCheck(t, files, cfg); len(f) != 0 {
+		t.Fatalf("Doppelung innerhalb einer Datei ⇒ kein Befund erwartet, bekam %+v", f)
+	}
+}

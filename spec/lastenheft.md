@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.97.1
+**Version:** 0.97.2
 
 **Status:** Draft
 
@@ -3358,7 +3358,6 @@ Datei, wenn ihr bereinigter Pfad gleich ist — ein symbolischer Link auf
 eine andere Autoritäts-Datei zählt als zweite Datei. Mit nur einer
 Autoritäts-Datei ist der Schalter wirkungslos. Ohne den Schalter ist der
 Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
-Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 
 **Akzeptanzkriterien:**
 
@@ -3376,7 +3375,7 @@ Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 - **Autorität (Liste):** Given `targets` aktiv, `targets.authority` als Liste zweier Dateien, ein Target nur in der zweiten, eines in beiden und eines in keiner, when `d-check --enable targets` läuft, then genau ein Befund `gate-undocumented` für das Target in keiner Datei, mit Fundstelle an seiner Regelzeile und allen Autoritäts-Dateien in der Meldung, Exit 1.
 - **Autorität (fehlender Eintrag):** Given `targets.authority` als Liste mit einer nicht existierenden Datei, when `d-check --enable targets` läuft, then **Exit 2** mit dem Namen dieser Datei.
 - **Autorität (leerer Listeneintrag):** Given `targets.authority` als Liste mit einem leeren oder Null-Eintrag (auch neben einem gültigen Pfad), when d-check die Konfiguration lädt, then **Exit 2** — der Eintrag fällt nicht still weg.
-- **Disjunktheit (Negative):** Given `targets.authority-disjoint: true` und ein Target, das als Tabellenzeile in zwei Autoritäts-Dateien steht, when `d-check --enable targets` läuft, then ein Befund `gate-declared-twice` an der Tabellenzeile der späteren Datei, die Meldung nennt die frühere, Exit 1 — auch wenn das Target in `targets.exempt-targets` steht.
+- **Disjunktheit (Negative):** Given `targets.authority-disjoint: true` und ein Target, das zwei Autoritäts-Dateien je in der ersten Zelle einer Tabellenzeile führen, when `d-check --enable targets` läuft, then ein Befund `gate-declared-twice` an der Tabellenzeile der späteren Datei, die Meldung nennt die frühere, Exit 1 — auch wenn das Target in `targets.exempt-targets` steht.
 - **Disjunktheit (Boundary):** Given dasselbe ohne den Schalter, oder mit dem Schalter und einer Doppelung nur innerhalb einer Datei, when `d-check --enable targets` läuft, then **kein** `gate-declared-twice`.
 - **Disjunktheit (führende Zelle):** Given `targets.authority-disjoint: true`, ein Target, das eine Datei in der ersten Zelle führt, und eine zweite Datei, die es nur in einer anderen Zelle erwähnt, when `d-check --enable targets` läuft, then **kein** `gate-declared-twice`; Given dasselbe ohne `targets.makefiles` und mit einer echten Doppelung, then der Befund erscheint trotzdem.
 - **Autorität (String unverändert):** Given `targets.authority` als einzelner Pfad, when `d-check --enable targets` läuft, then Befundsatz und Meldungstext wie vor dieser Erweiterung.
@@ -4071,6 +4070,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.97.2 | 2026-10-07 | Nachzug nach Verifikation, **vor** der ersten Closure dieser Erweiterung: in [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) einen doppelten Satzrest gestrichen und das Akzeptanzkriterium „Disjunktheit (Negative)" auf die führende erste Zelle präzisiert (es nannte noch jede Tabellenzeile). Keine Verhaltensänderung der Zusage | — |
 | 0.97.1 | 2026-10-07 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: die Disjunktheit in [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) präzisiert (Begründung in begleitender ADR). Der Erstentwurf (0.97.0) zählte jedes Vorkommen eines Targets in irgendeiner Zelle als Deklaration — ein Werkzeug-Teil, der in seiner Vertrag-Spalte das Einhängen in ein Sammel-Target nennt, wäre als Doppelung gemeldet worden; die Baseline meint die Zeile, die das Target führt. Zudem lief die Prüfung ohne `targets.makefiles` nicht, was nirgends stand. Die Zusage ist jetzt: nur die erste Zelle führt, die Prüfung läuft auch ohne Regelmenge, Symlink-Alias zählt als zweite Datei; neues Akzeptanzkriterium „führende Zelle" | — |
 | 0.97.0 | 2026-10-07 | [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) erweitert (Erweiterung statt neues Kürzel — Einzelmodul-Frage): opt-in-Prüfung der **Disjunktheit** der Autoritäts-Dateien über `targets.authority-disjoint`. Ein Target, das als Tabellenzeile in mehr als einer Autoritäts-Datei steht, meldet den neuen Grund-Code `gate-declared-twice` an der Tabellenzeile jeder späteren Datei (die Meldung nennt die Datei der ersten Nennung); `exempt-targets` nimmt davon nicht aus, eine Doppelung innerhalb einer Datei ist kein Fall. Ohne Schalter byte-identisch. Anlass: die adoptierte Baseline-Konvention führt seit `v6.16.0` die Regel, dass kein Target in zwei Teilen des Gate-Index steht — ein Re-Evaluierungs-Trigger der begleitenden ADR der Vorgänger-Erweiterung. Zwei neue Akzeptanzkriterien; Out-of-Scope präzisiert. Begründung in begleitender ADR | [Hinweis `ai-harness-course` 2026-10-07](../docs/plan/cr/2026-10-07-hinweis-eingehend-ai-harness-course-disjunktheit.md) |
 | 0.96.2 | 2026-10-06 | Nachzug nach Verifikation, **vor** der ersten Closure dieser Erweiterung: in [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) kehrte eine doppelte Verneinung die Definition von `gate-undocumented` um (eine Regel, die „in keiner Autoritäts-Doku nicht" steht) — gestrichen. „Nicht-Pfad-Listeneintrag" auf „Nicht-Skalar-Listeneintrag" präzisiert: ein Skalar wie eine Zahl wird als Pfad gelesen und scheitert erst zur Laufzeit. Keine Verhaltensänderung | — |

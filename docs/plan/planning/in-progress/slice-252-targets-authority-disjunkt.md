@@ -33,11 +33,14 @@ Beobachtung
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice.
-
 **Ziel:** Mit `targets.authority-disjoint: true` meldet `targets` ein Target,
-das als Tabellenzeile in mehr als einer `targets.authority`-Datei steht, mit
-dem neuen Grund-Code `gate-declared-twice` — an der Tabellenzeile jeder
-weiteren Datei, die Meldung nennt die Datei der ersten Nennung. Ohne den
+das in mehr als einer `targets.authority`-Datei von einer Tabellenzeile in
+der ersten Zelle geführt wird, mit dem neuen Grund-Code `gate-declared-twice`
+— an der führenden Zeile jeder weiteren Datei, die Meldung nennt die Datei
+der ersten Nennung. Ohne den Schalter ist der Befundsatz byte-identisch.
+*(Plan-Änderung nach R1: zuerst zählte jede Zelle, und die Prüfung hing an
+`targets.makefiles`; beides widersprach der Baseline-Lesart bzw. ließ einen
+eingeschalteten Schalter still.)*
 Schalter ist der Befundsatz byte-identisch.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
