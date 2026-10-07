@@ -36,7 +36,10 @@ Fix** — nur der macht rot.
    sich nicht aus einem Multi-Plattform-Index lesen lassen (etwa ein
    Einzel-Manifest bis `v0.83.0`), gilt als gescheitert, nicht als gescannt;
    nur `IMAGE_SCAN_PLATFORMS` scannt ihn dann gezielt, und der
-   Plattform-Nachweis aus 3. bleibt dabei in Kraft.
+   Plattform-Nachweis aus 3. bleibt dabei in Kraft. Gelesen wird der Index mit
+   `docker buildx imagetools` — eine Vorbedingung des Laufs; seine letzte
+   Meldung steht mit in der Ausgabe und trennt ein Einzel-Manifest von einem
+   fehlenden Ref oder einem Netz-Fehler.
 
 `--selftest` prüft die Auswertung netzlos (sieben Proben zur Zählung, vier zur
 Architektur); die Trivy-**Feldnamen** deckt er nicht. Fehlt das Feld

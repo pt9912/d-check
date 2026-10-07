@@ -177,6 +177,10 @@ plats="${IMAGE_SCAN_PLATFORMS}"
 [ -n "$(printf '%s' "${plats}" | tr -d '[:space:]')" ] || plats="$(index_plattformen "${ref}")"
 if [ -z "$(printf '%s' "${plats}" | tr -d '[:space:]')" ]; then
   echo "image-scan: ${ref}: kein lesbarer Multi-Plattform-Index — die Plattformen sind UNBEKANNT, nichts gescannt."
+  # Die Ursache trennt ein Einzel-Manifest von Netz-, Auth- oder
+  # Rate-Limit-Fehlern und einem fehlenden Ref; ohne sie sehen alle gleich aus.
+  why="$(docker buildx imagetools inspect "${ref}" --format '{{.Manifest.MediaType}}' 2>&1 | tail -n 1 || true)"
+  echo "image-scan: ${ref}: imagetools meldet: ${why:-<keine Ausgabe>}"
   errored=1
   continue
 fi
