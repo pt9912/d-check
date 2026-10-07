@@ -88,16 +88,20 @@ plattformen_aus_antwort() {
 # vollstaendig lesbarer Index) und `idx_why` (die Ursache, aus DEMSELBEN
 # Aufruf — ein zweiter koennte anders antworten).
 index_plattformen() {
-  local antwort rc=0
+  local antwort rc=0 errf
+  # stdout traegt die Liste, stderr nur die Ursache: Warnungen von buildx
+  # (etwa zu einer fehlerhaften config.json) duerfen nicht als Plattform gelten.
+  errf="$(mktemp)"
   antwort="$(docker buildx imagetools inspect "$1" \
     --format '{{range .Manifest.Manifests}}{{if .Platform}}{{.Platform.OS}}/{{.Platform.Architecture}}{{if .Platform.Variant}}/{{.Platform.Variant}}{{end}}{{else}}?{{end}}{{"\n"}}{{end}}' \
-    2>&1)" || rc=$?
+    2>"$errf")" || rc=$?
   idx_plats="$(plattformen_aus_antwort "$antwort" "$rc")"
-  idx_why="rc=${rc}: $(printf '%s' "$antwort" | tail -n 1)"
+  idx_why="rc=${rc}: $(tail -n 1 "$errf")"
+  rm -f "$errf"
   if [ "$rc" = "0" ]; then
     case "$antwort" in
       *'?'*) idx_why="Index-Eintrag ohne Plattform" ;;
-      *) [ -n "$idx_plats" ] || idx_why="Index ohne Plattform-Eintrag (nur Attestations)" ;;
+      *) [ -n "$idx_plats" ] || idx_why="Index ohne Plattform-Eintrag (leer oder nur Attestations)" ;;
     esac
   fi
 }
