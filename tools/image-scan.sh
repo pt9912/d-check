@@ -71,12 +71,35 @@ IMAGE_SCAN_REFS="${IMAGE_SCAN_REFS:-ghcr.io/pt9912/d-check:latest pt9912/d-check
 # uebersteuert die Liste fuer einen gezielten Lauf; leer = aus dem Index.
 IMAGE_SCAN_PLATFORMS="${IMAGE_SCAN_PLATFORMS:-}"
 
-# Plattformen eines Index aus der Registry, Attestations-Eintraege
-# (`unknown/unknown`) ausgenommen; leer, wenn der Ref kein lesbarer Index ist.
+# Plattformliste aus der Antwort von `imagetools inspect` — netzlos pruefbar
+# wie `zaehle`. ALLES oder NICHTS: ein Exit != 0 (buildx rendert Zeile fuer
+# Zeile und bricht erst am fehlerhaften Eintrag ab) oder ein Eintrag ohne
+# Plattform (`?`) machen die ganze Liste leer, sonst gaelte eine Teil-Antwort
+# als vollstaendig und die fehlenden Plattformen blieben still ungescannt.
+# Attestations-Eintraege (`unknown/...`) zaehlen nicht als Plattform.
+plattformen_aus_antwort() {
+  local antwort="$1" rc="$2"
+  [ "$rc" = "0" ] || return 0
+  case "$antwort" in *'?'*) return 0 ;; esac
+  printf '%s\n' "$antwort" | grep -v '^unknown/' | sed '/^$/d' | tr '\n' ' ' || true
+}
+
+# Plattformen eines Ref aus der Registry. Setzt `idx_plats` (leer = kein
+# vollstaendig lesbarer Index) und `idx_why` (die Ursache, aus DEMSELBEN
+# Aufruf — ein zweiter koennte anders antworten).
 index_plattformen() {
-  docker buildx imagetools inspect "$1" \
-    --format '{{range .Manifest.Manifests}}{{.Platform.OS}}/{{.Platform.Architecture}}{{if .Platform.Variant}}/{{.Platform.Variant}}{{end}}{{"\n"}}{{end}}' \
-    2>/dev/null | grep -v '^unknown/' | sed '/^$/d' | tr '\n' ' ' || true
+  local antwort rc=0
+  antwort="$(docker buildx imagetools inspect "$1" \
+    --format '{{range .Manifest.Manifests}}{{if .Platform}}{{.Platform.OS}}/{{.Platform.Architecture}}{{if .Platform.Variant}}/{{.Platform.Variant}}{{end}}{{else}}?{{end}}{{"\n"}}{{end}}' \
+    2>&1)" || rc=$?
+  idx_plats="$(plattformen_aus_antwort "$antwort" "$rc")"
+  idx_why="rc=${rc}: $(printf '%s' "$antwort" | tail -n 1)"
+  if [ "$rc" = "0" ]; then
+    case "$antwort" in
+      *'?'*) idx_why="Index-Eintrag ohne Plattform" ;;
+      *) [ -n "$idx_plats" ] || idx_why="Index ohne Plattform-Eintrag (nur Attestations)" ;;
+    esac
+  fi
 }
 
 # Cache ausserhalb des Repos, wie das Regelset von `semgrep` (ADR-0010): der
@@ -144,6 +167,27 @@ FINDING HIGH a v1 -> fix 2 CVE-1'                                               
   arch_probe "Architektur ohne Leerzeichen" '{"architecture":"amd64","os":"linux"}'          'amd64'
   arch_probe "erste Fundstelle zaehlt"   '"architecture": "amd64" … "architecture": "arm64"'  'amd64'
   arch_probe "Feld fehlt"                '{"Metadata":{}}'                                    ''
+  plat_probe() {
+    local name="$1" antwort="$2" rc="$3" erwartet="$4" got
+    got="$(plattformen_aus_antwort "$antwort" "$rc")"
+    if [ "$got" = "$erwartet" ]; then
+      printf '  ok   %-34s [%s]\n' "$name" "$erwartet"
+    else
+      printf '  FAIL %-34s erwartet [%s], war: [%s]\n' "$name" "$erwartet" "$got"
+      fails=$((fails + 1))
+    fi
+  }
+  plat_probe "Index zwei Plattformen"    'linux/amd64
+linux/arm64'                                                             0 'linux/amd64 linux/arm64 '
+  plat_probe "Attestation ausgenommen"   'linux/amd64
+unknown/unknown'                                                         0 'linux/amd64 '
+  plat_probe "Abbruch nach erster Zeile" 'linux/amd64
+ERROR: nil pointer evaluating *v1.Platform.OS'                           1 ''
+  plat_probe "Eintrag ohne Plattform"    'linux/amd64
+?
+linux/arm64'                                                             0 ''
+  plat_probe "nur Attestations"          'unknown/unknown'               0 ''
+  plat_probe "Einzel-Manifest (Fehler)"  'ERROR: template: ...'          1 ''
   echo
   echo "== Fehlschlaege: $fails"
   [ "$fails" -eq 0 ]
@@ -174,13 +218,16 @@ errored=0
 
 for ref in ${IMAGE_SCAN_REFS}; do
 plats="${IMAGE_SCAN_PLATFORMS}"
-[ -n "$(printf '%s' "${plats}" | tr -d '[:space:]')" ] || plats="$(index_plattformen "${ref}")"
+idx_why="IMAGE_SCAN_PLATFORMS gesetzt"
 if [ -z "$(printf '%s' "${plats}" | tr -d '[:space:]')" ]; then
-  echo "image-scan: ${ref}: kein lesbarer Multi-Plattform-Index — die Plattformen sind UNBEKANNT, nichts gescannt."
-  # Die Ursache trennt ein Einzel-Manifest von Netz-, Auth- oder
-  # Rate-Limit-Fehlern und einem fehlenden Ref; ohne sie sehen alle gleich aus.
-  why="$(docker buildx imagetools inspect "${ref}" --format '{{.Manifest.MediaType}}' 2>&1 | tail -n 1 || true)"
-  echo "image-scan: ${ref}: imagetools meldet: ${why:-<keine Ausgabe>}"
+  index_plattformen "${ref}"
+  plats="${idx_plats}"
+fi
+if [ -z "$(printf '%s' "${plats}" | tr -d '[:space:]')" ]; then
+  # Die Ursache trennt ein Einzel-Manifest, einen Eintrag ohne Plattform und
+  # Netz-, Auth- oder Rate-Limit-Fehler; ohne sie sehen alle gleich aus.
+  echo "image-scan: ${ref}: kein vollstaendig lesbarer Multi-Plattform-Index — die Plattformen sind UNBEKANNT, nichts gescannt."
+  echo "image-scan: ${ref}: imagetools: ${idx_why}"
   errored=1
   continue
 fi

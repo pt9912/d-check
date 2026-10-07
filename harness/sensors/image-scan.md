@@ -32,17 +32,19 @@ Fix** — nur der macht rot.
    Exit 0. Der Plattform-Nachweis vergleicht deshalb die gemeldete
    Architektur; weicht sie ab oder fehlt die Plattform im Index, gilt der Scan
    als gescheitert (Exit 2), nicht als grün.
-4. **Ohne lesbaren Index gibt es keinen Scan.** Ein Ref, dessen Plattformen
-   sich nicht aus einem Multi-Plattform-Index lesen lassen (etwa ein
-   Einzel-Manifest bis `v0.83.0`), gilt als gescheitert, nicht als gescannt;
-   nur `IMAGE_SCAN_PLATFORMS` scannt ihn dann gezielt, und der
+4. **Ohne vollständig lesbaren Index gibt es keinen Scan.** Ein Ref, dessen
+   Plattformen sich nicht vollständig aus einem Multi-Plattform-Index lesen
+   lassen — ein Einzel-Manifest bis `v0.83.0`, ein Index-Eintrag ohne
+   Plattform, ein Abbruch von `imagetools` mitten in der Liste —, gilt als
+   gescheitert, nicht als gescannt: eine Teil-Liste zählt nicht.
+   Nur `IMAGE_SCAN_PLATFORMS` scannt ihn dann gezielt, und der
    Plattform-Nachweis aus 3. bleibt dabei in Kraft. Gelesen wird der Index mit
-   `docker buildx imagetools` — eine Vorbedingung des Laufs; seine letzte
-   Meldung steht mit in der Ausgabe und trennt ein Einzel-Manifest von einem
+   `docker buildx imagetools` — eine Vorbedingung des Laufs; seine Meldung
+   steht mit in der Ausgabe und trennt die Fälle voneinander und von einem
    fehlenden Ref oder einem Netz-Fehler.
 
 `--selftest` prüft die Auswertung netzlos (sieben Proben zur Zählung, vier zur
-Architektur); die Trivy-**Feldnamen** deckt er nicht. Fehlt das Feld
+Architektur, sechs zur Plattformliste); die Trivy-**Feldnamen** deckt er nicht. Fehlt das Feld
 `architecture`, bleibt der Nachweis leer und der Scan gilt als gescheitert —
 laut, nicht still.
 
