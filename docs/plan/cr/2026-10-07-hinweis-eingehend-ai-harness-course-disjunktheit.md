@@ -9,7 +9,8 @@ ist.
 [`BEO-ALL/disjunktheit-geteilter-gate-index-ungeprueft`](../planning/observations/BEO-ALL/disjunktheit-geteilter-gate-index-ungeprueft/state.md)
 **Stand:** **eingegangen und geprüft** — die Regel steht in `v6.16.0`
 (veröffentlicht 2026-10-06), `grundlagen-harness-dateien.md` §harness/README.md
-als Einstiegspunkt, Bedingung *Disjunkt*; Umsetzung trägt `slice-252`.
+als Einstiegspunkt, Bedingung *Disjunkt*; **umgesetzt am 2026-10-07**, Träger
+`slice-252` (Antwort unten).
 
 **Ablage-Hinweis.** Abgelegt neben den eingehenden CRs, weil er dieselbe Frage
 beantwortet wie sie: was von außen kam und wie dieses Repo darauf reagiert.
@@ -33,3 +34,30 @@ unverändert.
 > während Phantom-Proben in beiden Teilen im selben Aufbau laut werden.
 > Liefert d-check die Prüfung, dreht s30d auf laut, und der Kurs zieht das
 > nach.
+
+## Antwort
+
+**Umgesetzt** — `targets` prüft die Disjunktheit opt-in über
+`targets.authority-disjoint: true`; Begründung in
+[ADR-0101](../adr/0101-targets-authority-disjunkt.md).
+
+- **Grund-Code:** `gate-declared-twice`.
+- **Was als „steht in einem Teil" zählt:** die Tabellenzeile, die das Target
+  in ihrer **ersten Zelle** führt — wie die Baseline es für die Target-Zelle
+  beschreibt. Eine Erwähnung in einer anderen Zelle (etwa „eingehängt in
+  `make gates`" in der Vertrag-Spalte eines Werkzeug-Teils) zählt nicht.
+- **Fundstelle:** die Datei, die ein Target in Konfigurations-Reihenfolge
+  zuerst führt, ist seine Heimat; gemeldet wird jede führende Zeile in einer
+  späteren Datei, die Meldung nennt die Heimat.
+- **`exempt-targets`** nimmt von der Disjunktheit nicht aus.
+- **Unabhängig von `targets.makefiles`:** die Prüfung braucht keine
+  Regelmenge.
+- **Grenzen:** eine Doppelung innerhalb **einer** Datei ist kein Fall; zwei
+  Einträge sind dieselbe Datei, wenn ihr bereinigter Pfad gleich ist — ein
+  symbolischer Link auf eine andere Autoritäts-Datei zählt als zweite Datei.
+- **Ohne Schalter** bleibt die Doppelnennung still, byte-identisch zum
+  bisherigen Verhalten.
+
+Für die Probe s30d heißt das: mit `targets.authority-disjoint: true` wird das
+doppelt geführte Target laut (Exit 1, `gate-declared-twice`), sofern beide
+Teile es in der ersten Zelle führen.

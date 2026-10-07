@@ -68,22 +68,22 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 Liefer-Punkte (3):
 
-- [ ] Kern: Disjunktheits-Prüfung mit `gate-declared-twice` (Fundstelle =
+- [x] Kern: Disjunktheits-Prüfung mit `gate-declared-twice` (Fundstelle =
       Tabellenzeile in der späteren Datei, Konfigurations-Reihenfolge;
       `exempt-targets` wirkt nicht; mit einer Datei wirkungslos); Tests rot
       ohne die Änderung aus dem richtigen Grund (Bewusstes Brechen).
-- [ ] Config-Rand und Lexik: Schlüssel `targets.authority-disjoint`
+- [x] Config-Rand und Lexik: Schlüssel `targets.authority-disjoint`
       (Bool, strikt), `--print-config`-Gerüst, Grund-Code in `AllReasons`
       und im `--doctor`-Klartext.
-- [ ] Lastenheft (Erweiterung, Bump + Historie nach
+- [x] Lastenheft (Erweiterung, Bump + Historie nach
       [`MR-032`](../../../../harness/conventions.md#mr-032)), Spezifikation
       (Schritt, Schema, §4); ADR; Antwort im Hinweis-Dokument; eigene
       Black-Box-Probe gegen ein Vorher-Image vor dem Review (ohne Schalter
       byte-identisch), Ergebnis im Plan notiert.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
       Rollenwechsel nach Schritt 8, kein Self-Review.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben
       (Ausgang des Eintrags zur Disjunktheit); jedes Risiko aus §6 mit
       Ausgang; drei Paarungen hier geprüft.
 
@@ -128,21 +128,58 @@ wellenlos hier geprüft.
 
 - Die Aussage „eine Doppelnennung ist kein Befund" steht in Lastenheft,
   Spezifikation, Vorgänger-ADR und CR-Antwort; bleibt eine davon stehen, sagt das
-  Repo zwei Dinge. — **Ausgang:** *(offen)*
+  Repo zwei Dinge. — **Ausgang:** entfallen — alle Stellen auf „für `gate-undocumented` bzw. ohne Schalter" eingeschränkt (Lastenheft, Spezifikation Schritt 5, Anhang der Vorgänger-ADR, Nachtrag der CR-Antwort); Handbuch und READMEs zieht die Release-Prep nach.
 - Die Black-Box-Probe von Hand kann wieder nur die Fälle prüfen, an die der
-  Autor denkt. — **Ausgang:** *(offen)*
+  Autor denkt. — **Ausgang:** weiter offen — eingetreten in diesem Vorgang (die Probe bestätigte die Byte-Identität, fand aber weder die Baseline-Lesart noch den Panic bei einer leeren Tabellenzeile); als Beleg ins Register zu `BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`.
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Die Baseline-Quelle wurde vor dem Schnitt gelesen
+  (`v6.16.0`, Bedingung *Disjunkt*), der Re-Evaluierungs-Trigger der
+  Vorgänger-ADR war damit belegt. Die eigene Black-Box-Probe vor dem Review
+  bestätigte die Byte-Identität ohne Schalter; nach allen Korrekturen erneut
+  gefahren: **78 Vergleiche** gegen `59d21c07^` (drei Durchläufe, vier
+  Fixtures mit einer `|`-Zeile, je sechs Ausgabeformen, dazu sechs
+  Selbstläufe über das Repo), stdout und stderr getrennt — byte-identisch. Ein
+  erster Durchlauf mit zusammengeführten Streams zeigte zwei Abweichungen,
+  die sich als Verschränkung der Streams herausstellten.
+- **Was ging anders als geplant:** Zweimal ein HIGH. R1 fand, dass die erste
+  Fassung jede Zelle zählte, während die Baseline die **führende** Zeile
+  meint, und dass die Prüfung ohne `targets.makefiles` nicht lief. Die
+  Behebung setzte im geteilten Extraktor an und brachte eine Regression mit:
+  eine Tabellenzeile aus nur `|` ließ jeden `targets`-Lauf mit Panic
+  abbrechen, auch ohne Schalter (Verifier V1). Zwei Plan-Stellen (Ziel, DoD)
+  tragen Änderungs-Vermerke.
+- **Steering-Loop-Eintrag:** Die Klasse
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+  traf den vierten Slice in Folge an diesem Modul. Gemessen an diesem Vorgang:
+  Die Hand-Probe vor dem Review bestätigte, was sie prüfte, und fand nichts,
+  woran der Autor nicht gedacht hatte. Der in slice-251 benannte
+  Sensor-Kandidat (Vorher-/Nachher-Black-Box als make-Target) hätte die
+  Byte-Identität mechanisch gehalten, die **Lesart** einer Baseline-Regel
+  aber ebenso wenig gefunden — dafür trug der fremde Leser. Die Entscheidung
+  über den Sensor bleibt beim Auftraggeber.
+- **Beobachtungs-Register (`../observations/`):** Evidence `slice-252` unter
+  `grenzen-liste-wird-als-vollstaendig-gelesen` und
+  [`BEO-ALL/fix-aendert-unbenannten-zweiten-pfad-mit`](../observations/BEO-ALL/fix-aendert-unbenannten-zweiten-pfad-mit/state.md)
+  (jetzt 2×);
+  [`BEO-ALL/disjunktheit-geteilter-gate-index-ungeprueft`](../observations/BEO-ALL/disjunktheit-geteilter-gate-index-ungeprueft/state.md)
+  bekommt den Ausgang *verkörpert*.
+- **Folge-Slices:** keine geschnitten. Benannt: die Baseline-Hebung dieses
+  Repos auf `v6.16.0` (Nachtlauf), der Sensor-Kandidat (Auftraggeber).
+- **Risiken aus §6:** Risiko 1 (widersprüchliche Aussage zur Doppelnennung):
+  entfallen — alle Stellen eingeschränkt, Handbuch/READMEs folgen in der
+  Release-Prep. Risiko 2 (Hand-Probe sieht nur bekannte Fälle): weiter offen
+  — eingetreten, Beleg im Register. Trigger-Audit: kein Carveout, kein
+  bootstrap-aware Gate; die Vorgänger-ADR löste ihren Re-Evaluierungs-Trigger
+  über die neue ADR ein (Anhang dort), die neue ist `Accepted`; keine Hard
+  Rule mit eingetretenem Auflösungs-Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  Antwort an die Baseline im
+  [Hinweis-Dokument](../../cr/2026-10-07-hinweis-eingehend-ai-harness-course-disjunktheit.md).
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice —
+  keine; (c) Register — alle zitierten Beobachtungen existieren und tragen
+  Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

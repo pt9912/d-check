@@ -1,13 +1,13 @@
 # ADR-0101: `targets` prüft opt-in die Disjunktheit der Autoritäts-Dateien (`gate-declared-twice`)
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-07
 
 **Autor:** pt9912
 
 **Bezug:** [`DC-FA-TGT-001`](../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
-(erweitert, Lastenheft 0.97.0, nach Review präzisiert in 0.97.1); löst den Re-Evaluierungs-Trigger von
+(erweitert, Lastenheft 0.97.0, nach Review präzisiert in 0.97.1 und 0.97.2); löst den Re-Evaluierungs-Trigger von
 [ADR-0100](0100-targets-authority-liste.md) ein (die Baseline nimmt die
 Disjunktheits-Regel an — gemeldet im
 [Hinweis der Baseline](../cr/2026-10-07-hinweis-eingehend-ai-harness-course-disjunktheit.md));
@@ -103,3 +103,4 @@ Index-Teilen — dann ist Default-an zu prüfen. Ohne das: permanent.
 |---|---|
 | 2026-10-07 | Angelegt als `Proposed`; `Accepted` erst mit der Closure des Vorgangs, nach Review und Verifikation |
 | 2026-10-07 | Nach R1 (HIGH, MEDIUM): Entscheidung 6 (nur die führende erste Zelle zählt) und 7 (unabhängig von `makefiles`) ergänzt, Entscheidung 5 um die Symlink-Grenze. Noch `Proposed`, Körper daher geändert statt angehängt |
+| 2026-10-07 | Nach Verifikation (V1 HIGH: Panic bei einer Tabellenzeile ohne Zellen, eingeführt mit der R1-Behebung) behoben; `Accepted` mit der Closure des Vorgangs |
