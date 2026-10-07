@@ -7,11 +7,11 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
-**Bezug:** [`MR-074`](../../../../harness/conventions.md#mr-074) (Bewegung 1:
+**Bezug:** [`MR-074`](../../../../../harness/conventions.md#mr-074) (Bewegung 1:
 werkzeug-eigener Teil des Gate-Index — dort als Kandidat benannt),
-[`DC-FA-TGT-001`](../../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
+[`DC-FA-TGT-001`](../../../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
 (das Modul, das den Index hält; hier nur genutzt),
-[ADR-0029](../../adr/0029-arch-check-via-a-check.md) (a-check als
+[ADR-0029](../../../adr/0029-arch-check-via-a-check.md) (a-check als
 Architektur-Gate, Fragment per `--print-mk`), Auftraggeber-Freigabe
 2026-10-07.
 
@@ -81,7 +81,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `.d-check.yml` | update | `targets.makefiles` + Kommentar |
 | `harness/sensors/arch-check.md` | update, falls gemessen | nennt er das Rezept? |
 
-**Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025)):
+**Spiegel vor dem Editieren** ([`MR-025`](../../../../../harness/conventions.md#mr-025)):
 die Sensor-Datei `harness/sensors/arch-check.md`, der Kommentar zum
 `targets`-Block in `.d-check.yml` (Target-Aussage), Bewegung 1 des Hebung-Eintrags (Kandidat
 → eingelöst, im Closure vermerkt).
@@ -123,18 +123,18 @@ wellenlos hier geprüft.
   neuen Text. `harness/sensors/arch-check.md` blieb unverändert, weil er
   `a-check.mk` bereits nennt (R1-F-5).
 - **Steering-Loop-Eintrag:** keine neue Verkörperung —
-  [`BEO-ALL/citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/state.md)
+  [`BEO-ALL/citation-stretched-beyond-scope`](../../observations/BEO-ALL/citation-stretched-beyond-scope/state.md)
   (ein Zitat trägt mehr, als sein Geltungsbereich hergibt) bekommt einen
   Beleg.
-- **Beobachtungs-Register (`../observations/`):** Evidence `slice-254` unter
+- **Beobachtungs-Register (`../../observations/`):** Evidence `slice-254` unter
   dem genannten Eintrag.
 - **Folge-Slices:** keine.
 - **Risiken aus §6:** entfallen — ein neues Fragment-Target ohne Index-Zeile
   meldet laut, die nächste a-check-Hebung prüft das Fragment ohnehin.
   Trigger-Audit: kein Carveout, kein bootstrap-aware Gate, keine ADR und keine
-  Hard Rule mit eingetretenem Trigger; [MR-074](../../../../harness/conventions.md#mr-074) Bewegung 1 als eingelöst
+  Hard Rule mit eingetretenem Trigger; [MR-074](../../../../../harness/conventions.md#mr-074) Bewegung 1 als eingelöst
   vermerkt. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice —
   keine; (c) Register — die zitierte Beobachtung existiert und trägt Belege.
 
@@ -153,11 +153,11 @@ des Repos (`*`, `ALL`); deklariert.
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:**
-[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
 — die Behauptung „einziges Target" wird gegen das Fragment gemessen, nicht
 übernommen.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-07 — beide Läufe grün (`upstream-drift` manuell gestartet
 nach den Pin-Hebungen).
 
