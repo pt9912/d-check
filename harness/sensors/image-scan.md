@@ -10,21 +10,32 @@ und gegen sie ist ein push-getriebenes Gate prinzipiell blind.
 fände nur die CVEs von gestern. Der **Scanner** ist digest-gepinnt, die **DB**
 bewusst nicht.
 
-Zwei Läufe je Image: ein Vollbericht über alle Schweregrade, der nie fällt, und
-der Entscheidungslauf `CRITICAL`/`HIGH` **mit verfügbarem Fix** — nur der macht
-rot.
+Je Registry **und je Plattform** des Index (`IMAGE_SCAN_PLATFORMS`, Default
+`linux/amd64 linux/arm64`,
+[ADR-0102](../../docs/plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md))
+drei Läufe: ein **Plattform-Nachweis**, der prüft, dass Trivy wirklich die
+verlangte Architektur gescannt hat; ein Vollbericht über alle Schweregrade, der
+nie fällt; und der Entscheidungslauf `CRITICAL`/`HIGH` **mit verfügbarem
+Fix** — nur der macht rot.
 
 ## Grenze — was das Grün nicht abdeckt
 
 1. **Der Fund-Raum ist klein und gemessen** — fünf OS-Pakete plus die
    Modul-Liste des Binaries. Ein grüner Lauf sagt „nichts Bekanntes in diesem
    Raum", **nicht** „das Image ist sicher".
-2. **Beide Trivy-Läufe fahren `--exit-code 0`**, weil Trivy einen echten
+2. **Alle Trivy-Läufe fahren `--exit-code 0`**, weil Trivy einen echten
    Fehler ebenfalls mit 1 quittiert — gemessen. Die Auswertung übernimmt das
    Skript.
+3. **Die Plattform steht im Bild, nicht im Flag.** Gemessen: Trivy scannt ein
+   Einzel-Manifest-Image bei `--platform linux/arm64` **still als amd64**, mit
+   Exit 0. Der Plattform-Nachweis vergleicht deshalb die gemeldete
+   Architektur; weicht sie ab oder fehlt die Plattform im Index, gilt der Scan
+   als gescheitert (Exit 2), nicht als grün.
 
-`--selftest` prüft die Auswertung netzlos (sieben Proben); die
-Trivy-**Feldnamen** deckt er nicht.
+`--selftest` prüft die Auswertung netzlos (sieben Proben zur Zählung, vier zur
+Architektur); die Trivy-**Feldnamen** deckt er nicht. Fehlt das Feld
+`architecture`, bleibt der Nachweis leer und der Scan gilt als gescheitert —
+laut, nicht still.
 
 ## Ausgabe und Ausgänge
 

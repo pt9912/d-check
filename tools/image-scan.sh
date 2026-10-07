@@ -11,7 +11,7 @@
 # CVEs von gestern. Damit steht er in derselben Klasse wie die Frische-Achsen,
 # nicht bei `semgrep` (ADR-0010, netzlos und hermetisch).
 #
-# KOPPLUNG: BEIDE Trivy-Laeufe fahren `--exit-code 0`, und das ist der Kern der
+# KOPPLUNG: ALLE Trivy-Laeufe fahren `--exit-code 0`, und das ist der Kern der
 # Fehlerbehandlung. GEMESSEN: ein nicht existierendes Image quittiert Trivy mit
 # `--exit-code 1` ebenfalls mit 1 -- Fehler und Befund waeren nicht zu
 # unterscheiden, und das Gate meldete "behebbare CRITICAL/HIGH", wo gar nicht
@@ -60,6 +60,14 @@ TRIVY_DIGEST="${TRIVY_DIGEST:-sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018
 # Bestaetigung der Inhalts-Gleichheit.
 IMAGE_SCAN_REFS="${IMAGE_SCAN_REFS:-ghcr.io/pt9912/d-check:latest pt9912/d-check:latest}"
 
+# JEDE Plattform des Index (ADR-0102). Ohne `--platform` waehlt Trivy die
+# Variante des Runners, und die uebrigen blieben ungescannt, ohne dass der
+# Lauf es sagt. GEMESSEN: ein Einzel-Manifest-Image (bis v0.83.0) scannt
+# Trivy bei `--platform linux/arm64` STILL als amd64, mit Exit 0 -- deshalb
+# prueft der Plattform-Nachweis unten die gescannte Architektur, statt dem
+# Flag zu glauben. Fehlt eine Plattform im Index, endet Trivy mit FATAL.
+IMAGE_SCAN_PLATFORMS="${IMAGE_SCAN_PLATFORMS:-linux/amd64 linux/arm64}"
+
 # Cache ausserhalb des Repos, wie das Regelset von `semgrep` (ADR-0010): der
 # Arbeitsbaum bleibt sauber, und `git status` meldet keine Werkzeug-Artefakte.
 # `XDG_CACHE_HOME` wird geehrt wie dort -- gleiche Klasse, gleiche Form.
@@ -78,6 +86,14 @@ zaehle() {
   # `grep -c` liefert 1, wenn nichts passt -- deshalb `|| true`, sonst risse
   # der Zaehl-Pfad den Lauf ab und ein SAUBERES Image saehe aus wie ein Fehler.
   printf '%s' "$1" | grep -c '^FINDING ' || true
+}
+
+# Die gescannte Architektur aus Trivys JSON -- `Metadata.ImageConfig`
+# traegt sie; die erste Fundstelle ist das Bild selbst. Leer, wenn das Feld
+# fehlt: dann gilt der Lauf als gescheitert, nicht als bestaetigt.
+arch_aus_json() {
+  printf '%s' "$1" | grep -oE '"architecture": *"[a-z0-9]+"' | head -n 1 \
+    | sed -E 's/.*"([a-z0-9]+)"$/\1/' || true
 }
 
 if [ "${1:-}" = "--selftest" ]; then
@@ -103,6 +119,20 @@ FINDING CRITICAL b v3 -> fix 4 CVE-2'                                           
   probe "Trivy-Warnzeile dazwischen" 'WARN irgendwas
 FINDING HIGH a v1 -> fix 2 CVE-1'                                                     '1'
   probe "Feldnamen leer gerendert" 'FINDING    ->  fix  '                             '1'
+  arch_probe() {
+    local name="$1" eingabe="$2" erwartet="$3" got
+    got="$(arch_aus_json "$eingabe")"
+    if [ "$got" = "$erwartet" ]; then
+      printf '  ok   %-34s [%s]\n' "$name" "$erwartet"
+    else
+      printf '  FAIL %-34s erwartet [%s], war: [%s]\n' "$name" "$erwartet" "$got"
+      fails=$((fails + 1))
+    fi
+  }
+  arch_probe "Architektur arm64"         '{"Metadata":{"ImageConfig":{"architecture": "arm64"}}}' 'arm64'
+  arch_probe "Architektur ohne Leerzeichen" '{"architecture":"amd64","os":"linux"}'          'amd64'
+  arch_probe "erste Fundstelle zaehlt"   '"architecture": "amd64" … "architecture": "arm64"'  'amd64'
+  arch_probe "Feld fehlt"                '{"Metadata":{}}'                                    ''
   echo
   echo "== Fehlschlaege: $fails"
   [ "$fails" -eq 0 ]
@@ -115,6 +145,10 @@ fi
 # Schluss-echo behauptete Sauberkeit ueber eine nie besuchte Menge.
 if [ -z "$(printf '%s' "${IMAGE_SCAN_REFS}" | tr -d '[:space:]')" ]; then
   echo "image-scan: IMAGE_SCAN_REFS ist leer — nichts zu pruefen ist KEIN gruener Befundstand." >&2
+  exit 2
+fi
+if [ -z "$(printf '%s' "${IMAGE_SCAN_PLATFORMS}" | tr -d '[:space:]')" ]; then
+  echo "image-scan: IMAGE_SCAN_PLATFORMS ist leer — nichts zu pruefen ist KEIN gruener Befundstand." >&2
   exit 2
 fi
 
@@ -131,40 +165,58 @@ findings=0
 errored=0
 
 for ref in ${IMAGE_SCAN_REFS}; do
+for plat in ${IMAGE_SCAN_PLATFORMS}; do
+  label="${ref} (${plat})"
+
+  # Plattform-Nachweis VOR der Auswertung: gescannt ist, was Trivy als
+  # Architektur meldet, nicht was das Flag verlangt (siehe oben).
+  if ! meta="$(trivy --platform "${plat}" --severity CRITICAL --format json "${ref}")"; then
+    echo "image-scan: Scan von ${label} ist GESCHEITERT (nicht: Befunde gefunden)."
+    errored=1
+    continue
+  fi
+  got_arch="$(arch_aus_json "${meta}")"
+  if [ "${got_arch}" != "${plat#*/}" ]; then
+    echo "image-scan: ${label}: Trivy meldet Architektur [${got_arch:-<leer>}] statt ${plat#*/} — die Plattform ist NICHT gescannt."
+    errored=1
+    continue
+  fi
+
   echo "=============================================================="
-  echo "== Vollbericht (alle Schweregrade): ${ref}"
+  echo "== Vollbericht (alle Schweregrade): ${label}"
   echo "=============================================================="
   # Faellt nie an Befunden -- beantwortet "was steckt gerade drin", auch wenn
   # nichts davon behebbar ist.
-  if ! trivy --severity CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN --format table "${ref}"; then
-    echo "image-scan: Scan von ${ref} ist GESCHEITERT (nicht: Befunde gefunden)."
+  if ! trivy --platform "${plat}" --severity CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN --format table "${ref}"; then
+    echo "image-scan: Scan von ${label} ist GESCHEITERT (nicht: Befunde gefunden)."
     errored=1
     continue
   fi
 
   echo
   echo "--------------------------------------------------------------"
-  echo "-- Handlungspflichtig (CRITICAL/HIGH mit verfuegbarem Fix): ${ref}"
+  echo "-- Handlungspflichtig (CRITICAL/HIGH mit verfuegbarem Fix): ${label}"
   echo "--------------------------------------------------------------"
   # Nur DIESER Lauf entscheidet ueber rot. Ein Nachtlauf, der an nicht
   # behebbaren Basis-Image-CVEs rot wird, ist in zwei Wochen ein weggeklicktes
   # Abzeichen und dann schlechter als nichts.
-  if ! out="$(trivy --severity CRITICAL,HIGH --ignore-unfixed \
+  if ! out="$(trivy --platform "${plat}" --severity CRITICAL,HIGH --ignore-unfixed \
                --format template --template "${TPL}" "${ref}")"; then
-    echo "image-scan: Entscheidungslauf fuer ${ref} ist GESCHEITERT."
+    echo "image-scan: Entscheidungslauf fuer ${label} ist GESCHEITERT."
     errored=1
     continue
   fi
 
   count="$(zaehle "${out}")"
   if [ "${count}" = "0" ]; then
-    echo "OK — keine behebbaren CRITICAL/HIGH in ${ref}."
+    echo "OK — keine behebbaren CRITICAL/HIGH in ${label}."
   else
     printf '%s\n' "${out}" | grep '^FINDING ' | sed 's/^FINDING /  /'
-    echo "image-scan: ${ref}: ${count} behebbare CRITICAL/HIGH-Befunde."
+    echo "image-scan: ${label}: ${count} behebbare CRITICAL/HIGH-Befunde."
     findings=1
   fi
   echo
+done
 done
 
 if [ "${errored}" = "1" ]; then
@@ -174,5 +226,5 @@ fi
 if [ "${findings}" = "1" ]; then
   exit 1
 fi
-echo "image-scan: keine behebbaren CRITICAL/HIGH in: ${IMAGE_SCAN_REFS}"
+echo "image-scan: keine behebbaren CRITICAL/HIGH in: ${IMAGE_SCAN_REFS} — je Plattform: ${IMAGE_SCAN_PLATFORMS}"
 exit 0
