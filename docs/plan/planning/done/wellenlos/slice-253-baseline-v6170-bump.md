@@ -7,14 +7,14 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
-**Bezug:** [`MR-073`](../../../../harness/conventions.md#mr-073) (Vorgänger in
+**Bezug:** [`MR-073`](../../../../../harness/conventions.md#mr-073) (Vorgänger in
 der Pin-Serie, Auflösungs-Trigger „die nächste Pin-Hebung"),
-[`MR-021`](../../../../harness/conventions.md#mr-021) (pin-gebundene Verweise),
-[`MR-039`](../../../../harness/conventions.md#mr-039) (Zitat-Delta im neuen
-Eintrag), [`MR-051`](../../../../harness/conventions.md#mr-051)
-(`d-check:cite`-Neu-Ankern), [`MR-055`](../../../../harness/conventions.md#mr-055)
-(Symlinks), [`MR-069`](../../../../harness/conventions.md#mr-069)
-(`ignore-refs`-Stufe), [`MR-070`](../../../../harness/conventions.md#mr-070)
+[`MR-021`](../../../../../harness/conventions.md#mr-021) (pin-gebundene Verweise),
+[`MR-039`](../../../../../harness/conventions.md#mr-039) (Zitat-Delta im neuen
+Eintrag), [`MR-051`](../../../../../harness/conventions.md#mr-051)
+(`d-check:cite`-Neu-Ankern), [`MR-055`](../../../../../harness/conventions.md#mr-055)
+(Symlinks), [`MR-069`](../../../../../harness/conventions.md#mr-069)
+(`ignore-refs`-Stufe), [`MR-070`](../../../../../harness/conventions.md#mr-070)
 (Frozen-Klassen vor der Ersetzung). Anlass: Nachtlauf `upstream-drift`
 (neuere Baseline-Tags) und das Release
 [`v6.17.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v6.17.0).
@@ -122,7 +122,7 @@ wellenlos hier geprüft.
   es fand die übersehenen Skills, bevor ein Mensch sie sah.
 - **Was ging anders als geplant:** Der Text des Hebung-Eintrags, nicht die
   Mechanik. Die erste Spiegel-Messung nahm `.harness/` ganz aus und übersah
-  die Skills; [MR-074](../../../../harness/conventions.md#mr-074) nannte eine unvollständige Liste inhaltlicher
+  die Skills; [MR-074](../../../../../harness/conventions.md#mr-074) nannte eine unvollständige Liste inhaltlicher
   Bewegungen, eine ungeprüfte Aussage über Werkzeug-Fragmente und danach
   zwei falsche Zuordnungen (R1-F-1/F-2, Verifier V-1). Der Move-Commit des
   Vorgänger-Eintrags lief mit `--no-verify`; das war unnötig — der Hook
@@ -132,16 +132,16 @@ wellenlos hier geprüft.
   Arbeitsbaum-Inhalt — deshalb der Umweg.
 - **Steering-Loop-Eintrag:** keine neue Verkörperung. Die beiden berührten
   Klassen sind bekannt:
-  [`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/state.md)
+  [`BEO-ALL/pin-bump-mirrors-ungated`](../../observations/BEO-ALL/pin-bump-mirrors-ungated/state.md)
   (Skills unter `.harness/`) und
-  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
-  (das Delta-Inventar). Für künftige Hebungen trägt [MR-074](../../../../harness/conventions.md#mr-074) die Lehre im Text:
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+  (das Delta-Inventar). Für künftige Hebungen trägt [MR-074](../../../../../harness/conventions.md#mr-074) die Lehre im Text:
   Spiegel-Messung schließt nur `.harness/baseline/` aus, nicht `.harness/`.
-- **Beobachtungs-Register (`../observations/`):** je eine Evidence-Datei
+- **Beobachtungs-Register (`../../observations/`):** je eine Evidence-Datei
   `slice-253` unter den beiden genannten Einträgen.
 - **Folge-Slices:** keine geschnitten. Benannte Kandidaten für eine
   Adoptions-Entscheidung des Auftraggebers: ein Werkzeug-Teil des Gate-Index
-  für `a-check.mk` ([MR-074](../../../../harness/conventions.md#mr-074) Bewegung 1) und die übrigen inhaltlichen
+  für `a-check.mk` ([MR-074](../../../../../harness/conventions.md#mr-074) Bewegung 1) und die übrigen inhaltlichen
   Bewegungen 2–4.
 - **Risiken aus §6:** Risiko 1 (Anker im neuen Baum): entfallen — keine Datei
   entfiel, alle Anker lösen auf. Risiko 2 (Mischfundstellen): entfallen —
@@ -150,7 +150,7 @@ wellenlos hier geprüft.
   Pin-Hebung") ist eingetreten, er liegt in `conventions/done/`; kein
   Carveout, kein bootstrap-aware Gate, keine ADR und keine Hard Rule mit
   eingetretenem Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice —
   keine; (c) Register — beide zitierten Beobachtungen existieren und tragen
   Belege.
@@ -172,13 +172,13 @@ Verweise im ganzen Repo (`*`, `ALL`); beide deklariert.
 
 **Vorgelagert — offene Beobachtungen sichten:** zwei Einträge treffen den
 Gegenstand —
-[`BEO-ALL/mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/state.md)
+[`BEO-ALL/mechanical-id-rewrite-misses-frozen-classes`](../../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/state.md)
 (die Frozen-Klassen werden vor der Ersetzung gelistet, nach
-[`MR-070`](../../../../harness/conventions.md#mr-070)) und
-[`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/state.md)
+[`MR-070`](../../../../../harness/conventions.md#mr-070)) und
+[`BEO-ALL/pin-bump-mirrors-ungated`](../../observations/BEO-ALL/pin-bump-mirrors-ungated/state.md)
 (Spiegel-Klassen gemessen statt angenommen).
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-07 — `upstream-drift` rot mit der Baseline-Meldung, die
 diesen Slice auslöst; dazu semgrep und golang-Digest (je eigener Vorgang);
 `image-scan` grün.
