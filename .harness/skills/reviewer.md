@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.16.0 · **Datum:** 2026-09-07 ·
+**Version:** 1.17.0 · **Datum:** 2026-10-07 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -187,7 +187,8 @@ sondern ausschließlich die Frage.
   **vor welle-80** `Accepted` wurden: sie sind immutabel und bleiben auf ihren
   `§`-Ankern — zwei Formen, eine Regel
   ([`MR-000`](../../harness/conventions.md#mr-000--baseline-aussage)).
-- **LOW** (nice-to-fix): Doku-Drift (Prosa-Modullisten, veraltete
+- **LOW** (nice-to-fix) — *mit Konventions-Anker* (ADR, Hard Rule, Linter-Regel,
+  Eintrag in diesem Skill; ohne Anker kein Finding): Doku-Drift (Prosa-Modullisten, veraltete
   Beispiele); latente Wartungsfalle (hart verdrahteter Wert, der erst
   bei künftigem Edit zündet); Ketten-Duplikate in Make-Targets.
 - **INFO**: dokumentationswürdige, aber undokumentierte Annahme;
@@ -204,8 +205,9 @@ nur melden). Streit über eine Kategorisierung ⇒ Regel hier schärfen.
   Konventions-Anker ist kein Finding.
 - **Kein Verifier:** DoD-Abhaken und Gate-Lauf-Bestätigung sind nicht
   deine Rolle.
-- **Kein Finding ohne Failure-Szenario:** was sich nicht als
-  konkretes Versagen erzählen lässt, wird nicht gemeldet.
+- **Kein HIGH- oder MEDIUM-Finding ohne Failure-Szenario:** was sich nicht als
+  konkretes Versagen erzählen lässt, wird nicht als HIGH oder MEDIUM gemeldet.
+  LOW trägt stattdessen einen Konventions-Anker, INFO braucht keins von beidem.
 - **Kein Lösungsvorschlag im Befund:** Lösungen gehören in die
   Übergabe an die Implementation, nicht ins Finding-Feld.
 - **REFUTED nur mit Beleg:** verworfen wird ausschließlich mit
@@ -216,7 +218,9 @@ nur melden). Streit über eine Kategorisierung ⇒ Regel hier schärfen.
 
 `kategorie` (HIGH/MEDIUM/LOW/INFO) · `quelle` (`DC-*`-ID, ADR-ID,
 `MR-*`-ID, Hard-Rule-Name oder „Maintainability") · `pfad`
-(`Datei:Zeile`) · `befund` (1–2 Sätze, beobachtbar, ohne
+(Datei · wörtliches, in der Datei eindeutig auffindbares Kurzzitat der Stelle
+als Anker; die Zeile darf als Lesehilfe dazu, ist aber nicht der Anker) ·
+`befund` (1–2 Sätze, beobachtbar, ohne
 Lösungsvorschlag) · `verifizierbar` (ja/nein — welcher Gate-Lauf
 würde den Befund bestätigen?) · `klasse` (stabile Kurz-Bezeichnung des
 Fehlermusters, über Reviews hinweg wiederauffindbar).
