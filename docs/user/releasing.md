@@ -111,6 +111,36 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
 Der Digest-Pin in Handbuch §2 entsteht **nach** dem Tag (er existiert erst nach
 dem GHCR-Push) als Folge-Commit.
 
+### Vorabversion (`vX.Y.Z-<suffix>`)
+
+Eine Vorabversion ist ein Release, das **nicht** empfohlen wird — etwa der erste
+Lauf eines geänderten Release-Pfads gegen die echten Registries. Die Pipeline
+setzt dafür kein `:latest` und markiert das GitHub-Release als Prerelease. Die
+Release-Prep zieht entsprechend nur nach, was den Vorgang belegt, und lässt
+alles, was Anwendern eine Version **empfiehlt**, beim letzten stabilen Release:
+
+- **Bekommt die Vorabversion:** einen eigenen `CHANGELOG.md`-Abschnitt
+  `## [X.Y.Z-<suffix>]` — die Release-Notes verlinken darauf — und eine Zeile im
+  §Verlauf von [`version.md`](../../version.md#verlauf), **ohne** `<a id>`-Anker.
+- **Bleibt beim letzten stabilen Release:** §Aktuell samt Anker in
+  `version.md`, alle `ghcr`-Pins und bare Tags in Handbuch und beiden READMEs,
+  Handbuch-Kopf und §11, der Digest-Pin in Handbuch §2. Auch die Prosa über eine
+  geänderte Zusage wartet: Handbuch und READMEs beschreiben, was die empfohlene
+  Version trägt.
+- **Unverändert:** `make ci` lokal grün vor dem Tag; danach die Belege aus dem
+  Lauf (Job-Summary, Pull per Digest) wie bei jedem Release.
+
+**Warum die Pins ganz draußen bleiben:** Das `versions`-Gate vergleicht
+`vMAJOR.MINOR.PATCH` und schneidet einen Suffix ab. Ein Pin auf
+`v0.84.0` statt `v0.84.0-rc.1` — oder umgekehrt — fiele ihm nicht auf. Bleiben
+§Aktuell und alle Pins auf derselben stabilen Version, prüft das Gate genau das,
+was es kann.
+
+**Das stabile Release danach** ist eine gewöhnliche Release-Prep (Schritte 1–5).
+Sein `CHANGELOG.md`-Abschnitt nennt den Inhalt **vollständig**, nicht nur die
+Differenz zur Vorabversion — wer von der letzten stabilen Version kommt, liest
+nur diesen Abschnitt.
+
 ### `image-test` auf macOS
 
 `make gates` läuft auf macOS nativ (Host-Werkzeuge sind POSIX-Klasse,

@@ -121,7 +121,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `tools/image-publish.sh`, `tools/image-verify-published.sh` | neu | Push ohne Tag, Gegenprobe, dann Tags |
 | `.github/dependabot.yml`, `tools/image-scan.sh` | update | Kommentare, die die alte FROM-Form bzw. den Config-Digest nannten |
 
-*(Plan-Änderung im Lauf: die beiden Skripte, die Kommentar-Spiegel in `dependabot.yml` und `tools/image-scan.sh` sowie die awk-Extraktion von `image-digest-axis` im `Makefile` — die FROM-Zeile mit `--platform` hätte `go-base-digest` sonst still auf SKIP gesetzt; nach R1 die Reihenfolge Push ohne Tag → Gegenprobe → Tags und die Digest-Pins der Builder-Images.)*
+*(Plan-Änderung im Lauf: die beiden Skripte, die Kommentar-Spiegel in `dependabot.yml` und `tools/image-scan.sh` sowie die awk-Extraktion von `image-digest-axis` im `Makefile` — die FROM-Zeile mit `--platform` hätte `go-base-digest` sonst still auf SKIP gesetzt; nach R1 die Reihenfolge Push ohne Tag → Gegenprobe → Tags und die Digest-Pins der Builder-Images; nach dem Prerelease-Lauf auf Auftraggeber-Wunsch der Abschnitt *Vorabversion* in `releasing.md` — die Datei unterschied Prerelease und stabiles Release nur bei `:latest`.)*
 
 **Reihenfolge im Release-Pfad** (Entwurf, die ADR legt fest): `make ci`
 (Gates + `amd64`-image-test wie heute) → QEMU/buildx einrichten → je
