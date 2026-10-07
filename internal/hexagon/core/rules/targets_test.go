@@ -497,3 +497,49 @@ func TestCheckTargetsAuthorityDisjunktGrenzen(t *testing.T) {
 		}
 	}
 }
+
+// TestCheckTargetsAuthorityDisjunktFuehrendeZelle: nur eine Zeile, die das
+// Target in ihrer ersten Zelle führt, zählt — eine Erwähnung in der
+// Vertrag-Spalte („eingehängt in `make gates`") ist keine zweite Deklaration.
+// Führt eine spätere Datei es in der ersten Zelle, meldet sie.
+func TestCheckTargetsAuthorityDisjunktFuehrendeZelle(t *testing.T) {
+	files := map[string]string{
+		tgtMakefile:          "gates:\n\techo\ntool:\n\techo\n",
+		"harness/README.md":  "| Target | Vertrag |\n|---|---|\n| `make gates` | alle Gates |\n",
+		"harness/targets.md": "| Target | Vertrag |\n|---|---|\n| `make tool` | eingehängt in `make gates` |\n",
+		"harness/other.md":   "| Target | Vertrag |\n|---|---|\n| `make gates` · `make tool` | doppelt geführt |\n",
+	}
+	cfg := model.TargetsConfig{
+		Makefiles:         []string{tgtMakefile},
+		Authority:         []string{"harness/README.md", "harness/targets.md"},
+		AuthorityDisjoint: true,
+	}
+	if f := mustCheck(t, files, cfg); len(f) != 0 {
+		t.Fatalf("Erwähnung außerhalb der ersten Zelle ⇒ kein Befund erwartet, bekam %+v", f)
+	}
+	cfg.Authority = append(cfg.Authority, "harness/other.md")
+	var got []string
+	for _, f := range mustCheck(t, files, cfg) {
+		got = append(got, fmt.Sprintf("%s:%d:%s", f.File, f.Line, f.Target))
+	}
+	if strings.Join(got, ",") != "harness/other.md:3:gates,harness/other.md:3:tool" {
+		t.Fatalf("Befunde = %q", got)
+	}
+}
+
+// TestCheckTargetsAuthorityDisjunktOhneMakefiles: die Disjunktheit braucht
+// keine Regelmenge — sie meldet auch ohne targets.makefiles.
+func TestCheckTargetsAuthorityDisjunktOhneMakefiles(t *testing.T) {
+	files := map[string]string{
+		"harness/README.md":  tgtDocTable("both"),
+		"harness/targets.md": tgtDocTable("both"),
+	}
+	cfg := model.TargetsConfig{
+		Authority:         []string{"harness/README.md", "harness/targets.md"},
+		AuthorityDisjoint: true,
+	}
+	f := mustCheck(t, files, cfg)
+	if len(f) != 1 || f[0].Reason != ReasonGateDeclaredTwice || f[0].File != "harness/targets.md" {
+		t.Fatalf("gate-declared-twice ohne makefiles erwartet, bekam %+v", f)
+	}
+}

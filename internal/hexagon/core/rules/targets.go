@@ -38,6 +38,9 @@ type targetRef struct {
 	name string
 	file string
 	line int
+	// lead: das Token steht in der ersten Zelle der Tabellenzeile — die Zeile
+	// führt dieses Target (Disjunktheit zählt nur solche Zeilen).
+	lead bool
 }
 
 // CheckTargets ist das Regelmodul targets (DC-FA-TGT-001): es prüft **hermetisch**
@@ -47,13 +50,22 @@ type targetRef struct {
 // Makefile-Regel ⇒ gate-phantom (Richtung 1); eine Makefile-Regel (minus
 // exempt-targets) ohne Eintrag in einer der Autoritäts-Dokus ⇒ gate-undocumented
 // (Richtung 2); opt-in ein Target in mehr als einer Autoritäts-Doku ⇒
-// gate-declared-twice (authority-disjoint). **fail-closed:** eine
+// gate-declared-twice (authority-disjoint, nur Tabellenzeilen, die das Target
+// in ihrer ersten Zelle führen; läuft auch ohne makefiles). **fail-closed:** eine
 // fehlende/unlesbare konfigurierte Datei ⇒
-// error (Exit 2). Leeres Makefiles ⇒ inert; die Richtungen sind an ihre
+// error (Exit 2). Leeres Makefiles ⇒ Richtung 1/2 inert; die Richtungen sind an ihre
 // jeweilige Doku-Quelle gekoppelt und voneinander unabhängig. Diagnose-only.
 func CheckTargets(fsys driven.Filesystem, cfg model.TargetsConfig) ([]model.Finding, error) {
-	if len(cfg.Makefiles) == 0 || fsys == nil {
-		return nil, nil // inert (keine Regelmenge / kein Port)
+	if fsys == nil {
+		return nil, nil // inert (kein Port)
+	}
+	// Die Disjunktheit braucht keine Regelmenge: sie läuft auch ohne makefiles.
+	twice, err := declaredTwiceFindings(fsys, cfg)
+	if err != nil {
+		return nil, err
+	}
+	if len(cfg.Makefiles) == 0 {
+		return twice, nil // Richtung 1/2 inert (keine Regelmenge)
 	}
 	ruleRefs, ruleSet, err := collectMakefileRules(fsys, cfg.Makefiles)
 	if err != nil {
@@ -64,10 +76,6 @@ func CheckTargets(fsys driven.Filesystem, cfg model.TargetsConfig) ([]model.Find
 		return nil, err
 	}
 	undoc, err := undocumentedFindings(fsys, cfg.Authority, cfg.ExemptTargets, ruleRefs)
-	if err != nil {
-		return nil, err
-	}
-	twice, err := declaredTwiceFindings(fsys, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -174,12 +182,15 @@ func undocumentedFindings(fsys driven.Filesystem, authority []string, exemptTarg
 }
 
 // declaredTwiceFindings prüft opt-in die Disjunktheit der Autoritäts-Dateien
-// (authority-disjoint): ein Target, das als Tabellenzeile in einer späteren
-// Datei steht als der seiner ersten Nennung, meldet gate-declared-twice an
-// dieser Zeile — je Vorkommen, in Konfigurations-Reihenfolge. Doppelungen
-// innerhalb einer Datei sind keine zwei Teile; eine Datei in zwei
-// Schreibweisen ist eine. exempt-targets wirkt hier nicht: ein ausgenommenes
-// Target in zwei Teilen läuft genauso auseinander.
+// (authority-disjoint): eine Tabellenzeile, die ein Target in ihrer ersten
+// Zelle führt, in einer späteren Datei als der seiner ersten führenden
+// Nennung, meldet gate-declared-twice an dieser Zeile — je Vorkommen, in
+// Konfigurations-Reihenfolge. Eine Erwähnung in einer anderen Zelle (etwa
+// „eingehängt in make gates") führt das Target nicht. Doppelungen innerhalb
+// einer Datei sind keine zwei Teile; Dateien gelten als gleich, wenn ihr
+// bereinigter Pfad gleich ist (ein Symlink-Alias zählt als zweite Datei).
+// exempt-targets wirkt hier nicht: ein ausgenommenes Target in zwei Teilen
+// läuft genauso auseinander.
 func declaredTwiceFindings(fsys driven.Filesystem, cfg model.TargetsConfig) ([]model.Finding, error) {
 	if !cfg.AuthorityDisjoint || len(cfg.Authority) < 2 {
 		return nil, nil
@@ -198,6 +209,9 @@ func declaredTwiceFindings(fsys driven.Filesystem, cfg model.TargetsConfig) ([]m
 			return nil, err
 		}
 		for _, r := range refs {
+			if !r.lead {
+				continue
+			}
 			first, ok := home[r.name]
 			if !ok {
 				home[r.name] = a
@@ -232,8 +246,12 @@ func extractDocTargets(fsys driven.Filesystem, file string) ([]targetRef, error)
 		if !tableRowLine(lines, prose, i) {
 			continue // ein Tabellen-Beispiel im Fence dokumentiert kein Target
 		}
+		lead := map[string]bool{}
+		for _, m := range docTargetRe.FindAllStringSubmatch(tableCells(line)[0], -1) {
+			lead[m[1]] = true
+		}
 		for _, m := range docTargetRe.FindAllStringSubmatch(line, -1) {
-			out = append(out, targetRef{name: m[1], file: file, line: i + 1})
+			out = append(out, targetRef{name: m[1], file: file, line: i + 1, lead: lead[m[1]]})
 		}
 	}
 	return out, nil

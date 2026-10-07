@@ -590,7 +590,8 @@ type rawTracked struct {
 // rawTargets trägt die Parameter des Moduls targets (DC-FA-TGT-001): makefiles
 // (Regelnamen-Quellen), doc-tables (make-X-Tabellen für Richtung 1), authority
 // (Vollständigkeits-Quelle(n) für Richtung 2 — String oder Liste, daher
-// yaml.Node), exempt-targets (Utility-Regeln ohne
+// yaml.Node), authority-disjoint (opt-in Disjunktheit der authority-Dateien),
+// exempt-targets (Utility-Regeln ohne
 // Doku-Pflicht). **Keine** scope — targets ist ein Post-Pass ohne Datei-Scan
 // (wie planning; ein targets.scope wäre wirkungslos, der strikte Decoder lehnt
 // es ab).

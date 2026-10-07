@@ -140,5 +140,5 @@ begleitender [ADR-0100](../adr/0100-targets-authority-liste.md).
 Baseline führt die Disjunktheit seit `v6.16.0`; `targets` prüft sie opt-in
 über `targets.authority-disjoint: true` mit dem Grund-Code
 `gate-declared-twice` ([ADR-0101](../adr/0101-targets-authority-disjunkt.md),
-d-check `v0.83.0`). Ohne den Schalter bleibt die Doppelnennung still wie oben
+verfügbar mit dem nächsten Release). Ohne den Schalter bleibt die Doppelnennung still wie oben
 beschrieben.

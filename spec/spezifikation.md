@@ -2706,8 +2706,8 @@ ist opt-in und prüft **hermetisch** (Filesystem-Port `ReadFile`, **kein** git,
 übereinstimmen. Wie `planning` ein **Post-Pass**, der nicht den Markdown-Baum
 scannt, sondern **deklarierte** Dateien liest:
 
-1. **Inert/Config/fail-closed.** Leeres `targets.makefiles` ⇒ Modul inert
-   (keine Regelmenge, kein Befund). Sonst wird jede konfigurierte Datei
+1. **Inert/Config/fail-closed.** Leeres `targets.makefiles` ⇒ Richtungen 1 und 2 inert
+   (keine Regelmenge; Schritt 5a läuft unabhängig davon). Sonst wird jede konfigurierte Datei
    (Wurzel-relativ, innerhalb der Repo-Wurzel) gelesen; eine fehlende/unlesbare
    konfigurierte Datei ⇒ **Exit 2** mit stderr-Hinweis (kein stilles Grün).
    **Richtung 1** (Schritt 4) läuft nur bei nicht-leerem `targets.doc-tables`,
@@ -2773,15 +2773,20 @@ scannt, sondern **deklarierte** Dateien liest:
    der bisherigen String-Form), „… in einer der Autoritäts-Dokus `<a>, <b>`"
    bei mehreren (Konfigurations-Reihenfolge).
 5a. **Disjunktheit (opt-in).** Nur bei `targets.authority-disjoint: true` und
-   mindestens zwei verschiedenen Autoritäts-Dateien (bereinigter Pfad): die
-   Dateien werden in Konfigurations-Reihenfolge gelesen, jedes Tabellen-Target
-   (Schritt 3) bekommt die Datei seiner ersten Nennung als Heimat. Jedes
-   weitere Vorkommen in einer **anderen** Datei ⇒ Grund-Code
+   mindestens zwei verschiedenen Autoritäts-Dateien (bereinigter Pfad; ein
+   Symlink-Alias zählt als zweite Datei); **unabhängig** von
+   `targets.makefiles` — der Schritt läuft auch, wenn Richtungen 1 und 2
+   inert sind. Die Dateien werden in Konfigurations-Reihenfolge gelesen;
+   gezählt werden nur **führende** Tabellen-Targets: ein ` `make X` ` in der
+   **ersten Zelle** der Tabellenzeile (Zell-Zerlegung wie `structure`,
+   escape- und backtick-bewusst). Ein Vorkommen in einer anderen Zelle führt
+   kein Target. Die erste führende Nennung bestimmt die Heimat-Datei; jede
+   führende Zeile in einer **anderen** Datei ⇒ Grund-Code
    `gate-declared-twice`, Befund: `file`/`line` = diese Datei/Tabellenzeile,
    `target` = `X`, `message` = „Target `X` steht in mehr als einer
-   Autoritäts-Doku (zuerst in `<heimat>`)". Vorkommen in der Heimat-Datei
-   selbst zählen nicht; `targets.exempt-targets` wirkt hier nicht. Ohne
-   Schalter entfällt der Schritt.
+   Autoritäts-Doku (zuerst in `<heimat>`)". Führende Zeilen in der
+   Heimat-Datei selbst zählen nicht; `targets.exempt-targets` wirkt hier
+   nicht. Ohne Schalter entfällt der Schritt.
 6. **Diagnose-only / Determinismus / Read-only.** Kein `--repair`-Hunk;
    identischer Arbeitsbaum ⇒ identischer Befundsatz
    ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)), nur lesend, netzlos,
@@ -3452,7 +3457,7 @@ Exit 2 ohne Prüfung
 | `mentions.documents` | Liste von Globs | leer (aus) | **Ist-Menge**: die Dokumente, in denen gesucht wird — als **Vereinigung** gelesen. Ein Block ist **ein** Paar: zwei unabhängige Invarianten in einem Block halten keine von beiden. Ohne `mentions.artifacts` ⇒ Exit 2; Treffermenge leer ⇒ Exit 2 |
 | `mentions.match` | `path` \| `basename` | `path` | Erkennungsform: der '/'-relative Pfad oder nur der Dateiname. Gesucht wird als **eigenständige Nennung** (Grenz-Prüfung links und rechts; links unter `basename` ist `/` ausgenommen). Ein anderer Wert ⇒ Exit 2 |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
-| `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien **oder Glob-Muster** (Eintrag mit `*`/`?`/`[`, `matchGlob`, `**` erlaubt), aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei, ein Glob ohne Treffer oder ein ungültiges Glob ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
+| `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien **oder Glob-Muster** (Eintrag mit `*`/`?`/`[`, `matchGlob`, `**` erlaubt), aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Richtungen 1 und 2 inert (Schritt 5a läuft unabhängig); eine fehlende/unlesbare Datei, ein Glob ohne Treffer oder ein ungültiges Glob ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
 | `targets.authority` | string \| string[] | leer | Wurzel-relative Doku-Datei oder Liste wörtlicher Doku-Dateien; **jede** nicht-exempte Makefile-Regel muss in **mindestens einer** als `make X`-Tabellenzeile stehen (Richtung 2 `gate-undocumented`); leer (String, Null oder Liste) ⇒ Richtung 2 entfällt; Einträge wörtlich, auch mit Glob-Zeichen; fehlende Datei oder leerer/Null-/Nicht-Pfad-Listeneintrag ⇒ Exit 2 |
 | `targets.authority-disjoint` | bool | `false` | `true` ⇒ ein Target, das als Tabellenzeile in mehr als einer `targets.authority`-Datei steht, meldet `gate-declared-twice` an jeder späteren Tabellenzeile; ohne Wirkung bei weniger als zwei verschiedenen Dateien; kein Bool ⇒ Exit 2 |
@@ -3619,6 +3624,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-07 | Nachzug nach Review: §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 5a — nur führende Tabellen-Targets (erste Zelle) zählen, der Schritt läuft unabhängig von `targets.makefiles`, Symlink-Alias zählt als zweite Datei; Schritt 1 und Schema-Zeile `targets.makefiles` entsprechend ("Richtungen 1 und 2 inert") |
 | 2026-10-07 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) um Schritt 5a (opt-in Disjunktheit der Autoritäts-Dateien, Grund-Code `gate-declared-twice`) erweitert, Schritt 5 verweist darauf; Schema-Zeile `targets.authority-disjoint`, §4-Zeile [`SPEC-088`](#4-grund--und-fehler-codes) |
 | 2026-10-06 | Nachzug nach Review: §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 5 — Listenelemente je Knoten geprüft (Null-Element ⇒ Exit 2 statt still verworfen), String-Form dekodiert wie zuvor, keine Ablehnung von Glob-Zeichen (Einträge wörtlich); Schema-Zeile nachgezogen |
 | 2026-10-06 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 5: `targets.authority` als Pfad oder Liste wörtlicher Pfade, Vereinigung der Tabellen-Targets, Doppelnennung kein Befund, Meldungstext bei einer Datei unverändert; Schema-Zeile `targets.authority` und Grund-Code-Zeile `gate-undocumented` nachgezogen |

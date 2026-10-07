@@ -7,7 +7,7 @@
 **Autor:** pt9912
 
 **Bezug:** [`DC-FA-TGT-001`](../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
-(erweitert, Lastenheft 0.97.0); löst den Re-Evaluierungs-Trigger von
+(erweitert, Lastenheft 0.97.0, nach Review präzisiert in 0.97.1); löst den Re-Evaluierungs-Trigger von
 [ADR-0100](0100-targets-authority-liste.md) ein (die Baseline nimmt die
 Disjunktheits-Regel an — gemeldet im
 [Hinweis der Baseline](../cr/2026-10-07-hinweis-eingehend-ai-harness-course-disjunktheit.md));
@@ -51,7 +51,19 @@ sie als benannte Grenze geführt wird.
    Doku-Pflicht, nicht von der Regel, dass zwei Zeilen dasselbe Target
    auseinanderlaufen lassen.
 5. **Doppelungen innerhalb einer Datei sind kein Fall** — die Regel spricht
-   von zwei Teilen. Dieselbe Datei in zwei Schreibweisen ist ein Teil.
+   von zwei Teilen. Dieselbe Datei in zwei Schreibweisen (bereinigter Pfad)
+   ist ein Teil; ein symbolischer Link auf eine andere Autoritäts-Datei zählt
+   als zweite Datei (benannte Grenze — das Modul löst keine Symlinks auf).
+6. **Nur die Zeile, die ein Target führt, zählt: `make X` in der ersten
+   Zelle.** Die Baseline meint mit „steht in einem Teil" die Zeile, deren
+   Target-Zelle den Namen trägt. Ein Werkzeug-Teil nennt in seiner
+   Vertrag-Spalte regelmäßig das Sammel-Target, in das er einhängt
+   („eingehängt in `make gates`"); jedes Vorkommen zu zählen, meldete genau
+   diesen vorgesehenen Fall als Verletzung. Richtung 2 bleibt bei jedem
+   Vorkommen — dort ist die großzügigere Lesart die sichere.
+7. **Die Disjunktheit läuft unabhängig von `targets.makefiles`.** Sie braucht
+   keine Regelmenge; ein eingeschalteter Schalter, der ohne Makefile-Quellen
+   still bliebe, wäre eine Prüfung ohne Gegenstand.
 
 ## Verglichene Alternativen
 
@@ -74,6 +86,8 @@ sie als benannte Grenze geführt wird.
 | Tooling | Regel | Make-Target |
 |---|---|---|
 | Go-Test `TestCheckTargetsAuthorityDisjunkt` | Befund an späteren Dateien, Heimat in der Meldung, auch für ein exemptes Target, drei Dateien | `make test` |
+| Go-Test `TestCheckTargetsAuthorityDisjunktFuehrendeZelle` | Erwähnung außerhalb der ersten Zelle still, führende Zeile in späterer Datei gemeldet | `make test` |
+| Go-Test `TestCheckTargetsAuthorityDisjunktOhneMakefiles` | Befund auch ohne `targets.makefiles` | `make test` |
 | Go-Test `TestCheckTargetsAuthorityDisjunktGrenzen` | ohne Schalter, eine Datei, gleiche Datei zweifach ⇒ still | `make test` |
 | Go-Test `TestDecode_TargetsAuthorityDisjoint` | Schalter durchgereicht, Default aus, kein Bool ⇒ Fehler | `make test` |
 | Go-Test `TestAllReasonsDeckungGegenSpezifikationGrundCodes` | Grund-Code in `AllReasons` und §4 | `make test` |
@@ -88,3 +102,4 @@ Index-Teilen — dann ist Default-an zu prüfen. Ohne das: permanent.
 | Datum | Ereignis |
 |---|---|
 | 2026-10-07 | Angelegt als `Proposed`; `Accepted` erst mit der Closure des Vorgangs, nach Review und Verifikation |
+| 2026-10-07 | Nach R1 (HIGH, MEDIUM): Entscheidung 6 (nur die führende erste Zelle zählt) und 7 (unabhängig von `makefiles`) ergänzt, Entscheidung 5 um die Symlink-Grenze. Noch `Proposed`, Körper daher geändert statt angehängt |
