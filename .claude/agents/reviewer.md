@@ -34,7 +34,7 @@ dort genügt Annahme oder Begründung.
 **Deine repo-spezifischen Quellen.**
 - Anweisungssatz:
   [`.harness/skills/reviewer.md`](../../.harness/skills/reviewer.md) —
-  sechzehn Prüffragen, Output-Schema, Negativbefund-Pflicht.
+  achtzehn Prüffragen, Output-Schema, Negativbefund-Pflicht.
 - ID-Schema und Adaptionen: [`harness/conventions.md`](../../harness/conventions.md).
 - Hard Rules: [`AGENTS.md`](../../AGENTS.md) §3.
 - Baseline-Bestand:

@@ -30,7 +30,12 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 `v6.17.0`: **LOW nur mit Konventions-Anker** (ADR, Hard Rule, Linter-Regel,
 Eintrag im Skill); die **Failure-Szenario-Pflicht gilt HIGH und MEDIUM**; das
 Feld **`pfad`** ankert die Fundstelle als wörtliches, in der Datei eindeutig
-auffindbares Kurzzitat, die Zeile ist Lesehilfe.
+auffindbares Kurzzitat, die Zeile ist Lesehilfe. Die vierte Regel der
+Bewegung, „Kein Stil-Polizist", trug der Skill bereits. *(Plan-Änderung nach
+R1: die Kontext-Eskalation, das `quelle`-Feld und die zweite
+`pfad`-Definition unter §Ablage werden mitgezogen, weil die neuen Regeln
+sonst mit ihnen kollidieren; dazu die veraltete Zahl der Prüffragen —
+achtzehn statt sechzehn — in Skill und Agent-Spiegel.)*
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 

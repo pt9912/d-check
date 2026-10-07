@@ -18,7 +18,7 @@ gleichen Modul** (Baseline
 die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
 (getrennter Kontext, anderes Prüf-Artefakt).
 
-## Die sechzehn Prüffragen (erste Ebene)
+## Die achtzehn Prüffragen (erste Ebene)
 
 Jede Frage ist so gestellt, dass **„ja" ein Finding ist**. Die Liste trägt alle
 HIGH- und MEDIUM-Klassen; LOW und INFO stehen nur unten. Sie trägt **nicht**,
@@ -49,7 +49,7 @@ Wer nur diese Tabelle liest, meldet die Bestands-Ausnahmen mit.
 
 **Was diese Ebene kostet und was nicht.** Sie ist eine Einstiegs-Ordnung, keine
 Kürzung: das Dokument ist durch sie **länger** geworden, nicht kürzer. Der
-Gewinn ist, dass keine der sechzehn Klassen mehr nur in einem Fließtext-Absatz
+Gewinn ist, dass keine der achtzehn Klassen mehr nur in einem Fließtext-Absatz
 steht, in dem sie beim Überfliegen untergeht. Der Preis ist Drift zwischen den
 Ebenen — deshalb trägt die Tabelle keine Ausnahme und keine Begründung,
 sondern ausschließlich die Frage.
@@ -195,7 +195,9 @@ sondern ausschließlich die Frage.
   bewusste Won't-Fix-Designnotiz.
 
 **Kontext-Eskalation:** dieselbe Beobachtung im Gate-/Sicherheitspfad
-steigt eine Stufe; die dritte Wiederholung derselben Klasse in einer
+steigt eine Stufe — aber nur, wenn die höhere Stufe ihre Bedingung erfüllt:
+nach MEDIUM nur mit erzählbarem Failure-Szenario, von INFO nach LOW nur mit
+Konventions-Anker; sonst bleibt die Stufe. Die dritte Wiederholung derselben Klasse in einer
 Sitzung ist ein Steering-Loop-Signal (Guide/Sensor nachziehen statt
 nur melden). Streit über eine Kategorisierung ⇒ Regel hier schärfen.
 
@@ -207,7 +209,7 @@ nur melden). Streit über eine Kategorisierung ⇒ Regel hier schärfen.
   deine Rolle.
 - **Kein HIGH- oder MEDIUM-Finding ohne Failure-Szenario:** was sich nicht als
   konkretes Versagen erzählen lässt, wird nicht als HIGH oder MEDIUM gemeldet.
-  LOW trägt stattdessen einen Konventions-Anker, INFO braucht keins von beidem.
+  LOW trägt stattdessen einen Konventions-Anker.
 - **Kein Lösungsvorschlag im Befund:** Lösungen gehören in die
   Übergabe an die Implementation, nicht ins Finding-Feld.
 - **REFUTED nur mit Beleg:** verworfen wird ausschließlich mit
@@ -217,7 +219,9 @@ nur melden). Streit über eine Kategorisierung ⇒ Regel hier schärfen.
 ## Output-Schema (pro Finding)
 
 `kategorie` (HIGH/MEDIUM/LOW/INFO) · `quelle` (`DC-*`-ID, ADR-ID,
-`MR-*`-ID, Hard-Rule-Name oder „Maintainability") · `pfad`
+`MR-*`-ID, Hard-Rule-Name, Linter-Regel, Abschnitt dieses Skills oder
+„Maintainability" — letzteres ist **kein** Konventions-Anker und trägt keinen
+LOW) · `pfad`
 (Datei · wörtliches, in der Datei eindeutig auffindbares Kurzzitat der Stelle
 als Anker; die Zeile darf als Lesehilfe dazu, ist aber nicht der Anker) ·
 `befund` (1–2 Sätze, beobachtbar, ohne
@@ -260,4 +264,5 @@ Deshalb **Kennung statt Adresse**:
 Das `pfad`-Feld eines Findings ist davon **nicht ausgenommen, sondern präzisiert**: Es benennt die
 Fundstelle im geprüften Stand und darf sie festhalten — aber in derselben Form,
 den **Tag eingeschlossen** (`` `v<X.Y.Z>` · `regelwerk/<datei>.md` §<Abschnitt> ``).
-Eine Fundstelle ohne Tag sagt nicht, in welchem Stand sie galt.
+Eine Fundstelle ohne Tag sagt nicht, in welchem Stand sie galt. Das Kurzzitat
+aus dem Output-Schema kommt dazu: `` `v<X.Y.Z>` · `regelwerk/<datei>.md` §<Abschnitt> · „<Kurzzitat>" ``.
