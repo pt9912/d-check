@@ -213,31 +213,41 @@ Die Pipeline (`release.yml`) läuft bei jedem `v*`-Tag-Push:
 
 1. **SemVer-Validate** (fail-fast): nur `vMAJOR.MINOR.PATCH` oder
    `…-PRERELEASE`; Build-Metadaten (`+`) werden abgelehnt.
-2. **`make ci`** — alle Gates plus Image-Integrationstests; baut das
-   Runtime-Image mit `VERSION` aus dem Tag.
-3. **OCI-Label-Pin** — `org.opencontainers.image.version` muss exakt
-   der Tag-Version entsprechen (Version-Drift shippt nicht).
-4. **Push** nach `ghcr.io/pt9912/d-check:v<version>`; `:latest`
+2. **`make ci`** — alle Gates plus Image-Integrationstests gegen die
+   `linux/amd64`-Variante, gebaut mit `VERSION` aus dem Tag.
+3. **`make image-test-arm64`** — dieselben Integrationstests gegen die
+   `linux/arm64`-Variante, Binary und Container unter QEMU. Gebaut wird per
+   Cross-Compile, emuliert nur der Test.
+4. **OCI-Label-Pin** an beiden geprüften Bildern —
+   `org.opencontainers.image.version` muss exakt der Tag-Version entsprechen
+   (Version-Drift shippt nicht).
+5. **Push** (`make image-publish`) — ein **Index** aus `linux/amd64` und
+   `linux/arm64` nach `ghcr.io/pt9912/d-check:v<version>`; `:latest`
    **nur** für stabile Releases (kein Prerelease-Suffix) —
    [ADR-0014](../plan/adr/0014-latest-tag-fuer-stabile-releases.md).
-5. **Docker-Hub-Spiegel** — dasselbe lokale Bild wird nach
-   `docker.io/pt9912/d-check` getaggt und gepusht, dieselbe Tag-Disziplin
-   wie Schritt 4. Danach vergleicht der Schritt die **Config-Digests** beider
-   Registries — aus den Registries gelesen, nicht aus dem lokalen Daemon — und
-   bricht bei Ungleichheit ab
+   Danach die Gegenprobe am **gepushten** Index: genau die zwei Plattformen,
+   Labels je Plattform, und je Plattform ist das Binary sha256-gleich zu dem
+   aus Schritt 2 bzw. 3 geprüften
+   ([ADR-0102](../plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)).
+6. **Docker-Hub-Spiegel** — der GHCR-Index wird samt Blobs nach
+   `docker.io/pt9912/d-check` **kopiert** (`docker buildx imagetools create`),
+   dieselbe Tag-Disziplin wie Schritt 5. Danach vergleicht der Schritt die
+   **Index-Digests** beider Registries — aus den Registries gelesen, nicht aus
+   dem lokalen Daemon — und bricht bei Ungleichheit ab
    ([`DC-FA-DIST-002`](../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)).
    **Fail-closed:** jeder Fehlschlag hier macht das Release rot, obwohl
    GHCR bereits trägt — die Meldung nennt deshalb den veröffentlichten
    GHCR-Digest. Die Zugangsdaten werden **vor** dem Push geprüft, sonst
    scheiterte der Login mit seinem eigenen Text statt mit dieser Meldung.
-6. **Hub-Darstellung** — Kurztext und Overview-Seite aus
+7. **Hub-Darstellung** — Kurztext und Overview-Seite aus
    `packaging/dockerhub/`. Beide Schritte tragen `continue-on-error` und
    können das Release **nicht** rot machen; das Zeichen-Limit prüft
    stattdessen `make gates`.
-7. **Digest-Pin** landet im Job-Summary und in den Notes des
-   automatisch angelegten GitHub-Releases. Existiert das Release zum
-   Tag bereits (z. B. Workflow-Re-Run), wird es wiederverwendet — der
-   aktuelle Digest steht dann nur im Job-Summary.
+8. **Digest-Pin** — der Index-Digest, auf beiden Registries derselbe —
+   landet im Job-Summary und in den Notes des automatisch angelegten
+   GitHub-Releases. Existiert das Release zum Tag bereits (z. B.
+   Workflow-Re-Run), wird es wiederverwendet — der aktuelle Digest steht dann
+   nur im Job-Summary.
 
 ## Konsum (Digest-Pin)
 

@@ -11,9 +11,11 @@ name: release
 # (docs/user/releasing.md).
 #
 # Docker-only-Pfad (AGENTS.md §3.1): `make ci` fährt die kompletten
-# Gates inkl. Image-Integrationstests und baut dabei das lokale
-# Runtime-Image (`d-check:latest`), das anschließend für GHCR
-# umgetaggt und gepusht wird.
+# Gates inkl. Image-Integrationstests gegen das lokale Runtime-Image
+# (`d-check:latest`, linux/amd64); `make image-test-arm64` prüft die
+# linux/arm64-Variante. Veröffentlicht wird ein Index beider Plattformen
+# (`make image-publish`), dessen Binaries gegen die geprüften verglichen
+# werden (DC-FA-DIST-001, ADR-0102).
 #
 # Action-Pinning (AGENTS.md §3.9, Supply-Chain-Härtung, u-boot-Konvention):
 # alle `uses:`-Einträge sind SHA-gepinnt mit Tag-Kommentar.
@@ -73,6 +75,22 @@ jobs:
           VERSION: ${{ steps.tag.outputs.version }}
         run: make ci VERSION="$VERSION"
 
+      # Die zweite Plattform des Index (DC-FA-DIST-001, ADR-0102): QEMU fuer
+      # den arm64-Test (Binary und Container), buildx fuer den Index-Build.
+      # Gebaut wird per Cross-Compile, emuliert wird nur der Test.
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+        with:
+          platforms: arm64
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Image-Integrationstests linux/arm64 (make image-test-arm64)
+        env:
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: make image-test-arm64 VERSION="$VERSION"
+
       - name: Log in to GHCR
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
@@ -80,84 +98,74 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Tag image for GHCR
-        env:
-          VERSION: ${{ steps.tag.outputs.version }}
-          IS_STABLE: ${{ steps.tag.outputs.is_stable }}
-        run: |
-          set -euo pipefail
-          docker tag "$LOCAL_IMAGE:latest" "$REGISTRY/$IMAGE_NAME:v$VERSION"
-          if [[ "$IS_STABLE" == "true" ]]; then
-            docker tag "$LOCAL_IMAGE:latest" "$REGISTRY/$IMAGE_NAME:latest"
-          fi
-
-      # OCI-Label-Pin: die Dockerfile-Labels müssen gesetzt sein, und
+      # OCI-Label-Pin VOR dem Push, an beiden geprueften Bildern: die
+      # Dockerfile-Labels muessen gesetzt sein, und
       # org.opencontainers.image.version muss exakt der Tag-Version
-      # entsprechen — ein Build mit Version-Drift darf nicht shippen.
+      # entsprechen — ein Build mit Version-Drift darf nicht shippen. Nach dem
+      # Push prueft image-verify-published.sh dieselben Labels je Plattform aus
+      # der Registry.
       - name: Verify OCI labels
         env:
           VERSION: ${{ steps.tag.outputs.version }}
         run: |
           set -euo pipefail
-          REF="$REGISTRY/$IMAGE_NAME:v$VERSION"
-          for LABEL in \
-            org.opencontainers.image.source \
-            org.opencontainers.image.description \
-            org.opencontainers.image.licenses \
-            org.opencontainers.image.title \
-            org.opencontainers.image.vendor
-          do
-            VALUE=$(docker image inspect --format "{{ index .Config.Labels \"$LABEL\" }}" "$REF")
-            if [[ -z "$VALUE" ]]; then
-              echo "::error::OCI-Label $LABEL ist leer auf $REF."
+          for REF in "$LOCAL_IMAGE:latest" "$LOCAL_IMAGE:arm64"; do
+            for LABEL in \
+              org.opencontainers.image.source \
+              org.opencontainers.image.description \
+              org.opencontainers.image.licenses \
+              org.opencontainers.image.title \
+              org.opencontainers.image.vendor
+            do
+              VALUE=$(docker image inspect --format "{{ index .Config.Labels \"$LABEL\" }}" "$REF")
+              if [[ -z "$VALUE" ]]; then
+                echo "::error::OCI-Label $LABEL ist leer auf $REF."
+                exit 1
+              fi
+              echo "$REF $LABEL=$VALUE"
+            done
+            IMAGE_VERSION=$(docker image inspect --format \
+              '{{ index .Config.Labels "org.opencontainers.image.version" }}' "$REF")
+            if [[ "$IMAGE_VERSION" != "$VERSION" ]]; then
+              echo "::error::org.opencontainers.image.version=[$IMAGE_VERSION] auf $REF entspricht nicht der Tag-Version [$VERSION]."
               exit 1
             fi
-            echo "$LABEL=$VALUE"
+            echo "$REF org.opencontainers.image.version=$IMAGE_VERSION (matcht Tag)"
           done
-          IMAGE_VERSION=$(docker image inspect --format \
-            '{{ index .Config.Labels "org.opencontainers.image.version" }}' "$REF")
-          if [[ "$IMAGE_VERSION" != "$VERSION" ]]; then
-            echo "::error::org.opencontainers.image.version=[$IMAGE_VERSION] entspricht nicht der Tag-Version [$VERSION]."
-            exit 1
-          fi
-          echo "org.opencontainers.image.version=$IMAGE_VERSION (matcht Tag)"
 
+      # Index-Build und Push, danach die Gegenprobe gegen den GEPUSHTEN Index
+      # (Plattformen, Labels je Plattform, Binary je Plattform gleich dem
+      # geprueften) — make image-publish, ADR-0102. Der Konsumenten-Pin ist
+      # der Index-Digest.
       - name: Push to GHCR
+        id: push
         env:
           VERSION: ${{ steps.tag.outputs.version }}
           IS_STABLE: ${{ steps.tag.outputs.is_stable }}
         run: |
           set -euo pipefail
-          docker push "$REGISTRY/$IMAGE_NAME:v$VERSION"
-          if [[ "$IS_STABLE" == "true" ]]; then
-            docker push "$REGISTRY/$IMAGE_NAME:latest"
-          fi
-          DIGEST=$(docker inspect --format '{{ index .RepoDigests 0 }}' "$REGISTRY/$IMAGE_NAME:v$VERSION")
+          trap 'echo "::error::Index-Push oder Gegenprobe fehlgeschlagen. Unter $REGISTRY/$IMAGE_NAME:v$VERSION kann bereits ein Index liegen — vor einem erneuten Lauf pruefen."' ERR
+          make image-publish VERSION="$VERSION" \
+            PUBLISH_REPO="$REGISTRY/$IMAGE_NAME" PUBLISH_LATEST="$IS_STABLE"
+          INDEX="$(docker buildx imagetools inspect --format '{{.Manifest.Digest}}' "$REGISTRY/$IMAGE_NAME:v$VERSION")"
+          DIGEST="$REGISTRY/$IMAGE_NAME@$INDEX"
           echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
           {
             echo "### d-check v$VERSION"
             echo ""
-            echo "Digest-Pin für Konsumenten:"
+            echo "Digest-Pin für Konsumenten (Index linux/amd64 + linux/arm64):"
             echo ""
             echo '```'
             echo "$DIGEST"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-        id: push
 
-      # Docker-Hub-Spiegel (DC-FA-DIST-002, ADR-0064). Zusage ist DERSELBE
-      # Digest, nicht ein zweiter Bau — deshalb wird dasselbe lokale Bild
-      # getaggt, das schon nach GHCR ging. Fail-closed: kein
-      # continue-on-error und kein Secret-Sondierungs-Schritt; fehlt das
-      # Token, ist das Release rot. Der Spiegel steht NACH dem GHCR-Push,
-      # damit die Quelle nie hinter dem Spiegel zurueckliegt.
-      # Docker-Hub-Spiegel (DC-FA-DIST-002, ADR-0065). Zusage ist derselbe
-      # Bild-INHALT, gemessen am Config-Digest — der Manifest-Digest ist
-      # registry-lokal (Blob-Neukompression beim zweiten Push) und taugt als
-      # Gleichheits-Groesse nicht. Fail-closed: der Spiegel ist eine Zusage.
-      # Er steht NACH dem GHCR-Push, damit die Quelle nie hinter ihm
-      # zurueckliegt; jeder Abbruch ab hier nennt deshalb den bereits
-      # veroeffentlichten GHCR-Stand.
+      # Docker-Hub-Spiegel (DC-FA-DIST-002, ADR-0102). Der Spiegel KOPIERT den
+      # GHCR-Index samt Blobs (imagetools create), statt ein Bild neu zu
+      # pushen; die Gleichheits-Groesse ist der Index-Digest, aus beiden
+      # Registries gelesen. Fail-closed: der Spiegel ist eine Zusage. Er steht
+      # NACH dem GHCR-Push, damit die Quelle nie hinter ihm zurueckliegt; jeder
+      # Abbruch ab hier nennt deshalb den bereits veroeffentlichten GHCR-Stand.
       #
       # Der Login laeuft als `run`-Schritt statt ueber die Action: nur so traegt
       # die Fehlermeldung den GHCR-Digest, den das Negative-Akzeptanzkriterium
@@ -191,45 +199,39 @@ jobs:
           set -euo pipefail
           trap 'echo "::error::Docker-Hub-Spiegel fehlgeschlagen. BEREITS VEROEFFENTLICHT: ${GHCR_DIGEST} auf ghcr.io — das Release ist unvollstaendig, der GHCR-Stand aber gueltig."' ERR
 
-          docker tag "$LOCAL_IMAGE:latest" "$DOCKERHUB_IMAGE:v$VERSION"
-          docker push "$DOCKERHUB_IMAGE:v$VERSION"
+          TAGS=(-t "$DOCKERHUB_IMAGE:v$VERSION")
           if [[ "$IS_STABLE" == "true" ]]; then
-            docker tag "$LOCAL_IMAGE:latest" "$DOCKERHUB_IMAGE:latest"
-            docker push "$DOCKERHUB_IMAGE:latest"
+            TAGS+=(-t "$DOCKERHUB_IMAGE:latest")
           fi
+          docker buildx imagetools create "${TAGS[@]}" "$GHCR_DIGEST"
 
-          # Gelesen wird aus den REGISTRIES, nicht aus dem lokalen Daemon: zwei
-          # aus demselben lokalen Bild abgeleitete Werte waeren trivial gleich,
-          # und ein Vergleich, der nicht fehlschlagen kann, ist ein stiller
-          # Gruen-Pfad. `sed -n …p` schweigt statt zu scheitern — sonst risse
-          # `pipefail` den Lauf ab, bevor die Leer-Pruefung greift.
-          config_digest() {
-            docker buildx imagetools inspect --raw "$1" 2>/dev/null \
-              | tr -d ' \n' \
-              | sed -n 's/.*"config":{[^}]*"digest":"\(sha256:[0-9a-f]\{64\}\)".*/\1/p'
+          # Gelesen wird aus den REGISTRIES: zwei aus derselben Quelle
+          # abgeleitete Werte waeren trivial gleich, und ein Vergleich, der
+          # nicht fehlschlagen kann, ist ein stiller Gruen-Pfad. Eine leere
+          # Antwort ist UNGEPRUEFT, nicht bestaetigt.
+          index_digest() {
+            docker buildx imagetools inspect --format '{{.Manifest.Digest}}' "$1" 2>/dev/null \
+              | sed -n 's/^\(sha256:[0-9a-f]\{64\}\)$/\1/p'
           }
-          GHCR_CFG="$(config_digest "$REGISTRY/$IMAGE_NAME:v$VERSION")"
-          HUB_CFG="$(config_digest "$DOCKERHUB_IMAGE:v$VERSION")"
+          GHCR_IDX="$(index_digest "$REGISTRY/$IMAGE_NAME:v$VERSION")"
+          HUB_IDX="$(index_digest "$DOCKERHUB_IMAGE:v$VERSION")"
 
-          if [[ -z "$GHCR_CFG" || -z "$HUB_CFG" ]]; then
-            echo "::error::Config-Digest nicht lesbar (ghcr.io=[${GHCR_CFG:-<leer>}] docker.io=[${HUB_CFG:-<leer>}]). Die Gleichheit ist damit UNGEPRUEFT, nicht bestaetigt. BEREITS VEROEFFENTLICHT: ${GHCR_DIGEST} auf ghcr.io."
+          if [[ -z "$GHCR_IDX" || -z "$HUB_IDX" ]]; then
+            echo "::error::Index-Digest nicht lesbar (ghcr.io=[${GHCR_IDX:-<leer>}] docker.io=[${HUB_IDX:-<leer>}]). Die Gleichheit ist damit UNGEPRUEFT, nicht bestaetigt. BEREITS VEROEFFENTLICHT: ${GHCR_DIGEST} auf ghcr.io."
             exit 1
           fi
-          if [[ "$GHCR_CFG" != "$HUB_CFG" ]]; then
-            echo "::error::Bild-Inhalt verschieden: ghcr.io=[$GHCR_CFG] docker.io=[$HUB_CFG]. DC-FA-DIST-002 sagt Inhalts-Gleichheit zu. BEREITS VEROEFFENTLICHT: ${GHCR_DIGEST} auf ghcr.io."
+          if [[ "$GHCR_IDX" != "$HUB_IDX" ]]; then
+            echo "::error::Index verschieden: ghcr.io=[$GHCR_IDX] docker.io=[$HUB_IDX]. DC-FA-DIST-002 sagt denselben Index-Digest zu. BEREITS VEROEFFENTLICHT: ${GHCR_DIGEST} auf ghcr.io."
             exit 1
           fi
-          echo "Spiegel traegt denselben Bild-Inhalt: $GHCR_CFG"
+          echo "Spiegel traegt denselben Index: $GHCR_IDX"
 
-          HUB_DIGEST="$(docker buildx imagetools inspect --format '{{.Manifest.Digest}}' "$DOCKERHUB_IMAGE:v$VERSION" 2>/dev/null || true)"
           {
             echo ""
-            echo "Gespiegelt nach Docker Hub — gleicher Bild-Inhalt (Config-Digest \`$GHCR_CFG\`)."
-            echo ""
-            echo "Digest-Pin fuer Docker-Hub-Konsumenten (registry-lokal, NICHT der GHCR-Digest):"
+            echo "Gespiegelt nach Docker Hub — derselbe Index-Digest, derselbe Pin:"
             echo ""
             echo '```'
-            echo "$DOCKERHUB_IMAGE@${HUB_DIGEST:-<nicht lesbar>}"
+            echo "$DOCKERHUB_IMAGE@$HUB_IDX"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
