@@ -83,6 +83,7 @@ liegt in CI bzw. lokal (`make gates`), nicht hier.
 | [`make baseline-verify`](sensors/baseline-verify.md) | prüft den committeten vendorten Baseline-Bestand auf Unversehrtheit | [`MR-011`](conventions.md#mr-011)-Kette; [`MR-021`](conventions.md#mr-021) (pin-gebundene Verweise); [`MR-055`](conventions.md#mr-055) (der Symlink als Träger) |
 | `make gates` | aggregiert baseline-verify + workflow-pins + doc-check + lint + test + arch-check + coverage-gate + semgrep + gate-consistency + planning-check, `record-gates` als letzter Schritt | — |
 | [`make image-test`](sensors/image-test.md) | prüft die Distributions-Akzeptanzkriterien gegen das lokal gebaute Image | [`DC-FA-DIST-001`](../spec/lastenheft.md#dc-fa-dist-001--docker-image)/[`DC-QA-02`](../spec/lastenheft.md#dc-qa-02--determinismus) (DC-Bindung) |
+| [`make image-test-arm64`](sensors/image-test.md) | dieselben Kriterien gegen die `linux/arm64`-Variante des Release-Index, Binary und Container unter binfmt/QEMU | [`DC-FA-DIST-001`](../spec/lastenheft.md#dc-fa-dist-001--docker-image) (DC-Bindung); [ADR-0102](../docs/plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md) — Bindepunkt `release.yml`, **nicht** `gates`/`ci` |
 | `make ci` | CI-äquivalenter Lauf (gates + image-test) — das Target der Release-Pipeline | — |
 | [`make trace-check`](sensors/trace-check.md) | hält, dass jede Commit-Botschaft eine Traceability-Kennung nennt | [ADR-0027](../docs/plan/adr/0027-commits-traceability-modul.md) (löst die Skript-Mechanik von [ADR-0013](../docs/plan/adr/0013-pr-ci-und-traceability-gate.md) ab); [`DC-FA-COMMITS-001`](../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in) |
 | [`make adr-check`](sensors/adr-check.md) | hält, dass eine `Accepted`-ADR nicht inhaltlich überschrieben wird | [ADR-0024](../docs/plan/adr/0024-vcs-immutable-gate.md) (löst die Skript-Mechanik von [ADR-0016](../docs/plan/adr/0016-adr-immutable-gate.md) ab); [ADR-0025](../docs/plan/adr/0025-codepaths-ignore-refs.md) (entfernt das Alt-Skript); [`AGENTS.md` §3.5](../AGENTS.md#35-adrs-sind-nach-accepted-immutable) |
@@ -127,6 +128,7 @@ behaupten.
 | `make slice-mv` | Lifecycle-Wechsel eines Slice: reiner Move-Commit + Verweis-Reparatur (eingehend/ausgehend) als eigener Commit — automatisiert die §3.3-Zweikommits | kein Gate · adoptiert aus ai-harness-init |
 | `make history-range-guard` | Vorlauf-Wächter für history-lesende Targets: angeforderte Range auflösbar und nicht leer (stilles Grün über leerem Prüfbereich, shallow-Clone) | kein Gate · adoptiert aus ai-harness-init |
 | `make selbstpruefung` | Negativ-Selbsttest des commit-msg-Hooks im Wegwerf-Klon: ohne Kennung fällt der Commit, mit Kennung geht er durch, `make gates` läuft im Klon | kein Gate · adoptiert aus ai-harness-init |
+| `make image-publish` | baut den Index `linux/amd64` + `linux/arm64`, pusht ihn nach `PUBLISH_REPO` und prüft den **gepushten** gegen die geprüften Bilder (Plattformen, Labels, Binary je Plattform). **Netz**, Release-Pfad | kein Gate · [ADR-0102](../docs/plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md) |
 | `make tidy` | pflegt `go.mod`/`go.sum` in Docker — bewusster Akt am Dependency-Stand | kein Gate |
 | `make build` | baut das Runtime-Image — Prerequisite von `image-test` und damit von `ci`/`fullbuild` | kein Gate |
 | `make run` | Selbst-Smoke-Test des gebauten Images | kein Gate |
@@ -150,7 +152,7 @@ sind deshalb keine Gates, auch keine Meta-Gates.
 
 | Klasse | Was geprüft wird | Targets | Bindepunkt |
 | --- | --- | --- | --- |
-| **Produkt-Gates** | Eigenschaften des Arbeitsprodukts (Code, Doku, Image) | `lint`, `test`, `arch-check`, `coverage-gate`, `semgrep`, `doc-check`, `image-test` | Arbeitsbaum-Inhalt (in `make gates`/`ci`) |
+| **Produkt-Gates** | Eigenschaften des Arbeitsprodukts (Code, Doku, Image) | `lint`, `test`, `arch-check`, `coverage-gate`, `semgrep`, `doc-check`, `image-test`; `image-test-arm64` (Release-Pfad) | Arbeitsbaum-Inhalt (in `make gates`/`ci`; `image-test-arm64` in `release.yml`) |
 | **Produkt-Gate mit fremdem Gegenstand** | das **publizierte** Image statt des Arbeitsbaums — CVEs entstehen ohne Commit | `image-scan` | Netz, Nachtlauf, **nicht** in `gates` |
 | **Meta-/Governance-Gates** | Harness-Integrität & Prozess-Invarianten („keine Harness-Lüge") | `gate-consistency`, `planning-check`, `baseline-verify`, `workflow-pins` (in `gates`); `trace-check`, `adr-check` (Commit-/Diff-Bindepunkt, **nicht** in `gates`/`ci`); `review-coverage`, `mention-coverage` (eigenständige Fokus-Läufe, **nicht** in `gates`/`ci`); `completeness-check`, `verify-closure-notes` (**Closure-Bindepunkte**: in `fullbuild`, **nicht** `gates`/`ci`) | Doku↔Makefile, Roadmap↔Lifecycle, Commit↔ID, ADR-Immutability, Requirements-Waisen, Closure-Note-Substanz, Risiko-Ausgänge, Vendor-Integrität, `uses:`-Pin-Form, Review-Report-Deckung, Erwähnungs-Deckung |
 

@@ -87,6 +87,33 @@ bench: build ## DC-QA-01-Benchmark: generiertes Fixture, N=3 Läufe, Median < 5 
 image-test: build ## DC-FA-DIST-001-Akzeptanzkriterien gegen das lokale Image (nativ vs. Container, :ro, Mount-Hinweis).
 	@bash tools/image-test.sh
 
+# Die zweite Plattform des Release-Index (ADR-0102). Gebaut wird per
+# Cross-Compile ohne Emulation; Binary und Container laufen dann unter
+# binfmt/QEMU — ohne die Registrierung fuer arm64 bricht image-test.sh ab.
+image-test-arm64: ## DC-FA-DIST-001-Akzeptanzkriterien gegen die linux/arm64-Variante (braucht binfmt/QEMU fuer arm64; ADR-0102).
+	$(DOCKER_BUILD) --platform linux/arm64 --load --build-arg VERSION=$(VERSION) --target runtime -t $(IMAGE):arm64 .
+	@IMAGE_REF=$(IMAGE):arm64 PLATFORM=linux/arm64 bash tools/image-test.sh
+
+# Release-Pfad (ADR-0102): baut den Index beider Plattformen, pusht ihn unter
+# v$(VERSION) — und :latest nur mit PUBLISH_LATEST=true (ADR-0014) — und prueft
+# danach den GEPUSHTEN Index gegen die geprueften lokalen Bilder
+# $(IMAGE):latest (amd64) und $(IMAGE):arm64. Setzt einen buildx-Builder mit
+# Multi-Plattform-Faehigkeit und eine angemeldete Registry voraus.
+PUBLISH_REPO   ?=
+PUBLISH_LATEST ?= false
+image-publish: ## Index linux/amd64+linux/arm64 bauen, nach PUBLISH_REPO pushen und gegen die geprueften Bilder pruefen (Netz, Release-Pfad; ADR-0102).
+	@test -n "$(PUBLISH_REPO)" || { echo "image-publish: PUBLISH_REPO fehlt (z. B. ghcr.io/pt9912/d-check)" >&2; exit 2; }
+	docker buildx build $(PROGRESS_FLAG) --platform linux/amd64,linux/arm64 \
+	  --provenance=false --sbom=false \
+	  --build-arg GO_VERSION=$(GO_VERSION) \
+	  --build-arg GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION) \
+	  --build-arg VERSION=$(VERSION) --target runtime \
+	  -t $(PUBLISH_REPO):v$(VERSION) $(if $(filter true,$(PUBLISH_LATEST)),-t $(PUBLISH_REPO):latest) \
+	  --push .
+	@REF=$(PUBLISH_REPO):v$(VERSION) VERSION=$(VERSION) \
+	  TESTED_AMD64=$(IMAGE):latest TESTED_ARM64=$(IMAGE):arm64 \
+	  bash tools/image-verify-published.sh
+
 image-scan: ## CVE-Scan gegen die PUBLIZIERTEN Images (Netz, NICHT in gates, Trivy digest-gepinnt; ADR-0066). Exit 1 = behebbare CRITICAL/HIGH, 2 = Scan gescheitert.
 	@bash tools/image-scan.sh
 
@@ -229,8 +256,10 @@ freshness-golangci: ## Neueren golangci-lint-Release als GOLANGCI_LINT_VERSION m
 # die EINZIGE Handhabe, weil sein Tag `nonroot` keine Version fuehrt.
 #
 # Referenz UND Pin kommen aus DERSELBEN FROM-Zeile — zwei Quellen waeren zwei
-# Spiegel, und ein Wechsel des Images liesse den einen stehen.
-image-digest-axis = @set -- $$(awk -v p='$(1)' '$$1=="FROM" && index($$2,p)==1 { d=$$2; sub(/.*@/,"",d); sub(/@.*/,"",$$2); print $$2, d; exit }' Dockerfile \
+# Spiegel, und ein Wechsel des Images liesse den einen stehen. Flags vor der
+# Referenz (`--platform=…`) werden uebersprungen; die Referenz ist das erste
+# Feld nach FROM, das nicht mit `--` beginnt.
+image-digest-axis = @set -- $$(awk -v p='$(1)' '$$1=="FROM" { i=2; while (substr($$i,1,2)=="--") i++; if (index($$i,p)==1) { r=$$i; d=r; sub(/.*@/,"",d); sub(/@.*/,"",r); print r, d; exit } }' Dockerfile \
 	  | sed -e 's|$${GO_VERSION}|$(GO_VERSION)|' -e 's|$${GOLANGCI_LINT_VERSION}|$(GOLANGCI_LINT_VERSION)|'); \
 	NAME="$$1" PINNED="$$2" \
 	  ADVICE='Dockerfile-Digest der Stage nachziehen (ADR-0011); make versions zeigt den Stand.' \

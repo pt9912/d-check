@@ -98,7 +98,7 @@ updates:
 # Frage "anderer Bau desselben Tags". Der Ausschluss steht also auf der
 # Policy-Entscheidung, nicht auf einem technischen Bruch.
 #
-# DRITTE, UNABHAENGIGE TATSACHE: `FROM golang:${GO_VERSION}@sha256:...` und das
+# DRITTE, UNABHAENGIGE TATSACHE: `FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}@sha256:...` und das
 # golangci-lint-Pendant wuerde Dependabot ohnehin nicht parsen -- sein
 # Tag-Muster kennt kein `${...}`. Der einzige Pin, den es sehen wuerde, ist das
 # Runtime-Basis-Image.

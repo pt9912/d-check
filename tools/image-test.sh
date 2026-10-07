@@ -15,13 +15,22 @@
 #
 # „Nativ" in einem Docker-only-Repo: das statische Binary wird aus dem
 # Runtime-Image extrahiert (docker cp) und direkt ausgeführt — kein
-# Host-Go (AGENTS.md §3.1). Annahme: Host-Architektur = Image-
-# Architektur (amd64); auf abweichenden Hosts (arm64) bricht der
-# Nativ-Lauf laut ab — dann Binary via qemu/binfmt ausführen oder den
-# Vergleich auf zwei Container-Varianten umstellen.
+# Host-Go (AGENTS.md §3.1).
+#
+# Plattform: IMAGE_REF nennt das Bild (Default `$IMAGE:latest`), PLATFORM
+# optional die Plattform (`linux/amd64`, `linux/arm64`; leer = die des
+# Hosts). Container und extrahiertes Binary laufen auf derselben Plattform;
+# die ELF-Maschine des Binaries wird gegen sie geprüft, sonst prüfte ein
+# Bild, das still die Host-Variante liefert, die falsche (DC-FA-DIST-001,
+# ADR-0102). Grenze: eine Plattform, die nicht die des Hosts ist, braucht
+# binfmt/QEMU auf dem Host — fehlt es, bricht der Lauf mit Hinweis ab.
 set -euo pipefail
 
 IMAGE="${IMAGE:-d-check}"
+REF="${IMAGE_REF:-$IMAGE:latest}"
+PLATFORM="${PLATFORM:-}"
+PLAT=()
+[ -z "$PLATFORM" ] || PLAT=(--platform "$PLATFORM")
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
@@ -31,10 +40,22 @@ fail() {
 }
 
 # Binary aus dem Runtime-Image extrahieren (identisches Artefakt).
-cid="$(docker create "$IMAGE":latest)"
+cid="$(docker create ${PLAT[@]+"${PLAT[@]}"} "$REF")"
 docker cp -q "$cid":/d-check "$WORK/d-check"
 docker rm "$cid" > /dev/null
 chmod +x "$WORK/d-check"
+
+# ELF-Maschine (Byte 18) gegen die verlangte Plattform: 3e = x86-64,
+# b7 = AArch64.
+want_arch="${PLATFORM#linux/}"
+if [ -z "$want_arch" ]; then
+  case "$(uname -m)" in x86_64) want_arch=amd64 ;; aarch64|arm64) want_arch=arm64 ;; *) want_arch="$(uname -m)" ;; esac
+fi
+case "$want_arch" in amd64) want_mach=3e ;; arm64) want_mach=b7 ;; *) fail "Plattform $want_arch nicht unterstützt" ;; esac
+got_mach="$(od -An -tx1 -j18 -N1 "$WORK/d-check" | tr -d ' \n')"
+[ "$got_mach" = "$want_mach" ] \
+  || fail "Binary in $REF ist ELF-Maschine 0x$got_mach, verlangt $want_arch (0x$want_mach)"
+echo "image-test: Plattform $want_arch — $REF"
 
 # Fixture: ein gültiger Link, ein kaputter Link.
 mkdir -p "$WORK/fixture/docs"
@@ -44,8 +65,10 @@ printf 'ziel\n' > "$WORK/fixture/docs/b.md"
 # --- (1) Happy: nativ vs. Container byte-identisch ------------------
 native_exit=0
 "$WORK/d-check" "$WORK/fixture" > "$WORK/native.out" 2> "$WORK/native.err" || native_exit=$?
+[ "$native_exit" -ne 126 ] \
+  || fail "Binary für $want_arch auf diesem Host nicht ausführbar — binfmt/QEMU für $want_arch fehlt"
 container_exit=0
-docker run --rm --network none -v "$WORK/fixture":/repo:ro "$IMAGE":latest \
+docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none -v "$WORK/fixture":/repo:ro "$REF" \
   > "$WORK/container.out" 2> "$WORK/container.err" || container_exit=$?
 
 [ "$native_exit" -eq 1 ] || fail "nativer Lauf: Exit $native_exit, want 1"
@@ -61,14 +84,14 @@ echo "image-test: (1) Happy — nativ und Container byte-identisch, Exit 1"
 rm "$WORK/fixture/docs/a.md"
 printf '# A\n\n[ok](b.md)\n' > "$WORK/fixture/docs/a.md"
 ro_exit=0
-docker run --rm --network none -v "$WORK/fixture":/repo:ro "$IMAGE":latest \
+docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none -v "$WORK/fixture":/repo:ro "$REF" \
   > /dev/null 2> "$WORK/ro.err" || ro_exit=$?
 [ "$ro_exit" -eq 0 ] || fail "read-only-Lauf: Exit $ro_exit, want 0 (stderr: $(cat "$WORK/ro.err"))"
 echo "image-test: (2) Boundary — read-only-Mount, vollständige Prüfung, Exit 0"
 
 # --- (3) Negative: kein Mount → Exit 2 + Mount-Hinweis --------------
 nomount_exit=0
-docker run --rm --network none "$IMAGE":latest \
+docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none "$REF" \
   > /dev/null 2> "$WORK/nomount.err" || nomount_exit=$?
 [ "$nomount_exit" -eq 2 ] || fail "Lauf ohne Mount: Exit $nomount_exit, want 2"
 grep -q '/repo gemountet' "$WORK/nomount.err" \
@@ -93,7 +116,7 @@ for mode in doctor repair; do
   nx=0
   "$WORK/d-check" "--$mode" "$WORK/idsfix" > "$WORK/n.$mode.out" 2> "$WORK/n.$mode.err" || nx=$?
   cx=0
-  docker run --rm --network none -v "$WORK/idsfix":/repo:ro "$IMAGE":latest "--$mode" \
+  docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none -v "$WORK/idsfix":/repo:ro "$REF" "--$mode" \
     > "$WORK/c.$mode.out" 2> "$WORK/c.$mode.err" || cx=$?
   [ "$nx" -eq "$cx" ] || fail "--$mode: Exit nativ $nx != Container $cx"
   [ "$nx" -eq 1 ] || fail "--$mode: Exit $nx, want 1"

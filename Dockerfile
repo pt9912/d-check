@@ -32,7 +32,10 @@ ARG GO_VERSION=1.27.1
 ARG GOLANGCI_LINT_VERSION=v2.14.0
 
 # ---- deps ------------------------------------------------------------------
-FROM golang:${GO_VERSION}@sha256:162be5298a40ed317005c8339c6de4d10d3eef336d66dc8e9259b03ab9d3a6d2 AS deps
+# Die Go-Stufen laufen auf der Build-Plattform (kein QEMU) und kompilieren
+# in `build` für die Ziel-Plattform; erst die Runtime-Stufe trägt die
+# Ziel-Plattform (DC-FA-DIST-001, ADR-0102).
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}@sha256:162be5298a40ed317005c8339c6de4d10d3eef336d66dc8e9259b03ab9d3a6d2 AS deps
 
 WORKDIR /src
 ENV GOFLAGS="-mod=readonly -buildvcs=false" \
@@ -95,12 +98,15 @@ RUN mkdir -p /out && \
 # ---- build -----------------------------------------------------------------
 FROM deps AS build
 
+ARG TARGETOS
+ARG TARGETARCH
+
 # VERSION (Git-Tag) ins Binary einbetten — Quelle des Image-Refs in
 # `--print-mk` (DC-FA-CLI-010, slice-038). Default für Dev-/Gate-Builds;
 # die Release-Pipeline setzt den Tag (make ci VERSION=…).
 ARG VERSION=0.0.0-dev
 COPY . .
-RUN CGO_ENABLED=0 go build \
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
     -ldflags="-s -w -X 'github.com/pt9912/d-check/internal/adapter/driving/cli.version=${VERSION}'" \
     -o /out/d-check \
     ./cmd/d-check
