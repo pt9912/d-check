@@ -59,7 +59,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `tools/image-scan.sh` | update | Plattform-Schleife |
 | `harness/sensors/image-scan.md` | update | Vertrag und Grenze |
 
-*(Plan-Änderung vor dem Code-Commit: ein **Plattform-Nachweis** je Lauf — gemessen scannt Trivy ein Einzel-Manifest-Image bei `--platform linux/arm64` still als amd64 mit Exit 0; ohne Nachweis wäre der arm64-Scan dort eine Behauptung. Dazu die Funktion `arch_aus_json` mit vier Selbsttest-Proben und der Spiegel „BEIDE Trivy-Läufe" im Skriptkopf und in der Sensor-Datei.)*
+*(Plan-Änderung vor dem Code-Commit: ein **Plattform-Nachweis** je Lauf — gemessen scannt Trivy ein Einzel-Manifest-Image bei `--platform linux/arm64` still als amd64 mit Exit 0; ohne Nachweis wäre der arm64-Scan dort eine Behauptung. Dazu die Funktion `arch_aus_json` mit vier Selbsttest-Proben und der Spiegel „BEIDE Trivy-Läufe" im Skriptkopf und in der Sensor-Datei. Nach R1: die Plattformen kommen aus dem Index selbst statt aus einer Kopie (F-1), ein Ref ohne lesbaren Index gilt als gescheitert; Geschichte-Anhänge an [ADR-0066](../../adr/0066-cve-scan-gegen-das-publizierte-image.md) und [ADR-0102](../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md) (F-2, F-3).)*
 
 ## 4. Trigger
 
@@ -78,7 +78,7 @@ wellenlos hier geprüft.
 
 ## 6. Risiken und offene Punkte
 
-- Der Nachtlauf verdoppelt seine Scan-Zeit. — **Ausgang:** *(offen)*
+- Der Nachtlauf verdreifacht seine Trivy-Läufe je Image (Plattform-Nachweis, Vollbericht, Entscheidung, je Plattform). — **Ausgang:** *(offen)*
 
 ## 7. Closure-Notiz
 
