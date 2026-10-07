@@ -13,7 +13,7 @@ slice-256 (Multi-Arch-Index).
 
 **Berührte Spec-Stellen:** — *(Nachtlauf-Sensor, keine Spec-Aussage)*.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-10-07.
 
