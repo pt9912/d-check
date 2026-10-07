@@ -930,10 +930,13 @@ planning:
 # Regel ohne Eintrag in der Autoritaets-Doku (harness/README.md §Sensors) ⇒
 # gate-undocumented. exempt-targets bleibt leer -- d-check dokumentiert jedes
 # Target des Makefile UND des Fragments a-check.mk (das Rezept hinter
-# arch-check) in harness/README.md §Sensors, dem EINEN Gate-Index (MR-071, aus der
-# adoptierten Vorlage: "Der Gate-Index steht einmal ... Diese Datei fuehrt die
-# Liste nicht.") -- die erschoepfende Pruefung des abgeloesten
-# gate-consistency.sh-Kerns.
+# arch-check) in harness/README.md §Sensors, dem EINEN Gate-Index (MR-071) --
+# die erschoepfende Pruefung des abgeloesten gate-consistency.sh-Kerns.
+# a-check.mk liegt im Wurzelverzeichnis und ist an die Repo-Politik angepasst;
+# die Regel der Baseline fuer Werkzeug-Teile des Index gilt Fragmenten unter
+# harness/mk/, die ein Werkzeug selbst erzeugt (MR-074, Bewegung 1).
+# Grenze: targets folgt keinem include -- ein eingebundenes Fragment wird nur
+# geprueft, wenn es in makefiles steht.
 # Loest den Doku-↔-Makefile-Kern von tools/gate-consistency.sh ab (ADR-0031).
 targets:
   makefiles: [Makefile, a-check.mk]

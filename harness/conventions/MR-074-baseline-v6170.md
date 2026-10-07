@@ -121,8 +121,8 @@
   mit Auslassung („Der Gate-Index steht einmal ... Diese Datei fuehrt die
   Liste nicht."); genau die ausgelassene Mitte trägt in `v6.17.0` den Satz,
   dass Targets aus Werkzeug-Fragmenten im Teil des Werkzeugs stehen. Der
-  zitierende Kommentar bleibt nach MR-039 unverändert; seine Aussage hängt an
-  Bewegung 1 oben.
+  zitierende Kommentar blieb nach MR-039 zunächst unverändert; **slice-254
+  hat ihn neu geschrieben**, das gekürzte Zitat ist entfallen.
 - **Begründung:** Der Nachtlauf meldete neuere Tags (`make
   baseline-freshness`); das Release `v6.17.0` lag vor. Die Hebung ist eine
   reine Fortschreibung; die inhaltlichen Bewegungen (oben) warten auf eigene

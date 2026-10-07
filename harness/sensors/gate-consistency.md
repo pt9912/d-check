@@ -18,6 +18,11 @@ Richtungen** — läuft via Modul `targets` (Image, dogfood). Der
    `configyaml.Decode`-Go-Test unter `make test`
    ([ADR-0032](../../docs/plan/adr/0032-gate-consistency-tombstone.md)); dieses
    Target trägt sie nicht mehr.
+3. **Es folgt keinem `include`** — gelesen werden genau die Dateien in
+   `targets.makefiles` (heute `Makefile` und das Fragment `a-check.mk`). Ein
+   weiteres eingebundenes Fragment bliebe ohne Befund, bis es dort eingetragen
+   ist; die Liste der `include`-Zeilen im `Makefile` zeigt, was gelesen werden
+   müsste.
 
 ## Bindung
 

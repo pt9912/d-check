@@ -42,7 +42,11 @@ Fragment ohne Index-Zeile meldet dann `gate-undocumented`.
   jedem Lauf selbst schreibt; a-check tut das nicht (`--print-mk` liefert nur
   das Fragment), und `a-check.mk` ist an die Repo-Politik angepasst, gehört
   also dem Repo. Seine Targets stehen deshalb dort, wo die Baseline die Targets
-  des Repos führt: in `harness/README.md` §Sensors.
+  des Repos führt: in `harness/README.md` §Sensors. Tragender Anker: die
+  Baseline-Regel für Werkzeug-Teile gilt einem Werkzeug, das Fragmente unter
+  dem Werkzeug-Verzeichnis selbst erzeugt; ein `--print-mk`-Fragment im
+  Wurzelverzeichnis führt die Baseline im Haupt-Index (wie ihr `d-check.mk`-Weg
+  in der Vorlage `.d-check.yml`) — R1-F-4.
 - **Disjunktheits-Schalter** (`authority-disjoint`) — mit einer einzigen
   Autoritäts-Datei wirkungslos.
 - **Die übrigen Bewegungen aus dem Hebung-Eintrag** — eigene Slices (Reviewer-Regeln,
@@ -58,7 +62,9 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
       `make arch-check`, mit Vertrag (Rezept aus dem Fragment, `arch-check`
       delegiert dorthin) und unveränderter Bindung.
 - [ ] `.d-check.yml` `targets.makefiles` liest `a-check.mk`; der Kommentar
-      nennt die Zahl der Targets gemessen. Bewusstes Brechen: ohne die
+      sagt gemessen, was der Index deckt. *(Plan-Änderung: statt einer Zahl,
+      die schon vor dem Slice veraltet war, die Aussage — nach R1-F-2.)*
+      Bewusstes Brechen: ohne die
       Index-Zeile meldet `make gate-consistency` `gate-undocumented` für
       `a-check` aus dem Fragment.
 - [ ] `make gates` grün.
@@ -77,7 +83,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 **Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025)):
 die Sensor-Datei `harness/sensors/arch-check.md`, der Kommentar zum
-`targets`-Block in `.d-check.yml` (Target-Zahl), Bewegung 1 des Hebung-Eintrags (Kandidat
+`targets`-Block in `.d-check.yml` (Target-Aussage), Bewegung 1 des Hebung-Eintrags (Kandidat
 → eingelöst, im Closure vermerkt).
 
 ## 4. Trigger
