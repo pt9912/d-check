@@ -60,13 +60,24 @@ TRIVY_DIGEST="${TRIVY_DIGEST:-sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018
 # Bestaetigung der Inhalts-Gleichheit.
 IMAGE_SCAN_REFS="${IMAGE_SCAN_REFS:-ghcr.io/pt9912/d-check:latest pt9912/d-check:latest}"
 
-# JEDE Plattform des Index (ADR-0102). Ohne `--platform` waehlt Trivy die
-# Variante des Runners, und die uebrigen blieben ungescannt, ohne dass der
-# Lauf es sagt. GEMESSEN: ein Einzel-Manifest-Image (bis v0.83.0) scannt
-# Trivy bei `--platform linux/arm64` STILL als amd64, mit Exit 0 -- deshalb
-# prueft der Plattform-Nachweis unten die gescannte Architektur, statt dem
-# Flag zu glauben. Fehlt eine Plattform im Index, endet Trivy mit FATAL.
-IMAGE_SCAN_PLATFORMS="${IMAGE_SCAN_PLATFORMS:-linux/amd64 linux/arm64}"
+# JEDE Plattform des Index (ADR-0102), gelesen aus dem Index SELBST — keine
+# Kopie der Plattformliste des Release-Pfads, die bei einer neuen Plattform
+# still zurueckbliebe. Ohne `--platform` waehlt Trivy die Variante des
+# Runners, und die uebrigen blieben ungescannt, ohne dass der Lauf es sagt.
+# GEMESSEN: ein Einzel-Manifest-Image (bis v0.83.0) scannt Trivy bei
+# `--platform linux/arm64` STILL als amd64, mit Exit 0 -- deshalb prueft der
+# Plattform-Nachweis unten die gescannte Architektur, statt dem Flag zu
+# glauben. Ein Ref ohne lesbaren Index gilt als gescheitert. IMAGE_SCAN_PLATFORMS
+# uebersteuert die Liste fuer einen gezielten Lauf; leer = aus dem Index.
+IMAGE_SCAN_PLATFORMS="${IMAGE_SCAN_PLATFORMS:-}"
+
+# Plattformen eines Index aus der Registry, Attestations-Eintraege
+# (`unknown/unknown`) ausgenommen; leer, wenn der Ref kein lesbarer Index ist.
+index_plattformen() {
+  docker buildx imagetools inspect "$1" \
+    --format '{{range .Manifest.Manifests}}{{.Platform.OS}}/{{.Platform.Architecture}}{{if .Platform.Variant}}/{{.Platform.Variant}}{{end}}{{"\n"}}{{end}}' \
+    2>/dev/null | grep -v '^unknown/' | sed '/^$/d' | tr '\n' ' ' || true
+}
 
 # Cache ausserhalb des Repos, wie das Regelset von `semgrep` (ADR-0010): der
 # Arbeitsbaum bleibt sauber, und `git status` meldet keine Werkzeug-Artefakte.
@@ -147,10 +158,6 @@ if [ -z "$(printf '%s' "${IMAGE_SCAN_REFS}" | tr -d '[:space:]')" ]; then
   echo "image-scan: IMAGE_SCAN_REFS ist leer — nichts zu pruefen ist KEIN gruener Befundstand." >&2
   exit 2
 fi
-if [ -z "$(printf '%s' "${IMAGE_SCAN_PLATFORMS}" | tr -d '[:space:]')" ]; then
-  echo "image-scan: IMAGE_SCAN_PLATFORMS ist leer — nichts zu pruefen ist KEIN gruener Befundstand." >&2
-  exit 2
-fi
 
 mkdir -p "$CACHE"
 
@@ -162,10 +169,18 @@ trivy() {
 }
 
 findings=0
+scanned=""
 errored=0
 
 for ref in ${IMAGE_SCAN_REFS}; do
-for plat in ${IMAGE_SCAN_PLATFORMS}; do
+plats="${IMAGE_SCAN_PLATFORMS}"
+[ -n "$(printf '%s' "${plats}" | tr -d '[:space:]')" ] || plats="$(index_plattformen "${ref}")"
+if [ -z "$(printf '%s' "${plats}" | tr -d '[:space:]')" ]; then
+  echo "image-scan: ${ref}: kein lesbarer Multi-Plattform-Index — die Plattformen sind UNBEKANNT, nichts gescannt."
+  errored=1
+  continue
+fi
+for plat in ${plats}; do
   label="${ref} (${plat})"
 
   # Plattform-Nachweis VOR der Auswertung: gescannt ist, was Trivy als
@@ -176,8 +191,10 @@ for plat in ${IMAGE_SCAN_PLATFORMS}; do
     continue
   fi
   got_arch="$(arch_aus_json "${meta}")"
-  if [ "${got_arch}" != "${plat#*/}" ]; then
-    echo "image-scan: ${label}: Trivy meldet Architektur [${got_arch:-<leer>}] statt ${plat#*/} — die Plattform ist NICHT gescannt."
+  # linux/arm64/v8 -> arm64: die Architektur ist das zweite Segment.
+  want_arch="${plat#*/}"; want_arch="${want_arch%%/*}"
+  if [ "${got_arch}" != "${want_arch}" ]; then
+    echo "image-scan: ${label}: Trivy meldet Architektur [${got_arch:-<leer>}] statt ${want_arch} — die Plattform ist NICHT gescannt."
     errored=1
     continue
   fi
@@ -207,6 +224,7 @@ for plat in ${IMAGE_SCAN_PLATFORMS}; do
     continue
   fi
 
+  scanned="${scanned} ${label}"
   count="$(zaehle "${out}")"
   if [ "${count}" = "0" ]; then
     echo "OK — keine behebbaren CRITICAL/HIGH in ${label}."
@@ -226,5 +244,5 @@ fi
 if [ "${findings}" = "1" ]; then
   exit 1
 fi
-echo "image-scan: keine behebbaren CRITICAL/HIGH in: ${IMAGE_SCAN_REFS} — je Plattform: ${IMAGE_SCAN_PLATFORMS}"
+echo "image-scan: keine behebbaren CRITICAL/HIGH in:${scanned}"
 exit 0

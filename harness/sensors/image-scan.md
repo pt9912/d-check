@@ -10,9 +10,10 @@ und gegen sie ist ein push-getriebenes Gate prinzipiell blind.
 fände nur die CVEs von gestern. Der **Scanner** ist digest-gepinnt, die **DB**
 bewusst nicht.
 
-Je Registry **und je Plattform** des Index (`IMAGE_SCAN_PLATFORMS`, Default
-`linux/amd64 linux/arm64`,
-[ADR-0102](../../docs/plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md))
+Je Registry **und je Plattform** des Index — die Plattformen liest das Skript
+aus dem Index selbst, nicht aus einer Kopie der Release-Liste
+([ADR-0102](../../docs/plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md));
+`IMAGE_SCAN_PLATFORMS` übersteuert sie für einen gezielten Lauf. Je Plattform
 drei Läufe: ein **Plattform-Nachweis**, der prüft, dass Trivy wirklich die
 verlangte Architektur gescannt hat; ein Vollbericht über alle Schweregrade, der
 nie fällt; und der Entscheidungslauf `CRITICAL`/`HIGH` **mit verfügbarem
@@ -31,6 +32,11 @@ Fix** — nur der macht rot.
    Exit 0. Der Plattform-Nachweis vergleicht deshalb die gemeldete
    Architektur; weicht sie ab oder fehlt die Plattform im Index, gilt der Scan
    als gescheitert (Exit 2), nicht als grün.
+4. **Ohne lesbaren Index gibt es keinen Scan.** Ein Ref, dessen Plattformen
+   sich nicht aus einem Multi-Plattform-Index lesen lassen (etwa ein
+   Einzel-Manifest bis `v0.83.0`), gilt als gescheitert, nicht als gescannt;
+   nur `IMAGE_SCAN_PLATFORMS` scannt ihn dann gezielt, und der
+   Plattform-Nachweis aus 3. bleibt dabei in Kraft.
 
 `--selftest` prüft die Auswertung netzlos (sieben Proben zur Zählung, vier zur
 Architektur); die Trivy-**Feldnamen** deckt er nicht. Fehlt das Feld
