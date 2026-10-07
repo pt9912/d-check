@@ -4,6 +4,25 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.83.0] — 2026-10-07
+
+### Added
+
+- slice-252 — **`targets` prüft opt-in die Disjunktheit der
+  Autoritäts-Dateien** ([`DC-FA-TGT-001`](spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in),
+  [ADR-0101](docs/plan/adr/0101-targets-authority-disjunkt.md)). Mit
+  `targets.authority-disjoint: true` meldet ein Target, das mehr als eine
+  `targets.authority`-Datei in der **ersten Zelle** einer Tabellenzeile
+  führt, den neuen Grund-Code `gate-declared-twice` — an jeder führenden Zeile
+  in einer späteren Datei, die Meldung nennt die Datei der ersten Nennung.
+  Erwähnungen in anderen Zellen (etwa „eingehängt in `make gates`" in der
+  Vertrag-Spalte) zählen nicht; `exempt-targets` nimmt nicht aus; die Prüfung
+  läuft auch ohne `targets.makefiles`. Eine Doppelung innerhalb einer Datei
+  ist kein Fall; ein symbolischer Link auf eine andere Autoritäts-Datei zählt
+  als zweite Datei. Ohne den Schalter ist die Ausgabe byte-identisch. Anlass:
+  die Baseline-Konvention (`ai-harness-course` `v6.16.0`) führt, dass kein
+  Target in zwei Teilen des Gate-Index steht.
+
 ## [0.82.0] — 2026-10-06
 
 ### Added
