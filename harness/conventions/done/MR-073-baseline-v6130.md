@@ -50,9 +50,9 @@
   erkannt, nicht in der ersten Liste;
   **27** blieben ganz frozen: 13 `done/`-Slices (inkl. Stub slice-224), 2
   Review-Reports, 3 aufgelöste MR-Dateien, CO-002, der eingehende CR, 1
-  Evidence-Datei, [ADR-0085](../../docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md)
+  Evidence-Datei, [ADR-0085](../../../docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md)
   (Provenanz-Prosa + Link, siehe unten —
-  [`docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md`](../../docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md)), 1
+  [`docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md`](../../../docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md)), 1
   Spec-Historie-Zeilen-Träger (`spec/lastenheft.md`), 3 Code-Kommentar-Träger,
   `.d-check.closure.yml`
   (2 Provenanz-Kommentare). Dazu der
@@ -63,11 +63,11 @@
 
   **`ignore-refs` wächst diesmal** — anders als beim Vorgänger, und das ist
   gemessen, nicht angenommen: **vier** eingefrorene Artefakte tragen den
-  entfernten `v6.9.0`-Baum als Markdown-**Link** ([ADR-0085](../../docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md)
+  entfernten `v6.9.0`-Baum als Markdown-**Link** ([ADR-0085](../../../docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md)
   in seiner Geltungsbegründung, die drei aufgelösten MR-Dateien
   MR-059/061/062 je in ihrer Begründung) und melden nach dem Entfernen
   `target-missing` — vier neue Einträge in `.d-check.yml`
-  ([`MR-069`](../conventions.md#mr-069--das-ignore-refs-ventil-ist-eine-deklarierte-gate-senkung-und-es-wächst-mit-jedem-bump)).
+  ([`MR-069`](../../conventions.md#mr-069--das-ignore-refs-ventil-ist-eine-deklarierte-gate-senkung-und-es-wächst-mit-jedem-bump)).
 
   **`d-check:cite`-Neu-Ankern, kein Zitat-Delta** — die Abwesenheits-Behauptung
   der ersten Fassung dieses Eintrags war falsch (Review-R1-F-1, gemessen am
@@ -79,7 +79,7 @@
   `modul-05-planning-harness.md` 170-171→180-181 und 160→170; die beiden
   Spannen des slice-240-Plans 363-364→373-374 und 369→379) — und **7**
   tag-only (Spanne identisch, nur der Baum-Pfad wechselte). Kein Zitat-Delta
-  ([`MR-039`](../conventions.md#mr-039)): die wörtlichen Zitate in lebenden
+  ([`MR-039`](../../conventions.md#mr-039)): die wörtlichen Zitate in lebenden
   Dokumenten (MR-056 zu `modul-05` §Lifecycle) sind im `v6.13.0`-Wortlaut
   unverändert — der Satz „…die Bedingung dafür, dass die Datei überhaupt
   nach `done/` darf…" steht zeilenidentisch (Zeile 36, im Delta nicht
