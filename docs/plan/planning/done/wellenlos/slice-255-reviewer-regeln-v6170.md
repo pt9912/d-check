@@ -7,7 +7,7 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
-**Bezug:** [`MR-074`](../../../../harness/conventions.md#mr-074) (Bewegung 3:
+**Bezug:** [`MR-074`](../../../../../harness/conventions.md#mr-074) (Bewegung 3:
 Reviewer-Regeln), Baseline `v6.17.0` · `regelwerk/modul-10-review-harness.md`
 §Ziel-Form: Reviewer-Skill und die Vorlagen
 `templates/.harness/skills/reviewer.template.md` /
@@ -73,7 +73,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
       Rollenwechsel nach Schritt 8, kein Self-Review.
 - [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft;
-      [MR-074](../../../../harness/conventions.md#mr-074) Bewegung 3 als eingelöst vermerkt.
+      [MR-074](../../../../../harness/conventions.md#mr-074) Bewegung 3 als eingelöst vermerkt.
 
 ## 3. Plan (vor Code)
 
@@ -83,7 +83,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `.harness/skills/closure-note-reviewer.md` | update | `pfad`, Version |
 | Hebung-Eintrag (MR-Datei) | update | Einlösung vermerkt (Closure) |
 
-**Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025)):
+**Spiegel vor dem Editieren** ([`MR-025`](../../../../../harness/conventions.md#mr-025)):
 `.claude/agents/reviewer.md` (Output-Beschreibung), die Agent-Prompts, die
 `pfad` als `Datei:Zeile` beschreiben, `harness/README.md` §Guides (nennt die
 Skills nur), die vorhandenen Cite-Direktiven im Reviewer-Skill.
@@ -129,18 +129,18 @@ wellenlos hier geprüft.
   nachgeschlagen werden: das Zitat steht in „…" mit ASCII-Schlusszeichen
   **hinter** der Direktive im selben Absatz.
 - **Steering-Loop-Eintrag:** keine neue Verkörperung —
-  [`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md)
-  (verkörpert als [`MR-025`](../../../../harness/conventions.md#mr-025))
+  [`BEO-ALL/semantic-change-body-only-edges-stale`](../../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md)
+  (verkörpert als [`MR-025`](../../../../../harness/conventions.md#mr-025))
   bekommt einen Beleg: die Spiegel-Liste lief über die Dateien, nicht über
   die Abschnitte der geänderten Datei selbst.
-- **Beobachtungs-Register (`../observations/`):** Evidence `slice-255` unter
+- **Beobachtungs-Register (`../../observations/`):** Evidence `slice-255` unter
   dem genannten Eintrag.
 - **Folge-Slices:** keine.
 - **Risiken aus §6:** entfallen (Begründung in §6). Trigger-Audit: kein
   Carveout, kein bootstrap-aware Gate, keine ADR und keine Hard Rule mit
-  eingetretenem Trigger; [MR-074](../../../../harness/conventions.md#mr-074)
+  eingetretenem Trigger; [MR-074](../../../../../harness/conventions.md#mr-074)
   Bewegung 3 als eingelöst vermerkt. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice —
   keine; (c) Register — die zitierte Beobachtung existiert und trägt Belege.
 
@@ -159,11 +159,11 @@ des Repos (`*`, `ALL`); deklariert.
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:**
-[`BEO-ALL/citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/state.md)
+[`BEO-ALL/citation-stretched-beyond-scope`](../../observations/BEO-ALL/citation-stretched-beyond-scope/state.md)
 — wörtliche Übernahmen aus der Baseline werden als `d-check:cite` geführt,
 damit ein Zitat nicht mehr trägt, als es sagt.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-07 — beide Läufe grün.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
