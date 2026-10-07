@@ -62,17 +62,17 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] Vendierter Baum steht auf `v6.17.0` (`SHA256SUMS` generiert und
+- [x] Vendierter Baum steht auf `v6.17.0` (`SHA256SUMS` generiert und
       verifiziert), der `v6.13.0`-Baum ist entfernt; §Baseline-Pin nachgezogen;
       der Vorgänger-Eintrag nach `conventions/done/`, neuer MR-Eintrag im Index.
-- [ ] Alle lebenden pin-gebundenen Referenzen nennen `v6.17.0` (Pfad-Verweise,
+- [x] Alle lebenden pin-gebundenen Referenzen nennen `v6.17.0` (Pfad-Verweise,
       Release-/Tree-URLs, bare Nennungen in lebenden Dokumenten, Symlinks unter
       `.claude/rules/`); `d-check:cite`-Spannen neu geankert; Zitat-Delta und
       Frozen-Liste im MR-Eintrag gemessen.
-- [ ] `make gates` grün; `make baseline-freshness` meldet den Pin aktuell.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
+- [x] `make gates` grün; `make baseline-freshness` meldet den Pin aktuell.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
       Rollenwechsel nach Schritt 8, kein Self-Review.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -108,21 +108,52 @@ wellenlos hier geprüft.
 ## 6. Risiken und offene Punkte
 
 - Ein lebender Verweis zeigt auf einen Anker oder eine Datei, die es im neuen
-  Baum nicht mehr gibt (Umbenennung im Delta). — **Ausgang:** *(offen)*
+  Baum nicht mehr gibt (Umbenennung im Delta). — **Ausgang:** entfallen — keine Datei entfiel, alle 15 Anker in lebenden Links lösen gegen `v6.17.0` auf (Verifier gemessen, da die Ziele außerhalb der Scan-Wurzel liegen).
 - Eine Mischfundstelle wird pauschal ersetzt und fälscht eine
-  Vergangenheits-Aussage. — **Ausgang:** *(offen)*
+  Vergangenheits-Aussage. — **Ausgang:** entfallen — Mischfundstellen zeilenweise entschieden (`observations/README.md` Zeile 21, `harness/conventions.md`), Reviewer und Verifier bestätigen die Frozen-Liste byte-genau.
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Der mechanische Teil hielt bei jeder Gegenprobe:
+  Re-Vendor mit Integritätsprüfung, Tag-Swaps je Datei mit zeilenweise
+  entschiedenen Mischfällen, Symlinks, vier neu geankerte Cite-Spannen bei
+  wortgleichem Text, `ignore-refs` ohne Zuwachs. Das rote `doc-check` nach
+  dem Entfernen des alten Baums war der zuverlässigste Sensor des Vorgangs —
+  es fand die übersehenen Skills, bevor ein Mensch sie sah.
+- **Was ging anders als geplant:** Der Text des Hebung-Eintrags, nicht die
+  Mechanik. Die erste Spiegel-Messung nahm `.harness/` ganz aus und übersah
+  die Skills; [MR-074](../../../../harness/conventions.md#mr-074) nannte eine unvollständige Liste inhaltlicher
+  Bewegungen, eine ungeprüfte Aussage über Werkzeug-Fragmente und danach
+  zwei falsche Zuordnungen (R1-F-1/F-2, Verifier V-1). Der Move-Commit des
+  Vorgänger-Eintrags lief mit `--no-verify`; das war unnötig — der Hook
+  lässt einen reinen Move durch, wenn die Korrektur schon im Arbeitsbaum liegt
+  und nur der Move gestagt ist (R1-F-6). Gestagt war aber auch das Entfernen
+  des alten Baums, und ein pfad-beschränkter Commit nimmt den
+  Arbeitsbaum-Inhalt — deshalb der Umweg.
+- **Steering-Loop-Eintrag:** keine neue Verkörperung. Die beiden berührten
+  Klassen sind bekannt:
+  [`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/state.md)
+  (Skills unter `.harness/`) und
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+  (das Delta-Inventar). Für künftige Hebungen trägt [MR-074](../../../../harness/conventions.md#mr-074) die Lehre im Text:
+  Spiegel-Messung schließt nur `.harness/baseline/` aus, nicht `.harness/`.
+- **Beobachtungs-Register (`../observations/`):** je eine Evidence-Datei
+  `slice-253` unter den beiden genannten Einträgen.
+- **Folge-Slices:** keine geschnitten. Benannte Kandidaten für eine
+  Adoptions-Entscheidung des Auftraggebers: ein Werkzeug-Teil des Gate-Index
+  für `a-check.mk` ([MR-074](../../../../harness/conventions.md#mr-074) Bewegung 1) und die übrigen inhaltlichen
+  Bewegungen 2–4.
+- **Risiken aus §6:** Risiko 1 (Anker im neuen Baum): entfallen — keine Datei
+  entfiel, alle Anker lösen auf. Risiko 2 (Mischfundstellen): entfallen —
+  zeilenweise entschieden, von Reviewer und Verifier bestätigt.
+  Trigger-Audit: der Auflösungs-Trigger des Vorgänger-Eintrags („die nächste
+  Pin-Hebung") ist eingetreten, er liegt in `conventions/done/`; kein
+  Carveout, kein bootstrap-aware Gate, keine ADR und keine Hard Rule mit
+  eingetretenem Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice —
+  keine; (c) Register — beide zitierten Beobachtungen existieren und tragen
+  Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

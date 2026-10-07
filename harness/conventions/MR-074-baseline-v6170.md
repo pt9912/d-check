@@ -77,7 +77,9 @@
   ohne den Plan dieses Slice (der den Tag als Gegenstand nennt; mit ihm 73 und
   184) —, **dazu zwei Skills unter `.harness/skills/`** mit 8 Vorkommen, die die
   erste Messung nicht sah, weil sie `.harness/` ganz ausnahm; erst das rote
-  `doc-check` nach dem Entfernen des alten Baums zeigte sie. **Lebend
+  `doc-check` nach dem Entfernen des alten Baums zeigte sie. **Für die nächste
+  Hebung:** die Spiegel-Messung schließt nur `.harness/baseline/` aus, nicht
+  `.harness/`. **Lebend
   retargetet:** `AGENTS.md`, `harness/README.md`, die drei `harness/rules/`-
   Dateien, alle aktiven `MR-*` außer dem Vorgänger, `.claude/agents/reviewer.md`,
   die beiden Skills, `roadmap.md`, `planning/README.md`, `spec/architecture.md`
