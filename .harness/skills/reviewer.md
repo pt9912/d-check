@@ -187,8 +187,8 @@ sondern ausschließlich die Frage.
   **vor welle-80** `Accepted` wurden: sie sind immutabel und bleiben auf ihren
   `§`-Ankern — zwei Formen, eine Regel
   ([`MR-000`](../../harness/conventions.md#mr-000--baseline-aussage)).
-- **LOW** (nice-to-fix) — *mit Konventions-Anker* (ADR, Hard Rule, Linter-Regel,
-  Eintrag in diesem Skill; ohne Anker kein Finding): Doku-Drift (Prosa-Modullisten, veraltete
+- **LOW** (nice-to-fix) — *mit Konventions-Anker* (ADR, Hard Rule, `MR-*`-Eintrag,
+  Linter-Regel, Eintrag in diesem Skill; ohne Anker kein Finding): Doku-Drift (Prosa-Modullisten, veraltete
   Beispiele); latente Wartungsfalle (hart verdrahteter Wert, der erst
   bei künftigem Edit zündet); Ketten-Duplikate in Make-Targets.
 - **INFO**: dokumentationswürdige, aber undokumentierte Annahme;
@@ -207,9 +207,9 @@ nur melden). Streit über eine Kategorisierung ⇒ Regel hier schärfen.
   Konventions-Anker ist kein Finding.
 - **Kein Verifier:** DoD-Abhaken und Gate-Lauf-Bestätigung sind nicht
   deine Rolle.
-- **Kein HIGH- oder MEDIUM-Finding ohne Failure-Szenario:** was sich nicht als
-  konkretes Versagen erzählen lässt, wird nicht als HIGH oder MEDIUM gemeldet.
-  LOW trägt stattdessen einen Konventions-Anker.
+- **Kein HIGH- oder MEDIUM-Finding ohne Failure-Szenario:**   <!-- d-check:cite .harness/baseline/v6.17.0/templates/.harness/skills/reviewer.template.md:87-88 -->
+  „was sich nicht als konkretes Versagen erzählen lässt, wird nicht als HIGH
+  oder MEDIUM gemeldet." LOW trägt stattdessen einen Konventions-Anker.
 - **Kein Lösungsvorschlag im Befund:** Lösungen gehören in die
   Übergabe an die Implementation, nicht ins Finding-Feld.
 - **REFUTED nur mit Beleg:** verworfen wird ausschließlich mit
@@ -221,9 +221,9 @@ nur melden). Streit über eine Kategorisierung ⇒ Regel hier schärfen.
 `kategorie` (HIGH/MEDIUM/LOW/INFO) · `quelle` (`DC-*`-ID, ADR-ID,
 `MR-*`-ID, Hard-Rule-Name, Linter-Regel, Abschnitt dieses Skills oder
 „Maintainability" — letzteres ist **kein** Konventions-Anker und trägt keinen
-LOW) · `pfad`
-(Datei · wörtliches, in der Datei eindeutig auffindbares Kurzzitat der Stelle
-als Anker; die Zeile darf als Lesehilfe dazu, ist aber nicht der Anker) ·
+LOW) · `pfad`   <!-- d-check:cite .harness/baseline/v6.17.0/templates/.harness/skills/reviewer.template.md:99-100 -->
+(Datei · „wörtliches, in der Datei eindeutig auffindbares Kurzzitat der Stelle
+als Anker; die Zeile darf als Lesehilfe dazu, ist aber nicht der Anker") ·
 `befund` (1–2 Sätze, beobachtbar, ohne
 Lösungsvorschlag) · `verifizierbar` (ja/nein — welcher Gate-Lauf
 würde den Befund bestätigen?) · `klasse` (stabile Kurz-Bezeichnung des

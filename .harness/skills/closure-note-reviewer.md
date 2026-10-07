@@ -73,9 +73,9 @@ sondern ein Steering-Loop-Signal — siehe §Pflege.
 ## Output-Schema (pro Finding)
 
 `kategorie` (HIGH/MEDIUM/LOW/INFO) · `quelle` (`Closure-Inhalt (a)`, `(b)` oder
-`(c)` — welcher der drei Pflicht-Inhalte fehlt) · `pfad`
-(`docs/plan/planning/done/<slice>.md` · wörtliches Kurzzitat der Stelle als
-Anker; die Zeile darf als Lesehilfe dazu, ist aber nicht der Anker) · `befund` (1–2 Sätze,
+`(c)` — welcher der drei Pflicht-Inhalte fehlt) · `pfad`   <!-- d-check:cite .harness/baseline/v6.17.0/templates/.harness/skills/closure-note-reviewer.template.md:77-78 -->
+(`docs/plan/planning/done/<slice>.md` · „wörtliches Kurzzitat der Stelle als
+Anker; die Zeile darf als Lesehilfe dazu, ist aber nicht der Anker") · `befund` (1–2 Sätze,
 beobachtbar, ohne Formulierungs-Vorschlag) · `verifizierbar` (**nein** —
 Floskel-Erkennung ist inferentiell; das Struktur-Gate bestätigt nur die Form) ·
 `klasse` (stabile Kurz-Bezeichnung der Floskel-Art, über Reviews hinweg
