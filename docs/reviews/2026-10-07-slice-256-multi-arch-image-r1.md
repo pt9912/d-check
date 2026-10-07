@@ -4,7 +4,7 @@
   Abgrenzung, §3 Plan samt Spiegel-Liste, §6 Risiken), gegen
   [ADR-0102](../plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)
   (Proposed), [ADR-0011](../plan/adr/0011-digest-pins-build-gate-images.md),
-  [ADR-0065](../plan/adr/0065-spiegel-gleichheit-ist-der-config-digest.md) (wird
+  ADR-0065 (wird
   abgelöst), gegen
   [`DC-FA-DIST-001`](../../spec/lastenheft.md#dc-fa-dist-001--docker-image)/[`DC-FA-DIST-002`](../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)
   (Lastenheft 0.98.0) und die Hard Rules `AGENTS.md` §3.1, §3.5–§3.7, §3.9 sowie §5

@@ -1,6 +1,6 @@
 # ADR-0102: Das Image ist ein Multi-Arch-Index, und der Spiegel kopiert ihn samt Index-Digest
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-07
 
@@ -140,6 +140,13 @@ tun" ist eine davon (Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR
   dem Host; ohne bricht er fail-closed mit Hinweis ab.
 - **Offen:** `make image-scan` scannt bis zum Folge-Vorgang nur die
   Host-Variante des Index.
+- **Negativ:** mit dem Status `Superseded by ADR-0102` meldet `matrix` jeden
+  Link auf ADR-0065 als `matrix-inactive`. Lebende Verweise ziehen auf diese
+  ADR um; [ADR-0068](0068-lokale-workflow-referenzen-ohne-pin.md) aber ist
+  `Accepted` und nennt ADR-0065 als ihren Anlass. Sie kommt deshalb in
+  `matrix.exempt-paths`, wie zuvor ADR-0047 — gemessener Preis: außer den drei
+  ADR-0065-Links trägt ihr Körper nur zwei Links auf `AGENTS.md`, die heute
+  keinen Befund ergeben.
 - **Folgepflicht:** Handbuch, READMEs, `operations.md` und Hub-Overview
   sagen Index-Digest statt Config-Digest; ADR-0065 auf
   `Superseded by` setzen.
@@ -166,3 +173,4 @@ tun" ist eine davon (Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR
 |---|---|
 | 2026-10-07 | Angelegt als `Proposed`; `Accepted` erst mit der Closure des Vorgangs, nach Review, Verifikation und dem Prerelease-Lauf |
 | 2026-10-07 | Nach R1 (vier MEDIUM): Entscheidung 3 auf „ohne Tag pushen, prüfen, dann taggen" umgestellt, Entscheidung 8 (Builder-Images digest-gepinnt) ergänzt, Option F und Konsequenzen nachgezogen. Noch `Proposed`, Körper daher geändert statt angehängt |
+| 2026-10-07 | Nach Verifikation (V-2 bis V-4) und R2 (R2-1 bis R2-4) nachgezogen; die Läufe `v0.84.0-rc.1` und `v0.84.0` haben die Docker-Hub-Hälfte von Entscheidung 6 gemessen (derselbe Index-Digest auf beiden Registries) und den arm64-Test unter QEMU grün in 4,5 min. Der Statuswechsel von ADR-0065 brachte die Ausnahme für ADR-0068 (§Konsequenzen). `Accepted` mit der Closure des Vorgangs |

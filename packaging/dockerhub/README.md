@@ -35,8 +35,8 @@ auf `c39f5c9` (2026-08-30), Schritt *Beschreibung hochladen* mit
 `##[error]Forbidden` beim `PATCH`; die API bestätigte es: `description` leer,
 `full_description` gar nicht vorhanden. **Der `success` war ein Artefakt von
 `continue-on-error`** — der Schritt darf das Release nicht rot machen (gewollt,
-[ADR-0065](../../docs/plan/adr/0065-spiegel-gleichheit-ist-der-config-digest.md)
-Punkt 5), verschluckte damit aber auch die Meldung, dass er nichts bewirkt hat.
+[ADR-0102](../../docs/plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)
+Entscheidung 9), verschluckte damit aber auch die Meldung, dass er nichts bewirkt hat.
 
 **Ursache und Behebung, beide belegt:** Der Push desselben Tokens funktionierte
 (das Bild lag auf Docker Hub); abgelehnt wurde nur der Metadaten-`PATCH`. Die

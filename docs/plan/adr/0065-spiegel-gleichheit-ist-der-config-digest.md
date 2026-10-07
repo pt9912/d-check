@@ -1,6 +1,6 @@
 # ADR-0065: Die Spiegel-Gleichheit ist der Config-Digest, nicht der Manifest-Digest
 
-**Status:** Accepted
+**Status:** Superseded by ADR-0102
 
 **Datum:** 2026-08-27
 
@@ -146,3 +146,4 @@ fail-closed-Entscheidung neu zu stellen.
 | Datum | Ereignis | Verweis |
 |---|---|---|
 | 2026-08-27 | Accepted — ersetzt [ADR-0064](0064-dockerhub-spiegel-fail-closed.md), nachdem ein unabhängiger Review dessen tragende Annahme am Bestand widerlegt hat | [slice-165](../planning/done/wellenlos/slice-165-dockerhub-spiegel.md) |
+| 2026-10-07 | Prüfgröße auf den Index-Digest gewechselt: das Image ist ein Multi-Plattform-Index, der Spiegel kopiert ihn samt Blobs und erhält dessen Digest — gemessen auf GHCR und Docker Hub; die Punkte 3 bis 7 gelten fort | [ADR-0102](0102-multi-arch-index-und-spiegel-per-index-digest.md) |

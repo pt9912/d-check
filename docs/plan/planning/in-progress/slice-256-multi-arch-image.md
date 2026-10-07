@@ -12,7 +12,7 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 [ADR-0002](../../adr/0002-distribution-ghcr-image.md),
 [ADR-0011](../../adr/0011-digest-pins-build-gate-images.md) §3 (die Basis-Pins
 sind bereits Index-Digests mit `arm64`),
-[ADR-0065](../../adr/0065-spiegel-gleichheit-ist-der-config-digest.md)
+ADR-0065 <!-- d-check:ignore (ADR-0065 ist abgelöst, ein Link wäre matrix-inactive) -->
 (Prüfgröße des Spiegels — wird abgelöst); Auftraggeber-Anfrage 2026-10-07
 (ein Image, das `docker pull` auf Apple Silicon und arm64-Linux ohne
 Emulation wählt).
@@ -54,7 +54,7 @@ kein Push nach GHCR/Hub):
 - `docker buildx imagetools create -t <B> <A>` erhält den **Index-Digest
   byte-gleich** über zwei Registries (`sha256:0b369a06…` beidseitig) —
   anders als der heutige `docker tag`/`push`-Spiegel, der neu komprimiert
-  (der Grund für [ADR-0065](../../adr/0065-spiegel-gleichheit-ist-der-config-digest.md)). **Gegen Docker Hub ungemessen** — das misst der
+  (der Grund für ADR-0065). **Gegen Docker Hub ungemessen** — das misst der <!-- d-check:ignore (ADR-0065 ist abgelöst, ein Link wäre matrix-inactive) -->
   Prerelease-Lauf (§2), bevor die Zusage im Lastenheft `Accepted` wird.
 - Labels sind je Plattform über `imagetools inspect --format '{{json .Image}}'`
   lesbar; `--provenance=false` hält den Index frei von Attestations-Einträgen
@@ -83,26 +83,26 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] Lastenheft: DIST-001 nennt die Plattformen und die Nativ-Identität je
+- [x] Lastenheft: DIST-001 nennt die Plattformen und die Nativ-Identität je
       Plattform; DIST-002 wechselt die Prüfgröße auf den Index-Digest
       (Akzeptanzkriterien neu, Out-of-Scope „andere Plattform-Matrix"
       bleibt als Zusage der Inhalts-Gleichheit); Version und Historie.
       Neue ADR (Multi-Arch-Index, Spiegel per `imagetools create`, löst
-      [ADR-0065](../../adr/0065-spiegel-gleichheit-ist-der-config-digest.md) ab) samt Index; [`SPEC-066`](../../../../spec/spezifikation.md#6-externe-verträge) nachgezogen.
-- [ ] `Dockerfile` cross-kompiliert; `tools/image-test.sh` prüft eine
+      ADR-0065 ab) samt Index; [`SPEC-066`](../../../../spec/spezifikation.md#6-externe-verträge) nachgezogen. <!-- d-check:ignore (ADR-0065 ist abgelöst, ein Link wäre matrix-inactive) -->
+- [x] `Dockerfile` cross-kompiliert; `tools/image-test.sh` prüft eine
       benannte Plattform (Binary aus dem Image der Plattform, Ausführung über
       binfmt/QEMU, wo sie nicht die des Hosts ist); ein `make`-Target baut und
       prüft die Nicht-Host-Plattform — im Index geführt.
-- [ ] `release.yml`: buildx-Index-Build mit `--provenance=false`, beide
+- [x] `release.yml`: buildx-Index-Build mit `--provenance=false`, beide
       Plattformen **vor** dem Push geprüft, Label-Check je Plattform,
       Konsumenten-Pin = Index-Digest, Spiegel per `imagetools create`,
       Gleichheitsprüfung über den Index-Digest (fail-closed wie bisher); neue
       Actions SHA-gepinnt (`make workflow-pins`). **Prerelease-Lauf**
       (`v0.84.0-rc.1`) grün, mit gemessenem Index-Digest auf beiden
       Registries.
-- [ ] `make gates` grün; Review durchgeführt, Report unter `docs/reviews/`;
+- [x] `make gates` grün; Review durchgeführt, Report unter `docs/reviews/`;
       Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -132,7 +132,7 @@ Label-Check je Plattform → Spiegel `imagetools create` → Index-Digest beider
 Registries gleich → GitHub-Release mit Index-Digest.
 
 **Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025)) —
-die Aussage „Prüfgröße Config-Digest" steht außer in DIST-002 und [ADR-0065](../../adr/0065-spiegel-gleichheit-ist-der-config-digest.md) in:
+die Aussage „Prüfgröße Config-Digest" steht außer in DIST-002 und ADR-0065 in: <!-- d-check:ignore (ADR-0065 ist abgelöst, ein Link wäre matrix-inactive) -->
 `release.yml` (Kommentare, `config_digest()`), `docs/user/releasing.md`,
 `docs/user/benutzerhandbuch.md` §Docker-Image, `docs/user/operations.md`,
 `README.md`/`README.de.md`, `packaging/dockerhub/overview.md`; die
@@ -163,31 +163,72 @@ Closure-Bedingung.
 ## 6. Risiken und offene Punkte
 
 - **Docker Hub erhält den Index-Digest nicht** (gemessen nur gegen
-  `registry:2`). — **Ausgang:** *(offen)*
+  `registry:2`). — **Ausgang:** entfallen — gemessen in zwei echten Läufen:
+  `v0.84.0-rc.1` (`sha256:bd064c9f…`) und `v0.84.0` (`sha256:e82ef2d2…`)
+  tragen auf GHCR und Docker Hub denselben Index-Digest, `:latest` ebenso.
 - **`arm64` im Nachtlauf-CVE-Scan blind**, bis slice-257 schließt. —
-  **Ausgang:** *(offen)*
+  **Ausgang:** eingetreten — Folge-Slice slice-257 (CVE-Scan je Plattform).
 - **QEMU-Laufzeit im Release-Job** — der `arm64`-image-test läuft emuliert;
-  der Job hat 30 min. Gemessen wird im Prerelease-Lauf. — **Ausgang:** *(offen)*
+  der Job hat 30 min. Gemessen wird im Prerelease-Lauf. — **Ausgang:**
+  entfallen — der ganze Release-Job brauchte 4,5 min (`v0.84.0-rc.1`), der
+  arm64-Test ist darin enthalten.
 - **Ein zweiter Bau zwischen Prüfung und Push** — `--load` je Plattform und
   `--push` des Index sind getrennte buildx-Aufrufe; die Gegenprobe auf das
   gepushte Binary schließt die Lücke nur, wenn sie fail-closed ist. —
-  **Ausgang:** *(offen)*
+  **Ausgang:** entfallen — die Gegenprobe ist fail-closed und läuft vor jedem
+  Tag; lokal gebrochen (anderes Binary ⇒ rot, kein Tag), in beiden echten
+  Läufen grün mit gleichen Binaries je Plattform.
 - **Builder-Images ohne Frische-Achse** — `moby/buildkit` und
   `tonistiigi/binfmt` sind in `release.yml` digest-gepinnt, aber weder
   Dependabot noch der Nachtlauf melden einen neueren Stand. —
-  **Ausgang:** *(offen)*
+  **Ausgang:** weiter offen — [`BEO-ALL/digest-pin-ohne-frische-achse`](../observations/BEO-ALL/digest-pin-ohne-frische-achse/state.md).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Die Messung vor dem Plan trug den ganzen Slice:
+  ein Spike gegen zwei Wegwerf-Registries zeigte vor jeder Spec-Änderung, dass
+  `imagetools create` den Index-Digest erhält und das Cross-Compile-Binary
+  byte-gleich zu dem der Gates ist — die schärfere Zusage in DIST-002 stand
+  damit auf einem Befund, nicht auf einer Annahme, und der echte Lauf
+  bestätigte sie gegen Docker Hub. Jeder Fehlerpfad des Release-Pfads ist
+  lokal gebrochen worden (anderes Binary, Einzel-Manifest, Attestation,
+  Label-Version, unerreichbare Referenz, scheiternder Push).
+- **Was ging anders als geplant:** Der erste Entwurf prüfte das gepushte
+  Binary **nach** dem Taggen — der Review fand, dass `:latest` dann schon auf
+  einen ungeprüften Index zeigen kann (R1-F-1); jetzt wird ohne Tag gepusht,
+  geprüft und erst dann getaggt. Die Gegenprobe zog anfangs beide Plattformen
+  über dieselbe Digest-Referenz, die der Daemon nur an ein Bild bindet — erst
+  der Lauf gegen die Wegwerf-Registry zeigte es. Die Images, die die neuen
+  Actions ziehen, waren ungepinnt (R1-F-2). Die FROM-Zeile mit `--platform`
+  hätte `go-base-digest` still auf SKIP gesetzt; gefunden beim Auflisten der
+  Spiegel, vor dem Commit. `releasing.md` kannte keine Vorabversion — der RC
+  folgte der Datei wörtlich und zog Pins und Prosa auf sich; der Abschnitt
+  *Vorabversion* ist auf Auftraggeber-Wunsch mitgenommen. Der Statuswechsel von
+  ADR-0065 auf `Superseded` machte jeden Link auf sie zu `matrix-inactive`; <!-- d-check:ignore (ADR-0065 ist abgelöst, ein Link wäre matrix-inactive) -->
+  lebende Verweise zogen um, die immutable [ADR-0068](../../adr/0068-lokale-workflow-referenzen-ohne-pin.md) kam wie [ADR-0047](../../adr/0047-matrix-spec-historie-nicht-provenance-exempt.md) in
+  `matrix.exempt-paths` (getragen von [ADR-0102](../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)).
+- **Steering-Loop-Eintrag:** keine neue Verkörperung —
+  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+  (verkörpert) bekommt einen Beleg; neu registriert sind
+  [`BEO-ALL/plan-aenderung-erst-im-fix-commit`](../observations/BEO-ALL/plan-aenderung-erst-im-fix-commit/state.md)
+  (2×, mit dem Beleg aus slice-255) und
+  [`BEO-ALL/digest-pin-ohne-frische-achse`](../observations/BEO-ALL/digest-pin-ohne-frische-achse/state.md)
+  (1×).
+- **Beobachtungs-Register (`../observations/`):** Evidence `slice-256` unter
+  den drei genannten Einträgen, dazu `slice-255` unter dem neuen
+  Plan-Änderungs-Eintrag.
+- **Folge-Slices:** slice-257 (CVE-Scan je Plattform).
+- **Risiken aus §6:** je ein Ausgang oben. Trigger-Audit: kein Carveout, kein
+  bootstrap-aware Gate, keine Hard Rule mit eingetretenem Trigger;
+  [ADR-0102](../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)
+  ist `Accepted` (ihr erster Re-Evaluierungs-Trigger — Docker Hub erhält den
+  Index-Digest nicht — ist durch die zwei Läufe ausgeschlossen),
+  ADR-0065 <!-- d-check:ignore (ADR-0065 ist abgelöst, ein Link wäre matrix-inactive) -->
+  `Superseded by ADR-0102`. Nachtlauf-Stand <!-- d-check:ignore (Status-Wert, kein Verweis) -->
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice —
+  slice-257 liegt in `open/`; (c) Register — die drei zitierten
+  Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
