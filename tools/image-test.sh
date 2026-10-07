@@ -23,7 +23,8 @@
 # die ELF-Maschine des Binaries wird gegen sie geprüft, sonst prüfte ein
 # Bild, das still die Host-Variante liefert, die falsche (DC-FA-DIST-001,
 # ADR-0102). Grenze: eine Plattform, die nicht die des Hosts ist, braucht
-# binfmt/QEMU auf dem Host — fehlt es, bricht der Lauf mit Hinweis ab.
+# binfmt/QEMU auf dem Host — fehlt es, bricht der Lauf mit Hinweis ab. Der Host
+# selbst muss Linux sein: ein Linux-Binary läuft auf macOS nicht nativ.
 set -euo pipefail
 
 IMAGE="${IMAGE:-d-check}"

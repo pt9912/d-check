@@ -14,6 +14,9 @@
 #
 # Grenze: fällt (2), liegt der ungetaggte Index unter seinem Digest in der
 # Registry; erreichbar ist er nur über diesen Digest, den die Meldung nennt.
+# Bricht (3) zwischen den Tags ab, kann v$VERSION schon gesetzt sein und
+# :latest noch nicht — jeder gesetzte Tag zeigt dann auf den geprüften
+# Digest, nie auf einen anderen.
 #
 # Eingaben: PUBLISH_REPO, VERSION, PUBLISH_LATEST, GO_VERSION,
 # GOLANGCI_LINT_VERSION, TESTED_AMD64, TESTED_ARM64, optional PROGRESS_FLAG.
@@ -34,6 +37,11 @@ fail() {
   exit 1
 }
 
+# Abbrüche über set -e (ein Docker-Aufruf scheitert) nennen ihren Schritt und
+# den Stand, den er hinterlässt.
+stage="(1) Build/Push ohne Tag — kein Tag gesetzt"
+trap 'echo "image-publish: FAIL — Schritt $stage" >&2' ERR
+
 # --- (1) Build und Push ohne Tag ------------------------------------
 docker buildx build ${PROGRESS_FLAG:+"$PROGRESS_FLAG"} --platform linux/amd64,linux/arm64 \
   --provenance=false --sbom=false \
@@ -50,12 +58,14 @@ ref="$PUBLISH_REPO@$digest"
 echo "image-publish: (1) Index ohne Tag gepusht — $ref"
 
 # --- (2) Gegenprobe am gepushten Index ------------------------------
+stage="(2) Gegenprobe — kein Tag gesetzt; der ungetaggte Index liegt unter $ref"
 REF="$ref" VERSION="$VERSION" TESTED_AMD64="$TESTED_AMD64" TESTED_ARM64="$TESTED_ARM64" \
   bash tools/image-verify-published.sh \
   || fail "Gegenprobe rot — KEIN Tag gesetzt; der ungetaggte Index liegt unter $ref"
 echo "image-publish: (2) Gegenprobe grün"
 
 # --- (3) Tags auf den geprüften Digest ------------------------------
+stage="(3) Tags — v$VERSION kann gesetzt sein, :latest noch nicht; gesetzte Tags zeigen auf $digest"
 tags=(-t "$PUBLISH_REPO:v$VERSION")
 [ "$PUBLISH_LATEST" != true ] || tags+=(-t "$PUBLISH_REPO:latest")
 docker buildx imagetools create "${tags[@]}" "$ref"

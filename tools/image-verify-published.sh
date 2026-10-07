@@ -71,8 +71,9 @@ binary_sha() {
   sha256sum "$WORK/bin" | cut -d' ' -f1
 }
 # Gezogen wird je Plattform über ihren Manifest-Digest aus dem Index: der
-# Daemon bindet eine Index-Referenz an genau ein lokales Bild, ein zweites
-# Ziehen derselben Referenz für die andere Plattform scheitert.
+# Daemon bindet eine Digest-Referenz an genau ein lokales Bild, ein zweites
+# Ziehen derselben Digest-Referenz für die andere Plattform scheitert; über den
+# Manifest-Digest je Plattform arbeiten Tag- und Digest-Referenz gleich.
 case "$REF" in *@*) repo="${REF%%@*}" ;; *) repo="${REF%:*}" ;; esac
 docker buildx imagetools inspect "$REF" \
   --format '{{range .Manifest.Manifests}}{{.Platform.OS}}/{{.Platform.Architecture}} {{.Digest}}{{"\n"}}{{end}}' \
