@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -439,5 +440,60 @@ func TestCheckTargetsAuthorityDublette(t *testing.T) {
 	want := "Makefile-Regel `ghost` ohne Deklaration in der Autoritäts-Doku harness/README.md"
 	if len(f) != 1 || f[0].Message != want {
 		t.Fatalf("Message = %+v\nwant %q", f, want)
+	}
+}
+
+// TestCheckTargetsAuthorityDisjunkt: mit authority-disjoint meldet ein
+// Target, das in mehr als einer Autoritäts-Datei als Tabellenzeile steht,
+// gate-declared-twice an der Zeile jeder weiteren Datei und nennt die Datei
+// der ersten Nennung; exempt-targets nimmt davon nicht aus.
+func TestCheckTargetsAuthorityDisjunkt(t *testing.T) {
+	files := map[string]string{
+		tgtMakefile:          "own:\n\techo\ntool:\n\techo\nboth:\n\techo\nclean:\n\techo\n",
+		"harness/README.md":  tgtDocTable("own", "both", "clean"),
+		"harness/targets.md": tgtDocTable("tool", "both", "clean"),
+		"harness/third.md":   tgtDocTable("both"),
+	}
+	cfg := model.TargetsConfig{
+		Makefiles:         []string{tgtMakefile},
+		Authority:         []string{"harness/README.md", "harness/targets.md", "harness/third.md"},
+		ExemptTargets:     []string{"clean"},
+		AuthorityDisjoint: true,
+	}
+	var got []string
+	for _, f := range mustCheck(t, files, cfg) {
+		if f.Reason != ReasonGateDeclaredTwice {
+			t.Fatalf("unerwarteter Befund %+v", f)
+		}
+		got = append(got, fmt.Sprintf("%s:%d:%s|%s", f.File, f.Line, f.Target, f.Message))
+	}
+	want := []string{
+		"harness/targets.md:8:both|Target `both` steht in mehr als einer Autoritäts-Doku (zuerst in harness/README.md)",
+		"harness/targets.md:9:clean|Target `clean` steht in mehr als einer Autoritäts-Doku (zuerst in harness/README.md)",
+		"harness/third.md:7:both|Target `both` steht in mehr als einer Autoritäts-Doku (zuerst in harness/README.md)",
+	}
+	if strings.Join(got, "\n") != strings.Join(want, "\n") {
+		t.Fatalf("Befunde =\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
+	}
+}
+
+// TestCheckTargetsAuthorityDisjunktGrenzen: ohne Schalter still (bisheriges
+// Verhalten); eine Doppelung innerhalb EINER Datei und dieselbe Datei in zwei
+// Schreibweisen sind keine zwei Teile.
+func TestCheckTargetsAuthorityDisjunktGrenzen(t *testing.T) {
+	files := map[string]string{
+		tgtMakefile:          "both:\n\techo\n",
+		"harness/README.md":  tgtDocTable("both", "both"),
+		"harness/targets.md": tgtDocTable("both"),
+	}
+	cases := []model.TargetsConfig{
+		{Makefiles: []string{tgtMakefile}, Authority: []string{"harness/README.md", "harness/targets.md"}},
+		{Makefiles: []string{tgtMakefile}, Authority: []string{"harness/README.md"}, AuthorityDisjoint: true},
+		{Makefiles: []string{tgtMakefile}, Authority: []string{"harness/README.md", "./harness/README.md"}, AuthorityDisjoint: true},
+	}
+	for i, cfg := range cases {
+		if f := mustCheck(t, files, cfg); len(f) != 0 {
+			t.Errorf("Fall %d: kein Befund erwartet, bekam %+v", i, f)
+		}
 	}
 }

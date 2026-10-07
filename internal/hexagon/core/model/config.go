@@ -852,10 +852,13 @@ type TrackedConfig struct {
 // Richtung 2 entfällt); ExemptTargets nimmt Regelnamen (exakt) von der
 // Doku-Pflicht aus (Utility-Targets). Hermetisch — nur der Filesystem-Port.
 type TargetsConfig struct {
-	Makefiles     []string
-	DocTables     []string
-	Authority     []string
-	ExemptTargets []string
+	Makefiles         []string
+	DocTables         []string
+	Authority         []string
+	// AuthorityDisjoint schaltet die Prüfung ein, dass kein Target in mehr
+	// als einer Authority-Datei steht (gate-declared-twice, DC-FA-TGT-001).
+	AuthorityDisjoint bool
+	ExemptTargets     []string
 }
 
 // SourcePin ist ein Config-Pin des Moduls sources (DC-FA-SRC-001): eine auf

@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.96.2
+**Version:** 0.97.0
 
 **Status:** Draft
 
@@ -3327,7 +3327,8 @@ byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 **Mehrere Autoritäts-Dateien:** `targets.authority` ist ein Pfad oder eine
 **Liste** wörtlicher Pfade. Eine Regel gilt als dokumentiert, wenn sie in
 **mindestens einer** dieser Dateien als Tabellenzeile steht (Vereinigung);
-steht sie in mehreren, ist das **kein** Befund. Jede Datei der Liste muss
+steht sie in mehreren, ist das für `gate-undocumented` **kein** Befund. Jede
+Datei der Liste muss
 existieren, sonst **Exit 2**. Einträge sind wörtliche Pfade, auch wenn sie
 Glob-Zeichen enthalten. Ein leerer, Null- oder Nicht-Skalar-Listeneintrag (Liste, Abbildung) ist
 ein Konfigurationsfehler, und jeder Eintrag unterliegt derselben Pfad-Regel
@@ -3336,6 +3337,19 @@ lassen Richtung 2 entfallen. Mit **einer** Datei — als String oder als
 einelementige Liste — ist der Befundsatz samt Meldungstext byte-identisch
 zur bisherigen String-Form ([`DC-QA-02`](#dc-qa-02--determinismus)); mit
 mehreren nennt die Meldung alle Autoritäts-Dateien.
+
+**Disjunktheit der Autoritäts-Dateien (opt-in):** Mit
+`targets.authority-disjoint: true` meldet `targets` ein Target, das als
+Tabellenzeile in **mehr als einer** Autoritäts-Datei steht, mit dem Grund-Code
+`gate-declared-twice` — die Datei, in der es in Konfigurations-Reihenfolge
+zuerst steht, ist seine Heimat; gemeldet wird jede Tabellenzeile in einer
+**späteren** Datei, und die Meldung nennt die Heimat. Teile eines Gate-Index
+sind disjunkt, sonst führen zwei Zeilen dasselbe Target und laufen
+auseinander. `targets.exempt-targets` nimmt davon nicht aus. Eine Doppelung
+innerhalb **einer** Datei ist keine Verletzung der Disjunktheit, dieselbe
+Datei in zwei Schreibweisen ist eine Datei, und mit nur einer
+Autoritäts-Datei ist der Schalter wirkungslos. Ohne den Schalter ist der
+Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 
 **Akzeptanzkriterien:**
 
@@ -3353,6 +3367,8 @@ mehreren nennt die Meldung alle Autoritäts-Dateien.
 - **Autorität (Liste):** Given `targets` aktiv, `targets.authority` als Liste zweier Dateien, ein Target nur in der zweiten, eines in beiden und eines in keiner, when `d-check --enable targets` läuft, then genau ein Befund `gate-undocumented` für das Target in keiner Datei, mit Fundstelle an seiner Regelzeile und allen Autoritäts-Dateien in der Meldung, Exit 1.
 - **Autorität (fehlender Eintrag):** Given `targets.authority` als Liste mit einer nicht existierenden Datei, when `d-check --enable targets` läuft, then **Exit 2** mit dem Namen dieser Datei.
 - **Autorität (leerer Listeneintrag):** Given `targets.authority` als Liste mit einem leeren oder Null-Eintrag (auch neben einem gültigen Pfad), when d-check die Konfiguration lädt, then **Exit 2** — der Eintrag fällt nicht still weg.
+- **Disjunktheit (Negative):** Given `targets.authority-disjoint: true` und ein Target, das als Tabellenzeile in zwei Autoritäts-Dateien steht, when `d-check --enable targets` läuft, then ein Befund `gate-declared-twice` an der Tabellenzeile der späteren Datei, die Meldung nennt die frühere, Exit 1 — auch wenn das Target in `targets.exempt-targets` steht.
+- **Disjunktheit (Boundary):** Given dasselbe ohne den Schalter, oder mit dem Schalter und einer Doppelung nur innerhalb einer Datei, when `d-check --enable targets` läuft, then **kein** `gate-declared-twice`.
 - **Autorität (String unverändert):** Given `targets.authority` als einzelner Pfad, when `d-check --enable targets` läuft, then Befundsatz und Meldungstext wie vor dieser Erweiterung.
 
 **Out-of-Scope:** Ausführen des Makefile oder Auflösen von `include`-Direktiven,
@@ -3365,8 +3381,9 @@ optionaler `authority`-Section-Anker bleibt spätere Anforderung); die
 verbleibt im repo-lokalen Rest von `gate-consistency.sh`); Nicht-Make-Build-
 Systeme; ein Auto-Fix (`--repair`); Glob-Muster für `targets.doc-tables` und
 `targets.authority` (dort bleiben Einträge wörtliche Pfade); eine Prüfung, dass ein
-Target in höchstens einer Autoritäts-Datei steht (Disjunktheit mehrerer
-Teile eines Gate-Index — eine Regel, die die gepinnte Baseline nicht kennt).
+Target in höchstens einer Autoritäts-Datei steht **als Default** (sie ist
+opt-in über `targets.authority-disjoint`, weil Adopter älterer Baselines die
+Regel nicht kennen); eine Prüfung auf Doppelungen innerhalb einer Datei.
 
 ---
 
@@ -4044,6 +4061,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.97.0 | 2026-10-07 | [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) erweitert (Erweiterung statt neues Kürzel — Einzelmodul-Frage): opt-in-Prüfung der **Disjunktheit** der Autoritäts-Dateien über `targets.authority-disjoint`. Ein Target, das als Tabellenzeile in mehr als einer Autoritäts-Datei steht, meldet den neuen Grund-Code `gate-declared-twice` an der Tabellenzeile jeder späteren Datei (die Meldung nennt die Datei der ersten Nennung); `exempt-targets` nimmt davon nicht aus, eine Doppelung innerhalb einer Datei ist kein Fall. Ohne Schalter byte-identisch. Anlass: die adoptierte Baseline-Konvention führt seit `v6.16.0` die Regel, dass kein Target in zwei Teilen des Gate-Index steht — ein Re-Evaluierungs-Trigger der begleitenden ADR der Vorgänger-Erweiterung. Zwei neue Akzeptanzkriterien; Out-of-Scope präzisiert. Begründung in begleitender ADR | [Hinweis `ai-harness-course` 2026-10-07](../docs/plan/cr/2026-10-07-hinweis-eingehend-ai-harness-course-disjunktheit.md) |
 | 0.96.2 | 2026-10-06 | Nachzug nach Verifikation, **vor** der ersten Closure dieser Erweiterung: in [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) kehrte eine doppelte Verneinung die Definition von `gate-undocumented` um (eine Regel, die „in keiner Autoritäts-Doku nicht" steht) — gestrichen. „Nicht-Pfad-Listeneintrag" auf „Nicht-Skalar-Listeneintrag" präzisiert: ein Skalar wie eine Zahl wird als Pfad gelesen und scheitert erst zur Laufzeit. Keine Verhaltensänderung | — |
 | 0.96.1 | 2026-10-06 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) präzisiert (Begründung in begleitender ADR). Der Erstentwurf (0.96.0) sagte „leerer Eintrag ⇒ Konfigurationsfehler" zu, aber ein Null-Element einer Liste verschwand beim Dekodieren still und ließ Richtung 2 unbemerkt entfallen; zugleich lehnte er Einträge mit Glob-Zeichen ab und brach damit die zugesagte Byte-Identität der String-Form (ein wörtlicher Pfad mit eckiger Klammer, ein Null-Wert, ein Alias verhielten sich anders als zuvor). Die Zusage ist jetzt: Einträge sind wörtlich auch mit Glob-Zeichen, die String-Form dekodiert wie zuvor, ein leerer, Null- oder Nicht-Pfad-Listeneintrag ist Exit 2; neues Akzeptanzkriterium „leerer Listeneintrag" | — |
 | 0.96.0 | 2026-10-06 | [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) erweitert (Erweiterung statt neues Kürzel — Einzelmodul-Frage): `targets.authority` nimmt neben einem Pfad eine **Liste** wörtlicher Pfade an; `gate-undocumented` misst gegen die Vereinigung, eine Doppelnennung ist kein Befund, eine fehlende Datei Exit 2, ein leerer Eintrag oder ein Muster ein Konfigurationsfehler. Mit einer Datei byte-identisch samt Meldungstext. Drei neue Akzeptanzkriterien; Out-of-Scope um die Disjunktheits-Prüfung ergänzt (Regel nur in einem offenen CR an den Kurs). Begründung in begleitender ADR. **Anlass ist ein Change Request** des Adopters `ai-harness-init` | [CR `ai-harness-init` 2026-10-06](../docs/plan/cr/2026-10-06-cr-eingehend-ai-harness-init-targets-authority-liste.md) |

@@ -108,6 +108,7 @@ Register (Baseline-Vorlage `templates/docs/plan/adr/README.template.md`).
 | [ADR-0098](0098-hostpaths-home-relativ-und-ziel-ventil.md) | `hostpaths` erkennt Home-relative Pfade mit Punkt-Ausnahme und trägt ein Ziel-Ventil statt eines Zeilen-Markers | Accepted | 2026-10-05 | [`DC-FA-HOST-001`](../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in), [ADR-0058](0058-konfigurations-flaechen-additiv-weiten.md) |
 | [ADR-0099](0099-targets-makefiles-glob.md) | `targets.makefiles` nimmt Glob-Muster an; ein Glob ohne Treffer ist Exit 2 | Accepted | 2026-10-06 | [`DC-FA-TGT-001`](../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in), [ADR-0058](0058-konfigurations-flaechen-additiv-weiten.md) |
 | [ADR-0100](0100-targets-authority-liste.md) | `targets.authority` nimmt eine Liste an; Doppelnennung ist kein Befund | Accepted | 2026-10-06 | [`DC-FA-TGT-001`](../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in), [ADR-0099](0099-targets-makefiles-glob.md) |
+| [ADR-0101](0101-targets-authority-disjunkt.md) | `targets` prüft opt-in die Disjunktheit der Autoritäts-Dateien (`gate-declared-twice`) | Proposed | 2026-10-07 | [`DC-FA-TGT-001`](../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in), [ADR-0100](0100-targets-authority-liste.md) |
 
 ## Konventionen
 

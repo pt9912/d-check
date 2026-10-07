@@ -255,6 +255,7 @@ modules: [links, anchors]
 #   doc-tables: [AGENTS.md, harness/README.md]   # Dateien mit make-X-Tabellen (Richtung 1 ⇒ gate-phantom)
 #   authority: AGENTS.md                         # Vollständigkeits-Quelle (Richtung 2 ⇒ gate-undocumented); auch Liste wörtlicher Pfade,
 #   # z. B. [harness/README.md, harness/targets.md] — ein Target gilt als dokumentiert, wenn es in einer davon steht
+#   authority-disjoint: false                    # true ⇒ ein Target in mehr als einer authority-Datei meldet gate-declared-twice
 #   exempt-targets: []                           # Regelnamen EXAKT (kein Glob, anders als tracked) — Utility-Targets ohne Doku-Pflicht
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---

@@ -2766,11 +2766,22 @@ scannt, sondern **deklarierte** Dateien liest:
    Tabellen-Targets (Schritt 3). Jede Makefile-Regel `X` (Schritt 2), die
    **nicht** in `targets.exempt-targets` steht und **nicht** in dieser
    Vereinigung enthalten ist ⇒ Grund-Code `gate-undocumented`; ein Target in
-   mehreren Autoritäts-Dateien ist kein Befund. Befund: `file`/`line` =
+   mehreren Autoritäts-Dateien ist für diesen Grund-Code kein Befund (Schritt
+   5a prüft das opt-in). Befund: `file`/`line` =
    Makefile/Regelzeile, `target` = `X`, `message` = „Makefile-Regel `X` ohne
    Deklaration in der Autoritäts-Doku `<datei>`" bei **einer** Datei (Wortlaut
    der bisherigen String-Form), „… in einer der Autoritäts-Dokus `<a>, <b>`"
    bei mehreren (Konfigurations-Reihenfolge).
+5a. **Disjunktheit (opt-in).** Nur bei `targets.authority-disjoint: true` und
+   mindestens zwei verschiedenen Autoritäts-Dateien (bereinigter Pfad): die
+   Dateien werden in Konfigurations-Reihenfolge gelesen, jedes Tabellen-Target
+   (Schritt 3) bekommt die Datei seiner ersten Nennung als Heimat. Jedes
+   weitere Vorkommen in einer **anderen** Datei ⇒ Grund-Code
+   `gate-declared-twice`, Befund: `file`/`line` = diese Datei/Tabellenzeile,
+   `target` = `X`, `message` = „Target `X` steht in mehr als einer
+   Autoritäts-Doku (zuerst in `<heimat>`)". Vorkommen in der Heimat-Datei
+   selbst zählen nicht; `targets.exempt-targets` wirkt hier nicht. Ohne
+   Schalter entfällt der Schritt.
 6. **Diagnose-only / Determinismus / Read-only.** Kein `--repair`-Hunk;
    identischer Arbeitsbaum ⇒ identischer Befundsatz
    ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)), nur lesend, netzlos,
@@ -3444,6 +3455,7 @@ Exit 2 ohne Prüfung
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien **oder Glob-Muster** (Eintrag mit `*`/`?`/`[`, `matchGlob`, `**` erlaubt), aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei, ein Glob ohne Treffer oder ein ungültiges Glob ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
 | `targets.authority` | string \| string[] | leer | Wurzel-relative Doku-Datei oder Liste wörtlicher Doku-Dateien; **jede** nicht-exempte Makefile-Regel muss in **mindestens einer** als `make X`-Tabellenzeile stehen (Richtung 2 `gate-undocumented`); leer (String, Null oder Liste) ⇒ Richtung 2 entfällt; Einträge wörtlich, auch mit Glob-Zeichen; fehlende Datei oder leerer/Null-/Nicht-Pfad-Listeneintrag ⇒ Exit 2 |
+| `targets.authority-disjoint` | bool | `false` | `true` ⇒ ein Target, das als Tabellenzeile in mehr als einer `targets.authority`-Datei steht, meldet `gate-declared-twice` an jeder späteren Tabellenzeile; ohne Wirkung bei weniger als zwei verschiedenen Dateien; kein Bool ⇒ Exit 2 |
 | `targets.exempt-targets` | string[] | leer | Regelnamen (**exakt**-Vergleich, **kein** Glob — anders als `tracked.exempt-targets`, das Pfad-Globs matcht), die von der Doku-Pflicht (Richtung 2) ausgenommen sind (Utility-Targets); ohne Eintrag prüft Richtung 2 jede Regel |
 | `trace.requirements.source` | string | `spec/lastenheft.md` | Wurzel-relative Anforderungsdatei; muss innerhalb der Repo-Wurzel liegen; leer/abwesend ⇒ Default und aktiviert keinen Strict-Guard. Ein **nichtleerer expliziter** Wert aktiviert fail-closed bei fehlender Quelle/null erkannten Anforderungen ([`DC-FA-REQ-001`](lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)) |
 | `trace.requirements.id-pattern` | string | `[A-Z][A-Z0-9]*-(?:FA-[A-Z]+\|QA)-\d+[A-Za-z]?` | Regex; erkennt eine Anforderungs-Kennung als **Ganz-Token** im Heading bzw. **Ganzzelle** der ID-Spalte und als Vorkommen in ADR-/Slice-Dateien; muss kompilieren (sonst Exit 2); leer ⇒ Default |
@@ -3582,6 +3594,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-059` | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `SPEC-060` | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
 | `SPEC-061` | `gate-undocumented` | targets | Makefile-Regel (nicht in `targets.exempt-targets`) ohne Deklaration als `make X` in einer der `targets.authority`-Dokus (undokumentiertes Gate) |
+| `SPEC-088` | `gate-declared-twice` | targets | Target als Tabellenzeile in mehr als einer `targets.authority`-Datei (opt-in `targets.authority-disjoint`; Teile des Gate-Index nicht disjunkt) |
 | `SPEC-062` | `source-drift` | sources | gepinnte externe Quelle (Marker `source-pin` oder Config `sources[]`) inhaltlich gedriftet — Content-Hash der Roh-Bytes bzw. des `unpack: zip`-Content-Manifests weicht vom hinterlegten `sha256` ab; die Meldung trägt den vollen Ist-`sha256` (Re-Pin-Vorlage) |
 | `SPEC-063` | `source-unreachable` | sources | gepinnte externe Quelle nicht materialisierbar (Netzfehler, HTTP-Status ≥ 400, Timeout, > `REDIRECT_MAX` Redirects, Body-/Entpack-Limit oder unter `unpack: zip` kein gültiges Zip) — bewusst getrennt von `source-drift` |
 
@@ -3606,6 +3619,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-07 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) um Schritt 5a (opt-in Disjunktheit der Autoritäts-Dateien, Grund-Code `gate-declared-twice`) erweitert, Schritt 5 verweist darauf; Schema-Zeile `targets.authority-disjoint`, §4-Zeile [`SPEC-088`](#4-grund--und-fehler-codes) |
 | 2026-10-06 | Nachzug nach Review: §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 5 — Listenelemente je Knoten geprüft (Null-Element ⇒ Exit 2 statt still verworfen), String-Form dekodiert wie zuvor, keine Ablehnung von Glob-Zeichen (Einträge wörtlich); Schema-Zeile nachgezogen |
 | 2026-10-06 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 5: `targets.authority` als Pfad oder Liste wörtlicher Pfade, Vereinigung der Tabellen-Targets, Doppelnennung kein Befund, Meldungstext bei einer Datei unverändert; Schema-Zeile `targets.authority` und Grund-Code-Zeile `gate-undocumented` nachgezogen |
 | 2026-10-06 | Nachzug nach Review: §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 1a präzisiert — jede Präfix-Komponente muss ein echtes Verzeichnis sein, ein passender Symlink ist Exit 2, SKIP_DIRS gelten nur unterhalb des Präfixes, Dubletten über den bereinigten Pfad, Lesefehler mit Ursache |

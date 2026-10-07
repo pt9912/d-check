@@ -1336,3 +1336,19 @@ func TestDecode_TargetsAuthority(t *testing.T) {
 		}
 	}
 }
+
+// TestDecode_TargetsAuthorityDisjoint: der Schalter wird durchgereicht, ist
+// ohne Angabe aus und nimmt nur Bool-Werte an.
+func TestDecode_TargetsAuthorityDisjoint(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte("targets:\n  authority: [a.md, b.md]\n  authority-disjoint: true\n"))
+	if err != nil || !cfg.Targets.AuthorityDisjoint {
+		t.Fatalf("authority-disjoint: true nicht durchgereicht: %+v, %v", cfg.Targets, err)
+	}
+	cfg, err = configyaml.Decode([]byte("targets:\n  authority: [a.md, b.md]\n"))
+	if err != nil || cfg.Targets.AuthorityDisjoint {
+		t.Fatalf("ohne Angabe muss der Schalter aus sein: %+v, %v", cfg.Targets, err)
+	}
+	if _, err := configyaml.Decode([]byte("targets:\n  authority-disjoint: ja\n")); err == nil {
+		t.Fatal("authority-disjoint: ja ⇒ Konfigurationsfehler erwartet")
+	}
+}

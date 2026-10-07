@@ -595,10 +595,11 @@ type rawTracked struct {
 // (wie planning; ein targets.scope wäre wirkungslos, der strikte Decoder lehnt
 // es ab).
 type rawTargets struct {
-	Makefiles     []string  `yaml:"makefiles"`
-	DocTables     []string  `yaml:"doc-tables"`
-	Authority     yaml.Node `yaml:"authority"`
-	ExemptTargets []string  `yaml:"exempt-targets"`
+	Makefiles         []string  `yaml:"makefiles"`
+	DocTables         []string  `yaml:"doc-tables"`
+	Authority         yaml.Node `yaml:"authority"`
+	AuthorityDisjoint bool      `yaml:"authority-disjoint"`
+	ExemptTargets     []string  `yaml:"exempt-targets"`
 }
 
 // rawCommits trägt scope und die Parameter des Moduls commits
@@ -1681,6 +1682,7 @@ func applyTargets(r *raw, cfg *model.Config) error {
 	cfg.Targets = model.TargetsConfig{
 		Makefiles: t.Makefiles, DocTables: t.DocTables,
 		Authority: authority, ExemptTargets: t.ExemptTargets,
+		AuthorityDisjoint: t.AuthorityDisjoint,
 	}
 	return nil
 }

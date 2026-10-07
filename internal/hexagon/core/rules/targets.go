@@ -16,6 +16,9 @@ import (
 const (
 	ReasonGatePhantom      = "gate-phantom"
 	ReasonGateUndocumented = "gate-undocumented"
+	// ReasonGateDeclaredTwice: ein Target steht in mehr als einer
+	// Autoritäts-Datei (opt-in authority-disjoint).
+	ReasonGateDeclaredTwice = "gate-declared-twice"
 )
 
 var (
@@ -43,7 +46,9 @@ type targetRef struct {
 // ein in einer Doku-**Tabellenzeile** als `make X` behauptetes Target ohne
 // Makefile-Regel ⇒ gate-phantom (Richtung 1); eine Makefile-Regel (minus
 // exempt-targets) ohne Eintrag in einer der Autoritäts-Dokus ⇒ gate-undocumented
-// (Richtung 2). **fail-closed:** eine fehlende/unlesbare konfigurierte Datei ⇒
+// (Richtung 2); opt-in ein Target in mehr als einer Autoritäts-Doku ⇒
+// gate-declared-twice (authority-disjoint). **fail-closed:** eine
+// fehlende/unlesbare konfigurierte Datei ⇒
 // error (Exit 2). Leeres Makefiles ⇒ inert; die Richtungen sind an ihre
 // jeweilige Doku-Quelle gekoppelt und voneinander unabhängig. Diagnose-only.
 func CheckTargets(fsys driven.Filesystem, cfg model.TargetsConfig) ([]model.Finding, error) {
@@ -62,7 +67,11 @@ func CheckTargets(fsys driven.Filesystem, cfg model.TargetsConfig) ([]model.Find
 	if err != nil {
 		return nil, err
 	}
-	return append(phantom, undoc...), nil
+	twice, err := declaredTwiceFindings(fsys, cfg)
+	if err != nil {
+		return nil, err
+	}
+	return append(append(phantom, undoc...), twice...), nil
 }
 
 // collectMakefileRules extrahiert die Regelnamen (mit Fundstelle) aus allen
@@ -160,6 +169,49 @@ func undocumentedFindings(fsys driven.Filesystem, authority []string, exemptTarg
 			Reason:  ReasonGateUndocumented,
 			Message: "Makefile-Regel `" + r.name + "` ohne Deklaration " + where,
 		})
+	}
+	return out, nil
+}
+
+// declaredTwiceFindings prüft opt-in die Disjunktheit der Autoritäts-Dateien
+// (authority-disjoint): ein Target, das als Tabellenzeile in einer späteren
+// Datei steht als der seiner ersten Nennung, meldet gate-declared-twice an
+// dieser Zeile — je Vorkommen, in Konfigurations-Reihenfolge. Doppelungen
+// innerhalb einer Datei sind keine zwei Teile; eine Datei in zwei
+// Schreibweisen ist eine. exempt-targets wirkt hier nicht: ein ausgenommenes
+// Target in zwei Teilen läuft genauso auseinander.
+func declaredTwiceFindings(fsys driven.Filesystem, cfg model.TargetsConfig) ([]model.Finding, error) {
+	if !cfg.AuthorityDisjoint || len(cfg.Authority) < 2 {
+		return nil, nil
+	}
+	home := map[string]string{} // Target → Datei der ersten Nennung
+	seenDoc := map[string]bool{}
+	var out []model.Finding
+	for _, a := range cfg.Authority {
+		key := path.Clean(a)
+		if seenDoc[key] {
+			continue
+		}
+		seenDoc[key] = true
+		refs, err := extractDocTargets(fsys, a)
+		if err != nil {
+			return nil, err
+		}
+		for _, r := range refs {
+			first, ok := home[r.name]
+			if !ok {
+				home[r.name] = a
+				continue
+			}
+			if first == a {
+				continue
+			}
+			out = append(out, model.Finding{
+				File: r.file, Line: r.line, Rule: "targets", Target: r.name,
+				Reason:  ReasonGateDeclaredTwice,
+				Message: "Target `" + r.name + "` steht in mehr als einer Autoritäts-Doku (zuerst in " + first + ")",
+			})
+		}
 	}
 	return out, nil
 }

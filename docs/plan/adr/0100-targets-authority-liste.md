@@ -106,3 +106,4 @@ einen Glob nötig.
 | 2026-10-06 | Angelegt als `Proposed`; `Accepted` erst mit der Closure des Vorgangs, nach Review und Verifikation |
 | 2026-10-06 | Nach R1 (HIGH, MEDIUM): Entscheidung 3 auf „keine Ablehnung von Glob-Zeichen" umgestellt, Entscheidung 4 auf Knoten-Prüfung der Listenelemente (Null-Elemente verschwanden still), Entscheidung 5 (`--doctor`-Klartext) ergänzt. Noch `Proposed`, Körper daher geändert statt angehängt |
 | 2026-10-06 | Nach Verifikation: `Nicht-Pfad-` zu `Nicht-Skalar-Element` präzisiert (V5). `Accepted` mit der Closure des Vorgangs |
+| 2026-10-07 | Re-Evaluierungs-Trigger eingetreten: die Baseline führt seit `v6.16.0` die Disjunktheit des Gate-Index. Entscheidung 2 (Doppelnennung kein Befund) gilt weiter für `gate-undocumented`; die opt-in-Prüfung der Disjunktheit entscheidet [ADR-0101](0101-targets-authority-disjunkt.md) |
