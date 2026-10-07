@@ -7,19 +7,19 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
-**Bezug:** [`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image),
-[`DC-FA-DIST-002`](../../../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel);
-[ADR-0002](../../adr/0002-distribution-ghcr-image.md),
-[ADR-0011](../../adr/0011-digest-pins-build-gate-images.md) §3 (die Basis-Pins
+**Bezug:** [`DC-FA-DIST-001`](../../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image),
+[`DC-FA-DIST-002`](../../../../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel);
+[ADR-0002](../../../adr/0002-distribution-ghcr-image.md),
+[ADR-0011](../../../adr/0011-digest-pins-build-gate-images.md) §3 (die Basis-Pins
 sind bereits Index-Digests mit `arm64`),
 ADR-0065 <!-- d-check:ignore (ADR-0065 ist abgelöst, ein Link wäre matrix-inactive) -->
 (Prüfgröße des Spiegels — wird abgelöst); Auftraggeber-Anfrage 2026-10-07
 (ein Image, das `docker pull` auf Apple Silicon und arm64-Linux ohne
 Emulation wählt).
 
-**Berührte Spec-Stellen:** [`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image),
-[`DC-FA-DIST-002`](../../../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel),
-[`SPEC-066`](../../../../spec/spezifikation.md#6-externe-verträge) (Runtime-Basis-Zeile).
+**Berührte Spec-Stellen:** [`DC-FA-DIST-001`](../../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image),
+[`DC-FA-DIST-002`](../../../../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel),
+[`SPEC-066`](../../../../../spec/spezifikation.md#6-externe-verträge) (Runtime-Basis-Zeile).
 
 **Verantwortlich:** pt9912.
 
@@ -88,7 +88,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
       (Akzeptanzkriterien neu, Out-of-Scope „andere Plattform-Matrix"
       bleibt als Zusage der Inhalts-Gleichheit); Version und Historie.
       Neue ADR (Multi-Arch-Index, Spiegel per `imagetools create`, löst
-      ADR-0065 ab) samt Index; [`SPEC-066`](../../../../spec/spezifikation.md#6-externe-verträge) nachgezogen. <!-- d-check:ignore (ADR-0065 ist abgelöst, ein Link wäre matrix-inactive) -->
+      ADR-0065 ab) samt Index; [`SPEC-066`](../../../../../spec/spezifikation.md#6-externe-verträge) nachgezogen. <!-- d-check:ignore (ADR-0065 ist abgelöst, ein Link wäre matrix-inactive) -->
 - [x] `Dockerfile` cross-kompiliert; `tools/image-test.sh` prüft eine
       benannte Plattform (Binary aus dem Image der Plattform, Ausführung über
       binfmt/QEMU, wo sie nicht die des Hosts ist); ein `make`-Target baut und
@@ -110,7 +110,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | `spec/lastenheft.md` | update | DIST-001/002, Version, Historie |
-| `spec/spezifikation.md` | update | [`SPEC-066`](../../../../spec/spezifikation.md#6-externe-verträge) (Plattformen; Altdrift `latest` mit) |
+| `spec/spezifikation.md` | update | [`SPEC-066`](../../../../../spec/spezifikation.md#6-externe-verträge) (Plattformen; Altdrift `latest` mit) |
 | `docs/plan/adr/0102-…md` + `README.md` | neu / update | Entscheidung + Index |
 | `Dockerfile` | update | `--platform=$BUILDPLATFORM`, `TARGETOS`/`TARGETARCH` |
 | `tools/image-test.sh` | update | Plattform-Parameter; die amd64-Annahme im Kopf entfällt |
@@ -131,7 +131,7 @@ jeder Plattform im **gepushten** Index ist byte-gleich zum geprüften →
 Label-Check je Plattform → Spiegel `imagetools create` → Index-Digest beider
 Registries gleich → GitHub-Release mit Index-Digest.
 
-**Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025)) —
+**Spiegel vor dem Editieren** ([`MR-025`](../../../../../harness/conventions.md#mr-025)) —
 die Aussage „Prüfgröße Config-Digest" steht außer in DIST-002 und ADR-0065 in: <!-- d-check:ignore (ADR-0065 ist abgelöst, ein Link wäre matrix-inactive) -->
 `release.yml` (Kommentare, `config_digest()`), `docs/user/releasing.md`,
 `docs/user/benutzerhandbuch.md` §Docker-Image, `docs/user/operations.md`,
@@ -181,7 +181,7 @@ Closure-Bedingung.
 - **Builder-Images ohne Frische-Achse** — `moby/buildkit` und
   `tonistiigi/binfmt` sind in `release.yml` digest-gepinnt, aber weder
   Dependabot noch der Nachtlauf melden einen neueren Stand. —
-  **Ausgang:** weiter offen — [`BEO-ALL/digest-pin-ohne-frische-achse`](../observations/BEO-ALL/digest-pin-ohne-frische-achse/state.md).
+  **Ausgang:** weiter offen — [`BEO-ALL/digest-pin-ohne-frische-achse`](../../observations/BEO-ALL/digest-pin-ohne-frische-achse/state.md).
 
 ## 7. Closure-Notiz
 
@@ -205,27 +205,27 @@ Closure-Bedingung.
   folgte der Datei wörtlich und zog Pins und Prosa auf sich; der Abschnitt
   *Vorabversion* ist auf Auftraggeber-Wunsch mitgenommen. Der Statuswechsel von
   ADR-0065 auf `Superseded` machte jeden Link auf sie zu `matrix-inactive`; <!-- d-check:ignore (ADR-0065 ist abgelöst, ein Link wäre matrix-inactive) -->
-  lebende Verweise zogen um, die immutable [ADR-0068](../../adr/0068-lokale-workflow-referenzen-ohne-pin.md) kam wie [ADR-0047](../../adr/0047-matrix-spec-historie-nicht-provenance-exempt.md) in
-  `matrix.exempt-paths` (getragen von [ADR-0102](../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)).
+  lebende Verweise zogen um, die immutable [ADR-0068](../../../adr/0068-lokale-workflow-referenzen-ohne-pin.md) kam wie [ADR-0047](../../../adr/0047-matrix-spec-historie-nicht-provenance-exempt.md) in
+  `matrix.exempt-paths` (getragen von [ADR-0102](../../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)).
 - **Steering-Loop-Eintrag:** keine neue Verkörperung —
-  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+  [`BEO-ALL/commit-message-overclaims-work`](../../observations/BEO-ALL/commit-message-overclaims-work/state.md)
   (verkörpert) bekommt einen Beleg; neu registriert sind
-  [`BEO-ALL/plan-aenderung-erst-im-fix-commit`](../observations/BEO-ALL/plan-aenderung-erst-im-fix-commit/state.md)
+  [`BEO-ALL/plan-aenderung-erst-im-fix-commit`](../../observations/BEO-ALL/plan-aenderung-erst-im-fix-commit/state.md)
   (2×, mit dem Beleg aus slice-255) und
-  [`BEO-ALL/digest-pin-ohne-frische-achse`](../observations/BEO-ALL/digest-pin-ohne-frische-achse/state.md)
+  [`BEO-ALL/digest-pin-ohne-frische-achse`](../../observations/BEO-ALL/digest-pin-ohne-frische-achse/state.md)
   (1×).
-- **Beobachtungs-Register (`../observations/`):** Evidence `slice-256` unter
+- **Beobachtungs-Register (`../../observations/`):** Evidence `slice-256` unter
   den drei genannten Einträgen, dazu `slice-255` unter dem neuen
   Plan-Änderungs-Eintrag.
 - **Folge-Slices:** slice-257 (CVE-Scan je Plattform).
 - **Risiken aus §6:** je ein Ausgang oben. Trigger-Audit: kein Carveout, kein
   bootstrap-aware Gate, keine Hard Rule mit eingetretenem Trigger;
-  [ADR-0102](../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)
+  [ADR-0102](../../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)
   ist `Accepted` (ihr erster Re-Evaluierungs-Trigger — Docker Hub erhält den
   Index-Digest nicht — ist durch die zwei Läufe ausgeschlossen),
   ADR-0065 <!-- d-check:ignore (ADR-0065 ist abgelöst, ein Link wäre matrix-inactive) -->
   `Superseded by ADR-0102`. Nachtlauf-Stand <!-- d-check:ignore (Status-Wert, kein Verweis) -->
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice —
   slice-257 liegt in `open/`; (c) Register — die drei zitierten
   Beobachtungen existieren und tragen Belege.
@@ -246,12 +246,12 @@ Distribution des Repos (Build-Rezept, Release-Pfad) unter dem Default `*`
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:**
-[`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/state.md)
+[`BEO-ALL/pin-bump-mirrors-ungated`](../../observations/BEO-ALL/pin-bump-mirrors-ungated/state.md)
 — der Digest-Pin in Handbuch §2 wird ein Index-Digest; sein Nachzug bleibt
 ein ungewächterter Spiegel der Release-Prep, dieser Slice ändert daran
 nichts. Keine weiteren Treffer für Image, Release oder Spiegel.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-07 — `upstream-drift` und `image-scan` grün.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
