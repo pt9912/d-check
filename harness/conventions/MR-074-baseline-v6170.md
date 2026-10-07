@@ -28,35 +28,43 @@
      fünf Bedingungen, darunter die Disjunktheit) —
      `grundlagen-harness-dateien.md`, `modul-13-quality-gates.md`,
      `grundlagen-begriffe.md`; nachgezogen in `templates/AGENTS.template.md`
-     §4, `templates/harness/README.template.md`,
-     `templates/harness/sensors/gate.template.md`, `templates/Makefile` und
+     §4, `templates/harness/README.template.md`, `templates/Makefile` und
      `templates/.d-check.yml`. **Dieses Repo ist betroffen:** das `Makefile`
      bindet das Werkzeug-Fragment `a-check.mk` ein (erzeugt aus
      `a-check --print-mk`), und `targets.makefiles` liest nur `Makefile` —
      dessen einziges Target `a-check` steht bisher weder im Index noch in
-     einem Werkzeug-Teil (gemessen).
-     Die Frage, ob d-check einen Werkzeug-Teil für `a-check.mk` führt, ist ein
-     Kandidat für einen Folge-Slice.
+     einem Werkzeug-Teil (gemessen). Die Frage, ob d-check einen Werkzeug-Teil
+     für `a-check.mk` führt, ist ein Kandidat für einen Folge-Slice.
   2. **Festlegungen der Harness-Werkzeuge gehören in die Spezifikation**, nicht
      in ein viertes Stratum — `grundlagen-referenz-richtung.md`,
-     `modul-03-spec.md`; nachgezogen in `templates/spec/spezifikation.template.md`
-     (neuer §7 *Festlegungen der Harness-Werkzeuge*, die Historie rückt von §7
-     nach **§8**), `templates/docs/plan/adr/NNNN-titel.template.md` und
+     `modul-03-spec.md`, dazu die Spec-Anteile von
+     `grundlagen-harness-dateien.md` und `grundlagen-begriffe.md`;
+     nachgezogen in `templates/spec/spezifikation.template.md` (neuer §7
+     *Festlegungen der Harness-Werkzeuge*, die Historie rückt von §7 nach
+     **§8**), `templates/harness/sensors/gate.template.md` (Sensor-Datei
+     verlinkt die Spec-Kennung statt Schwelle und Randform zu führen), die
+     Spec-Anteile von `templates/harness/README.template.md`,
+     `templates/docs/plan/adr/NNNN-titel.template.md` und
      `templates/docs/plan/adr/README.template.md` (die ADR eines solchen Gates
      schärft dessen Spec-Stelle). Die Umnummerierung koppelt an die Ausnahme
      `"7. Historie"` ([`MR-0098`](../conventions.md#mr-0098)) — eine spätere
      Adoption fiele dort laut auf.
-  3. **Reviewer:** kein HIGH- oder MEDIUM-Finding ohne Failure-Szenario; die
-     Fundstelle wird als wörtliches, eindeutig auffindbares Kurzzitat geankert,
-     die Zeile ist Lesehilfe — `modul-10-review-harness.md`; nachgezogen in
-     `templates/.harness/skills/reviewer.template.md` und
-     `templates/docs/reviews/review-report.template.md`.
-  4. **Register-Kennung in den Templates** `BEO-<NNN>` → `BEO-<KUERZEL>/<slug>`
-     — `templates/docs/plan/planning/welle-results.template.md` (nur dieser
+  3. **Reviewer** — `modul-10-review-harness.md`: kein Stil-Polizist
+     (Formatierung oder Benennung ohne Konventions-Anker ist kein Finding),
+     kein HIGH- oder MEDIUM-Finding ohne Failure-Szenario; die Fundstelle wird
+     als wörtliches, eindeutig auffindbares Kurzzitat geankert, die Zeile ist
+     Lesehilfe. Nachgezogen in `templates/.harness/skills/reviewer.template.md`
+     (dort **zusätzlich**: LOW nur mit Konventions-Anker),
+     `templates/docs/reviews/review-report.template.md` und
+     `templates/.harness/skills/closure-note-reviewer.template.md` (dort nur
+     die Kurzzitat-Regel).
+  4. **Register-Kennung** `BEO-<NNN>` → `BEO-<KUERZEL>/<slug>` bzw. „die
+     Beobachtung" — `modul-10-review-harness.md` sowie
+     `templates/docs/plan/planning/welle-results.template.md` (nur dieser
      Nachzug), `templates/docs/plan/planning/slice.template.md`,
-     `templates/harness/conventions.template.md`,
-     `templates/.harness/skills/closure-note-reviewer.template.md`. Dieses Repo
-     führt die Verzeichnis-Form bereits.
+     `templates/harness/conventions.template.md` und
+     `templates/docs/reviews/review-report.template.md`. Dieses Repo führt die
+     Verzeichnis-Form bereits.
   5. **Audit-Span-Pflichtfelder** — `modul-15-observability.md`: liefert die
      Quelle den Wert eines Pflichtfelds nicht, bleibt es Pflicht und wird
      ausdrücklich als nicht bekannt gekennzeichnet (nicht `0`, nicht `false`),
