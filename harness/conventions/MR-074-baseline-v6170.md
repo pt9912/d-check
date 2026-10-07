@@ -35,6 +35,9 @@
      dessen einziges Target `a-check` steht bisher weder im Index noch in
      einem Werkzeug-Teil (gemessen). Die Frage, ob d-check einen Werkzeug-Teil
      für `a-check.mk` führt, ist ein Kandidat für einen Folge-Slice.
+     **Eingelöst durch slice-254:** kein Werkzeug-Teil (a-check schreibt keinen),
+     das Target steht in der `arch-check`-Zeile von `harness/README.md`
+     §Sensors, und `targets.makefiles` liest das Fragment mit.
   2. **Festlegungen der Harness-Werkzeuge gehören in die Spezifikation**, nicht
      in ein viertes Stratum — `grundlagen-referenz-richtung.md`,
      `modul-03-spec.md`, dazu die Spec-Anteile von

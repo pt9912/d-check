@@ -928,14 +928,15 @@ planning:
 # (Filesystem-Port, kein git/Netz/Makefile-Ausführen): ein in einer Doku-Tabellen-
 # zeile behauptetes `make X` ohne Makefile-Regel ⇒ gate-phantom; jede Makefile-
 # Regel ohne Eintrag in der Autoritaets-Doku (harness/README.md §Sensors) ⇒
-# gate-undocumented. exempt-targets bleibt leer -- d-check dokumentiert alle 54
-# Targets in harness/README.md §Sensors, dem EINEN Gate-Index (MR-071, aus der
+# gate-undocumented. exempt-targets bleibt leer -- d-check dokumentiert jedes
+# Target des Makefile UND des Fragments a-check.mk (das Rezept hinter
+# arch-check) in harness/README.md §Sensors, dem EINEN Gate-Index (MR-071, aus der
 # adoptierten Vorlage: "Der Gate-Index steht einmal ... Diese Datei fuehrt die
 # Liste nicht.") -- die erschoepfende Pruefung des abgeloesten
 # gate-consistency.sh-Kerns.
 # Loest den Doku-↔-Makefile-Kern von tools/gate-consistency.sh ab (ADR-0031).
 targets:
-  makefiles: [Makefile]
+  makefiles: [Makefile, a-check.mk]
   doc-tables: [harness/README.md]                                       # der EINE Gate-Index (MR-071)
   authority: harness/README.md                                          # dieselbe Datei -- es gibt nur einen Index
   exempt-targets: []
