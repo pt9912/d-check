@@ -61,17 +61,17 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] `.harness/skills/reviewer.md`: LOW-Anker, Failure-Szenario nur für
+- [x] `.harness/skills/reviewer.md`: LOW-Anker, Failure-Szenario nur für
       HIGH/MEDIUM, `pfad` als Kurzzitat; Version und Datum gehoben; jede
       übernommene Regel wortnah zur Baseline-Quelle, mit `d-check:cite`, wo
       wörtlich zitiert wird.
-- [ ] `.harness/skills/closure-note-reviewer.md`: `pfad` als Kurzzitat;
+- [x] `.harness/skills/closure-note-reviewer.md`: `pfad` als Kurzzitat;
       Version gehoben.
-- [ ] Spiegel geprüft (`.claude/agents/reviewer.md`, Agent-Prompts in
+- [x] Spiegel geprüft (`.claude/agents/reviewer.md`, Agent-Prompts in
       `.claude/`); `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor —
       Rollenwechsel nach Schritt 8, kein Self-Review.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft;
       [MR-074](../../../../harness/conventions.md#mr-074) Bewegung 3 als eingelöst vermerkt.
 
@@ -106,19 +106,43 @@ wellenlos hier geprüft.
 ## 6. Risiken und offene Punkte
 
 - Kurzzitate als Anker sind bei sehr kurzen oder sich wiederholenden Zeilen
-  nicht eindeutig. — **Ausgang:** *(offen)*
+  nicht eindeutig. — **Ausgang:** entfallen — die Regel selbst verlangt ein
+  „in der Datei eindeutig auffindbares" Kurzzitat; eine mehrdeutige Stelle
+  verlängert das Zitat, statt die Regel zu brechen, und die Zeile bleibt als
+  Lesehilfe daneben.
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Die drei Regeln stehen wortgleich zur Vorlage und
+  sind jetzt gewächtert: jede wörtliche Übernahme trägt `d-check:cite`, und
+  ein getauschtes Wort im Zitat macht `make doc-check` rot
+  (`citation-mismatch`) — selbst gebrochen, nicht nur behauptet. Der
+  Verifier brach die vorhandenen Spannen ebenfalls und bestätigte jeden
+  R1-Fix einzeln.
+- **Was ging anders als geplant:** Die neuen Regeln kollidierten mit drei
+  Stellen **im selben** Skill, die die Spiegel-Liste nicht nannte
+  (Kontext-Eskalation, `quelle`-Feld, zweite `pfad`-Definition — R1-F-1, F-2,
+  F-4); der Plan ist dafür geändert. Die DoD-Klausel „mit `d-check:cite`, wo
+  wörtlich zitiert wird" war nach dem Feat-Commit nicht eingelöst — erst die
+  Verifikation fand es (V-1). Die Plan-Änderung nach R1 reiste im selben
+  Commit wie der Fix statt davor (V-3). Die Form der Direktive musste
+  nachgeschlagen werden: das Zitat steht in „…" mit ASCII-Schlusszeichen
+  **hinter** der Direktive im selben Absatz.
+- **Steering-Loop-Eintrag:** keine neue Verkörperung —
+  [`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md)
+  (verkörpert als [`MR-025`](../../../../harness/conventions.md#mr-025))
+  bekommt einen Beleg: die Spiegel-Liste lief über die Dateien, nicht über
+  die Abschnitte der geänderten Datei selbst.
+- **Beobachtungs-Register (`../observations/`):** Evidence `slice-255` unter
+  dem genannten Eintrag.
+- **Folge-Slices:** keine.
+- **Risiken aus §6:** entfallen (Begründung in §6). Trigger-Audit: kein
+  Carveout, kein bootstrap-aware Gate, keine ADR und keine Hard Rule mit
+  eingetretenem Trigger; [MR-074](../../../../harness/conventions.md#mr-074)
+  Bewegung 3 als eingelöst vermerkt. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice —
+  keine; (c) Register — die zitierte Beobachtung existiert und trägt Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

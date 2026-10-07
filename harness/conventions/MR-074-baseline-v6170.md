@@ -62,7 +62,10 @@
      (dort **zusätzlich**: LOW nur mit Konventions-Anker),
      `templates/docs/reviews/review-report.template.md` und
      `templates/.harness/skills/closure-note-reviewer.template.md` (dort nur
-     die Kurzzitat-Regel).
+     die Kurzzitat-Regel). **Eingelöst durch slice-255:** beide Reviewer-Skills
+     tragen die Regeln wortgleich, jede wörtliche Übernahme mit
+     `d-check:cite`; die Kontext-Eskalation und das `quelle`-Feld sind an die
+     LOW- und Failure-Szenario-Regel angepasst.
   4. **Register-Kennung** `BEO-<NNN>` → `BEO-<KUERZEL>/<slug>` bzw. „die
      Beobachtung" — `modul-10-review-harness.md` sowie
      `templates/docs/plan/planning/welle-results.template.md` (nur dieser
