@@ -4,6 +4,38 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.84.0] — 2026-10-07
+
+### Added
+
+- slice-256 — **Multi-Plattform-Image `linux/amd64` + `linux/arm64`**
+  ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image),
+  [ADR-0102](docs/plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)).
+  Jeder Tag ist ein OCI-Index beider Plattformen; `docker pull` wählt die
+  Variante des Rechners selbst — auf Apple Silicon und arm64-Linux ohne
+  Emulation. Gebaut wird per Cross-Compile; jede Variante wird **vor** der
+  Veröffentlichung gegen die native Ausführung desselben Binaries geprüft
+  (neues Target `make image-test-arm64`), der Index wird erst ohne Tag
+  gepusht, gegengeprüft (Binary je Plattform gleich dem geprüften) und erst
+  dann getaggt (`make image-publish`). Belegt im Lauf der Vorabversion
+  `v0.84.0-rc.1`.
+
+### Changed
+
+- slice-256 — **Der Docker-Hub-Spiegel trägt denselben Index-Digest wie GHCR**
+  ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)).
+  Der Spiegel kopiert den Index samt Blobs, statt ein Bild neu zu pushen;
+  geprüft wird der Index-Digest aus beiden Registries. Ein Digest-Pin gilt
+  damit für beide — bis `v0.83.0` war der Manifest-Digest registry-lokal.
+- Abhängigkeiten: `go-git/go-billy` 5.9.2, `ProtonMail/go-crypto` 1.5.2,
+  `pjbgf/sha1cd` 0.7.0 (Dependabot,
+  [ADR-0067](docs/plan/adr/0067-dependabot-als-hebender-kanal.md)); Basis- und
+  Gate-Images: `golang:1.27.1`-Digest neu, semgrep 1.179.0, a-check v0.22.0.
+- Harness und Release-Prozess dieses Repos, **nicht** das Prüf-Verhalten des
+  Werkzeugs: Baseline-Pin auf `v6.17.0` (slice-253), das a-check-Target im
+  Gate-Index (slice-254), Reviewer-Regeln der Baseline in den Reviewer-Skills
+  (slice-255); `docs/user/releasing.md` regelt die Vorabversion (slice-256).
+
 ## [0.84.0-rc.1] — 2026-10-07
 
 Vorabversion: sie trägt den neuen Release-Pfad erstmals gegen GHCR und Docker
