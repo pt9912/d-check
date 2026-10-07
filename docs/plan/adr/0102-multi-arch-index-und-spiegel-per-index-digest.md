@@ -140,8 +140,8 @@ tun" ist eine davon (Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR
   dem Host; ohne bricht er fail-closed mit Hinweis ab.
 - **Offen:** `make image-scan` scannt bis zum Folge-Vorgang nur die
   Host-Variante des Index.
-- **Folgepflicht:** Handbuch, READMEs, `operations.md`, Hub-Overview und
-  `releasing.md` sagen Index-Digest statt Config-Digest; ADR-0065 auf
+- **Folgepflicht:** Handbuch, READMEs, `operations.md` und Hub-Overview
+  sagen Index-Digest statt Config-Digest; ADR-0065 auf
   `Superseded by` setzen.
 
 ## Fitness Function (falls maschinell prüfbar)

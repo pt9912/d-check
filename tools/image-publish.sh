@@ -59,8 +59,12 @@ echo "image-publish: (2) Gegenprobe grün"
 tags=(-t "$PUBLISH_REPO:v$VERSION")
 [ "$PUBLISH_LATEST" != true ] || tags+=(-t "$PUBLISH_REPO:latest")
 docker buildx imagetools create "${tags[@]}" "$ref"
-tagged="$(docker buildx imagetools inspect --format '{{.Manifest.Digest}}' "$PUBLISH_REPO:v$VERSION" 2>/dev/null || true)"
-[ "$tagged" = "$digest" ] \
-  || fail "$PUBLISH_REPO:v$VERSION zeigt auf [${tagged:-<leer>}], nicht auf den geprüften $digest"
+check_tags=("v$VERSION")
+[ "$PUBLISH_LATEST" != true ] || check_tags+=(latest)
+for t in "${check_tags[@]}"; do
+  tagged="$(docker buildx imagetools inspect --format '{{.Manifest.Digest}}' "$PUBLISH_REPO:$t" 2>/dev/null || true)"
+  [ "$tagged" = "$digest" ] \
+    || fail "$PUBLISH_REPO:$t zeigt auf [${tagged:-<leer>}], nicht auf den geprüften $digest"
+done
 echo "image-publish: (3) getaggt — v$VERSION$([ "$PUBLISH_LATEST" != true ] || echo ' + latest')"
 echo "image-publish: $ref"
