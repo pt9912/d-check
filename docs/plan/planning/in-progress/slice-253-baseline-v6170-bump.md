@@ -126,7 +126,7 @@ wellenlos hier geprüft.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
-<!-- d-check:cite .harness/baseline/v6.13.0/regelwerk/modul-05-planning-harness.md:373-374 -->
+<!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:373-374 -->
 
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
@@ -135,7 +135,7 @@ wellenlos hier geprüft.
 Harness-Mechanik (`tools/harness/`, Kürzel `HARN`) samt der pin-gebundenen
 Verweise im ganzen Repo (`*`, `ALL`); beide deklariert.
 
-<!-- d-check:cite .harness/baseline/v6.13.0/regelwerk/modul-05-planning-harness.md:379-379 -->
+<!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
 > **Offene Beobachtungen sichten.** Das
 

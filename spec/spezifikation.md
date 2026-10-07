@@ -5,7 +5,7 @@
 (`DC-*`-IDs). Bei Konflikt gewinnt das Lastenheft.
 
 **Rolle:** Technik-Stratum — fortschreibbar ohne Change Request; eine ADR darf
-sie schärfen, das Lastenheft nicht. Regeln: Baseline-Regelwerk v6.13.0,
+sie schärfen, das Lastenheft nicht. Regeln: Baseline-Regelwerk v6.17.0,
 modul-03-spec.md §Ziel-Form: Spezifikation.
 
 ---

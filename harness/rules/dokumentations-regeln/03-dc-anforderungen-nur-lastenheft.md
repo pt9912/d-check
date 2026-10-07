@@ -8,5 +8,5 @@ Neue oder geänderte `DC-*`-Anforderungen entstehen nur in
 schärfen die Spezifikation, nicht das Lastenheft). Der Anlege-Prozess
 (Akzeptanzkriterien-Trio, Versions-Bump + Historie, Beleg-Pflicht) folgt
 dem Baseline-Regelwerk
-([`modul-03-spec`](../../../.harness/baseline/v6.13.0/regelwerk/modul-03-spec.md));
+([`modul-03-spec`](../../../.harness/baseline/v6.17.0/regelwerk/modul-03-spec.md));
 das repo-spezifische ID-Schema steht in `spec/lastenheft.md` §3.

@@ -1,1 +1,1 @@
-../../.harness/baseline/v6.13.0/regelwerk/modul-06-roadmap.md
+../../.harness/baseline/v6.17.0/regelwerk/modul-06-roadmap.md

@@ -3,7 +3,7 @@
 **Status:** Aktiv. **Letzte Änderung:** 2026-08-22.
 
 **Rolle:** Sicht-Stratum — *keine* eigenen Anforderungen, derivativ. Regeln:
-Baseline-Regelwerk v6.13.0, modul-03-spec.md §Ziel-Form: Architektur-Sicht.
+Baseline-Regelwerk v6.17.0, modul-03-spec.md §Ziel-Form: Architektur-Sicht.
 
 **Hard Rule:** Diese Datei ist **sprach- und meilensteinfrei**: Sie
 benennt Schichten und Rollen, keine Technologie, und enthält keine

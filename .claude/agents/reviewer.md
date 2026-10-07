@@ -38,5 +38,5 @@ dort genügt Annahme oder Begründung.
 - ID-Schema und Adaptionen: [`harness/conventions.md`](../../harness/conventions.md).
 - Hard Rules: [`AGENTS.md`](../../AGENTS.md) §3.
 - Baseline-Bestand:
-  [`.harness/baseline/v6.13.0/regelwerk/modul-10-review-harness.md`](../../.harness/baseline/v6.13.0/regelwerk/modul-10-review-harness.md)
+  [`.harness/baseline/v6.17.0/regelwerk/modul-10-review-harness.md`](../../.harness/baseline/v6.17.0/regelwerk/modul-10-review-harness.md)
   — nur die benötigten Abschnitte laden.

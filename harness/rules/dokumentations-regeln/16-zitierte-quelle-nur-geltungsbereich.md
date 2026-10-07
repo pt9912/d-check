@@ -11,7 +11,7 @@ Datei ist das ihre Vorlage, nicht eine andere. Ein Zitat sieht aus wie ein
 Beleg, auch wenn es keiner ist; das macht die Klasse beim Schreiben
 unsichtbar und im Review auffindbar. Urteil, kein `grep`; der
 Reviewer-Skill trägt den Anker dazu. Kanon:
-[`grundlagen-source-precedence.md` §Wie weit trägt ein zitierter Satz](../../../.harness/baseline/v6.13.0/regelwerk/grundlagen-source-precedence.md)
+[`grundlagen-source-precedence.md` §Wie weit trägt ein zitierter Satz](../../../.harness/baseline/v6.17.0/regelwerk/grundlagen-source-precedence.md)
 — dort als Frage an **jede** zitierte Aussage, hier als operative Form für
 den Implementer. *(Hard Rule aus dem Steering Loop,
 [`BEO-ALL/citation-stretched-beyond-scope`](../../../docs/plan/planning/observations/BEO-ALL/citation-stretched-beyond-scope/observation.md),

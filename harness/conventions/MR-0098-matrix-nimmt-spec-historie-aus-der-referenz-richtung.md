@@ -1,7 +1,7 @@
 # MR-0098 — Die Matrix nimmt die `7. Historie` beider Spec-Straten aus der Referenz-Richtung aus
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`grundlagen-referenz-richtung.md`](../../.harness/baseline/v6.13.0/regelwerk/grundlagen-referenz-richtung.md)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-referenz-richtung.md`](../../.harness/baseline/v6.17.0/regelwerk/grundlagen-referenz-richtung.md)
   §Referenz-Richtung (SDP), Regel 5 — „in keinem Abschnitt, auch nicht in
   seiner Historie". Die Ausnahme hebt genau diese Hälfte für die
   `7. Historie` beider Spec-Straten aus der Matrix-Prüfung heraus; das

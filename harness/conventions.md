@@ -24,9 +24,9 @@ Diese Datei ist konformitätsbringend für *Form*-Fragen, nicht autoritativ
 ## Baseline
 
 - **Konvention:** AI-Harness-Kurs
-- **Stand:** [`v6.13.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v6.13.0),
+- **Stand:** [`v6.17.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v6.17.0),
   gepinnt mit
-  [`MR-073`](#mr-073)
+  [`MR-074`](#mr-074)
   — der jeweils aktuelle Eintrag der Pin-Serie. Die **Kette** der bisherigen
   Hebungen steht nicht hier, sondern in
   [§Aufgelöste Adaptionen](#aufgelöste-adaptionen): dort trägt jede Zeile ihren
@@ -38,13 +38,13 @@ Diese Datei ist konformitätsbringend für *Form*-Fragen, nicht autoritativ
 ## Adoptierte Konventions-Quellen
 
 - **Extern (Lehrmaterial):**
-  [`ai-harness-course@v6.13.0`](https://github.com/pt9912/ai-harness-course/tree/v6.13.0)
+  [`ai-harness-course@v6.17.0`](https://github.com/pt9912/ai-harness-course/tree/v6.17.0)
   (`kurs/de/` — Konventionen in `grundlagen/`, Templates in `lab/templates/`).
   Kanonische Quelle; bei Konflikt maßgeblich.
 - **Vendored Baseline (Regelwerk + Templates):** aus dem self-contained
   Release-Asset
-  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v6.13.0/lab-regelwerk.zip)
-  entpackt nach [`.harness/baseline/v6.13.0/`](../.harness/baseline/v6.13.0/regelwerk/)
+  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v6.17.0/lab-regelwerk.zip)
+  entpackt nach [`.harness/baseline/v6.17.0/`](../.harness/baseline/v6.17.0/regelwerk/)
   (`{regelwerk,templates}/` + `SHA256SUMS`) — der **netzlose** Lesepfad,
   materialisiert/verifiziert per
   [`fetch-baseline-cache.sh`](../tools/harness/fetch-baseline-cache.sh).
@@ -60,7 +60,7 @@ vendored Vorlage `harness/conventions/MR-<NNN>-titel.template.md`; ist ihr
 Auflösungs-Trigger eingetreten, wandert sie per `git mv` nach `conventions/done/`.
 Der **Zustand ist die Verzeichnis-Position**, kein Status-Feld — was hier steht,
 liest **jeder** Agentenlauf, aufgelöste Adaptionen gehören nicht in diesen Pfad
-([Baseline-Regelwerk §Konventionsspeicher](../.harness/baseline/v6.13.0/regelwerk/grundlagen-harness-dateien.md#harnessconventionsmd-als-konventionsspeicher)).
+([Baseline-Regelwerk §Konventionsspeicher](../.harness/baseline/v6.17.0/regelwerk/grundlagen-harness-dateien.md#harnessconventionsmd-als-konventionsspeicher)).
 Je Index-Zeile steht ein Voll-Slug-`<a id>` — **Migrations-Schuld**, damit die
 eingefrorenen in-repo-Verweise auf `conventions.md#mr-…` (immutable ADRs, `done/`-
 Slices, Reviews) ohne Retarget und ohne ADR-Edit auflösen; ein frisch unter der
@@ -133,7 +133,7 @@ ob der Eintrag ihn betrifft.
 | [MR-055](conventions/MR-055-symlink-als-pin-traeger.md) <a id="mr-055--ein-symlink-auf-den-vendored-baum-ist-ein-pin-gebundener-träger-nachtrag-zu-mr-021"></a><a id="mr-055"></a> | Ein Symlink auf den vendored Baum ist ein pin-gebundener Träger (Nachtrag zu [MR-021](#mr-021)) | Symlinks unter `.claude/rules/` mit Ziel in `.harness/baseline/<tag>/` | keine — Nachtrag zu [MR-021](#mr-021), **nicht** zum Kanon: der kennt den Baum als gepinnte Referenz, aber keinen Symlink als Träger |
 | [MR-056](conventions/MR-056-dod-haken-waechter.md) <a id="mr-056--der-dod-haken-eines-geschlossenen-slice-wird-gewächtert"></a><a id="mr-056"></a> | Der DoD-Haken eines geschlossenen Slice wird gewächtert | `.d-check.closure.yml`, Abschnitt `## N. Definition of Done` der Slice-Dateien unter `docs/plan/planning/done/` | keine — der Kanon macht die DoD-Häkchen zur Bedingung des Übergangs; gehalten war davon nur die Closure-Notiz-Hälfte. Werkzeug-Wahl, keine Abweichung |
 | [MR-066](conventions/MR-066-slice-wachstum-ohne-rueckfuehrung.md) <a id="mr-066--was-nicht-still-weiterschieben-verlangt-wenn-die-rückführung-nicht-gezogen-wird"></a><a id="mr-066"></a> | Was „nicht still weiterschieben" verlangt, wenn die Rückführung nicht gezogen wird: Grund **und** benannte Ersatz-Form der Prüfung (seit slice-204) | jeder Slice über der Ein-Sitzungs-Review-Grenze, der nicht zurückgeführt wird | keine — **präzisiert** `modul-05` §Ziel-Form: Slice, die das stille Weiterschieben verbietet, ohne zu sagen, was an die Stelle der Stille tritt |
-| [MR-073](conventions/MR-073-baseline-v6130.md) <a id="mr-073--baseline-pin-hebung-auf-v6130-fünfzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-073"></a> | Baseline-Pin-Hebung auf v6.13.0 (fünfzehnter Nachtrag zu [MR-011](#mr-011), Nachtrag zu [MR-023](#mr-023)) | §Baseline, pin-gebundene Verweise, `.harness/baseline/v6.13.0/` | — *(Pin-Fortschreibung im Bundle-Layout des Vorgängers)* |
+| [MR-074](conventions/MR-074-baseline-v6170.md) <a id="mr-074--baseline-pin-hebung-auf-v6170-sechzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-074"></a> | Baseline-Pin-Hebung auf v6.17.0 (sechzehnter Nachtrag zu [MR-011](#mr-011), Nachtrag zu [MR-023](#mr-023)) | §Baseline, pin-gebundene Verweise, `.harness/baseline/v6.17.0/` | — *(Pin-Fortschreibung im Bundle-Layout des Vorgängers)* |
 | [MR-069](conventions/MR-069-ignore-refs-ist-eine-deklarierte-gate-senkung.md) <a id="mr-069--das-ignore-refs-ventil-ist-eine-deklarierte-gate-senkung-und-es-wächst-mit-jedem-bump"></a><a id="mr-069"></a> | Das `ignore-refs`-Ventil ist eine deklarierte Gate-Senkung und wächst mit jedem Bump | `ignore-refs`-Einträge auf entfernte `.harness/baseline/<tag>/`-Bäume | `grundlagen-harness-dateien` §harness/README.md als Einstiegspunkt — keine Abweichung, sondern die Einlösung der dort verlangten Begründungslast |
 | [MR-070](conventions/MR-070-frozen-klassen-vor-mechanischer-ersetzung.md) <a id="mr-070--wer-mechanisch-über-den-baum-ersetzt-listet-die-frozen-klassen-vorher-auf"></a><a id="mr-070"></a> | Wer mechanisch über den Baum ersetzt, listet die Frozen-Klassen vorher auf — über die Eigenschaft, nicht über Verzeichnisse (seit slice-209) | jede mechanische Ersetzung über mehr als eine Datei (`sed`, Token-Austausch, Nachzug nach `git mv`) | keine — **ergänzt** um einen Vorgang, den der Kanon nicht führt; die nächstgelegene Regel betrifft die Verweis-**Form**, nicht die Massen-Operation |
 | [MR-0098](conventions/MR-0098-matrix-nimmt-spec-historie-aus-der-referenz-richtung.md) <a id="mr-0098--die-matrix-nimmt-die-7-historie-beider-spec-straten-aus-der-referenz-richtung-aus"></a><a id="mr-0098"></a> | Die Matrix nimmt die `7. Historie` beider Spec-Straten aus der Referenz-Richtung aus (seit slice-248) | `matrix.exclude-sections` | keine — **ergänzt** um die Historie-Ausnahme (v5.11.0); Begründung und Messung im MR-Eintrags-File |
@@ -176,6 +176,7 @@ auffindbar bleibt, ohne gelesen zu werden.
 | [MR-067](conventions/done/MR-067-baseline-v650.md) <a id="mr-067--baseline-pin-hebung-auf-v650-zwölfter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-067"></a> | [MR-071](#mr-071) (nächste Pin-Hebung — der eigene Auflösungs-Trigger des Eintrags) |
 | [MR-071](conventions/done/MR-071-baseline-v660.md) <a id="mr-071--baseline-pin-hebung-auf-v660-dreizehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-071"></a> | [MR-072](#mr-072) (nächste Pin-Hebung — der eigene Auflösungs-Trigger des Eintrags) |
 | [MR-072](conventions/done/MR-072-baseline-v690.md) <a id="mr-072--baseline-pin-hebung-auf-v690-vierzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-072"></a> | [MR-073](#mr-073) (nächste Pin-Hebung — der eigene Auflösungs-Trigger des Eintrags) |
+| [MR-073](conventions/done/MR-073-baseline-v6130.md) <a id="mr-073--baseline-pin-hebung-auf-v6130-fünfzehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-073"></a> | [MR-074](#mr-074) (nächste Pin-Hebung — der eigene Auflösungs-Trigger des Eintrags) |
 | [MR-059](conventions/done/MR-059-wellen-archiv-stub-move.md) <a id="mr-059--wellen-archiv-stub-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013"></a><a id="mr-059"></a> | Baseline-Konformität (seit slice-223): `AGENTS.md` §3.3 trägt die Klasse „vollständig ersetzter Inhalt" jetzt als einen Satz, ohne Nennung dieses Eintrags — der Kanon selbst deckt den Fall, keine Abweichung mehr nötig |
 | [MR-061](conventions/done/MR-061-register-migrations-move.md) <a id="mr-061--register-formatmigration-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013"></a><a id="mr-061"></a> | Baseline-Konformität (seit slice-223), wie [MR-059](#mr-059) — zusätzlich ohnehin erschöpft (ein Migrations-Commit, bereits vollzogen) |
 | [MR-062](conventions/done/MR-062-wellenloser-slice-archiv-move.md) <a id="mr-062--wellenloser-einzel-slice-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013"></a><a id="mr-062"></a> | Baseline-Konformität (seit slice-223), wie [MR-059](#mr-059) |

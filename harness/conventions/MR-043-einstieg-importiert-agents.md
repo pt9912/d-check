@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon verlangt von der
   Wurzel-Einstiegsdatei genau dies —
-  [`grundlagen-durchsetzungsschicht.md` §Das vollständige Artefakt-Set](../../.harness/baseline/v6.13.0/regelwerk/grundlagen-durchsetzungsschicht.md):   <!-- d-check:cite .harness/baseline/v6.13.0/regelwerk/grundlagen-durchsetzungsschicht.md:116-118 -->
+  [`grundlagen-durchsetzungsschicht.md` §Das vollständige Artefakt-Set](../../.harness/baseline/v6.17.0/regelwerk/grundlagen-durchsetzungsschicht.md):   <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/grundlagen-durchsetzungsschicht.md:116-118 -->
   *„Sie bringt `AGENTS.md` in den Lauf-Kontext, wo Modul 9 es für jeden Lauf
   verlangt. Sie **verweist** dorthin und legt nichts fest"* — die Fettung im
   zweiten Satz steht so in der Quelle, das tragende Verb *bringt* nicht; die
