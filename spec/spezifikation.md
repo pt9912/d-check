@@ -3618,12 +3618,13 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 |---|---|---|---|
 | `SPEC-064` | `gopkg.in/yaml.v3` | gepinnt via `go.sum` | striktes Decoding (`KnownFields`); vollständig im Config-Adapter gekapselt |
 | `SPEC-065` | GitHub Flavored Markdown (Slug-/Anker-Verhalten) | Referenzverhalten, Stand 2026-06 | [§1, DC-FA-ANCH-001.a](#dc-fa-anch-001a--github-slug-algorithmus) |
-| `SPEC-066` | Runtime-Basis-Image distroless/static | Digest-gepinnt | Multi-Stage-Build; nur volle Semver-Tags, kein `latest` |
+| `SPEC-066` | Runtime-Basis-Image distroless/static | Digest-gepinnt (Index-Digest; Plattformen `linux/amd64`, `linux/arm64`) | Multi-Stage-Build, die Go-Stufen kompilieren auf der Build-Plattform für die Ziel-Plattform; das veröffentlichte Image ist ein Index beider Plattformen; volle Semver-Tags, `latest` nur für stabile Releases |
 
 ## 7. Historie
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-07 | §6-Zeile [`SPEC-066`](#6-externe-verträge): das Runtime-Image ist ein Index für `linux/amd64` und `linux/arm64`, die Go-Stufen kompilieren auf der Build-Plattform für die Ziel-Plattform ([`DC-FA-DIST-001`](lastenheft.md#dc-fa-dist-001--docker-image) 0.98.0); die Aussage „kein `latest`" war seit der `latest`-Regel für stabile Releases überholt und ist mitberichtigt |
 | 2026-10-07 | Nachzug nach Review: §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 5a — nur führende Tabellen-Targets (erste Zelle) zählen, der Schritt läuft unabhängig von `targets.makefiles`, Symlink-Alias zählt als zweite Datei; Schritt 1 und Schema-Zeile `targets.makefiles` entsprechend ("Richtungen 1 und 2 inert") |
 | 2026-10-07 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) um Schritt 5a (opt-in Disjunktheit der Autoritäts-Dateien, Grund-Code `gate-declared-twice`) erweitert, Schritt 5 verweist darauf; Schema-Zeile `targets.authority-disjoint`, §4-Zeile [`SPEC-088`](#4-grund--und-fehler-codes) |
 | 2026-10-06 | Nachzug nach Review: §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 5 — Listenelemente je Knoten geprüft (Null-Element ⇒ Exit 2 statt still verworfen), String-Form dekodiert wie zuvor, keine Ablehnung von Glob-Zeichen (Einträge wörtlich); Schema-Zeile nachgezogen |

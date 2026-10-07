@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.97.2
+**Version:** 0.98.0
 
 **Status:** Draft
 
@@ -3931,24 +3931,31 @@ Repository nie beschreibt. Default-Befehl des Images ist die Prüfung
 von `/repo`; CLI-Optionen werden als Container-Argumente angehängt.
 Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
+Jeder Tag trägt einen **Multi-Plattform-Index** mit den Plattformen
+`linux/amd64` und `linux/arm64`; die Container-Laufzeit wählt die Variante
+ihres Hosts selbst, ohne Emulation. Die Identität zur nativen Ausführung gilt
+**je Plattform** — gegen das Binary derselben Plattform —, und jede Variante
+ist vor ihrer Veröffentlichung daraufhin geprüft.
+
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given ein Repo mit einem kaputten Link, when der Container mit gemountetem Repo läuft, then identische Befund-Ausgabe und Exit-Code 1 wie beim nativen Aufruf.
 - **Boundary:** Given ein read-only gemountetes Repo (`:ro`), when der Container läuft, then keine Schreibfehler und vollständige Prüfung.
+- **Boundary (Plattform):** Given ein veröffentlichtes Release, when das Image auf einem `linux/arm64`-Host bezogen und mit einem Repo mit kaputtem Link gestartet wird, then läuft die `linux/arm64`-Variante, und Befund-Ausgabe und Exit-Code sind identisch zur nativen Ausführung des `linux/arm64`-Binaries.
 - **Negative:** Given kein Mount auf `/repo` (Verzeichnis leer oder fehlt), when der Container läuft, then Exit-Code 2 mit Hinweis auf den erwarteten Mount.
 
-**Out-of-Scope:** Distributionswege jenseits der Container-Registries (Homebrew, Paketmanager, Release-Binaries); deren Bewertung erfolgt später per ADR. Der **Spiegel** nach Docker Hub ist seit [`DC-FA-DIST-002`](#dc-fa-dist-002--docker-hub-spiegel) **nicht** mehr out-of-scope; das Bezugs-Ziel dieser Anforderung bleibt GHCR.
+**Out-of-Scope:** Distributionswege jenseits der Container-Registries (Homebrew, Paketmanager, Release-Binaries); deren Bewertung erfolgt später per ADR. Weitere Plattformen (`linux/arm/v7`, `linux/s390x`, Windows-Container) — jede wäre eine Erweiterung dieser Zusage. Der **Spiegel** nach Docker Hub ist seit [`DC-FA-DIST-002`](#dc-fa-dist-002--docker-hub-spiegel) **nicht** mehr out-of-scope; das Bezugs-Ziel dieser Anforderung bleibt GHCR.
 
 ### DC-FA-DIST-002 — Docker-Hub-Spiegel
 
 **Beschreibung:** Jedes nach GHCR veröffentlichte Image wird zusätzlich als
 `docker.io/pt9912/d-check` gespiegelt — **dasselbe Bild unter denselben Tags**,
-nicht ein zweiter Bau. Prüfgröße ist der **Config-Digest**, aus **beiden
-Registries** gelesen: er ist die Identität des Bild-Inhalts und über Registries
-hinweg stabil. Der **Manifest**-Digest ist es ausdrücklich **nicht** — er hängt
-an der Blob-Kompression des jeweiligen Registrys und fällt je Registry
-verschieden aus; wer `docker.io/…@sha256:…` pinnt, nimmt deshalb den
-Docker-Hub-Digest, nicht den von GHCR. GHCR bleibt die **Quelle**, Docker Hub
+nicht ein zweiter Bau. Prüfgröße ist der **Index-Digest**, aus **beiden
+Registries** gelesen: er bindet alle Plattform-Varianten samt ihrem Inhalt, und
+er bleibt beim Spiegeln erhalten, weil der Spiegel den Index mit seinen Blobs
+unverändert überträgt, statt ihn neu zu verpacken. Wer
+`docker.io/…@sha256:…` pinnt, nimmt deshalb **denselben** Digest wie auf GHCR.
+GHCR bleibt die **Quelle**, Docker Hub
 der Spiegel; die Richtung ist Teil der Zusage. Die Tagging-Disziplin ist die von
 [`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image): volle Semver-Tags, und
 `:latest` bewegt sich ausschließlich für stabile Releases. Die Spiegelung ist
@@ -3958,11 +3965,11 @@ der Zustand nicht geraten werden muss.
 
 **Akzeptanzkriterien:**
 
-- **Happy Path:** Given ein veröffentlichtes Release `vX.Y.Z`, when der Config-Digest von `docker.io/pt9912/d-check:vX.Y.Z` und der von `ghcr.io/pt9912/d-check:vX.Y.Z` **aus den Registries** gelesen werden, then sind beide identisch.
+- **Happy Path:** Given ein veröffentlichtes Release `vX.Y.Z`, when der Index-Digest von `docker.io/pt9912/d-check:vX.Y.Z` und der von `ghcr.io/pt9912/d-check:vX.Y.Z` **aus den Registries** gelesen werden, then sind beide identisch.
 - **Boundary:** Given ein Release mit Prerelease-Suffix (`vX.Y.Z-rc1`), when die Veröffentlichung läuft, then trägt Docker Hub den Versions-Tag, und `:latest` bleibt dort unverändert auf dem letzten stabilen Release.
 - **Negative:** Given fehlende oder ungültige Docker-Hub-Zugangsdaten, when die Veröffentlichung läuft, then bricht sie **vor** dem Spiegel-Push mit einer Fehlermeldung ab, die den bereits veröffentlichten GHCR-Stand ausdrücklich benennt — kein stiller Durchlauf und keine Teil-Veröffentlichung ohne Aussage.
 
-**Out-of-Scope:** Spiegel auf weitere Registries; ein vom GHCR-Bild **abweichender** Docker-Hub-Bau (etwa andere Basis oder andere Plattform-Matrix) — die Zusage ist Inhalts-Gleichheit, nicht Parallelbau; **Gleichheit des Manifest-Digests** (registry-lokal, siehe oben); der **Inhalt** der Hub-Beschreibungsseite — er wird aus der Packaging-Doku gesetzt, ist aber nicht Teil der Distributions-Zusage: sein Fehlschlag lässt das Release grün.
+**Out-of-Scope:** Spiegel auf weitere Registries; ein vom GHCR-Bild **abweichender** Docker-Hub-Bau (etwa andere Basis oder andere Plattform-Matrix) — die Zusage ist Inhalts-Gleichheit, nicht Parallelbau; der **Inhalt** der Hub-Beschreibungsseite — er wird aus der Packaging-Doku gesetzt, ist aber nicht Teil der Distributions-Zusage: sein Fehlschlag lässt das Release grün.
 
 ---
 
@@ -4070,6 +4077,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.98.0 | 2026-10-07 | [`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image) sagt einen **Multi-Plattform-Index** (`linux/amd64`, `linux/arm64`) zu; die Identität zur nativen Ausführung gilt je Plattform, neues Kriterium „Boundary (Plattform)", weitere Plattformen ausdrücklich Out-of-Scope. [`DC-FA-DIST-002`](#dc-fa-dist-002--docker-hub-spiegel) wechselt die Prüfgröße vom Config-Digest auf den **Index-Digest**: ein Index hat keinen einzelnen Config-Digest, und ein Spiegel, der den Index samt Blobs unverändert kopiert, erhält dessen Digest — die Zusage wird damit schärfer (ein Pin für beide Registries), der Out-of-Scope-Punkt „Gleichheit des Manifest-Digests" entfällt. Begründung in begleitender ADR | — |
 | 0.97.2 | 2026-10-07 | Nachzug nach Verifikation, **vor** der ersten Closure dieser Erweiterung: in [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) einen doppelten Satzrest gestrichen und das Akzeptanzkriterium „Disjunktheit (Negative)" auf die führende erste Zelle präzisiert (es nannte noch jede Tabellenzeile). Keine Verhaltensänderung der Zusage | — |
 | 0.97.1 | 2026-10-07 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Erweiterung: die Disjunktheit in [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) präzisiert (Begründung in begleitender ADR). Der Erstentwurf (0.97.0) zählte jedes Vorkommen eines Targets in irgendeiner Zelle als Deklaration — ein Werkzeug-Teil, der in seiner Vertrag-Spalte das Einhängen in ein Sammel-Target nennt, wäre als Doppelung gemeldet worden; die Baseline meint die Zeile, die das Target führt. Zudem lief die Prüfung ohne `targets.makefiles` nicht, was nirgends stand. Die Zusage ist jetzt: nur die erste Zelle führt, die Prüfung läuft auch ohne Regelmenge, Symlink-Alias zählt als zweite Datei; neues Akzeptanzkriterium „führende Zelle" | — |
 | 0.97.0 | 2026-10-07 | [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) erweitert (Erweiterung statt neues Kürzel — Einzelmodul-Frage): opt-in-Prüfung der **Disjunktheit** der Autoritäts-Dateien über `targets.authority-disjoint`. Ein Target, das als Tabellenzeile in mehr als einer Autoritäts-Datei steht, meldet den neuen Grund-Code `gate-declared-twice` an der Tabellenzeile jeder späteren Datei (die Meldung nennt die Datei der ersten Nennung); `exempt-targets` nimmt davon nicht aus, eine Doppelung innerhalb einer Datei ist kein Fall. Ohne Schalter byte-identisch. Anlass: die adoptierte Baseline-Konvention führt seit `v6.16.0` die Regel, dass kein Target in zwei Teilen des Gate-Index steht — ein Re-Evaluierungs-Trigger der begleitenden ADR der Vorgänger-Erweiterung. Zwei neue Akzeptanzkriterien; Out-of-Scope präzisiert. Begründung in begleitender ADR | [Hinweis `ai-harness-course` 2026-10-07](../docs/plan/cr/2026-10-07-hinweis-eingehend-ai-harness-course-disjunktheit.md) |
