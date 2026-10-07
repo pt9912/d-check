@@ -32,12 +32,12 @@ docker run --rm -v "$PWD:/repo:ro" pt9912/d-check:__VERSION__ --enable ids --dis
 
 For CI, pin to the **digest** rather than to a moving tag. This image is a
 **mirror** of `ghcr.io/pt9912/d-check` — the same image, not a second build:
-the **config** digest is identical on both registries, and the release pipeline
-verifies it after the push.
+the **index** digest is identical on both registries, and the release pipeline
+verifies it after the push — a digest pin taken from GHCR resolves here too.
 
-**The manifest digest, in contrast, is registry-local** — it depends on each
-registry's blob compression. So take the digest **from the registry you pull
-from**; one copied from GHCR will not resolve here.
+Every tag is a multi-platform image for `linux/amd64` and `linux/arm64`;
+Docker picks the variant for your machine, so Apple Silicon and arm64 Linux
+run it without emulation.
 
 ```bash
 docker run --rm -v "$PWD:/repo:ro" pt9912/d-check@sha256:<digest>

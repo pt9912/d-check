@@ -301,22 +301,23 @@ Lastenhefts, und beide werden gemessen, nicht behauptet:
   Host-Pfad-Hygiene, Versions-Pin-Konsistenz, Struktur-Invarianten,
   Diagramm-Kennungen und wortgleichen Zitaten).
 - **Container nativ-identisch:** Befund-Ausgabe und Exit-Code des
-  Images sind byte-identisch zur nativen Ausführung, automatisiert
-  getestet ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image));
+  Images sind byte-identisch zur nativen Ausführung, je Plattform
+  (`linux/amd64`, `linux/arm64`) automatisiert getestet
+  ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image));
   CI-Konsum per Digest-Pin.
 
 ## Nutzung
 
-Verteilung als Container-Image über GHCR
+Verteilung als Multi-Plattform-Container-Image (`linux/amd64`, `linux/arm64`)
+über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)),
 zusätzlich nach Docker Hub gespiegelt als
-`pt9912/d-check` — dasselbe Bild, kein zweiter Bau, gleicher **Config**-Digest
-(der **Manifest**-Digest ist registry-lokal: per Digest pinnt man den der
-Registry, aus der man zieht)
+`pt9912/d-check` — dasselbe Bild, kein zweiter Bau, gleicher **Index**-Digest
+(ein Digest-Pin gilt für beide Registries)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.83.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0-rc.1
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

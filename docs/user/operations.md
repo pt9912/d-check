@@ -13,12 +13,12 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check@sha256:<digest>
 
 Dasselbe Bild liegt gespiegelt auf Docker Hub
 ([`DC-FA-DIST-002`](../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel));
-der Config-Digest ist auf beiden Registries gleich, der **Manifest**-Digest
-nicht — ein `docker.io`-Pin nimmt deshalb den Docker-Hub-Digest, nicht den von
-GHCR:
+der Spiegel ist eine Kopie, und der **Index**-Digest ist auf beiden Registries
+gleich — derselbe Pin gilt für `docker.io`. Jeder Tag trägt die Plattformen
+`linux/amd64` und `linux/arm64`:
 
 ```sh
-docker run --rm -v "$PWD:/repo:ro" pt9912/d-check@sha256:<digest-von-docker-hub>
+docker run --rm -v "$PWD:/repo:ro" pt9912/d-check@sha256:<digest>
 ```
 
 Das Image prüft das nach `/repo` gemountete Repository (read-only

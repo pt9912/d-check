@@ -299,22 +299,23 @@ spec, and both are measured, not asserted:
   host-path hygiene, version-pin consistency, structure invariants,
   diagram identifiers and verbatim citations).
 - **Container native-identical:** the image's finding output and exit code
-  are byte-identical to native execution, tested automatically
+  are byte-identical to native execution, tested automatically per platform
+  (`linux/amd64`, `linux/arm64`)
   ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image));
   CI consumption via digest pin.
 
 ## Usage
 
-Distributed as a container image via GHCR
+Distributed as a multi-platform container image (`linux/amd64`, `linux/arm64`)
+via GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)),
 also mirrored to Docker Hub as `pt9912/d-check` —
-the same image, not a second build, same **config** digest (the **manifest**
-digest is registry-local: when pinning by digest, use the one from the registry
-you pull from)
+the same image, not a second build, same **index** digest (one digest pin
+works for both registries)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.83.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0-rc.1
 ```
 
 CI pipelines pin to the digest from the release notes rather than to
