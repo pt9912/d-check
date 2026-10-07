@@ -32,7 +32,7 @@ ARG GO_VERSION=1.27.1
 ARG GOLANGCI_LINT_VERSION=v2.14.0
 
 # ---- deps ------------------------------------------------------------------
-FROM golang:${GO_VERSION}@sha256:3680233e3204827fbdc66088528ae6d4b3d034f51d03a99d454f6de034888244 AS deps
+FROM golang:${GO_VERSION}@sha256:162be5298a40ed317005c8339c6de4d10d3eef336d66dc8e9259b03ab9d3a6d2 AS deps
 
 WORKDIR /src
 ENV GOFLAGS="-mod=readonly -buildvcs=false" \
