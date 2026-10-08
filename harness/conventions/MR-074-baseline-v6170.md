@@ -58,7 +58,8 @@
      die Historie ist §8, die Ausnahme folgt
      ([`MR-075`](../conventions.md#mr-075)); eingetragen sind die vier Gates
      `coverage-gate`, `lint`, `semgrep` und `baseline-verify`. Die übrigen
-     Werkzeuge übernimmt slice-260.
+     Werkzeuge übernehmen slice-260 (Wächter, Hooks, Prüfer) und slice-262
+     (Netz- und Nachtlauf-Werkzeuge).
   3. **Reviewer** — `modul-10-review-harness.md`: kein Stil-Polizist
      (Formatierung oder Benennung ohne Konventions-Anker ist kein Finding),
      kein HIGH- oder MEDIUM-Finding ohne Failure-Szenario; die Fundstelle wird

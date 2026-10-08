@@ -1,4 +1,4 @@
-# slice-260: Festlegungen der lokalen Wächter, Hooks und Prüfer in die Spezifikation
+# slice-262: Festlegungen der Netz- und Nachtlauf-Werkzeuge in die Spezifikation
 
 **Lifecycle:** Der Zustand dieses Slice ist das Verzeichnis, in dem diese
 Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
@@ -8,7 +8,8 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
 **Bezug:** [`MR-074`](../../../../harness/conventions.md#mr-074) (Bewegung 2,
-Rest); Folge von slice-259, der den Abschnitt §7 der Spezifikation anlegt.
+Rest); geteilt aus slice-260, dessen Abgrenzung neun Werkzeuge mit eigener
+Festlegung ergab.
 
 **Berührte Spec-Stellen:** `spec/spezifikation.md` §7.
 
@@ -23,27 +24,19 @@ Rest); Folge von slice-259, der den Abschnitt §7 der Spezifikation anlegt.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice.
 
-**Ziel:** Die Festlegungen der lokalen Wächter, Hooks und Prüfer, die nicht
-in `make gates` laufen und keine eigene Anforderung verfeinern, stehen in §7
-der Spezifikation, und ihre Sensor-Dateien verlinken die Kennung: der
-Tool-Call-Wächter (was blockiert wird, fail-closed), das Handoff-Gate aus
-Stop-Hook und `record-gates` (Inhalts-Hash, Schleifen-Schutz, Freigabe ohne
-Nachweis), die git-Hooks (welcher Übergang welche Prüfung auslöst) und
-`blackbox-probe` (Kanarienlauf, Abbruch, Vergleich).
+**Ziel:** Die Festlegungen der Werkzeuge, die gegen einen fremden Stand
+prüfen — über das Netz, im Nachtlauf —, stehen in §7 der Spezifikation, und
+ihre Sensor-Dateien verlinken die Kennung: `image-scan` (Plattformen aus dem
+Index, Plattform-Nachweis, Entscheidungslauf), die Versions-Achsen samt der
+Action-Pins (Gleich/Ungleich, Präfix, fail-open), die Digest-Achsen,
+`baseline-freshness` (Currency und Content-Drift) und `nightly-state` (was
+gelesen werden muss, was planmäßig ist).
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
-- **Der Abschnitt selbst und die Gates aus `make gates`** — slice-259.
-- **Netz- und Nachtlauf-Werkzeuge** (`image-scan`, die Versions- und
-  Digest-Achsen, `baseline-freshness`, `nightly-state`) — slice-262
-  übernimmt sie; geteilt beim Schnitt, weil die Abgrenzung neun Werkzeuge mit
-  eigener Festlegung ergab, über der Grenze aus §4.
-- **Was eine Anforderung durchsetzt** (`image-test`, `trace-check`,
-  `adr-check`, die Hooks, soweit sie diese nur rufen) — deren Festlegung ist
-  Verfeinerung der Anforderung in §1, nicht §7 (Vorlage §7).
-- **Werkzeuge, die nur bewegen oder sagen** (`archive-wave`, `slice-mv`,
-  `help`, `clean`, `versions`) — sie treffen keine Festlegung, die man
-  fortschreiben müsste.
+- **Die lokalen Wächter, Hooks und Prüfer** — slice-260.
+- **Die Gates aus `make gates`** — slice-259.
+- **Werkzeuge, die nur bewegen oder sagen** — wie in slice-260.
 
 Was hier steht, ist die Grenze, an der ein wachsender Slice sich messen lässt:
 Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
@@ -58,7 +51,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 - [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft;
       [MR-074](../../../../harness/conventions.md#mr-074) Bewegung 2 mit dem
-      Anteil dieses Slice vermerkt (eingelöst, sobald auch slice-262 schließt).
+      Anteil dieses Slice vermerkt (eingelöst, sobald auch slice-260 schließt).
 
 ## 3. Plan (vor Code)
 
@@ -69,7 +62,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 4. Trigger
 
-**Start** (`next` → `in-progress`): slice-259 in `done/`; `in-progress/` leer.
+**Start** (`next` → `in-progress`): `in-progress/` leer.
 
 **Rückführungen — vorab benennen:**
 
@@ -106,16 +99,14 @@ wellenlos hier geprüft.
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
 **Vorgelagert — Sub-Area-Wahl prüfen:** die Spezifikation und die
-Harness-Doku unter dem Default `*` (`ALL`); `tools/harness/` (`HARN`) ist
-berührt, soweit Wächter und Hooks dort liegen — beim Anlegen des Plans für
-die Umsetzung neu prüfen.
+Harness-Doku unter dem Default `*` (`ALL`); `tools/harness/` (`HARN`), soweit
+die Achsen dort liegen — beim Beanspruchen neu prüfen.
 
 <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
 > **Offene Beobachtungen sichten.** Das
 
-**Vorgelagert — offene Beobachtungen sichten:** beim Beanspruchen neu lesen;
-Stand beim Schnitt wie slice-259.
+**Vorgelagert — offene Beobachtungen sichten:** beim Beanspruchen neu lesen.
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
 beim Beanspruchen aus dem jüngsten Lauf lesen.
