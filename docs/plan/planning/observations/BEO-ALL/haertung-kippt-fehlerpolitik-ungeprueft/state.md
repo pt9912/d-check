@@ -1,1 +1,1 @@
-**Stand:** offen
+**Stand:** verkörpert — Prüffrage 19 im Reviewer-Skill `.harness/skills/reviewer.md` (seit slice-257): ein neuer Leseweg einer Härtung wird gegen seine Fehlerformen gefahren, nicht nur gegen den Fall, den er beheben soll. Bleibt wach: eine Prüffrage für Menschen kann weiter verfehlt werden.

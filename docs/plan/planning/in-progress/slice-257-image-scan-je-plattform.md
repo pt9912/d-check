@@ -43,13 +43,14 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] `tools/image-scan.sh` scannt je Referenz `linux/amd64` und
-      `linux/arm64` (Plattform im Bericht genannt); die Plattformliste steht
-      an einer Stelle.
-- [ ] `harness/sensors/image-scan.md` nennt die Plattformen und die Grenze;
+- [x] `tools/image-scan.sh` scannt je Referenz jede Plattform des Index — gelesen
+      aus dem Index selbst, nach der Plan-Änderung nach R1 statt einer festen
+      Liste `linux/amd64`/`linux/arm64` (Plattform im Bericht genannt); die
+      Übersteuerung `IMAGE_SCAN_PLATFORMS` steht an einer Stelle.
+- [x] `harness/sensors/image-scan.md` nennt die Plattformen und die Grenze;
       `make gates` grün; Nachtlauf manuell ausgelöst und grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -78,19 +79,46 @@ wellenlos hier geprüft.
 
 ## 6. Risiken und offene Punkte
 
-- Der Nachtlauf verdreifacht seine Trivy-Läufe je Image (Plattform-Nachweis, Vollbericht, Entscheidung, je Plattform). — **Ausgang:** *(offen)*
+- Der Nachtlauf verdreifacht seine Trivy-Läufe je Image (Plattform-Nachweis, Vollbericht, Entscheidung, je Plattform). — **Ausgang:** entfallen — gemessen: der Nachtlauf mit vier Scans brauchte rund 45 s bei 30 min Timeout, lokal 19 s.
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Jede Zusage des Scans ist an einem Bruch belegt,
+  nicht nur an einem grünen Lauf: das alte Einzel-Manifest mit verlangtem
+  arm64 (still als amd64 gescannt — der Grund für den Plattform-Nachweis), eine
+  fehlende Plattform, ein fehlender Ref, ein präparierter Index mit einem
+  Eintrag ohne Plattform, eine fehlerhafte `config.json`. Die Auswertung ist in
+  drei netzlos prüfbare Funktionen geschnitten (Zählung, Architektur,
+  Plattformliste) mit 17 Selbsttest-Proben.
+- **Was ging anders als geplant:** Der Plan sah eine feste Plattformliste vor;
+  gemessen scannt Trivy ein Einzel-Manifest bei verlangtem arm64 still als
+  amd64 (Plan-Änderung vor dem Code: Plattform-Nachweis). R1 zeigte, dass die
+  feste Liste eine Kopie des Release-Pfads ist (F-1); ihr Ersatz — die
+  Plattformen aus dem Index lesen — führte einen neuen Leseweg ein, der Fehler
+  von `imagetools` verschluckte: eine Teil-Antwort galt als vollständige Liste,
+  der Scan meldete Exit 0 ohne arm64 (R2-1 HIGH, gemessen). Die Behebung ließ
+  stderr in die Liste laufen (R3-1). Drei Runden für einen Fix, der jeweils
+  den nächsten Rand anfasste.
+- **Steering-Loop-Eintrag:** Reviewer-Skill ergänzt: Prüffrage 19 — ein neuer
+  Leseweg einer Härtung wird gegen seine Fehlerformen gefahren, nicht nur
+  gegen den Fall, den er beheben soll — liegt in `.harness/skills/reviewer.md`.
+  Auslöser: `BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft` (slice-156, slice-206, slice-257 — 3×).
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-257.md` in
+  [`BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft`](../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/state.md)
+  ergänzt — Zähler 3×, Ausgang verkörpert (Auftraggeber-Entscheid);
+  [`BEO-ALL/fix-commit-ausserhalb-review-range`](../observations/BEO-ALL/fix-commit-ausserhalb-review-range/state.md)
+  neu angelegt mit Belegen aus slice-256 und slice-257 (2×).
+- **Folge-Slices:** keine.
+- **Risiken aus §6:** entfallen (Begründung in §6). Trigger-Audit: kein
+  Carveout, kein bootstrap-aware Gate, keine Hard Rule mit eingetretenem
+  Trigger; [ADR-0066](../../adr/0066-cve-scan-gegen-das-publizierte-image.md)
+  und [ADR-0102](../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)
+  tragen je einen Geschichte-Anhang (drei Läufe je Plattform; die
+  Offen-Konsequenz von [ADR-0102](../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md) eingelöst). Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — `.harness/skills/reviewer.md` trägt
+  `(seit slice-257)` in Prüffrage 19; (b) Folge-Slice — keine; (c) Register —
+  beide zitierten Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
