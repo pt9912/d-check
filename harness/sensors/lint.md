@@ -2,11 +2,9 @@
 
 ## Vertrag
 
-**29** kalibrierte Linter: 5 Default-Linter plus 23 aus
-[ADR-0006](../../docs/plan/adr/0006-lint-profil-solid.md), dazu `nolintlint`
-aus [`AGENTS.md`](../../AGENTS.md) §3.2. Ausnahmen leben **zentral** in
-`.golangci.yml` (`exclude-rules`) mit Begründung; Inline-Suppressions sind
-verboten.
+Hält das SOLID-nahe Lint-Profil dieses Repos ([ADR-0006](../../docs/plan/adr/0006-lint-profil-solid.md)).
+Welche Linter mit welchen Schwellen laufen und welche Ausnahmen gelten, legt
+[`SPEC-090`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) fest; Inline-Suppressions verbietet [`AGENTS.md`](../../AGENTS.md) §3.2.
 
 ## Grenze — was das Grün nicht abdeckt
 
@@ -21,11 +19,12 @@ verboten.
    Funktionsgrenzen und Struktur-Regeln fängt er nicht; dafür stehen
    [`semgrep`](semgrep.md) und [`arch-check`](arch-check.md) daneben.
 
-3. **Fünf Ausschluss-Regeln verkleinern den Prüfbereich** —
-   [`.golangci.yml`](../../.golangci.yml) nimmt die Komplexitäts-Linter für
-   `_test.go` heraus und `testpackage` für den Kern-Baum. Zentral deklariert
-   mit Begründung, wie `AGENTS.md` §3.2 es verlangt — und trotzdem eine
-   Verkleinerung: Ein grüner Lauf sagt „sauber außerhalb dieser fünf".
+3. **Die Ausschluss-Regeln verkleinern den Prüfbereich** — zentral in
+   [`.golangci.yml`](../../.golangci.yml) deklariert, mit Begründung, wie
+   `AGENTS.md` §3.2 es verlangt; welche es sind, zählt
+   [`SPEC-090`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+   auf. Ein grüner Lauf sagt „sauber außerhalb dieser Ausnahmen".
+
 ## Bindung
 
 Bestandteil von `make gates`.

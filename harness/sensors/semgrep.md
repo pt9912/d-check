@@ -2,14 +2,10 @@
 
 ## Vertrag
 
-`docker run --network none` mit **gepinntem** Image und **gepinntem**,
-außerhalb des Repos gecachtem Regelset (`semgrep/semgrep-rules` auf
-Commit-Pin, Umfang `go/lang/security`). Ein Befund bricht das Gate
-(`--error`).
-
-**Reproduzierbar und netzlos zugleich:** Das Cache-Holen am Pin ist **Setup**
-— Netz, wie ein Image-Pull —, nicht Teil der Analyse. Der Scan selbst läuft
-ohne Netz.
+Hermetisches Security-Gate über den Go-Code ([ADR-0010](../../docs/plan/adr/0010-semgrep-hermetisches-gate.md)):
+Regel-Umfang, Pin, Befund-Politik und der Abbruch bei null geladenen Regeln
+stehen in [`SPEC-091`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge). Lesen: das Holen des Regelsets
+am Pin ist Setup und braucht Netz, der Scan selbst läuft ohne.
 
 ## Grenze — was das Grün nicht abdeckt
 
