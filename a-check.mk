@@ -5,8 +5,8 @@
 # dabei das Fragment per --print-mk neu erzeugen (das Makefile-Target
 # arch-check delegiert hierher und bleibt unberührt).
 #
-# ZWEI TEILE DES v0.22.0-FRAGMENTS SIND BEWUSST NICHT ADOPTIERT (beide lagen
-# schon im v0.17.0-Fragment; das v0.22.0-Fragment ist byte-gleich zum v0.20.0-Fragment), damit die
+# ZWEI TEILE DES v0.23.0-FRAGMENTS SIND BEWUSST NICHT ADOPTIERT (beide lagen
+# schon im v0.17.0-Fragment; das v0.23.0-Fragment ist byte-gleich zum v0.20.0-Fragment), damit die
 # Anweisung oben nicht als unbelegte Zusage dasteht:
 #   DOCKER ?= docker   Eine Runtime-Indirektion zahlt sich nur repo-weit aus;
 #                      die uebrigen Rezepte dieses Repos rufen `docker` hart.
@@ -39,7 +39,7 @@
 #
 # Die drei Vorbedingungen des Architektur-Gates (tech.adapter-Liste,
 # composition_root: forbid, exclude) kamen mit v0.8.0 und tragen weiter.
-# Vor der Hebung auf v0.22.0 gemessen: derselbe Lauf ueber dieses Repo, 0
+# Vor der Hebung auf v0.23.0 gemessen: derselbe Lauf ueber dieses Repo, 0
 # Befunde in beiden Fassungen, und beide melden denselben konstruierten
 # Verstoss (app-impurity) an derselben Zeile; --print-mk ist unveraendert.
 # Der opt-in-Block shapes (seit v0.21.0) ist hier nicht konfiguriert.
@@ -50,8 +50,8 @@
 # Richtungssegment, und die ports-Schicht in `.a-check.yml` fuehrt ohnehin
 # kein `direction`-Feld, die einzige Vorbedingung, unter der die Aenderung
 # greift. Gemessen, nicht aus dem Changelog geschlossen.
-A_CHECK_VERSION ?= v0.22.0
-A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check:$(A_CHECK_VERSION)@sha256:12e961f799e6d50d25cf68f1a0b230cf222f51c2360bf91933cd7489174a26a9
+A_CHECK_VERSION ?= v0.23.0
+A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check:$(A_CHECK_VERSION)@sha256:97cb6d4eb52a0c9fb8f352baeea4f028691fdffbe534499141668dd9329c3f44
 
 .PHONY: a-check
 a-check: ## Architektur: Hexagon-Regeln via a-check (netzlos, read-only).
