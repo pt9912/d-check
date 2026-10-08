@@ -16,7 +16,8 @@ Streams verschränken sich und zeigen Abweichungen, die keine sind.
 
 **Nebenwirkung:** das Target baut `$(IMAGE):latest` neu, mit
 `VERSION=0.0.0-dev` — dasselbe Bild wie ein `make build` ohne Version; ein
-zuvor mit Release-Version gebautes `:latest` ist danach ersetzt.
+zuvor mit Release-Version gebautes `:latest` ist danach ersetzt — auch, wenn
+`VERSION` auf der Kommandozeile mitgegeben wird.
 
 Gedacht für die Zusage „ohne Schalter unverändert": vor dem Review laufen
 lassen, mit `REF` auf den Stand vor der Änderung.
@@ -35,13 +36,19 @@ lassen, mit `REF` auf den Stand vor der Änderung.
    samt `.d-check.yml`, nicht die von `REF`. Eine Konfiguration, die nur der
    neue Stand versteht, zeigt sich als Abweichung (das alte Binary endet mit
    Exit 2) — erwartbar, aber kein Verhaltensvergleich.
-4. **Nur Läufe des Werkzeugs zählen** — erkannt an seinem Lebenszeichen,
-   nicht am Wortlaut einer Docker-Meldung (der wechselt mit der
-   Docker-Version): Exit 1 muss einen Befund auf stdout tragen, Exit 2 eine
-   Zeile `d-check:` auf stderr, jeder andere Exit außer 0 bricht ab. Sonst
-   zählte ein Container, der auf beiden Seiten gleich nicht startet, als
-   „gleich". Ein Docker-Ausfall, der mit Exit 0 endete, bliebe unerkannt;
-   keine der gemessenen Formen (125, Daemon-Ausfall mit 1) tut das.
+4. **Nur echte Vergleiche zählen.** Ein Lauf gilt als Lauf des Werkzeugs,
+   wenn er mit 0, 1 oder 2 endet **und** eine Ausgabe auf stdout oder eine
+   Zeile `d-check:` auf stderr trägt — erkannt an diesem Lebenszeichen, nicht
+   am Wortlaut einer Docker-Meldung (gemessen über Standard, `--json`,
+   `--yaml`, `--doctor`, `--repair`, `--repair-broad`, `--trace`). Sonst
+   bricht die Probe ab. Endet ein Fall auf **beiden** Seiten mit Exit 2, hat
+   das Werkzeug die Eingabe nirgends geprüft — leerer Mount, fehlende
+   Leserechte (das Repo selbst wird anders als die Fixtures nicht lesbar
+   gemacht, eine `umask 077` trifft es), kaputte Konfiguration —; der Fall
+   zählt nicht als gleich, und die Probe endet mit Exit 2. **Restgrenze:**
+   ein Container-Ausfall, der trotzdem eine `d-check:`-Zeile oder Ausgabe
+   trüge, bliebe unerkannt; keine gemessene Form (Exit 125, Daemon-Ausfall
+   mit 1, leerer Mount) tut das.
 5. **Kein Gate.** Eine gewollte Änderung erzeugt Abweichungen; ob eine
    Abweichung gewollt ist, entscheidet der Vorgang, der sie erzeugt.
 
@@ -49,9 +56,9 @@ lassen, mit `REF` auf den Stand vor der Änderung.
 
 | Exit | Bedeutung |
 |---|---|
-| 0 | byte-identisch über alle Vergleiche |
+| 0 | byte-identisch über alle Vergleiche — und jeder Fall war auf mindestens einer Seite prüfbar |
 | 1 | mindestens eine Abweichung — je Fall die Ströme und ein Diff-Auszug |
-| 2 | Lauf gescheitert (`REF` fehlt oder ist kein Commit, Vorher-Image nicht baubar, Nachher-Image fehlt, leere Formen oder Fixtures, ein Lauf ohne Exit des Werkzeugs oder mit Docker-Fehler) |
+| 2 | Lauf gescheitert (`REF` fehlt oder ist kein Commit, Vorher-Image nicht baubar, Nachher-Image fehlt, leere Formen oder Fixtures, ein Lauf ohne Lebenszeichen des Werkzeugs, ein Fall auf beiden Seiten mit Exit 2) |
 
 **Das sind die Codes des Skripts.** `make` normalisiert jeden fehlgeschlagenen
 Recipe auf seinen eigenen Exit 2; 1 und 2 trennt die **Ausgabe**.

@@ -79,15 +79,14 @@ lauf() { # image dir form outprefix
   echo "$rc" > "$4.rc"
   # Nur ein Lauf DES WERKZEUGS zaehlt — erkannt an seinem Lebenszeichen, nicht
   # am Wortlaut einer Docker-Meldung (der wechselt mit der Docker-Version):
-  # Exit 1 traegt in jeder Form einen Befund auf stdout, Exit 2 eine Zeile
-  # `d-check:` auf stderr; Exit 0 liefert Docker beim Scheitern nicht. Ohne
-  # das zaehlte ein Container, der auf beiden Seiten gleich nicht startet
-  # (125/126/127, Mount-Fehler, Daemon weg — dieser endet mit 1), als „gleich".
+  # ein Exit 0, 1 oder 2 UND eine Ausgabe auf stdout oder eine Zeile
+  # `d-check:` auf stderr (gemessen ueber Standard, --json, --yaml, --doctor,
+  # --repair, --repair-broad, --trace: jede Form traegt eins von beidem).
+  # Ohne das zaehlte ein Container, der auf beiden Seiten gleich nicht
+  # startet (125/126/127, Mount-Fehler, Daemon weg mit 1), als „gleich".
   local why=""
   case "$rc" in
-    0) ;;
-    1) [ -s "$4.out" ] || why="Exit 1 ohne Befund-Ausgabe" ;;
-    2) grep -q '^d-check:' "$4.err" || why="Exit 2 ohne Meldung des Werkzeugs" ;;
+    0|1|2) [ -s "$4.out" ] || grep -q '^d-check:' "$4.err" || why="Exit ${rc} ohne Ausgabe des Werkzeugs" ;;
     *) why="Exit ${rc}" ;;
   esac
   [ -z "$why" ] || fail "${1} auf ${2} (${3}): ${why} — kein Lauf des Werkzeugs: $(tail -n 1 "$4.err")"
@@ -95,6 +94,7 @@ lauf() { # image dir form outprefix
 
 vergleiche=0
 abweichungen=0
+unvergleichbar=0
 for fx in "${fixtures[@]}"; do
   name="${fx%%=*}" dir="${fx#*=}"
   for form in $PROBE_FORMS; do
@@ -102,6 +102,15 @@ for fx in "${fixtures[@]}"; do
     p="$WORK/run.${name}.${form//[^a-z-]/_}"
     lauf "$VORHER" "$dir" "$form" "$p.v"
     lauf "$NACHHER" "$dir" "$form" "$p.n"
+    # Exit 2 auf BEIDEN Seiten heisst: das Werkzeug konnte die Eingabe auf
+    # keiner Seite pruefen (leerer Mount, fehlende Leserechte, kaputte
+    # Konfiguration) — gleiche Fehlermeldungen sind kein Verhaltensvergleich.
+    # Einseitiges Exit 2 bleibt eine Abweichung.
+    if [ "$(cat "$p.v.rc")" = 2 ] && [ "$(cat "$p.n.rc")" = 2 ]; then
+      unvergleichbar=$((unvergleichbar + 1))
+      echo "  NICHT PRUEFBAR ${tag}: beide Seiten Exit 2 — $(grep -m1 '^d-check:' "$p.n.err")"
+      continue
+    fi
     vergleiche=$((vergleiche + 1))
     diffs=""
     cmp -s "$p.v.out" "$p.n.out" || diffs="${diffs} stdout"
@@ -122,6 +131,10 @@ for fx in "${fixtures[@]}"; do
   done
 done
 
+if [ "$unvergleichbar" -gt 0 ]; then
+  echo "blackbox-probe: GESCHEITERT — ${unvergleichbar} Fall/Faelle auf beiden Seiten nicht pruefbar (Exit 2); ${vergleiche} verglichen, ${abweichungen} davon abweichend." >&2
+  exit 2
+fi
 if [ "$abweichungen" -gt 0 ]; then
   echo "blackbox-probe: ${abweichungen} von ${vergleiche} Vergleichen weichen ab (Vorher $(git rev-parse --short "$REF"))."
   exit 1
