@@ -31,6 +31,16 @@ Follow this exact workflow:
     `verifier` sees it; otherwise the largest code share of the slice is
     read by no review. (seit slice-258; permanent — the size of a fix is a
     judgement, no gate can see it)
+15. Before each code commit, hold `git diff --cached --name-only` against the
+    plan table in §3 and its plan-change notes. Every file not named there
+    gets a plan-change note first, committed on its own before the code
+    (`AGENTS.md` §6 Schritt 4). (seit slice-259; permanent — whether a
+    plan-change note covers a file is a judgement)
+16. Before each code commit, read every comment line the diff touches —
+    also one only rewrapped or moved — against the five classes of
+    `AGENTS.md` §3.7: no story of earlier behaviour, no origin prose, no
+    external reference. (seit slice-259; permanent — chronicle is a
+    judgement, no gate can see it)
 
 Do not skip gates.
 Do not claim completion without command output.

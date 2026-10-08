@@ -62,20 +62,20 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] `spec/spezifikation.md`: neuer §7 nach der Vorlage, Historie als §8;
+- [x] `spec/spezifikation.md`: neuer §7 nach der Vorlage, Historie als §8;
       die Kopplungen nachgezogen — `matrix.exclude-sections` und die
       `structure`-Regel der Historie in der `.d-check.yml`, dazu ein
       Konventions-Nachtrag zu [`MR-0098`](../../../../harness/conventions.md#mr-0098) (die Ausnahme gilt seit der
       Umnummerierung für zwei verschiedene Überschriften).
-- [ ] §7-Einträge (`SPEC-<NNN>`) für `coverage-gate`, `lint`, `semgrep`,
+- [x] §7-Einträge (`SPEC-<NNN>`) für `coverage-gate`, `lint`, `semgrep`,
       `baseline-verify`, je mit dem, was als Treffer gilt, und wie die
       Randformen entschieden sind — am Code und an der Konfiguration geprüft,
       nicht aus der Sensor-Datei abgeschrieben.
-- [ ] Die Sensor-Dateien der vier (bzw. die Index-Zeile von `coverage-gate`,
+- [x] Die Sensor-Dateien der vier (bzw. die Index-Zeile von `coverage-gate`,
       das keine Sensor-Datei hat) verlinken die Kennung; Schwelle und
       Randform stehen nur noch in der Spezifikation. `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft;
       [MR-074](../../../../harness/conventions.md#mr-074) Bewegung 2 als
       teilweise eingelöst vermerkt (Rest: slice-260).
@@ -122,22 +122,71 @@ wellenlos hier geprüft.
 
 - **Zwei Orte für eine Schwelle** — die Coverage-Schwelle steht als Zusage in
   der Spezifikation und als Wert im Build (`COVERAGE_THRESHOLD`); kein Gate
-  hält beide gleich. — **Ausgang:** *(offen)*
+  hält beide gleich. — **Ausgang:** weiter offen — am Code nachgezählt sind es
+  drei Träger, nicht zwei: die Zusage in [`SPEC-089`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge),
+  der Default `THRESHOLD ?= 93` im `Makefile` und das `ARG` im `Dockerfile`
+  (Verifikation INFO-3); die Hilfe-Zeile nennt die Zahl nicht mehr (R2 F-5).
+  Eingetragen als
+  [`BEO-ALL/schwelle-mit-mehreren-traegern-ohne-gleichhalter`](../observations/BEO-ALL/schwelle-mit-mehreren-traegern-ohne-gleichhalter/state.md)
+  (1×); ein Gate, das Spezifikation und Build-Wert gleich hält, wäre ein
+  eigener Slice und ist nicht geschnitten.
 - **Die Matrix sieht die Umnummerierung nicht** — ohne Nachzug fiele die
   Historie der Spezifikation still aus der Ausnahme und meldete ihre frozen
-  Verweise. — **Ausgang:** *(offen)*
+  Verweise. — **Ausgang:** entfallen — `exclude-sections` trägt beide
+  Überschriften ([`MR-075`](../../../../harness/conventions.md#mr-075)); bewusst
+  gebrochen: ohne `"8. Historie"` meldet `make doc-check` viermal
+  `matrix-forbidden` in §8 der Spezifikation, mit ihr null (Verifikation).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Die Spezifikation trägt jetzt, was die vier
+  Gates aus `make gates` prüfen und wie sie an ihren Randformen entscheiden
+  ([`SPEC-089`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+  bis [`SPEC-092`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)); die Sensor-Dateien verlinken die Kennung. Die Festlegung
+  am Code zu prüfen statt aus der Sensor-Datei abzuschreiben, hat einen
+  echten Defekt gefunden: eine leere, nicht numerische oder negative Schwelle
+  bestand still grün, und der Exit-2-Zweig für einen unlesbaren Wert war tot.
+  Das Skript folgt jetzt der Festlegung; die Verifikation hat jede Festlegung
+  bewusst gebrochen und rot aus dem richtigen Grund gesehen.
+- **Was ging anders als geplant:** Zwei Review-Runden. R1 fand den
+  Schwellen-Defekt und eine zu kurze Ausnahme-Liste des Lint-Profils; das
+  Skript wurde per Plan-Änderung mitgenommen. Die Mitnahme von `LC_ALL=C`
+  erreichte den Plan erst im Fix-Commit (R2 F-4). R2 fand im Fix selbst
+  Chronik und Herkunfts-Prosa in Kommentaren, eine Exit-Code-Unterscheidung,
+  die über `make` nicht besteht, und eine zu kurze semgrep-Ausschlussliste.
+  Die Produkt-Seite der Umnummerierung (`--suggest-config` kennt nur
+  `7. Historie`) ist nach slice-261 ausgelagert.
+- **Steering-Loop-Eintrag:** Workflow-Skelett um zwei Schritte ergänzt, beide
+  liegen in `.claude/commands/implement-slice.md` (Schritte 15 und 16, je
+  `seit slice-259`): vor jedem Code-Commit die Dateiliste gegen §3 und die
+  Plan-Notizen halten (Auslöser
+  `BEO-ALL/plan-aenderung-erst-im-fix-commit` — slice-255, slice-256,
+  slice-259, 3×) und jede berührte Kommentarzeile gegen die fünf Klassen
+  lesen (Auslöser `BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`
+  — slice-227, slice-245, slice-259, 3×); beide Ausgänge
+  Auftraggeber-Entscheid.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-259.md` in
+  [`BEO-ALL/plan-aenderung-erst-im-fix-commit`](../observations/BEO-ALL/plan-aenderung-erst-im-fix-commit/state.md)
+  (3×, verkörpert),
+  [`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`](../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md)
+  (3×, verkörpert),
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+  und
+  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+  ergänzt; neu
+  [`BEO-ALL/schwelle-mit-mehreren-traegern-ohne-gleichhalter`](../observations/BEO-ALL/schwelle-mit-mehreren-traegern-ohne-gleichhalter/state.md)
+  (1×).
+- **Folge-Slices:** slice-260 (die übrigen Werkzeuge in §7), slice-261
+  (`--suggest-config` schlägt `8. Historie` mit vor). [`MR-074`](../../../../harness/conventions.md#mr-074)
+  Bewegung 2 ist als teilweise eingelöst vermerkt.
+- **Risiken aus §6:** eines weiter offen (Register, siehe §6), eines
+  entfallen (gemessen). Trigger-Audit: kein Carveout, kein bootstrap-aware
+  Gate, keine ADR, keine Hard Rule mit eingetretenem Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — `.claude/commands/implement-slice.md` trägt
+  `seit slice-259` in den Schritten 15 und 16; (b) Folge-Slices — slice-260 und
+  slice-261 liegen in `open/`; (c) Register — die fünf zitierten
+  Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

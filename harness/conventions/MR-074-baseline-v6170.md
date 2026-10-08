@@ -54,6 +54,11 @@
      schärft dessen Spec-Stelle). Die Umnummerierung koppelt an die Ausnahme
      `"7. Historie"` ([`MR-0098`](../conventions.md#mr-0098)) — eine spätere
      Adoption fiele dort laut auf.
+     **Teilweise eingelöst durch slice-259:** §7 der Spezifikation besteht,
+     die Historie ist §8, die Ausnahme folgt
+     ([`MR-075`](../conventions.md#mr-075)); eingetragen sind die vier Gates
+     `coverage-gate`, `lint`, `semgrep` und `baseline-verify`. Die übrigen
+     Werkzeuge übernimmt slice-260.
   3. **Reviewer** — `modul-10-review-harness.md`: kein Stil-Polizist
      (Formatierung oder Benennung ohne Konventions-Anker ist kein Finding),
      kein HIGH- oder MEDIUM-Finding ohne Failure-Szenario; die Fundstelle wird

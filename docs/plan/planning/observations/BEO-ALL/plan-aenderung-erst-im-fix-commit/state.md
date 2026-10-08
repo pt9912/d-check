@@ -1,1 +1,1 @@
-**Stand:** offen — 2×.
+**Stand:** verkörpert — Schritt 15 im Workflow-Skelett `.claude/commands/implement-slice.md` (seit slice-259, permanent): vor jedem Code-Commit wird die Dateiliste gegen §3 und die Plan-Notizen gehalten; jede fehlende Datei bekommt zuerst einen eigenen Plan-Commit. Bleibt wach: ob eine Notiz eine Datei deckt, ist ein Urteil.
