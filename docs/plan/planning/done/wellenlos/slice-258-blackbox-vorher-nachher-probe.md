@@ -7,7 +7,7 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
-**Bezug:** [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+**Bezug:** [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
 (zwölf Belege, viermal in Folge am Modul `targets`); der Sensor-Kandidat ist
 in slice-251 benannt und in slice-252 als offene Auftraggeber-Entscheidung
 geführt; Auftraggeber-Freigabe 2026-10-07.
@@ -85,7 +85,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 *(Plan-Änderung vor dem Code-Commit: `.d-check.yml` `scan.ignore` nimmt die Fixtures aus dem Dogfooding-Scan — sie tragen absichtlich kaputte Links und nackte Kennungen und sind Eingaben der Probe, kein Doku-Vertrag; bisher Geprüftes fällt dadurch nicht heraus. Dazu `tools/blackbox-probe/README.md` eine Ebene über den Fixtures, damit sie weiter geprüft wird. Nach R1: ein Lauf zählt nur mit einem Exit des Werkzeugs (0, 1, 2) und ohne Docker-Fehlermeldung, sonst ist die Probe gescheitert (F-1); `VERSION` ist auf beiden Seiten fest `0.0.0-dev` (F-4); `make clean` räumt das Vorher-Image ab (F-6); die Sensor-Datei nennt die Grenzen, `harness/sensors/doc-check.md` das dritte Ventil (F-2, F-3, F-5). Nach der Verifikation: ein Lauf zählt nur mit dem Lebenszeichen des Werkzeugs (Exit 1 mit Befund auf stdout, Exit 2 mit `d-check:` auf stderr) statt am Wortlaut einer Docker-Meldung (V-1); die Sensor-Datei nennt den Neubau von `:latest` und „leer heißt Default" (V-2, V-3). Nach R2: das Lebenszeichen gilt für jeden Exit gleich (stdout nicht leer oder eine `d-check:`-Zeile auf stderr — gemessen über sieben Formen, darunter `--repair`), und ein Fall, der auf beiden Seiten mit Exit 2 endet, ist kein Vergleich — die Probe scheitert dann (R2-1, R2-3); die Sensor-Datei nennt die Restgrenze und den Kommandozeilen-Fall von `VERSION` (R2-2, R2-4). Nach R3: die Klassifikation über die Ausgabe des Werkzeugs entfällt — sie wies echte Läufe ab (`-h`, Panic) und verschluckte Unterschiede bei beidseitigem Exit 2 (R3-1, R3-2). Statt dessen ein **Kanarienlauf** vor und nach allen Läufen auf beiden Images (Fixture `sauber`: Exit 0 und genau eine geprüfte Datei) belegt Daemon, Mounts und gesehenen Inhalt; Exit 125/126/127 bricht ab; alles andere wird verglichen, auch Exit 2. Nach R4: auch das Repo wird als lesbare Kopie unter demselben Arbeitsverzeichnis gemountet — eine Mount-Quelle für alle Läufe, die der Kanarienlauf mitbelegt (R4-1); der Kanarienlauf prüft nur Exit-Codes (`sauber` 0, `links` 1) statt einer Zusammenfassungs-Zeile (R4-2); jeder Exit außer 0, 1, 2 bricht ab. Nach der zweiten Verifikation: die Repo-Kopie überspringt gelöschte, noch getrackte Dateien (V2-1), die Kanarien-Meldung unterscheidet Umgebung und Exit-Vertrag des Nachher-Stands (V2-2).)*
 
-**Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025)):
+**Spiegel vor dem Editieren** ([`MR-025`](../../../../../harness/conventions.md#mr-025)):
 keine bestehende Zusage wird geändert; neu ist nur das Target. Der
 Gate-Index (`make gate-consistency`) verlangt die Werkzeug-Zeile.
 
@@ -113,7 +113,7 @@ wellenlos hier geprüft.
   einem älteren `REF`; für einen Lauf vor dem Review tragbar.
 - **Rauschen** — Ausgaben, die zwischen zwei Läufen desselben Stands
   schwanken (Zeit, Pfade), meldeten Abweichungen ohne Verhaltensänderung;
-  [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus) sagt Determinismus zu, gemessen wird es hier zum ersten Mal über
+  [`DC-QA-02`](../../../../../spec/lastenheft.md#dc-qa-02--determinismus) sagt Determinismus zu, gemessen wird es hier zum ersten Mal über
   zwei Images. — **Ausgang:** entfallen — zwei getrennt gebaute Images
   desselben Stands waren in jedem Lauf byte-identisch (über ein Dutzend Läufe
   in Implementierung, Review und Verifikation, auch gegen `v0.83.0`).
@@ -143,18 +143,18 @@ wellenlos hier geprüft.
   Verkörperung ein viertes Auftreten: die Prosa-Form ist ausgeschöpft, ein
   mechanischer Sensor ist nicht möglich (die Fallmenge eines neuen Lesewegs
   ist ein Urteil) — das Gegenmittel ist derselbe Schritt 14.
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-258.md` in
-  [`BEO-ALL/fix-commit-ausserhalb-review-range`](../observations/BEO-ALL/fix-commit-ausserhalb-review-range/state.md)
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-258.md` in
+  [`BEO-ALL/fix-commit-ausserhalb-review-range`](../../observations/BEO-ALL/fix-commit-ausserhalb-review-range/state.md)
   (3×, verkörpert, Auftraggeber-Entscheid),
-  [`BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft`](../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/state.md)
+  [`BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft`](../../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/state.md)
   (4×) und
-  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
   ergänzt.
 - **Folge-Slices:** keine.
 - **Risiken aus §6:** entfallen, beide gemessen (siehe §6). Trigger-Audit:
   kein Carveout, kein bootstrap-aware Gate, keine ADR, keine Hard Rule mit
   eingetretenem Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — `.claude/commands/implement-slice.md` trägt
   `seit slice-258` in Schritt 14; (b) Folge-Slice — keine; (c) Register — die
   drei zitierten Beobachtungen existieren und tragen Belege.
@@ -175,13 +175,13 @@ Werkzeug des Repos unter dem Default `*` (`ALL`); deklariert. `tools/harness/`
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:**
-[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
 — der Anlass dieses Slice. Dazu
-[`BEO-ALL/fix-commit-ausserhalb-review-range`](../observations/BEO-ALL/fix-commit-ausserhalb-review-range/state.md)
+[`BEO-ALL/fix-commit-ausserhalb-review-range`](../../observations/BEO-ALL/fix-commit-ausserhalb-review-range/state.md)
 (2×): ein Fix, der mehr schreibt als seine Befunde, bekommt eine eigene
 Review-Runde.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-08 — `upstream-drift` und `image-scan` grün.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
