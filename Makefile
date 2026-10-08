@@ -113,7 +113,10 @@ image-publish: ## Index linux/amd64+linux/arm64 ohne Tag pushen, gegen die gepru
 # Vorher/Nachher von aussen: Vorher-Image aus `git archive $(REF)`, Nachher ist
 # $(IMAGE):latest; Fixtures unter tools/blackbox-probe/fixtures/ plus das Repo.
 # Werkzeug, kein Gate — ob eine Abweichung gewollt ist, entscheidet der Vorgang.
-blackbox-probe: build ## Vorher/Nachher-Vergleich (REF=<git-ref>): stdout/stderr/Exit getrennt ueber Fixtures und Ausgabeformen; 1 = Abweichung, 2 = gescheitert.
+# VERSION ist auf beiden Seiten 0.0.0-dev: eine exportierte Release-Version
+# erzeugte sonst einen Unterschied, der keine Verhaltensaenderung ist.
+blackbox-probe: ## Vorher/Nachher-Vergleich (REF=<git-ref>): stdout/stderr/Exit getrennt ueber Fixtures und Ausgabeformen; 1 = Abweichung, 2 = gescheitert.
+	@$(MAKE) --no-print-directory build VERSION=0.0.0-dev
 	@REF=$(REF) IMAGE=$(IMAGE) bash tools/blackbox-probe.sh
 
 image-scan: ## CVE-Scan gegen die PUBLIZIERTEN Images (Netz, NICHT in gates, Trivy digest-gepinnt; ADR-0066). Exit 1 = behebbare CRITICAL/HIGH, 2 = Scan gescheitert.
@@ -450,7 +453,7 @@ clean: ## Lokale Images entfernen.
 	@-docker image rm \
 	    $(IMAGE):latest $(IMAGE):deps $(IMAGE):compile \
 	    $(IMAGE):lint $(IMAGE):test \
-	    $(IMAGE):coverage 2>/dev/null || true
+	    $(IMAGE):coverage $(IMAGE):arm64 $(IMAGE):probe-vorher 2>/dev/null || true
 	@echo "[clean] images removed"
 
 # archive-wave (Baseline-Regelwerk modul-06-roadmap.md §Wellen-Closure-

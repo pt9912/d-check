@@ -77,6 +77,14 @@ lauf() { # image dir form outprefix
     docker run --rm --network none -v "$2":/repo:ro "$1" "$3" > "$4.out" 2> "$4.err" || rc=$?
   fi
   echo "$rc" > "$4.rc"
+  # Nur ein Lauf DES WERKZEUGS zaehlt: Exit 0/1/2 und kein Docker-Fehler auf
+  # stderr. Scheitert der Container auf beiden Seiten gleich (125/126/127,
+  # Mount-Fehler, Daemon weg — dieser endet mit 1 wie ein Befund), waeren
+  # stderr und Exit identisch und der Fall zaehlte sonst als „gleich".
+  case "$rc" in 0|1|2) ;; *) fail "${1} auf ${2} (${3}): Exit ${rc} — kein Lauf des Werkzeugs: $(tail -n 1 "$4.err")" ;; esac
+  if grep -qE '^docker: |Cannot connect to the Docker daemon|Error response from daemon' "$4.err"; then
+    fail "${1} auf ${2} (${3}): Docker-Fehler — $(grep -m1 -E '^docker: |Cannot connect|Error response' "$4.err")"
+  fi
 }
 
 vergleiche=0
