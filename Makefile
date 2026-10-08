@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test image-test-arm64 image-publish semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave slice-mv selbstpruefung history-range-guard
+.PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test image-test-arm64 image-publish blackbox-probe semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave slice-mv selbstpruefung history-range-guard
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -109,6 +109,12 @@ image-publish: ## Index linux/amd64+linux/arm64 ohne Tag pushen, gegen die gepru
 	  PROGRESS_FLAG=$(PROGRESS_FLAG) \
 	  TESTED_AMD64=$(IMAGE):latest TESTED_ARM64=$(IMAGE):arm64 \
 	  bash tools/image-publish.sh
+
+# Vorher/Nachher von aussen: Vorher-Image aus `git archive $(REF)`, Nachher ist
+# $(IMAGE):latest; Fixtures unter tools/blackbox-probe/fixtures/ plus das Repo.
+# Werkzeug, kein Gate — ob eine Abweichung gewollt ist, entscheidet der Vorgang.
+blackbox-probe: build ## Vorher/Nachher-Vergleich (REF=<git-ref>): stdout/stderr/Exit getrennt ueber Fixtures und Ausgabeformen; 1 = Abweichung, 2 = gescheitert.
+	@REF=$(REF) IMAGE=$(IMAGE) bash tools/blackbox-probe.sh
 
 image-scan: ## CVE-Scan gegen die PUBLIZIERTEN Images (Netz, NICHT in gates, Trivy digest-gepinnt; ADR-0066). Exit 1 = behebbare CRITICAL/HIGH, 2 = Scan gescheitert.
 	@bash tools/image-scan.sh

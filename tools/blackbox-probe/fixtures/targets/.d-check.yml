@@ -1,0 +1,5 @@
+modules: [links, targets]
+targets:
+  makefiles: [Makefile]
+  doc-tables: [harness/README.md]
+  authority: harness/README.md

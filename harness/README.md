@@ -122,6 +122,7 @@ behaupten.
 | `make record-gates` | Working-Tree-Hash-Nachweis für den Stop-Hook | kein Gate |
 | [`make hooks`](sensors/hooks.md) | installiert die lokalen git-Hooks, die Commit und Übergang an grüne Gates binden | kein Gate · [ADR-0013](../docs/plan/adr/0013-pr-ci-und-traceability-gate.md), [ADR-0024](../docs/plan/adr/0024-vcs-immutable-gate.md) |
 | `make bench` | misst die Performance gegen ein generiertes Fixture (Median aus drei Läufen) | kein Gate, [`DC-QA-01`](../spec/lastenheft.md#dc-qa-01--performance) |
+| [`make blackbox-probe`](sensors/blackbox-probe.md) | vergleicht Vorher-Image (`REF=<ref>`) und Nachher-Image über Fixtures und Ausgabeformen, stdout/stderr/Exit getrennt | kein Gate · meldet, urteilt nicht über den Repo-Zustand |
 | `make baseline-probe` | fährt die Alias-Auflösung von [`baseline-verify`](sensors/baseline-verify.md) gegen neun Proben | kein Gate · [`MR-055`](conventions.md#mr-055) |
 | `make trace` | gibt die Requirements-Traceability-Matrix auf stdout aus | kein Gate · [`DC-FA-CLI-009`](../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) |
 | [`make archive-wave`](sensors/archive-wave.md) | bewegt geschlossene Zeitdokumente ins Archiv und ersetzt sie durch Stubs; ohne `APPLY=1` wird nichts geschrieben | kein Gate |

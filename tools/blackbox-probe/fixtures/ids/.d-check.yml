@@ -1,0 +1,5 @@
+modules: [links, anchors, ids]
+ids:
+  patterns:
+    - regex: 'ADR-\d{4}'
+      target: docs/plan/adr/
