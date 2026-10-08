@@ -2,23 +2,16 @@
 
 ## Vertrag
 
-Setzt `core.hooksPath` auf [`.githooks/`](../../.githooks/) und aktiviert damit
-drei Bindungen:
-
-- **`commit-msg`** — Traceability: jede Commit-Botschaft nennt eine
-  `DC-*`/`ADR-*`/`MR-*`/`slice-*`-Kennung (`make trace-check`).
-- **`pre-commit`, drei Teile** — ADR-Immutabilität über das Modul `vcs`
-  ([ADR-0024](../../docs/plan/adr/0024-vcs-immutable-gate.md)) **und** der
-  volle `make doc-check` als Doku-Guard (seit welle-79): der Commit ist an
-  einen grünen Doku-Stand gebunden, und ein roter Gate-Exit kann keine
-  Shell-Kette mehr passieren.
-  **Dritter `pre-commit`-Teil, der Slice-Closure-Übergangs-Wächter** (seit
-  welle-86): ein gestagter
-  Rename/Add nach `docs/plan/planning/done/slice-*.md` — **nicht rekursiv**,
-  ein archivierter Stub eine Ebene tiefer zählt nicht — löst zusätzlich
-  [`make verify-closure-notes`](verify-closure-notes.md) aus. Die
-  Vorbedingungen hängen damit am **Übergang** selbst, nicht nur an einer
-  gelegentlichen `fullbuild`-Prüfung.
+Setzt `core.hooksPath` auf [`.githooks/`](../../.githooks/) und bindet damit
+Commit und Slice-Übergang an grüne Prüfungen:
+[`make trace-check`](trace-check.md) an jede Commit-Botschaft,
+[`make adr-check`](adr-check.md) und [`make doc-check`](doc-check.md) an
+jeden Commit, [`make verify-closure-notes`](verify-closure-notes.md) an jeden
+Übergang eines Slice nach `done/`. Welcher Hook welche Prüfung ruft und
+welcher Diff den Übergang erkennt, legt
+[`SPEC-095`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+fest — die Vorbedingungen hängen damit am **Übergang** selbst, nicht nur an
+einer gelegentlichen `fullbuild`-Prüfung.
 
 ## Grenze — was das Grün nicht abdeckt
 

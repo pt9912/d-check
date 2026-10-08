@@ -3,13 +3,13 @@
 ## Vertrag
 
 Proben für den Wächter
-([`pretooluse-command-guard.sh`](../../.claude/hooks/pretooluse-command-guard.sh)):
-Paketmanager, die Host-Sprachtoolchain, Skript-Interpreter, Brace-Group und Sub-Shell
-werden blockiert; **Gegenkontrollen** — legitime Aufrufe, die ein blockiertes
-Wort tragen — müssen durchlaufen. Dazu die Fail-closed-Fälle: die des
-Extraktors (malformes/abgeschnittenes JSON, `\u`-Escape in Wert und Schlüssel,
-zwei Strings ohne Trenner, Müll außerhalb eines Strings) und der des Wächters
-selbst (leeres `PATH`).
+([`pretooluse-command-guard.sh`](../../.claude/hooks/pretooluse-command-guard.sh)).
+Was er blockiert und wie er an seinen Randformen entscheidet, legt
+[`SPEC-093`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+fest. Die Proben fahren beide Richtungen: blockierte Aufrufe und
+**Gegenkontrollen** — legitime Aufrufe, die ein blockiertes Wort tragen und
+durchlaufen müssen —, dazu die Fail-closed-Fälle des Extraktors und des
+Wächters selbst (leeres `PATH`).
 
 **Zwei Verdikte stehen neben `pass`/`block`:** `crash` — der Wächter gibt
 nichts aus, was sonst von „erlaubt" nicht zu unterscheiden wäre — und `halb`:

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # record-gates — Nachweis schreiben, dass `make gates` den aktuellen
-# Arbeitsbaum-Zustand abgedeckt hat. Läuft als letzter gates-Prerequisite
-# (nur bei grünen Gates). Der Stop-Hook vergleicht denselben Hash.
+# Arbeitsbaum-Zustand abgedeckt hat. `make gates` ruft es im eigenen Rezept,
+# nach allen grünen Gliedern (MR-076). Der Stop-Hook vergleicht denselben Hash.
 # Übernommen aus b-cad (harness/conventions.md MR-004).
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"

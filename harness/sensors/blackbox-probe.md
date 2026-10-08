@@ -2,18 +2,15 @@
 
 ## Vertrag
 
-Baut aus einer Git-Referenz (`REF=<ref>`) ein **Vorher**-Image — `git archive`,
-Dockerfile und Build-Defaults dieses Stands — und fährt es zusammen mit dem
-**Nachher**-Image (`make build`) über dieselben Fixtures und Ausgabeformen.
-Verglichen werden **stdout, stderr und Exit getrennt**; zusammengeführte
-Streams verschränken sich und zeigen Abweichungen, die keine sind.
-
-- **Fixtures:** jedes Unterverzeichnis von `tools/blackbox-probe/fixtures/`
-  (je ein kleines Repository im Default-Zustand eines Moduls) und das Repo
-  selbst — als Kopie seiner im Arbeitsbaum vorhandenen, nicht ignorierten
-  Dateien (eine gelöschte, noch getrackte Datei fällt heraus).
-- **Formen:** Standard, `--json`, `--yaml`, `--doctor` (`PROBE_FORMS`
-  übersteuert; leer heißt Default).
+Vergleicht ein **Vorher**-Image aus einer Git-Referenz (`REF=<ref>`) mit dem
+**Nachher**-Image (`make build`) über dieselben Fixtures und Ausgabeformen,
+stdout, stderr und Exit getrennt — zusammengeführte Streams verschränken sich
+und zeigen Abweichungen, die keine sind. Was verglichen wird, wann der
+Kanarienlauf den Vergleich trägt und in welchen Fällen der Lauf scheitert,
+legt [`SPEC-096`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+fest. Die Fixtures sind je ein kleines Repository im Default-Zustand eines
+Moduls; eine gelöschte, noch getrackte Datei fällt aus der Kopie des Repos
+heraus.
 
 **Nebenwirkung:** das Target baut `$(IMAGE):latest` neu, mit
 `VERSION=0.0.0-dev` — dasselbe Bild wie ein `make build` ohne Version; ein
@@ -55,16 +52,14 @@ lassen, mit `REF` auf den Stand vor der Änderung.
 5. **Kein Gate.** Eine gewollte Änderung erzeugt Abweichungen; ob eine
    Abweichung gewollt ist, entscheidet der Vorgang, der sie erzeugt.
 
-## Ausgabe und Ausgänge
+## Ausgabe lesen
 
-| Exit | Bedeutung |
-|---|---|
-| 0 | byte-identisch über alle Vergleiche, Kanarienlauf vorher und nachher grün |
-| 1 | mindestens eine Abweichung — je Fall die Ströme und ein Diff-Auszug |
-| 2 | Lauf gescheitert (`REF` fehlt oder ist kein Commit, `git archive` gescheitert, Vorher-Image nicht baubar, Nachher-Image fehlt, Kopie des Arbeitsbaums gescheitert, leere Formen oder Fixtures, Kanarienlauf gescheitert — die Meldung unterscheidet Umgebung und eine Änderung am Exit-Vertrag des Nachher-Stands —, ein Lauf mit einem Exit außer 0, 1, 2) |
-
-**Das sind die Codes des Skripts.** `make` normalisiert jeden fehlgeschlagenen
-Recipe auf seinen eigenen Exit 2; 1 und 2 trennt die **Ausgabe**.
+Die Exit-Codes legt
+[`SPEC-096`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+fest; über `make` endet jedes Scheitern mit 2, und 1 und 2 trennt die
+**Ausgabe**. Eine Abweichung nennt je Fall die Ströme und einen Diff-Auszug.
+Scheitert der Kanarienlauf nur auf dem Nachher-Image, sagt die Meldung, dass
+eher der Exit-Vertrag des neuen Stands sich geändert hat als die Umgebung.
 
 ## Bindung
 
