@@ -48,11 +48,11 @@ jobs:
       # vcs (Image) statt eines Skripts und baut dafuer das Runtime-Image — das
       # `make ci` darunter per Docker-Cache wiederverwendet (kein Doppel-Build).
       #
-      # Slice-Closure-Uebergang (welle-86/slice-175): dieselbe Bindung wie im
+      # Slice-Closure-Uebergang: dieselbe Erkennung wie im
       # lokalen pre-commit-Hook (.githooks/pre-commit), hier ueber die
       # Commit-Range statt --staged -- --no-verify umgeht den Hook, nicht die
-      # CI. Ein Rename/Add nach docs/plan/planning/done/slice-*.md IRGENDWO in
-      # der Range loest make verify-closure-notes gegen den HEAD-Stand aus.
+      # CI. Ein Rename/Add eines slice-*.md irgendwo unter docs/plan/planning/done/
+      # in der Range loest make verify-closure-notes gegen den HEAD-Stand aus.
       - name: Traceability + ADR-Immutable + Slice-Closure-Uebergang (Commit-Range)
         env:
           EVENT: ${{ github.event_name }}
@@ -76,7 +76,7 @@ jobs:
           make trace-check RANGE="$RANGE"
           make adr-check RANGE="$RANGE"
           if git diff --name-status --diff-filter=AR "$RANGE" -- 'docs/plan/planning/done/' \
-              | awk -F'\t' '{print $NF}' | grep -qE '^docs/plan/planning/done/slice-[0-9]+[^/]*\.md$'; then
+              | awk -F'\t' '{print $NF}' | grep -qE '^docs/plan/planning/done/(.+/)?slice-[0-9]+[^/]*\.md$'; then
             echo "Slice-Closure-Uebergang im Commit-Range erkannt -- verify-closure-notes"
             make verify-closure-notes
           fi

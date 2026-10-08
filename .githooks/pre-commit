@@ -15,14 +15,14 @@
 # (DC-FA-VCS-001), keine, die aus dem gemeinsamen Gate folgt.
 # Das abgeloeste Alt-Skript wurde mit ADR-0025 entfernt (codepaths.ignore-refs).
 #
-# Slice-Closure-Uebergang (welle-86/slice-175, Baseline-Regelwerk modul-05
-# §Lifecycle als State Machine): die Vorbedingungen fuer done/ (DoD-Haekchen,
-# Closure-Notiz, Risiko-Ausgaenge) haengen bisher nur an make fullbuild, einer
-# gelegentlichen Zustands-Pruefung -- nicht am UEBERGANG selbst. Ein gestagter
-# Rename/Add nach docs/plan/planning/done/slice-*.md loest deshalb zusaetzlich
-# make verify-closure-notes aus. Archivierte Stubs (done/<welle-id>/slice-*.md,
-# eine Verzeichnisebene tiefer) sind bewusst ausgenommen -- MR-059s Ein-Commit-
-# Form ersetzt dort ohnehin den Volltext, keine neue Zusage entsteht.
+# Slice-Closure-Uebergang (Baseline-Regelwerk modul-05 §Lifecycle als State
+# Machine): die Vorbedingungen fuer done/ (DoD-Haekchen, Closure-Notiz,
+# Risiko-Ausgaenge) haengen am UEBERGANG selbst. Ein gestagter Rename/Add
+# eines slice-*.md irgendwo unter docs/plan/planning/done/ -- direkt, unter
+# wellenlos/ oder unter <welle-id>/ -- loest zusaetzlich make
+# verify-closure-notes aus. KOPPLUNG: dieselbe Erkennung steht in
+# .github/workflows/ci.yml. GRENZE: auch ein archivierter Stub loest den Lauf
+# aus; er prueft dann den ganzen Bestand, der ohnehin gruen sein muss.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 make adr-check STAGED=1
@@ -32,7 +32,7 @@ make adr-check STAGED=1
 # ihn traegt (set -e). Kostet einen Image-Cache-Lauf (~Sekunden).
 make doc-check
 if git diff --cached --name-status --diff-filter=AR -- 'docs/plan/planning/done/' \
-    | awk -F'\t' '{print $NF}' | grep -qE '^docs/plan/planning/done/slice-[0-9]+[^/]*\.md$'; then
+    | awk -F'\t' '{print $NF}' | grep -qE '^docs/plan/planning/done/(.+/)?slice-[0-9]+[^/]*\.md$'; then
     echo "pre-commit: Slice-Closure-Uebergang erkannt -- verify-closure-notes" >&2
     make verify-closure-notes
 fi
