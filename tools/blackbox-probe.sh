@@ -77,24 +77,35 @@ lauf() { # image dir form outprefix
     docker run --rm --network none -v "$2":/repo:ro "$1" "$3" > "$4.out" 2> "$4.err" || rc=$?
   fi
   echo "$rc" > "$4.rc"
-  # Nur ein Lauf DES WERKZEUGS zaehlt — erkannt an seinem Lebenszeichen, nicht
-  # am Wortlaut einer Docker-Meldung (der wechselt mit der Docker-Version):
-  # ein Exit 0, 1 oder 2 UND eine Ausgabe auf stdout oder eine Zeile
-  # `d-check:` auf stderr (gemessen ueber Standard, --json, --yaml, --doctor,
-  # --repair, --repair-broad, --trace: jede Form traegt eins von beidem).
-  # Ohne das zaehlte ein Container, der auf beiden Seiten gleich nicht
-  # startet (125/126/127, Mount-Fehler, Daemon weg mit 1), als „gleich".
-  local why=""
+  # 125/126/127: der Container ist nicht gestartet — kein Lauf, den man
+  # vergleichen koennte. Jeder andere Exit, auch 2 und ein Absturz, ist ein
+  # Verhalten des Werkzeugs und wird verglichen.
   case "$rc" in
-    0|1|2) [ -s "$4.out" ] || grep -q '^d-check:' "$4.err" || why="Exit ${rc} ohne Ausgabe des Werkzeugs" ;;
-    *) why="Exit ${rc}" ;;
+    125|126|127) fail "${1} auf ${2} (${3}): Exit ${rc}, Container nicht gestartet — $(tail -n 1 "$4.err")" ;;
   esac
-  [ -z "$why" ] || fail "${1} auf ${2} (${3}): ${why} — kein Lauf des Werkzeugs: $(tail -n 1 "$4.err")"
 }
 
+# Kanarienlauf vor und nach allen Vergleichen, auf beiden Images: das Fixture
+# `sauber` muss Exit 0 und genau eine geprüfte Datei liefern. Er belegt
+# Daemon, Mounts und den Inhalt, den der Container sieht — getrennt vom
+# Vergleich und ohne Wortlaut einer Docker-Meldung. Scheitert er, waeren
+# gleiche Ausgaben beider Seiten kein Vergleich (leerer oder fremder Mount,
+# Daemon weg), und die Probe bricht ab.
+kanarie() { # wann
+  local img
+  [ -d "$WORK/fx/sauber" ] || fail "Kanarien-Fixture ${FIXTURES_DIR}/sauber fehlt"
+  for img in "$VORHER" "$NACHHER"; do
+    lauf "$img" "$WORK/fx/sauber" - "$WORK/kanarie"
+    if [ "$(cat "$WORK/kanarie.rc")" != 0 ] \
+       || ! grep -q '^d-check: 1 Datei(en) geprüft, 0 Befund(e)' "$WORK/kanarie.err"; then
+      fail "Kanarienlauf ${1} auf ${img}: Exit $(cat "$WORK/kanarie.rc") — $(tail -n 1 "$WORK/kanarie.err"); Umgebung traegt keinen Vergleich (Daemon, Mount oder gesehener Inhalt)"
+    fi
+  done
+}
+
+kanarie "vorher"
 vergleiche=0
 abweichungen=0
-unvergleichbar=0
 for fx in "${fixtures[@]}"; do
   name="${fx%%=*}" dir="${fx#*=}"
   for form in $PROBE_FORMS; do
@@ -102,15 +113,6 @@ for fx in "${fixtures[@]}"; do
     p="$WORK/run.${name}.${form//[^a-z-]/_}"
     lauf "$VORHER" "$dir" "$form" "$p.v"
     lauf "$NACHHER" "$dir" "$form" "$p.n"
-    # Exit 2 auf BEIDEN Seiten heisst: das Werkzeug konnte die Eingabe auf
-    # keiner Seite pruefen (leerer Mount, fehlende Leserechte, kaputte
-    # Konfiguration) — gleiche Fehlermeldungen sind kein Verhaltensvergleich.
-    # Einseitiges Exit 2 bleibt eine Abweichung.
-    if [ "$(cat "$p.v.rc")" = 2 ] && [ "$(cat "$p.n.rc")" = 2 ]; then
-      unvergleichbar=$((unvergleichbar + 1))
-      echo "  NICHT PRUEFBAR ${tag}: beide Seiten Exit 2 — $(grep -m1 '^d-check:' "$p.n.err")"
-      continue
-    fi
     vergleiche=$((vergleiche + 1))
     diffs=""
     cmp -s "$p.v.out" "$p.n.out" || diffs="${diffs} stdout"
@@ -130,13 +132,10 @@ for fx in "${fixtures[@]}"; do
     fi
   done
 done
+kanarie "nachher"
 
-if [ "$unvergleichbar" -gt 0 ]; then
-  echo "blackbox-probe: GESCHEITERT — ${unvergleichbar} Fall/Faelle auf beiden Seiten nicht pruefbar (Exit 2); ${vergleiche} verglichen, ${abweichungen} davon abweichend." >&2
-  exit 2
-fi
 if [ "$abweichungen" -gt 0 ]; then
   echo "blackbox-probe: ${abweichungen} von ${vergleiche} Vergleichen weichen ab (Vorher $(git rev-parse --short "$REF"))."
   exit 1
 fi
-echo "blackbox-probe: byte-identisch über ${vergleiche} Vergleiche (Vorher $(git rev-parse --short "$REF"), stdout/stderr/Exit getrennt)."
+echo "blackbox-probe: byte-identisch über ${vergleiche} Vergleiche (Vorher $(git rev-parse --short "$REF"), stdout/stderr/Exit getrennt, Kanarienlauf vorher und nachher)."
