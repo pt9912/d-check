@@ -12,7 +12,7 @@ Rest); Folge von slice-259, der den Abschnitt §7 der Spezifikation anlegt.
 
 **Berührte Spec-Stellen:** `spec/spezifikation.md` §7.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-10-08.
 
@@ -105,19 +105,34 @@ wellenlos hier geprüft.
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** die Spezifikation und die
-Harness-Doku unter dem Default `*` (`ALL`); `tools/harness/` (`HARN`) ist
-berührt, soweit Wächter und Hooks dort liegen — beim Anlegen des Plans für
-die Umsetzung neu prüfen.
+**Vorgelagert — Sub-Area-Wahl prüfen:** geändert werden die Spezifikation und
+die Harness-Doku unter dem Default `*` (`ALL`); deklariert. `tools/harness/`
+(`HARN`) und `.claude/hooks/` werden nur gelesen — die Festlegung beschreibt
+den Wächter, sie ändert ihn nicht; berührt ist `HARN` damit nicht. Ändert
+sich das im Lauf (ein Wächter folgt seiner Festlegung, wie das
+Coverage-Skript in slice-259), ist das eine Plan-Änderung vor dem Code.
 
 <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
 > **Offene Beobachtungen sichten.** Das
 
-**Vorgelagert — offene Beobachtungen sichten:** beim Beanspruchen neu lesen;
-Stand beim Schnitt wie slice-259.
+**Vorgelagert — offene Beobachtungen sichten:** gelesen am 2026-10-08.
+[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+(verkörpert, wach; in slice-259 dreimal getroffen) — jede Liste in §7 (was
+der Wächter blockiert, welcher Übergang welche Prüfung auslöst) wird am Code
+gezählt, nicht aus der Sensor-Datei übernommen;
+[`BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/state.md)
+(2×) — trifft die Sensor-Dateien, die hier auf die Kennung umgestellt werden;
+ein dritter Treffer wäre eine Lücke;
+[`BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft`](../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/state.md)
+— die fail-closed-Randformen des Wächters werden als Festlegung geschrieben,
+also an ihren Fehlerformen geprüft. Außerhalb dieses Slice gefunden:
+[`BEO-ALL/begruendung-traegt-entscheidung-nicht`](../observations/BEO-ALL/begruendung-traegt-entscheidung-nicht/state.md)
+steht seit slice-222 bei drei Belegen auf `offen`, ohne Ausgang — gemeldet,
+nicht hier gelöst.
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
-beim Beanspruchen aus dem jüngsten Lauf lesen.
+gelesen am 2026-10-08 aus dem jüngsten Lauf (`make nightly-state`) —
+`upstream-drift` grün (11:37 UTC), `image-scan` grün (10:38 UTC).
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
