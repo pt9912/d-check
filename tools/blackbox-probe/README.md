@@ -6,6 +6,6 @@ wenn ein Slice eine Zusage „ohne Schalter unverändert" an einem Modul trifft,
 das noch keines hat; es zeigt den **Default**-Zustand des Moduls, nicht den
 neuen Schalter.
 
-`fixtures/sauber/` ist zugleich der **Kanarienlauf**: er muss Exit 0 und genau
-eine geprüfte Datei liefern. Wer ihn ändert, ändert die Umgebungsprüfung der
+`fixtures/sauber/` und `fixtures/links/` sind zugleich der **Kanarienlauf**: sie
+müssen mit Exit 0 bzw. 1 enden. Wer ihren Exit ändert, ändert die Umgebungsprüfung der
 Probe mit.

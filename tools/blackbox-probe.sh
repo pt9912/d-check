@@ -65,8 +65,15 @@ for d in "$FIXTURES_DIR"/*/; do
   fixtures+=("$name=$WORK/fx/$name")
 done
 [ "${#fixtures[@]}" -gt 0 ] || fail "keine Fixtures unter ${FIXTURES_DIR}/"
+# Das Repo als Kopie seiner nicht ignorierten Dateien, wie die Fixtures unter
+# $WORK/fx und gleich lesbar gemacht: EINE Mount-Quelle fuer alle Laeufe, die
+# der Kanarienlauf mitbelegt. Ein direkter Mount des Arbeitsbaums waere eine
+# zweite Quelle mit eigenen Rechten (umask), die keine Kanarie prueft.
+mkdir -p "$WORK/fx/repo"
+git ls-files -z -co --exclude-standard | tar --null -T - -cf - | tar -x -C "$WORK/fx/repo" \
+  || fail "Kopie des Arbeitsbaums gescheitert"
 chmod -R a+rX "$WORK/fx"
-fixtures+=("repo=$PWD")
+fixtures+=("repo=$WORK/fx/repo")
 
 # --- Laeufe und Vergleich -------------------------------------------
 lauf() { # image dir form outprefix
@@ -77,29 +84,32 @@ lauf() { # image dir form outprefix
     docker run --rm --network none -v "$2":/repo:ro "$1" "$3" > "$4.out" 2> "$4.err" || rc=$?
   fi
   echo "$rc" > "$4.rc"
-  # 125/126/127: der Container ist nicht gestartet — kein Lauf, den man
-  # vergleichen koennte. Jeder andere Exit, auch 2 und ein Absturz, ist ein
-  # Verhalten des Werkzeugs und wird verglichen.
+  # d-check endet nur mit 0, 1 oder 2 (auch ein Absturz endet mit 2); jeder
+  # andere Exit heisst, der Container lief nicht oder wurde beendet
+  # (125/126/127 Start, 137 OOM) — kein Lauf, den man vergleichen koennte.
+  # 0, 1 und 2 sind Verhalten des Werkzeugs und werden verglichen.
   case "$rc" in
-    125|126|127) fail "${1} auf ${2} (${3}): Exit ${rc}, Container nicht gestartet — $(tail -n 1 "$4.err")" ;;
+    0|1|2) ;;
+    *) fail "${1} auf ${2} (${3}): Exit ${rc}, kein Lauf des Werkzeugs — $(tail -n 1 "$4.err")" ;;
   esac
 }
 
-# Kanarienlauf vor und nach allen Vergleichen, auf beiden Images: das Fixture
-# `sauber` muss Exit 0 und genau eine geprüfte Datei liefern. Er belegt
-# Daemon, Mounts und den Inhalt, den der Container sieht — getrennt vom
-# Vergleich und ohne Wortlaut einer Docker-Meldung. Scheitert er, waeren
-# gleiche Ausgaben beider Seiten kein Vergleich (leerer oder fremder Mount,
-# Daemon weg), und die Probe bricht ab.
+# Kanarienlauf vor und nach allen Vergleichen, auf beiden Images, ueber den
+# Exit-Vertrag allein: `sauber` muss mit 0 enden, `links` mit 1. Er belegt
+# Daemon, die Mount-Quelle aller Laeufe ($WORK/fx) und den Inhalt, den der
+# Container sieht — ein leerer Mount endet mit 2, ein Mount ohne Markdown
+# bei `links` mit 0, ein Daemon-Ausfall bei `sauber` mit 1. Kein Wortlaut
+# einer Meldung: ein Vorgang, der die Ausgabe aendert, bricht ihn nicht.
 kanarie() { # wann
-  local img
-  [ -d "$WORK/fx/sauber" ] || fail "Kanarien-Fixture ${FIXTURES_DIR}/sauber fehlt"
+  local img fx want
   for img in "$VORHER" "$NACHHER"; do
-    lauf "$img" "$WORK/fx/sauber" - "$WORK/kanarie"
-    if [ "$(cat "$WORK/kanarie.rc")" != 0 ] \
-       || ! grep -q '^d-check: 1 Datei(en) geprüft, 0 Befund(e)' "$WORK/kanarie.err"; then
-      fail "Kanarienlauf ${1} auf ${img}: Exit $(cat "$WORK/kanarie.rc") — $(tail -n 1 "$WORK/kanarie.err"); Umgebung traegt keinen Vergleich (Daemon, Mount oder gesehener Inhalt)"
-    fi
+    for fx in sauber:0 links:1; do
+      want="${fx#*:}"; fx="${fx%%:*}"
+      [ -d "$WORK/fx/$fx" ] || fail "Kanarien-Fixture ${FIXTURES_DIR}/${fx} fehlt"
+      lauf "$img" "$WORK/fx/$fx" - "$WORK/kanarie"
+      [ "$(cat "$WORK/kanarie.rc")" = "$want" ] \
+        || fail "Kanarienlauf ${1} auf ${img} (${fx}): Exit $(cat "$WORK/kanarie.rc") statt ${want} — $(tail -n 1 "$WORK/kanarie.err"); die Umgebung traegt keinen Vergleich (Daemon, Mount oder gesehener Inhalt)"
+    done
   done
 }
 
