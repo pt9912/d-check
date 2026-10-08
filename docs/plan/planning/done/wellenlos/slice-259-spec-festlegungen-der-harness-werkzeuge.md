@@ -7,13 +7,13 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
-**Bezug:** [`MR-074`](../../../../harness/conventions.md#mr-074) (Bewegung 2:
+**Bezug:** [`MR-074`](../../../../../harness/conventions.md#mr-074) (Bewegung 2:
 Festlegungen der Harness-Werkzeuge gehören in die Spezifikation), Baseline
 `v6.17.0` · `regelwerk/grundlagen-referenz-richtung.md` §Spec-Straten,
 `regelwerk/modul-03-spec.md` §Ziel-Form: Spezifikation, Vorlagen
 `templates/spec/spezifikation.template.md` (§7 neu, Historie §8) und
 `templates/harness/sensors/gate.template.md`;
-[`MR-0098`](../../../../harness/conventions.md#mr-0098) (Kopplung an die
+[`MR-0098`](../../../../../harness/conventions.md#mr-0098) (Kopplung an die
 Historie-Ausnahme); Auftraggeber-Freigabe 2026-10-07.
 
 **Berührte Spec-Stellen:** `spec/spezifikation.md` §7 (neu) und §8 (Historie,
@@ -50,7 +50,7 @@ ist.
   `planning-check`, `workflow-pins`, `trace-check`, …) — ihre Festlegung steht
   schon als Verfeinerung der Anforderung in §1; die Vorlage verlangt für sie
   keinen §7-Eintrag.
-- **`Schärft:`-Feld der Gate-ADRs** ([ADR-0006](../../adr/0006-lint-profil-solid.md), [ADR-0010](../../adr/0010-semgrep-hermetisches-gate.md), …) — sie sind
+- **`Schärft:`-Feld der Gate-ADRs** ([ADR-0006](../../../adr/0006-lint-profil-solid.md), [ADR-0010](../../../adr/0010-semgrep-hermetisches-gate.md), …) — sie sind
   `Accepted` und unveränderlich; der Bestand bleibt bewusst stehen, neue
   Gate-ADRs zeigen auf §7.
 - **Neue Anforderungen im Lastenheft** — eine Festlegung eines Werkzeugs legt
@@ -65,7 +65,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 - [x] `spec/spezifikation.md`: neuer §7 nach der Vorlage, Historie als §8;
       die Kopplungen nachgezogen — `matrix.exclude-sections` und die
       `structure`-Regel der Historie in der `.d-check.yml`, dazu ein
-      Konventions-Nachtrag zu [`MR-0098`](../../../../harness/conventions.md#mr-0098) (die Ausnahme gilt seit der
+      Konventions-Nachtrag zu [`MR-0098`](../../../../../harness/conventions.md#mr-0098) (die Ausnahme gilt seit der
       Umnummerierung für zwei verschiedene Überschriften).
 - [x] §7-Einträge (`SPEC-<NNN>`) für `coverage-gate`, `lint`, `semgrep`,
       `baseline-verify`, je mit dem, was als Treffer gilt, und wie die
@@ -77,7 +77,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 - [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
 - [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft;
-      [MR-074](../../../../harness/conventions.md#mr-074) Bewegung 2 als
+      [MR-074](../../../../../harness/conventions.md#mr-074) Bewegung 2 als
       teilweise eingelöst vermerkt (Rest: slice-260).
 
 ## 3. Plan (vor Code)
@@ -86,17 +86,17 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 |---|---|---|
 | `spec/spezifikation.md` | update | §7 neu, Historie §8, vier Einträge, Historie-Zeile |
 | `.d-check.yml` | update | `exclude-sections`, `structure`-Abschnitt der Historie |
-| Konventions-Nachtrag zu [MR-0098](../../../../harness/conventions.md#mr-0098) | neu | die Ausnahme trägt jetzt `7. Historie` (Lastenheft) und `8. Historie` (Spezifikation) |
+| Konventions-Nachtrag zu [MR-0098](../../../../../harness/conventions.md#mr-0098) | neu | die Ausnahme trägt jetzt `7. Historie` (Lastenheft) und `8. Historie` (Spezifikation) |
 | `harness/sensors/{lint,semgrep,baseline-verify}.md`, `harness/README.md` | update | Verweis auf die Kennung statt eigener Festlegung |
 
-*(Plan-Änderung nach R1, vor dem Code: `tools/coverage-gate.sh` wird an die Festlegung angepasst statt umgekehrt — eine leere, nicht numerische oder negative Schwelle bestand bisher still grün, und der Exit-2-Zweig für einen unlesbaren Wert war tot (R1 F-1); die Kommentare in Skript, `Dockerfile` und `Makefile` zeigen auf [`SPEC-089`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) (F-4). Die Schlagwort-Liste von `--suggest-config` (Produkt-Code) übernimmt ein eigener Folge-Slice (F-6). Mitgenommen: `LC_ALL=C` im Skript — unter einer Locale mit Dezimalkomma endete selbst der bestandene Fall mit 1 (gemessen auf dem Host; im Container C-Locale).)*
+*(Plan-Änderung nach R1, vor dem Code: `tools/coverage-gate.sh` wird an die Festlegung angepasst statt umgekehrt — eine leere, nicht numerische oder negative Schwelle bestand bisher still grün, und der Exit-2-Zweig für einen unlesbaren Wert war tot (R1 F-1); die Kommentare in Skript, `Dockerfile` und `Makefile` zeigen auf [`SPEC-089`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) (F-4). Die Schlagwort-Liste von `--suggest-config` (Produkt-Code) übernimmt ein eigener Folge-Slice (F-6). Mitgenommen: `LC_ALL=C` im Skript — unter einer Locale mit Dezimalkomma endete selbst der bestandene Fall mit 1 (gemessen auf dem Host; im Container C-Locale).)*
 
-*(Plan-Änderung nach R2, vor dem Code: der Skript-Kommentar zur Schwellen-Prüfung trägt die Zusage statt des früheren Verhaltens, die Muster-Zeile im Kopf entfällt (R2 F-1); [`SPEC-089`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) und [`SPEC-091`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) nennen ihre Exit-Codes als die des Skripts — über `make` endet jedes Scheitern mit 2, die Unterscheidung trägt die Meldung (F-2); [`SPEC-091`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) und Grenze 2 von `harness/sensors/semgrep.md` nennen die Voreinstellung von semgrep als Ausschluss-Klasse samt der gemessenen Verzeichnis-Ausnahmen, nicht nur `*_test.go` (F-3); die Hilfe-Zeile von `make coverage-gate` nennt die Schwelle nicht mehr als Zahl (F-5).)*
+*(Plan-Änderung nach R2, vor dem Code: der Skript-Kommentar zur Schwellen-Prüfung trägt die Zusage statt des früheren Verhaltens, die Muster-Zeile im Kopf entfällt (R2 F-1); [`SPEC-089`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) und [`SPEC-091`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) nennen ihre Exit-Codes als die des Skripts — über `make` endet jedes Scheitern mit 2, die Unterscheidung trägt die Meldung (F-2); [`SPEC-091`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) und Grenze 2 von `harness/sensors/semgrep.md` nennen die Voreinstellung von semgrep als Ausschluss-Klasse samt der gemessenen Verzeichnis-Ausnahmen, nicht nur `*_test.go` (F-3); die Hilfe-Zeile von `make coverage-gate` nennt die Schwelle nicht mehr als Zahl (F-5).)*
 
-**Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025)):
+**Spiegel vor dem Editieren** ([`MR-025`](../../../../../harness/conventions.md#mr-025)):
 die Überschrift `7. Historie` der Spezifikation steht in `.d-check.yml`
-(zweimal), in [`MR-0098`](../../../../harness/conventions.md#mr-0098) (Titel, Geltungsbereich, Adaption), in der Index-Zeile
-von [`MR-0098`](../../../../harness/conventions.md#mr-0098) in `harness/conventions.md` und in den Kommentaren der
+(zweimal), in [`MR-0098`](../../../../../harness/conventions.md#mr-0098) (Titel, Geltungsbereich, Adaption), in der Index-Zeile
+von [`MR-0098`](../../../../../harness/conventions.md#mr-0098) in `harness/conventions.md` und in den Kommentaren der
 `.d-check.yml`; ein Anker-Link auf `#7-historie` der Spezifikation existiert
 nicht (gemessen). Die Schwelle `93 %` steht in `harness/README.md` und
 `tools/coverage-gate.sh`/`Dockerfile` (`COVERAGE_THRESHOLD`) — die
@@ -123,17 +123,17 @@ wellenlos hier geprüft.
 - **Zwei Orte für eine Schwelle** — die Coverage-Schwelle steht als Zusage in
   der Spezifikation und als Wert im Build (`COVERAGE_THRESHOLD`); kein Gate
   hält beide gleich. — **Ausgang:** weiter offen — am Code nachgezählt sind es
-  drei Träger, nicht zwei: die Zusage in [`SPEC-089`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge),
+  drei Träger, nicht zwei: die Zusage in [`SPEC-089`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge),
   der Default `THRESHOLD ?= 93` im `Makefile` und das `ARG` im `Dockerfile`
   (Verifikation INFO-3); die Hilfe-Zeile nennt die Zahl nicht mehr (R2 F-5).
   Eingetragen als
-  [`BEO-ALL/schwelle-mit-mehreren-traegern-ohne-gleichhalter`](../observations/BEO-ALL/schwelle-mit-mehreren-traegern-ohne-gleichhalter/state.md)
+  [`BEO-ALL/schwelle-mit-mehreren-traegern-ohne-gleichhalter`](../../observations/BEO-ALL/schwelle-mit-mehreren-traegern-ohne-gleichhalter/state.md)
   (1×); ein Gate, das Spezifikation und Build-Wert gleich hält, wäre ein
   eigener Slice und ist nicht geschnitten.
 - **Die Matrix sieht die Umnummerierung nicht** — ohne Nachzug fiele die
   Historie der Spezifikation still aus der Ausnahme und meldete ihre frozen
   Verweise. — **Ausgang:** entfallen — `exclude-sections` trägt beide
-  Überschriften ([`MR-075`](../../../../harness/conventions.md#mr-075)); bewusst
+  Überschriften ([`MR-075`](../../../../../harness/conventions.md#mr-075)); bewusst
   gebrochen: ohne `"8. Historie"` meldet `make doc-check` viermal
   `matrix-forbidden` in §8 der Spezifikation, mit ihr null (Verifikation).
 
@@ -141,8 +141,8 @@ wellenlos hier geprüft.
 
 - **Was hat funktioniert:** Die Spezifikation trägt jetzt, was die vier
   Gates aus `make gates` prüfen und wie sie an ihren Randformen entscheiden
-  ([`SPEC-089`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
-  bis [`SPEC-092`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)); die Sensor-Dateien verlinken die Kennung. Die Festlegung
+  ([`SPEC-089`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+  bis [`SPEC-092`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)); die Sensor-Dateien verlinken die Kennung. Die Festlegung
   am Code zu prüfen statt aus der Sensor-Datei abzuschreiben, hat einen
   echten Defekt gefunden: eine leere, nicht numerische oder negative Schwelle
   bestand still grün, und der Exit-2-Zweig für einen unlesbaren Wert war tot.
@@ -165,24 +165,24 @@ wellenlos hier geprüft.
   lesen (Auslöser `BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`
   — slice-227, slice-245, slice-259, 3×); beide Ausgänge
   Auftraggeber-Entscheid.
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-259.md` in
-  [`BEO-ALL/plan-aenderung-erst-im-fix-commit`](../observations/BEO-ALL/plan-aenderung-erst-im-fix-commit/state.md)
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-259.md` in
+  [`BEO-ALL/plan-aenderung-erst-im-fix-commit`](../../observations/BEO-ALL/plan-aenderung-erst-im-fix-commit/state.md)
   (3×, verkörpert),
-  [`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`](../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md)
+  [`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`](../../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md)
   (3×, verkörpert),
-  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
   und
-  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+  [`BEO-ALL/commit-message-overclaims-work`](../../observations/BEO-ALL/commit-message-overclaims-work/state.md)
   ergänzt; neu
-  [`BEO-ALL/schwelle-mit-mehreren-traegern-ohne-gleichhalter`](../observations/BEO-ALL/schwelle-mit-mehreren-traegern-ohne-gleichhalter/state.md)
+  [`BEO-ALL/schwelle-mit-mehreren-traegern-ohne-gleichhalter`](../../observations/BEO-ALL/schwelle-mit-mehreren-traegern-ohne-gleichhalter/state.md)
   (1×).
 - **Folge-Slices:** slice-260 (die übrigen Werkzeuge in §7), slice-261
-  (`--suggest-config` schlägt `8. Historie` mit vor). [`MR-074`](../../../../harness/conventions.md#mr-074)
+  (`--suggest-config` schlägt `8. Historie` mit vor). [`MR-074`](../../../../../harness/conventions.md#mr-074)
   Bewegung 2 ist als teilweise eingelöst vermerkt.
 - **Risiken aus §6:** eines weiter offen (Register, siehe §6), eines
   entfallen (gemessen). Trigger-Audit: kein Carveout, kein bootstrap-aware
   Gate, keine ADR, keine Hard Rule mit eingetretenem Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — `.claude/commands/implement-slice.md` trägt
   `seit slice-259` in den Schritten 15 und 16; (b) Folge-Slices — slice-260 und
   slice-261 liegen in `open/`; (c) Register — die fünf zitierten
@@ -203,13 +203,13 @@ Spezifikation und die Harness-Doku unter dem Default `*` (`ALL`); deklariert.
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:**
-[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
 — die Festlegungen werden am Code geprüft, nicht aus den Sensor-Dateien
 übernommen;
-[`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md)
+[`BEO-ALL/semantic-change-body-only-edges-stale`](../../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md)
 — die Spiegel der Umnummerierung stehen in §3.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-08 aus dem **jüngsten** Lauf — `upstream-drift` rot
 (semgrep 1.180.0, a-check v0.23.0 upstream; beide Pins vor diesem Slice
 gehoben, Lauf neu ausgelöst), `image-scan` grün.
