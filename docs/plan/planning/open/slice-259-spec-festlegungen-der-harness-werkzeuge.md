@@ -19,7 +19,7 @@ Historie-Ausnahme); Auftraggeber-Freigabe 2026-10-07.
 **Berührte Spec-Stellen:** `spec/spezifikation.md` §7 (neu) und §8 (Historie,
 bisher §7).
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-10-08.
 
