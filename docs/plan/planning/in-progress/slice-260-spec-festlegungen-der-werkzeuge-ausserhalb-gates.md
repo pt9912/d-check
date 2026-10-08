@@ -94,6 +94,13 @@ frei (gemessen an einem Modell-Makefile mit `.NOTPARALLEL`: Glied rot,
 `gates`, das unter `-k` erst läuft, wenn alle Prerequisites grün sind; das
 Target `record-gates` bleibt als Werkzeug stehen.)*
 
+| neuer Eintrag unter `harness/conventions/`, Index in `harness/conventions.md`, Kopfkommentar `tools/harness/record-gates.sh` | neu/update | die Härtung am Handoff-Gate landet als eigener Eintrag, der [`MR-004`](../../../../harness/conventions.md#mr-004) schärft (Baseline-Regelwerk `modul-13-quality-gates.md` §Guard-Härtung); der Kopfkommentar des Skripts nennt den Ort des Aufrufs |
+
+*(Plan-Änderung vor dem Code: [`MR-004`](../../../../harness/conventions.md#mr-004)
+beschreibt `record-gates` als letzten Prerequisite von `gates` — mit dem Fix
+aus der vorigen Plan-Änderung stimmt das nicht mehr, und ein akzeptierter
+Eintrag wird nicht umgeschrieben.)*
+
 ## 4. Trigger
 
 **Start** (`next` → `in-progress`): slice-259 in `done/`; `in-progress/` leer.
