@@ -7,7 +7,7 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
-**Bezug:** [ADR-0066](../../adr/0066-cve-scan-gegen-das-publizierte-image.md)
+**Bezug:** [ADR-0066](../../../adr/0066-cve-scan-gegen-das-publizierte-image.md)
 (CVE-Scan gegen das publizierte Image); Folge von
 slice-256 (Multi-Arch-Index).
 
@@ -34,7 +34,7 @@ der Lauf es sagt.
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Der Index selbst** — slice-256; dieser Slice setzt ihn voraus.
-- **Eine Schwelle oder ein rotes Urteil auf Befunde** — [ADR-0066](../../adr/0066-cve-scan-gegen-das-publizierte-image.md) lässt den
+- **Eine Schwelle oder ein rotes Urteil auf Befunde** — [ADR-0066](../../../adr/0066-cve-scan-gegen-das-publizierte-image.md) lässt den
   Scan berichten, nicht gaten; das ändert sich hier nicht.
 
 Was hier steht, ist die Grenze, an der ein wachsender Slice sich messen lässt:
@@ -60,7 +60,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `tools/image-scan.sh` | update | Plattform-Schleife |
 | `harness/sensors/image-scan.md` | update | Vertrag und Grenze |
 
-*(Plan-Änderung vor dem Code-Commit: ein **Plattform-Nachweis** je Lauf — gemessen scannt Trivy ein Einzel-Manifest-Image bei `--platform linux/arm64` still als amd64 mit Exit 0; ohne Nachweis wäre der arm64-Scan dort eine Behauptung. Dazu die Funktion `arch_aus_json` mit vier Selbsttest-Proben und der Spiegel „BEIDE Trivy-Läufe" im Skriptkopf und in der Sensor-Datei. Nach R1: die Plattformen kommen aus dem Index selbst statt aus einer Kopie (F-1), ein Ref ohne lesbaren Index gilt als gescheitert; Geschichte-Anhänge an [ADR-0066](../../adr/0066-cve-scan-gegen-das-publizierte-image.md) und [ADR-0102](../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md) (F-2, F-3). Nach R2: die Plattformliste gilt nur vollständig — ein Abbruch von `imagetools` oder ein Index-Eintrag ohne Plattform machen sie leer (R2-1, HIGH), die Ursache kommt aus demselben Aufruf (R2-3).)*
+*(Plan-Änderung vor dem Code-Commit: ein **Plattform-Nachweis** je Lauf — gemessen scannt Trivy ein Einzel-Manifest-Image bei `--platform linux/arm64` still als amd64 mit Exit 0; ohne Nachweis wäre der arm64-Scan dort eine Behauptung. Dazu die Funktion `arch_aus_json` mit vier Selbsttest-Proben und der Spiegel „BEIDE Trivy-Läufe" im Skriptkopf und in der Sensor-Datei. Nach R1: die Plattformen kommen aus dem Index selbst statt aus einer Kopie (F-1), ein Ref ohne lesbaren Index gilt als gescheitert; Geschichte-Anhänge an [ADR-0066](../../../adr/0066-cve-scan-gegen-das-publizierte-image.md) und [ADR-0102](../../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md) (F-2, F-3). Nach R2: die Plattformliste gilt nur vollständig — ein Abbruch von `imagetools` oder ein Index-Eintrag ohne Plattform machen sie leer (R2-1, HIGH), die Ursache kommt aus demselben Aufruf (R2-3).)*
 
 ## 4. Trigger
 
@@ -103,19 +103,19 @@ wellenlos hier geprüft.
   Leseweg einer Härtung wird gegen seine Fehlerformen gefahren, nicht nur
   gegen den Fall, den er beheben soll — liegt in `.harness/skills/reviewer.md`.
   Auslöser: `BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft` (slice-156, slice-206, slice-257 — 3×).
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-257.md` in
-  [`BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft`](../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/state.md)
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-257.md` in
+  [`BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft`](../../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/state.md)
   ergänzt — Zähler 3×, Ausgang verkörpert (Auftraggeber-Entscheid);
-  [`BEO-ALL/fix-commit-ausserhalb-review-range`](../observations/BEO-ALL/fix-commit-ausserhalb-review-range/state.md)
+  [`BEO-ALL/fix-commit-ausserhalb-review-range`](../../observations/BEO-ALL/fix-commit-ausserhalb-review-range/state.md)
   neu angelegt mit Belegen aus slice-256 und slice-257 (2×).
 - **Folge-Slices:** keine.
 - **Risiken aus §6:** entfallen (Begründung in §6). Trigger-Audit: kein
   Carveout, kein bootstrap-aware Gate, keine Hard Rule mit eingetretenem
-  Trigger; [ADR-0066](../../adr/0066-cve-scan-gegen-das-publizierte-image.md)
-  und [ADR-0102](../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)
+  Trigger; [ADR-0066](../../../adr/0066-cve-scan-gegen-das-publizierte-image.md)
+  und [ADR-0102](../../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)
   tragen je einen Geschichte-Anhang (drei Läufe je Plattform; die
-  Offen-Konsequenz von [ADR-0102](../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md) eingelöst). Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  Offen-Konsequenz von [ADR-0102](../../../adr/0102-multi-arch-index-und-spiegel-per-index-digest.md) eingelöst). Nachtlauf-Stand
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — `.harness/skills/reviewer.md` trägt
   `(seit slice-257)` in Prüffrage 19; (b) Folge-Slice — keine; (c) Register —
   beide zitierten Beobachtungen existieren und tragen Belege.
@@ -137,7 +137,7 @@ Distribution unter dem Default `*` (`ALL`); deklariert.
 **Vorgelagert — offene Beobachtungen sichten:** keine Treffer für CVE-Scan
 oder Nachtlauf.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-07 — `upstream-drift` und `image-scan` grün.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
