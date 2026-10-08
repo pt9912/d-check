@@ -14,7 +14,7 @@ geführt; Auftraggeber-Freigabe 2026-10-07.
 
 **Berührte Spec-Stellen:** — *(Harness-Werkzeug, keine Spec-Aussage)*.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-10-08.
 
