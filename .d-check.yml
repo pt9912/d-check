@@ -607,14 +607,15 @@ matrix:
     # seine Aufgabe), der CHANGELOG traegt sie als Historie, die Release-Doku
     # referenziert den aktuellen Stand.
   # exakter Heading-Vergleich. Die immutable ADR-Geschichte bleibt
-  # provenance-exempt; die "7. Historie" beider Spec-Straten ist seit ADR-0097
+  # provenance-exempt; die Historie beider Spec-Straten ("7. Historie" im
+  # Lastenheft, "8. Historie" in der Spezifikation, MR-075) ist seit ADR-0097
   # ebenfalls ausgenommen: beide Abschnitte sind Zeitdokumente (jede Zeile
   # friert den Stand ihres Datums), und die aussen/adaptionsblock-Regeln
   # verboten dort jeden Verweis — in den Konventionsspeicher, in
   # Agenten-Briefing und in Change Requests, den der Kanon in der
   # Lastenheft-Historie ausdrücklich zulässt (v5.11.0). Die ADR-Geschichte
   # bleibt separat ausgenommen (unten: [Geschichte]).
-  exclude-sections: [Geschichte, "7. Historie"]
+  exclude-sections: [Geschichte, "7. Historie", "8. Historie"]
   # Grandfathering (DC-FA-MTX-003): die vor Einführung Accepted-ADRs (0001–0021)
   # sind immutabel und nennen Slices als legitime Verifikations-Zeiger im Körper
   # — sie werden ganz übersprungen; neue ADRs ab 0022 tragen den Marker.
@@ -730,7 +731,7 @@ structure:
     table:
       order: desc              # Spalte 1 = Version (0.61.0 …)
   - files: spec/spezifikation.md
-    section: "## 7. Historie"
+    section: "## 8. Historie"
     table:
       order: desc              # Spalte 1 = Datum
   - files: docs/plan/planning/in-progress/roadmap.md

@@ -3620,10 +3620,27 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | `SPEC-065` | GitHub Flavored Markdown (Slug-/Anker-Verhalten) | Referenzverhalten, Stand 2026-06 | [§1, DC-FA-ANCH-001.a](#dc-fa-anch-001a--github-slug-algorithmus) |
 | `SPEC-066` | Runtime-Basis-Image distroless/static | Digest-gepinnt (Index-Digest; Plattformen `linux/amd64`, `linux/arm64`) | Multi-Stage-Build, die Go-Stufen kompilieren auf der Build-Plattform für die Ziel-Plattform; das veröffentlichte Image ist ein Index beider Plattformen; volle Semver-Tags, `latest` nur für stabile Releases |
 
-## 7. Historie
+## 7. Festlegungen der Harness-Werkzeuge
+
+Was ein Gate dieses Repos prüft und wie es an seinen Randformen entscheidet —
+für die Gates, die keine eigene Anforderung verfeinern. Setzt ein Werkzeug
+genau eine Anforderung durch, steht seine Festlegung als deren Verfeinerung in
+§1 und nicht hier. Eine Randform, die nach der Entscheidung über das Gate
+auftaucht, wird hier fortgeschrieben; womit das Werkzeug selbst gedeckt ist,
+steht bei ihm, nicht hier.
+
+| Kennung | Werkzeug | Festlegung |
+|---|---|---|
+| `SPEC-089` | `make coverage-gate` | Gesamt-Coverage aller Pakete unter `internal/` (`-coverpkg` über alle diese Pakete, `-covermode=atomic`), gemessen über die Testsuite des Hauptmoduls; Prüfgröße ist die `total:`-Zeile des Coverage-Berichts je Funktion. Schwelle **93 %**, verglichen mit „größer oder gleich" — genau 93,0 besteht. Darunter Exit 1. Fehlt die Coverage-Eingabe, fehlt die `total:`-Zeile oder ist der Wert nicht lesbar, endet das Gate mit Exit 2: gescheitert, nicht bestanden. |
+| `SPEC-090` | `make lint` | golangci-lint v2 mit `default: none` und 29 ausdrücklich eingeschalteten Lintern — die Standard-Fünf (errcheck, govet, ineffassign, staticcheck, unused) und das SOLID-nahe Profil —, mit den Schwellen der Konfiguration: cyclop und gocyclo 15, gocognit 20, funlen 100 Zeilen oder 60 Anweisungen, nestif 5, dupl 150, maintidx 20, interfacebloat 10. Jeder Befund ist rot. Ausnahmen gelten nur zentral in der Konfiguration, **sechs** Regeln: Komplexitäts- und Längen-Linter, noctx und unparam sowie zwei revive-Regeln (unbenutzte Parameter und Empfänger) für Testdateien; testpackage für den Kern und für eine Testdatei des git-Adapters. Eine Inline-Direktive prüft nolintlint auf ihre Form — benannter Linter, Begründung, Wirkung —, nicht auf ihre Berechtigung. |
+| `SPEC-091` | `make semgrep` | semgrep, Image digest-gepinnt, mit dem Regel-Umfang `go/lang/security` des Regelsets `semgrep-rules` an einem Commit-Pin, netzlos über das Repo. Jeder Befund ist rot. Lädt der Lauf **keine** Regel — ein leerer oder umbenannter Umfang am Pin —, endet er mit Exit 2 statt grün: Ein Lauf ohne Regel ist kein Scan. Das Holen des Regelsets am Pin ist Setup und braucht Netz; die Prüfung selbst nicht. |
+| `SPEC-092` | `make baseline-verify` | Der vendorte Baseline-Baum des gepinnten Tags gegen sein mitgeliefertes Manifest `SHA256SUMS`, drei Fragen, alle nötig: (1) jede Manifest-Zeile stimmt — geänderte und gelöschte Dateien; (2) die Zahl der Dateien im ganzen Tag-Verzeichnis ohne das Manifest ist gleich der Zahl der Manifest-Zeilen und größer null — eingelegte Dateien, auch als Geschwister der beiden Bäume; (3) jeder symbolische Link unterhalb von `.claude/rules/` löst auf ein existierendes Ziel auf, rekursiv und mit Punkt-Namen. Ein fehlendes Host-Werkzeug (`sha256sum`, `find`, `readlink`) oder ein fehlendes Manifest ist rot. Geprüft wird innere Konsistenz, nicht Echtheit: Ein Baum, dessen Manifest mit ihm geändert wurde, besteht. |
+
+## 8. Historie
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-08 | Neuer Abschnitt §[7](#7-festlegungen-der-harness-werkzeuge) „Festlegungen der Harness-Werkzeuge" — was ein Gate prüft und wie es an seinen Randformen entscheidet, für die Gates ohne eigene Anforderung: [`SPEC-089`](#7-festlegungen-der-harness-werkzeuge) `make coverage-gate`, [`SPEC-090`](#7-festlegungen-der-harness-werkzeuge) `make lint`, [`SPEC-091`](#7-festlegungen-der-harness-werkzeuge) `make semgrep`, [`SPEC-092`](#7-festlegungen-der-harness-werkzeuge) `make baseline-verify`; die Historie ist jetzt §8. Die Festlegungen standen bisher nur in der Harness-Doku; am Code nachgemessen trägt die Lint-Konfiguration sechs Ausnahme-Regeln, nicht fünf |
 | 2026-10-07 | §6-Zeile [`SPEC-066`](#6-externe-verträge): das Runtime-Image ist ein Index für `linux/amd64` und `linux/arm64`, die Go-Stufen kompilieren auf der Build-Plattform für die Ziel-Plattform ([`DC-FA-DIST-001`](lastenheft.md#dc-fa-dist-001--docker-image) 0.98.0); die Aussage „kein `latest`" war seit der `latest`-Regel für stabile Releases überholt und ist mitberichtigt |
 | 2026-10-07 | Nachzug nach Review: §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) Schritt 5a — nur führende Tabellen-Targets (erste Zelle) zählen, der Schritt läuft unabhängig von `targets.makefiles`, Symlink-Alias zählt als zweite Datei; Schritt 1 und Schema-Zeile `targets.makefiles` entsprechend ("Richtungen 1 und 2 inert") |
 | 2026-10-07 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) um Schritt 5a (opt-in Disjunktheit der Autoritäts-Dateien, Grund-Code `gate-declared-twice`) erweitert, Schritt 5 verweist darauf; Schema-Zeile `targets.authority-disjoint`, §4-Zeile [`SPEC-088`](#4-grund--und-fehler-codes) |
