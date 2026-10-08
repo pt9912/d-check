@@ -77,14 +77,20 @@ lauf() { # image dir form outprefix
     docker run --rm --network none -v "$2":/repo:ro "$1" "$3" > "$4.out" 2> "$4.err" || rc=$?
   fi
   echo "$rc" > "$4.rc"
-  # Nur ein Lauf DES WERKZEUGS zaehlt: Exit 0/1/2 und kein Docker-Fehler auf
-  # stderr. Scheitert der Container auf beiden Seiten gleich (125/126/127,
-  # Mount-Fehler, Daemon weg — dieser endet mit 1 wie ein Befund), waeren
-  # stderr und Exit identisch und der Fall zaehlte sonst als „gleich".
-  case "$rc" in 0|1|2) ;; *) fail "${1} auf ${2} (${3}): Exit ${rc} — kein Lauf des Werkzeugs: $(tail -n 1 "$4.err")" ;; esac
-  if grep -qE '^docker: |Cannot connect to the Docker daemon|Error response from daemon' "$4.err"; then
-    fail "${1} auf ${2} (${3}): Docker-Fehler — $(grep -m1 -E '^docker: |Cannot connect|Error response' "$4.err")"
-  fi
+  # Nur ein Lauf DES WERKZEUGS zaehlt — erkannt an seinem Lebenszeichen, nicht
+  # am Wortlaut einer Docker-Meldung (der wechselt mit der Docker-Version):
+  # Exit 1 traegt in jeder Form einen Befund auf stdout, Exit 2 eine Zeile
+  # `d-check:` auf stderr; Exit 0 liefert Docker beim Scheitern nicht. Ohne
+  # das zaehlte ein Container, der auf beiden Seiten gleich nicht startet
+  # (125/126/127, Mount-Fehler, Daemon weg — dieser endet mit 1), als „gleich".
+  local why=""
+  case "$rc" in
+    0) ;;
+    1) [ -s "$4.out" ] || why="Exit 1 ohne Befund-Ausgabe" ;;
+    2) grep -q '^d-check:' "$4.err" || why="Exit 2 ohne Meldung des Werkzeugs" ;;
+    *) why="Exit ${rc}" ;;
+  esac
+  [ -z "$why" ] || fail "${1} auf ${2} (${3}): ${why} — kein Lauf des Werkzeugs: $(tail -n 1 "$4.err")"
 }
 
 vergleiche=0

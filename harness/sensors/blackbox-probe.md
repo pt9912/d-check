@@ -12,7 +12,11 @@ Streams verschränken sich und zeigen Abweichungen, die keine sind.
   (je ein kleines Repository im Default-Zustand eines Moduls) und das Repo
   selbst.
 - **Formen:** Standard, `--json`, `--yaml`, `--doctor` (`PROBE_FORMS`
-  übersteuert).
+  übersteuert; leer heißt Default).
+
+**Nebenwirkung:** das Target baut `$(IMAGE):latest` neu, mit
+`VERSION=0.0.0-dev` — dasselbe Bild wie ein `make build` ohne Version; ein
+zuvor mit Release-Version gebautes `:latest` ist danach ersetzt.
 
 Gedacht für die Zusage „ohne Schalter unverändert": vor dem Review laufen
 lassen, mit `REF` auf den Stand vor der Änderung.
@@ -31,12 +35,13 @@ lassen, mit `REF` auf den Stand vor der Änderung.
    samt `.d-check.yml`, nicht die von `REF`. Eine Konfiguration, die nur der
    neue Stand versteht, zeigt sich als Abweichung (das alte Binary endet mit
    Exit 2) — erwartbar, aber kein Verhaltensvergleich.
-4. **Nur Läufe des Werkzeugs zählen.** Ein Lauf mit einem Exit außer 0, 1
-   und 2 oder mit einer Docker-Fehlermeldung auf stderr bricht die Probe mit
-   Exit 2 ab — sonst zählte ein Container, der auf beiden Seiten gleich nicht
-   startet, als „gleich". Erkannt werden die Meldungsformen `docker: …`,
-   `Cannot connect to the Docker daemon` und `Error response from daemon`;
-   eine andere Form des Daemon-Ausfalls mit Exit 1 sähe aus wie ein Befund.
+4. **Nur Läufe des Werkzeugs zählen** — erkannt an seinem Lebenszeichen,
+   nicht am Wortlaut einer Docker-Meldung (der wechselt mit der
+   Docker-Version): Exit 1 muss einen Befund auf stdout tragen, Exit 2 eine
+   Zeile `d-check:` auf stderr, jeder andere Exit außer 0 bricht ab. Sonst
+   zählte ein Container, der auf beiden Seiten gleich nicht startet, als
+   „gleich". Ein Docker-Ausfall, der mit Exit 0 endete, bliebe unerkannt;
+   keine der gemessenen Formen (125, Daemon-Ausfall mit 1) tut das.
 5. **Kein Gate.** Eine gewollte Änderung erzeugt Abweichungen; ob eine
    Abweichung gewollt ist, entscheidet der Vorgang, der sie erzeugt.
 
