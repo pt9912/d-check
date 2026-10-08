@@ -66,6 +66,21 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 |---|---|---|
 | `spec/spezifikation.md` | update | §7-Einträge |
 | `harness/sensors/*.md` der betroffenen Werkzeuge | update | Verweis auf die Kennung |
+| `harness/sensors/{guard-probe,hooks,blackbox-probe}.md`, `harness/README.md` (Zeile `record-gates`) | update | die Sensor-Dateien bzw. die Index-Zeile der vier Werkzeuge |
+| `.githooks/pre-commit`, `.github/workflows/ci.yml` | update | der Closure-Übergangs-Wächter folgt der Festlegung |
+
+*(Plan-Änderung vor dem Code: Am Code nachgelesen erkennt der
+Closure-Übergangs-Wächter in `pre-commit` und in der CI nur einen Slice, der
+**direkt** unter `done/` landet (`^docs/plan/planning/done/slice-…\.md$`).
+Seit 2026-09-29 schließen Slices nach `done/wellenlos/` bzw.
+`done/<welle-id>/` — gemessen über die Move-Commits: 21 Closures seither,
+keine davon direkt unter `done/`; der Wächter hat bei keiner ausgelöst.
+`verify-closure-notes` lief nur, weil es von Hand gefahren wurde. Die
+Festlegung wird so geschrieben, dass jeder Rename/Add eines
+`slice-*.md` irgendwo unter `done/` den Wächter auslöst, und beide Stellen
+folgen ihr. Der Ausschluss archivierter Stubs entfällt: Ein Stub-Add löst
+einen Lauf über den ganzen Bestand aus, der ohnehin grün sein muss — Kosten,
+keine falsche Zusage.)*
 
 ## 4. Trigger
 
