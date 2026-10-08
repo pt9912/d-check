@@ -11,15 +11,21 @@ am Pin ist Setup und braucht Netz, der Scan selbst läuft ohne.
 
 1. **Der Umfang ist `go/lang/security`**, nicht das ganze Regelset. Ein
    grüner Lauf sagt etwas über diesen Ausschnitt.
+2. **Testdateien werden nicht gescannt** — die Voreinstellung von semgrep
+   überspringt `*_test.go`; ein grüner Lauf sagt nichts über Testcode. Die
+   Zahl steht im Lauf selbst (`Ran N rules on M files` und die Zeile zu den
+   übersprungenen Dateien). Gescannt wird dagegen auch eine nicht getrackte,
+   nicht ignorierte Datei — gemessen, obwohl semgrep „limited to files tracked
+   by git" meldet.
 
-2. **Das Regelset ist gepinnt und altert** — der Lauf misst gegen den Stand des
+3. **Das Regelset ist gepinnt und altert** — der Lauf misst gegen den Stand des
    Pins, nicht gegen den heutigen. Eine Regel, die upstream nach der Hebung
    entstand, existiert für diesen Gate nicht. Das ist der Preis der
    Netzlosigkeit und der Grund, warum es
    [`make freshness-semgrep`](freshness-go.md) und `make semgrep-digest`
    gibt — **beide fail-open und außerhalb von `gates`**. Ein grüner Lauf sagt
    also „nichts nach dem gepinnten Regelstand", nicht „nichts Bekanntes".
-3. **Der Regel-Cache wird beim Bezug geprüft, danach nicht mehr — wie fast
+4. **Der Regel-Cache wird beim Bezug geprüft, danach nicht mehr — wie fast
    alles hier.** Der Bezug läuft über einen **git-Commit-Pin**; ein Commit-SHA
    ist ein Hash über den **Baum**, nicht über eine mitgelieferte Liste.
    *(Dass git den Bezug gegen den SHA prüft, ist die dokumentierte Eigenschaft

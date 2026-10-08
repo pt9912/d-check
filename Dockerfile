@@ -70,9 +70,8 @@ COPY . .
 RUN CGO_ENABLED=0 go test ./...
 
 # ---- coverage --------------------------------------------------------------
-# Kalibrierungs-Bindung (harness/README.md §Sensors): Schwelle 93 %
-# (Kalibrierung 2026-06-11; zuvor Ramp 85 → 90 bei welle-03 done);
-# Verfehlung ⇒ Carveout-Pflicht.
+# Schwelle, Messbasis und Randformen: spec/spezifikation.md §7 (SPEC-089);
+# Verfehlung ⇒ Carveout-Pflicht, Senkung nur per ADR.
 # `-coverpkg` misst über die Paketgrenzen von ./internal/... (u-boot-
 # Muster) — sonst zählt nur paket-lokale Abdeckung.
 # `pipefail` via SHELL, damit `go test … | tee` den Exit-Code nicht

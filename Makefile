@@ -32,10 +32,9 @@ NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 # (gate-consistency parst nur das Makefile, keine includes).
 include a-check.mk
 
-# Kalibrierungs-Bindung (harness/README.md §Sensors): 93 % seit
-# 2026-06-11 (Kalibrierung nach Test-Ausbau, Ist 95,1 %; zuvor Ramp
-# 85 → 90 bei welle-03 done). Override: `make coverage-gate
-# THRESHOLD=…`; Senkung nur per ADR (AGENTS.md §3.6).
+# Schwelle, Messbasis und Randformen: spec/spezifikation.md §7 (SPEC-089).
+# Override: `make coverage-gate THRESHOLD=…` — nur eine nicht negative Zahl,
+# sonst Exit 2; Senkung nur per ADR (AGENTS.md §3.6).
 THRESHOLD ?= 93
 
 DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
@@ -70,7 +69,7 @@ test: ## `go test ./...` in Docker (Akzeptanzkriterien DC-FA-*).
 
 arch-check: a-check ## Import-Regeln R1–R6 (ADR-0005/ADR-0012) via a-check-Image (.a-check.yml; netzlos, read-only — DC-QA-03). ADR-0029 (löst tools/arch-check.sh ab).
 
-coverage-gate: ## Coverage-Schwelle (Kalibrierungs-Bindung: 93 %, Historie in harness/README §Sensors).
+coverage-gate: ## Coverage-Schwelle 93 % (SPEC-089; Override THRESHOLD=…, Senkung nur per ADR).
 	$(DOCKER_BUILD) $(NO_CACHE_FILTER_COV) \
 	    --build-arg COVERAGE_THRESHOLD=$(THRESHOLD) \
 	    --target coverage -t $(IMAGE):coverage .
