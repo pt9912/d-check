@@ -83,6 +83,8 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `Makefile` | update | Target `blackbox-probe` |
 | `harness/README.md`, `harness/sensors/blackbox-probe.md` | update / neu | Werkzeug-Zeile, Vertrag | <!-- d-check:ignore (Datei entsteht mit diesem Slice) -->
 
+*(Plan-Änderung vor dem Code-Commit: `.d-check.yml` `scan.ignore` nimmt die Fixtures aus dem Dogfooding-Scan — sie tragen absichtlich kaputte Links und nackte Kennungen und sind Eingaben der Probe, kein Doku-Vertrag; bisher Geprüftes fällt dadurch nicht heraus. Dazu `tools/blackbox-probe/README.md` eine Ebene über den Fixtures, damit sie weiter geprüft wird.)*
+
 **Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025)):
 keine bestehende Zusage wird geändert; neu ist nur das Target. Der
 Gate-Index (`make gate-consistency`) verlangt die Werkzeug-Zeile.
