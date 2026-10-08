@@ -45,9 +45,8 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test image-test-arm64 image-publish blackbox-probe semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave slice-mv selbstpruefung history-range-guard
 
-# Der gates-Nachweis (record-gates) darf erst nach grünen Gates
-# entstehen — unter `make -j` liefen Prerequisites parallel und der
-# Nachweis entstünde trotz roter Gates (MR-005).
+# Prerequisites laufen nacheinander, in der Reihenfolge ihrer Liste, auch
+# unter `make -j` (MR-005).
 .NOTPARALLEL:
 
 help: ## Targets anzeigen.
@@ -347,9 +346,12 @@ nightly-state: ## Ausgang des juengsten Nachtlaufs lesen (Netz, fail-open, NICHT
 baseline-freshness: ## Upstream-Audit des Baseline-Pins: neuerer Release-Tag ODER unbestimmter Currency-Stand (Exit 3, seit slice-215) + Content-Drift am gepinnten Tag (Netz, NICHT in gates, fail-open). MR-011-Kette.
 	@bash tools/harness/fetch-baseline-cache.sh --check-latest
 
-# record-gates läuft als LETZTER Prerequisite — der Nachweis entsteht
-# nur, wenn alle Gates grün sind (sonst bricht make vorher ab).
-gates: baseline-verify workflow-pins doc-check lint test arch-check coverage-gate semgrep gate-consistency planning-check record-gates ## alle inneren Gates (mandatory vor Handoff).
+# Der Nachweis steht im Rezept, nicht in der Prerequisite-Liste: ein Rezept
+# läuft erst, wenn alle Prerequisites grün sind — auch unter `make -k`, das
+# nach einem roten Glied die übrigen Prerequisites weiter abarbeitet
+# (SPEC-094).
+gates: baseline-verify workflow-pins doc-check lint test arch-check coverage-gate semgrep gate-consistency planning-check ## alle inneren Gates (mandatory vor Handoff).
+	@bash tools/harness/record-gates.sh
 	@echo "[gates] baseline-verify + workflow-pins + doc-check + lint + test + arch-check + coverage-gate + semgrep + gate-consistency + planning-check green"
 
 # ci = gates + Image-Integrationstests — das Target, das die
