@@ -73,7 +73,8 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 Closure-Übergangs-Wächter in `pre-commit` und in der CI nur einen Slice, der
 **direkt** unter `done/` landet (`^docs/plan/planning/done/slice-…\.md$`).
 Seit 2026-09-29 schließen Slices nach `done/wellenlos/` bzw.
-`done/<welle-id>/` — gemessen über die Move-Commits: 21 Closures seither,
+`done/<welle-id>/` — gemessen über die Move-Commits: 20 Closures seither
+(17 nach `done/wellenlos/`, 3 nach `done/welle-91/`),
 keine davon direkt unter `done/`; der Wächter hat bei keiner ausgelöst.
 `verify-closure-notes` lief nur, weil es von Hand gefahren wurde. Die
 Festlegung wird so geschrieben, dass jeder Rename/Add eines
