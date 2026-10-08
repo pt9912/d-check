@@ -27,7 +27,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 **Ziel:** Ein make-Target vergleicht das Verhalten des Werkzeugs **vor** und
 **nach** einer Änderung mechanisch: Es baut aus einer Git-Referenz ein
-Vorher-Image (`git archive <ref>`, dieselben Build-Args wie `make build`),
+Vorher-Image (`git archive <ref>`, Dockerfile und Build-Defaults dieses Stands),
 nimmt das aktuelle Image als Nachher und fährt beide über dieselben Fixtures
 und Ausgabeformen. Verglichen werden **stdout, stderr und Exit getrennt** —
 zusammengeführte Streams erzeugten in slice-252 Schein-Abweichungen. Das
@@ -83,7 +83,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `Makefile` | update | Target `blackbox-probe` |
 | `harness/README.md`, `harness/sensors/blackbox-probe.md` | update / neu | Werkzeug-Zeile, Vertrag | <!-- d-check:ignore (Datei entsteht mit diesem Slice) -->
 
-*(Plan-Änderung vor dem Code-Commit: `.d-check.yml` `scan.ignore` nimmt die Fixtures aus dem Dogfooding-Scan — sie tragen absichtlich kaputte Links und nackte Kennungen und sind Eingaben der Probe, kein Doku-Vertrag; bisher Geprüftes fällt dadurch nicht heraus. Dazu `tools/blackbox-probe/README.md` eine Ebene über den Fixtures, damit sie weiter geprüft wird.)*
+*(Plan-Änderung vor dem Code-Commit: `.d-check.yml` `scan.ignore` nimmt die Fixtures aus dem Dogfooding-Scan — sie tragen absichtlich kaputte Links und nackte Kennungen und sind Eingaben der Probe, kein Doku-Vertrag; bisher Geprüftes fällt dadurch nicht heraus. Dazu `tools/blackbox-probe/README.md` eine Ebene über den Fixtures, damit sie weiter geprüft wird. Nach R1: ein Lauf zählt nur mit einem Exit des Werkzeugs (0, 1, 2) und ohne Docker-Fehlermeldung, sonst ist die Probe gescheitert (F-1); `VERSION` ist auf beiden Seiten fest `0.0.0-dev` (F-4); `make clean` räumt das Vorher-Image ab (F-6); die Sensor-Datei nennt die Grenzen, `harness/sensors/doc-check.md` das dritte Ventil (F-2, F-3, F-5).)*
 
 **Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025)):
 keine bestehende Zusage wird geändert; neu ist nur das Target. Der
