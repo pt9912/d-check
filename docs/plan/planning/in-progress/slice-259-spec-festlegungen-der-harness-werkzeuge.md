@@ -89,6 +89,8 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | Konventions-Nachtrag zu [MR-0098](../../../../harness/conventions.md#mr-0098) | neu | die Ausnahme trägt jetzt `7. Historie` (Lastenheft) und `8. Historie` (Spezifikation) |
 | `harness/sensors/{lint,semgrep,baseline-verify}.md`, `harness/README.md` | update | Verweis auf die Kennung statt eigener Festlegung |
 
+*(Plan-Änderung nach R1, vor dem Code: `tools/coverage-gate.sh` wird an die Festlegung angepasst statt umgekehrt — eine leere, nicht numerische oder negative Schwelle bestand bisher still grün, und der Exit-2-Zweig für einen unlesbaren Wert war tot (R1 F-1); die Kommentare in Skript, `Dockerfile` und `Makefile` zeigen auf [`SPEC-089`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) (F-4). Die Schlagwort-Liste von `--suggest-config` (Produkt-Code) übernimmt ein eigener Folge-Slice (F-6).)*
+
 **Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025)):
 die Überschrift `7. Historie` der Spezifikation steht in `.d-check.yml`
 (zweimal), in [`MR-0098`](../../../../harness/conventions.md#mr-0098) (Titel, Geltungsbereich, Adaption), in der Index-Zeile
