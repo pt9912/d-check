@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # coverage-gate.sh — Go-Coverage-Gate. Schwelle, Messbasis und Randformen
 # legt spec/spezifikation.md §7 (SPEC-089) fest; Verfehlung ⇒
-# Carveout-Pflicht, Senkung nur per ADR. Muster: u-boot
-# scripts/coverage-gate.sh (gleiche Build-Familie).
+# Carveout-Pflicht, Senkung nur per ADR.
 #
 # Aufruf:
 #   coverage-gate.sh <coverage-func.txt> <threshold>
@@ -23,9 +22,9 @@ fi
 func_file="$1"
 threshold="$2"
 
-# Die Schwelle ist ein Build-Parameter. Leer, nicht numerisch oder negativ
-# verglich awk sie bisher als 0 — jede Coverage bestand still. Nur eine
-# nicht negative Zahl ist eine Schwelle; alles andere ist gescheitert.
+# Die Schwelle ist ein Build-Parameter. Nur eine nicht negative Zahl ist
+# eine Schwelle; alles andere endet mit 2, bevor awk vergleicht — awk läse
+# einen leeren oder nicht numerischen Wert als 0.
 if [[ ! "$threshold" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
   echo "coverage-gate: Schwelle '$threshold' ist keine nicht negative Zahl" >&2
   exit 2

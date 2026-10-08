@@ -69,7 +69,7 @@ test: ## `go test ./...` in Docker (Akzeptanzkriterien DC-FA-*).
 
 arch-check: a-check ## Import-Regeln R1–R6 (ADR-0005/ADR-0012) via a-check-Image (.a-check.yml; netzlos, read-only — DC-QA-03). ADR-0029 (löst tools/arch-check.sh ab).
 
-coverage-gate: ## Coverage-Schwelle 93 % (SPEC-089; Override THRESHOLD=…, Senkung nur per ADR).
+coverage-gate: ## Coverage-Schwelle nach SPEC-089 (Override THRESHOLD=…, Senkung nur per ADR).
 	$(DOCKER_BUILD) $(NO_CACHE_FILTER_COV) \
 	    --build-arg COVERAGE_THRESHOLD=$(THRESHOLD) \
 	    --target coverage -t $(IMAGE):coverage .

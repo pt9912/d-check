@@ -11,9 +11,11 @@ am Pin ist Setup und braucht Netz, der Scan selbst läuft ohne.
 
 1. **Der Umfang ist `go/lang/security`**, nicht das ganze Regelset. Ein
    grüner Lauf sagt etwas über diesen Ausschnitt.
-2. **Testdateien werden nicht gescannt** — die Voreinstellung von semgrep
-   überspringt `*_test.go`; ein grüner Lauf sagt nichts über Testcode. Die
-   Zahl steht im Lauf selbst (`Ran N rules on M files` und die Zeile zu den
+2. **Was die Voreinstellung von semgrep auslässt, wird nicht gescannt** —
+   gemessen darunter Testdateien (`*_test.go`) und Verzeichnisse wie `test/`
+   und `build/`; die Liste gehört dem Werkzeug, nicht diesem Repo. Ein grüner
+   Lauf sagt nichts über Testcode und nichts über eine Go-Datei in einem
+   solchen Verzeichnis. Die Zahl steht im Lauf selbst (`Ran N rules on M files` und die Zeile zu den
    übersprungenen Dateien). Gescannt wird dagegen auch eine nicht getrackte,
    nicht ignorierte Datei — gemessen, obwohl semgrep „limited to files tracked
    by git" meldet.
