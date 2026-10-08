@@ -70,7 +70,11 @@ done
 # der Kanarienlauf mitbelegt. Ein direkter Mount des Arbeitsbaums waere eine
 # zweite Quelle mit eigenen Rechten (umask), die keine Kanarie prueft.
 mkdir -p "$WORK/fx/repo"
-git ls-files -z -co --exclude-standard | tar --null -T - -cf - | tar -x -C "$WORK/fx/repo" \
+# Getrackte, aber im Arbeitsbaum geloeschte Dateien fallen heraus — kopiert
+# wird, was der Arbeitsbaum traegt, nicht was der Index nennt.
+git ls-files -z -co --exclude-standard \
+  | while IFS= read -r -d '' f; do { [ -e "$f" ] || [ -L "$f" ]; } && printf '%s\0' "$f"; done \
+  | tar --null -T - -cf - | tar -x -C "$WORK/fx/repo" \
   || fail "Kopie des Arbeitsbaums gescheitert"
 chmod -R a+rX "$WORK/fx"
 fixtures+=("repo=$WORK/fx/repo")
@@ -101,14 +105,20 @@ lauf() { # image dir form outprefix
 # bei `links` mit 0, ein Daemon-Ausfall bei `sauber` mit 1. Kein Wortlaut
 # einer Meldung: ein Vorgang, der die Ausgabe aendert, bricht ihn nicht.
 kanarie() { # wann
-  local img fx want
+  local img fx want ursache
   for img in "$VORHER" "$NACHHER"; do
     for fx in sauber:0 links:1; do
       want="${fx#*:}"; fx="${fx%%:*}"
       [ -d "$WORK/fx/$fx" ] || fail "Kanarien-Fixture ${FIXTURES_DIR}/${fx} fehlt"
       lauf "$img" "$WORK/fx/$fx" - "$WORK/kanarie"
-      [ "$(cat "$WORK/kanarie.rc")" = "$want" ] \
-        || fail "Kanarienlauf ${1} auf ${img} (${fx}): Exit $(cat "$WORK/kanarie.rc") statt ${want} — $(tail -n 1 "$WORK/kanarie.err"); die Umgebung traegt keinen Vergleich (Daemon, Mount oder gesehener Inhalt)"
+      [ "$(cat "$WORK/kanarie.rc")" = "$want" ] && continue
+      # Besteht das Vorher-Image denselben Kanarienlauf und nur das Nachher
+      # nicht, liegt eher eine Aenderung am Exit-Vertrag vor als eine
+      # Stoerung der Umgebung — die Meldung sagt das, statt zu raten.
+      ursache="die Umgebung traegt keinen Vergleich (Daemon, Mount oder gesehener Inhalt)"
+      [ "$img" = "$NACHHER" ] \
+        && ursache="das Vorher-Image bestand denselben Lauf — vermutlich eine Aenderung am Exit-Vertrag des Nachher-Stands, keine Umgebungsstoerung"
+      fail "Kanarienlauf ${1} auf ${img} (${fx}): Exit $(cat "$WORK/kanarie.rc") statt ${want} — $(tail -n 1 "$WORK/kanarie.err"); ${ursache}"
     done
   done
 }

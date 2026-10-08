@@ -10,7 +10,8 @@ Streams verschränken sich und zeigen Abweichungen, die keine sind.
 
 - **Fixtures:** jedes Unterverzeichnis von `tools/blackbox-probe/fixtures/`
   (je ein kleines Repository im Default-Zustand eines Moduls) und das Repo
-  selbst.
+  selbst — als Kopie seiner im Arbeitsbaum vorhandenen, nicht ignorierten
+  Dateien (eine gelöschte, noch getrackte Datei fällt heraus).
 - **Formen:** Standard, `--json`, `--yaml`, `--doctor` (`PROBE_FORMS`
   übersteuert; leer heißt Default).
 
@@ -60,7 +61,7 @@ lassen, mit `REF` auf den Stand vor der Änderung.
 |---|---|
 | 0 | byte-identisch über alle Vergleiche, Kanarienlauf vorher und nachher grün |
 | 1 | mindestens eine Abweichung — je Fall die Ströme und ein Diff-Auszug |
-| 2 | Lauf gescheitert (`REF` fehlt oder ist kein Commit, Vorher-Image nicht baubar, Nachher-Image fehlt, leere Formen oder Fixtures, Kanarienlauf gescheitert, ein Lauf mit einem Exit außer 0, 1, 2) |
+| 2 | Lauf gescheitert (`REF` fehlt oder ist kein Commit, `git archive` gescheitert, Vorher-Image nicht baubar, Nachher-Image fehlt, Kopie des Arbeitsbaums gescheitert, leere Formen oder Fixtures, Kanarienlauf gescheitert — die Meldung unterscheidet Umgebung und eine Änderung am Exit-Vertrag des Nachher-Stands —, ein Lauf mit einem Exit außer 0, 1, 2) |
 
 **Das sind die Codes des Skripts.** `make` normalisiert jeden fehlgeschlagenen
 Recipe auf seinen eigenen Exit 2; 1 und 2 trennt die **Ausgabe**.
