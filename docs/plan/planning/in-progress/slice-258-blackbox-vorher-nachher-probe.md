@@ -59,29 +59,29 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] `tools/blackbox-probe.sh` und `make blackbox-probe REF=<ref>`: baut das <!-- d-check:ignore (Datei entsteht mit diesem Slice) -->
+- [x] `tools/blackbox-probe.sh` und `make blackbox-probe REF=<ref>`: baut das
       Vorher-Image, fährt Vorher und Nachher über die Fixtures und die
       Ausgabeformen, vergleicht stdout, stderr und Exit getrennt; Exit 0 bei
       Gleichheit, 1 bei Abweichung (mit Liste), 2 bei gescheitertem Lauf;
       fail-closed bei leerer Fixture- oder Formenmenge.
-- [ ] Grundmenge an Fixtures unter `tools/blackbox-probe/fixtures/` plus das <!-- d-check:ignore (Datei entsteht mit diesem Slice) -->
+- [x] Grundmenge an Fixtures unter `tools/blackbox-probe/fixtures/` plus das
       Repo selbst; Bruch-Test: eine bewusst geänderte Meldung wird als
       Abweichung gemeldet, der unveränderte Stand als byte-identisch.
-- [ ] `harness/README.md` (Werkzeug-Zeile, `kein Gate`) und
-      `harness/sensors/blackbox-probe.md` (Vertrag, Grenzen); `make gates` <!-- d-check:ignore (Datei entsteht mit diesem Slice) -->
+- [x] `harness/README.md` (Werkzeug-Zeile, `kein Gate`) und
+      `harness/sensors/blackbox-probe.md` (Vertrag, Grenzen); `make gates`
       grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `tools/blackbox-probe.sh` | neu | Vorher-Image, Läufe, getrennter Vergleich | <!-- d-check:ignore (Datei entsteht mit diesem Slice) -->
-| `tools/blackbox-probe/fixtures/` | neu | Grundmenge | <!-- d-check:ignore (Datei entsteht mit diesem Slice) -->
+| `tools/blackbox-probe.sh` | neu | Vorher-Image, Läufe, getrennter Vergleich |
+| `tools/blackbox-probe/fixtures/` | neu | Grundmenge |
 | `Makefile` | update | Target `blackbox-probe` |
-| `harness/README.md`, `harness/sensors/blackbox-probe.md` | update / neu | Werkzeug-Zeile, Vertrag | <!-- d-check:ignore (Datei entsteht mit diesem Slice) -->
+| `harness/README.md`, `harness/sensors/blackbox-probe.md` | update / neu | Werkzeug-Zeile, Vertrag |
 
 *(Plan-Änderung vor dem Code-Commit: `.d-check.yml` `scan.ignore` nimmt die Fixtures aus dem Dogfooding-Scan — sie tragen absichtlich kaputte Links und nackte Kennungen und sind Eingaben der Probe, kein Doku-Vertrag; bisher Geprüftes fällt dadurch nicht heraus. Dazu `tools/blackbox-probe/README.md` eine Ebene über den Fixtures, damit sie weiter geprüft wird. Nach R1: ein Lauf zählt nur mit einem Exit des Werkzeugs (0, 1, 2) und ohne Docker-Fehlermeldung, sonst ist die Probe gescheitert (F-1); `VERSION` ist auf beiden Seiten fest `0.0.0-dev` (F-4); `make clean` räumt das Vorher-Image ab (F-6); die Sensor-Datei nennt die Grenzen, `harness/sensors/doc-check.md` das dritte Ventil (F-2, F-3, F-5). Nach der Verifikation: ein Lauf zählt nur mit dem Lebenszeichen des Werkzeugs (Exit 1 mit Befund auf stdout, Exit 2 mit `d-check:` auf stderr) statt am Wortlaut einer Docker-Meldung (V-1); die Sensor-Datei nennt den Neubau von `:latest` und „leer heißt Default" (V-2, V-3). Nach R2: das Lebenszeichen gilt für jeden Exit gleich (stdout nicht leer oder eine `d-check:`-Zeile auf stderr — gemessen über sieben Formen, darunter `--repair`), und ein Fall, der auf beiden Seiten mit Exit 2 endet, ist kein Vergleich — die Probe scheitert dann (R2-1, R2-3); die Sensor-Datei nennt die Restgrenze und den Kommandozeilen-Fall von `VERSION` (R2-2, R2-4). Nach R3: die Klassifikation über die Ausgabe des Werkzeugs entfällt — sie wies echte Läufe ab (`-h`, Panic) und verschluckte Unterschiede bei beidseitigem Exit 2 (R3-1, R3-2). Statt dessen ein **Kanarienlauf** vor und nach allen Läufen auf beiden Images (Fixture `sauber`: Exit 0 und genau eine geprüfte Datei) belegt Daemon, Mounts und gesehenen Inhalt; Exit 125/126/127 bricht ab; alles andere wird verglichen, auch Exit 2. Nach R4: auch das Repo wird als lesbare Kopie unter demselben Arbeitsverzeichnis gemountet — eine Mount-Quelle für alle Läufe, die der Kanarienlauf mitbelegt (R4-1); der Kanarienlauf prüft nur Exit-Codes (`sauber` 0, `links` 1) statt einer Zusammenfassungs-Zeile (R4-2); jeder Exit außer 0, 1, 2 bricht ab. Nach der zweiten Verifikation: die Repo-Kopie überspringt gelöschte, noch getrackte Dateien (V2-1), die Kanarien-Meldung unterscheidet Umgebung und Exit-Vertrag des Nachher-Stands (V2-2).)*
 
@@ -109,23 +109,55 @@ wellenlos hier geprüft.
 ## 6. Risiken und offene Punkte
 
 - **Laufzeit** — zwei Image-Builds plus Läufe über Fixtures und Formen. —
-  **Ausgang:** *(offen)*
+  **Ausgang:** entfallen — gemessen 47–57 s mit `REF=HEAD`, rund 80 s mit
+  einem älteren `REF`; für einen Lauf vor dem Review tragbar.
 - **Rauschen** — Ausgaben, die zwischen zwei Läufen desselben Stands
   schwanken (Zeit, Pfade), meldeten Abweichungen ohne Verhaltensänderung;
   [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus) sagt Determinismus zu, gemessen wird es hier zum ersten Mal über
-  zwei Images. — **Ausgang:** *(offen)*
+  zwei Images. — **Ausgang:** entfallen — zwei getrennt gebaute Images
+  desselben Stands waren in jedem Lauf byte-identisch (über ein Dutzend Läufe
+  in Implementierung, Review und Verifikation, auch gegen `v0.83.0`).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Das Werkzeug trägt: `REF=HEAD` ist
+  byte-identisch, eine geänderte Meldung erscheint als Abweichung mit Diff,
+  ein alter Stand wird ohne Rauschen verglichen. Die Endform trennt zwei
+  Fragen sauber — ob die Umgebung einen Vergleich trägt (Kanarienlauf über
+  den Exit-Vertrag, eine Mount-Quelle für alle Läufe) und was das Werkzeug tut
+  (alles andere wird verglichen, auch Exit 2 und ein Absturz).
+- **Was ging anders als geplant:** Vier Review-Runden und zwei
+  Verifikationen, weil jede Behebung nur die gerade gemessene Fehlerform
+  schloss: erst Docker-Exit 125 und eine ältere Docker-Meldung (F-1), dann die
+  Meldung des installierten Docker 29 (V-1), dann gleiches Scheitern mit
+  Exit 2 (R2-1), dann eine Ausgabe-Klassifikation, die echte Läufe abwies
+  (R3), dann eine zweite Mount-Quelle ohne Kanarie (R4-1). Erst R4 benannte
+  die Fallmenge — die Mount-Quellen, nicht die Ausfallarten. Mitgenommen:
+  `scan.ignore` für die Fixtures, `make clean` für `:arm64` aus slice-256;
+  jede Änderung steht als Plan-Änderung vor ihrem Code-Commit.
+- **Steering-Loop-Eintrag:** Workflow-Skelett ergänzt: Schritt 14 — ein Fix,
+  der mehr schreibt als seine Befunde, bekommt eine eigene Review-Runde über
+  genau seinen Commit — liegt in `.claude/commands/implement-slice.md`.
+  Auslöser: `BEO-ALL/fix-commit-ausserhalb-review-range` (slice-256, slice-257, slice-258 — 3×).
+  Dazu erreicht `BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft` nach ihrer
+  Verkörperung ein viertes Auftreten: die Prosa-Form ist ausgeschöpft, ein
+  mechanischer Sensor ist nicht möglich (die Fallmenge eines neuen Lesewegs
+  ist ein Urteil) — das Gegenmittel ist derselbe Schritt 14.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-258.md` in
+  [`BEO-ALL/fix-commit-ausserhalb-review-range`](../observations/BEO-ALL/fix-commit-ausserhalb-review-range/state.md)
+  (3×, verkörpert, Auftraggeber-Entscheid),
+  [`BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft`](../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/state.md)
+  (4×) und
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+  ergänzt.
+- **Folge-Slices:** keine.
+- **Risiken aus §6:** entfallen, beide gemessen (siehe §6). Trigger-Audit:
+  kein Carveout, kein bootstrap-aware Gate, keine ADR, keine Hard Rule mit
+  eingetretenem Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — `.claude/commands/implement-slice.md` trägt
+  `seit slice-258` in Schritt 14; (b) Folge-Slice — keine; (c) Register — die
+  drei zitierten Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

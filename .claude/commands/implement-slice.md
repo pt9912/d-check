@@ -25,6 +25,12 @@ Follow this exact workflow:
 12. Report changed files, gates run, failures, and residual risks.
 13. Hand off to the `reviewer` agent type (no self-review, `AGENTS.md` §6
     Schritt 8/Modul 8), then to the `verifier` agent type before closure.
+14. When a fix for review or verification findings writes more than those
+    findings ask for — a new mechanism, a rework, a new reading path —, run
+    another `reviewer` round over exactly the fix commit(s) before the
+    `verifier` sees it; otherwise the largest code share of the slice is
+    read by no review. (seit slice-258; permanent — the size of a fix is a
+    judgement, no gate can see it)
 
 Do not skip gates.
 Do not claim completion without command output.

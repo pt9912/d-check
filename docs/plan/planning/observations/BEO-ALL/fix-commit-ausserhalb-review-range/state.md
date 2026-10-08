@@ -1,1 +1,1 @@
-**Stand:** offen — 2×.
+**Stand:** verkörpert — Schritt 14 im Workflow-Skelett `.claude/commands/implement-slice.md` (seit slice-258, permanent): ein Fix, der mehr schreibt als seine Befunde, bekommt eine eigene Review-Runde über genau seinen Commit, bevor der Verifier ihn sieht. Bleibt wach: ob ein Fix „mehr" schreibt, ist ein Urteil.
