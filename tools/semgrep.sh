@@ -17,10 +17,10 @@
 # d-check ⇒ keine zentrale `--exclude-rule`-Ausnahme nötig.
 set -euo pipefail
 
-SEMGREP_VERSION="${SEMGREP_VERSION:-1.179.0}"
+SEMGREP_VERSION="${SEMGREP_VERSION:-1.180.0}"
 # Digest-Pin (ADR-0011): Tag bleibt lesbar, der @sha256:-Digest ist die
 # Wahrheit. Hebung von Version UND Digest gemeinsam (bewusster Commit).
-SEMGREP_DIGEST="${SEMGREP_DIGEST:-sha256:93963d9295a366f59e4850127b1550400ee7b388f04fe144e4a1f6325d96e01b}"
+SEMGREP_DIGEST="${SEMGREP_DIGEST:-sha256:529ee8a277ec8adc5b534d7c74eea0a47e9de21d62852b6ba7ac6ba9566845c3}"
 RULES_COMMIT="${SEMGREP_RULES_COMMIT:-d41fb34cf74466e2878af5f268ebf54466a04541}"
 RULES_SUBSET="go/lang/security"
 RULES_REMOTE="https://github.com/semgrep/semgrep-rules.git"
