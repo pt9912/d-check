@@ -83,6 +83,17 @@ folgen ihr. Der Ausschluss archivierter Stubs entfällt: Ein Stub-Add löst
 einen Lauf über den ganzen Bestand aus, der ohnehin grün sein muss — Kosten,
 keine falsche Zusage.)*
 
+| `Makefile` (`gates`) | update | der Nachweis entsteht nur nach grünen Gliedern, auch unter `make -k` |
+
+*(Plan-Änderung vor dem Code: `record-gates` steht als letzter
+**Prerequisite** von `gates`; der Kommentar sagt, `make` breche vorher ab. Unter
+`make -k gates` stimmt das nicht — `-k` arbeitet die übrigen Prerequisites
+weiter ab, der Nachweis entsteht trotz rotem Glied, und der Stop-Hook gäbe
+frei (gemessen an einem Modell-Makefile mit `.NOTPARALLEL`: Glied rot,
+`record-gates` läuft, Exit 2). Der Nachweis wandert in das **Rezept** von
+`gates`, das unter `-k` erst läuft, wenn alle Prerequisites grün sind; das
+Target `record-gates` bleibt als Werkzeug stehen.)*
+
 ## 4. Trigger
 
 **Start** (`next` → `in-progress`): slice-259 in `done/`; `in-progress/` leer.
