@@ -10,7 +10,7 @@ Kanarienlauf den Vergleich trägt und in welchen Fällen der Lauf scheitert,
 legt [`SPEC-096`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
 fest. Die Fixtures sind je ein kleines Repository im Default-Zustand eines
 Moduls; eine gelöschte, noch getrackte Datei fällt aus der Kopie des Repos
-heraus.
+heraus. `PROBE_FORMS` übersteuert die Formen; leer heißt Default.
 
 **Nebenwirkung:** das Target baut `$(IMAGE):latest` neu, mit
 `VERSION=0.0.0-dev` — dasselbe Bild wie ein `make build` ohne Version; ein

@@ -29,6 +29,10 @@ einer gelegentlichen `fullbuild`-Prüfung.
 3. **Die CI blockiert einen Merge nur mit Branch Protection** — ein
    Pflicht-Status-Check auf dem Default-Branch liegt **außerhalb** des Repos
    und ist aus dem Klon nicht auditierbar. Ohne sie ist die CI *advisory*.
+4. **Der Übergang löst `verify-closure-notes` aus, aber der Lauf prüft nur
+   `done/` selbst.** Ein Slice, der nach `done/wellenlos/` oder unter ein
+   Wellen-Verzeichnis wandert, wird erkannt und nicht geprüft; ein grüner
+   Commit sagt über seine Closure-Notiz nichts.
 
 ## Bindung
 

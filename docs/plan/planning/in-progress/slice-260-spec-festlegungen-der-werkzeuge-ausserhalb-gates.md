@@ -165,6 +165,10 @@ die Harness-Doku unter dem Default `*` (`ALL`); deklariert. `tools/harness/`
 den Wächter, sie ändert ihn nicht; berührt ist `HARN` damit nicht. Ändert
 sich das im Lauf (ein Wächter folgt seiner Festlegung, wie das
 Coverage-Skript in slice-259), ist das eine Plan-Änderung vor dem Code.
+**Nachtrag nach den Plan-Änderungen:** `tools/harness/record-gates.sh` und der
+Stop-Hook sind jetzt geändert; `HARN` ist berührt, Modus GF wie deklariert
+(konventionsgetragen über [`MR-004`](../../../../harness/conventions.md#mr-004), geschärft durch
+[`MR-076`](../../../../harness/conventions.md#mr-076)).
 
 <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 

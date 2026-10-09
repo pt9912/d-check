@@ -109,9 +109,13 @@ Dateien wäre sonst wahr, ohne etwas gesehen zu haben.
 
 **Closure-Bindepunkt** — in `make fullbuild`, bewusst **nicht** in
 `gates`/`ci`. Zusätzlich am **Übergang** selbst: der `pre-commit`-Hook löst ihn
-aus, sobald ein Rename/Add nach `docs/plan/planning/done/slice-*.md` gestagt
-ist (nicht rekursiv), und dieselbe Bindung läuft in der PR-/Push-CI über die
-Commit-Range.
+aus, sobald ein Rename/Add eines `slice-*.md` irgendwo unter
+`docs/plan/planning/done/` gestagt ist, und dieselbe Bindung läuft in der
+PR-/Push-CI über die Commit-Range
+([`SPEC-095`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)).
+**Der Lauf selbst liest nur `done/`, nicht seine Unterverzeichnisse:** ein
+Slice, der nach `done/wellenlos/` oder unter ein Wellen-Verzeichnis wandert,
+löst ihn aus, wird aber nicht geprüft.
 
 [ADR-0048](../../docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md) ·
 [ADR-0059](../../docs/plan/adr/0059-closure-waechter-weicht-structure-regel.md) ·

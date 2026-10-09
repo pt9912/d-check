@@ -42,8 +42,18 @@ JSON
   exit 0
 fi
 
-current="$(bash tools/harness/working-tree-hash.sh)"
-recorded="$(cat "$state_file")"
+# Ein Hash, der nicht entsteht, ist kein Nachweis: der Hook blockt mit Grund,
+# statt unter `set -e` ohne Antwort zu enden — das ließe den Stop durch.
+if ! current="$(bash tools/harness/working-tree-hash.sh)" \
+    || ! recorded="$(cat "$state_file")"; then
+  cat <<'JSON'
+{
+  "decision": "block",
+  "reason": "The content hash of the working tree could not be computed or the recorded one could not be read. Fix the cause, then run `make gates`."
+}
+JSON
+  exit 0
+fi
 
 if [ "$current" != "$recorded" ]; then
   cat <<'JSON'

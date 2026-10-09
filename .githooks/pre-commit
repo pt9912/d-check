@@ -20,9 +20,11 @@
 # Risiko-Ausgaenge) haengen am UEBERGANG selbst. Ein gestagter Rename/Add
 # eines slice-*.md irgendwo unter docs/plan/planning/done/ -- direkt, unter
 # wellenlos/ oder unter <welle-id>/ -- loest zusaetzlich make
-# verify-closure-notes aus. KOPPLUNG: dieselbe Erkennung steht in
-# .github/workflows/ci.yml. GRENZE: auch ein archivierter Stub loest den Lauf
-# aus; er prueft dann den ganzen Bestand, der ohnehin gruen sein muss.
+# verify-closure-notes aus (SPEC-095). KOPPLUNG: dieselbe Erkennung steht in
+# .github/workflows/ci.yml. grep liest die ganze Liste: mit -q braeche es
+# beim ersten Treffer ab, und unter pipefail liesse das SIGPIPE des awk
+# den Treffer verschwinden. GRENZE: der ausgeloeste Lauf prueft nur die
+# Slices direkt unter done/, nicht die in seinen Unterverzeichnissen.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 make adr-check STAGED=1
@@ -32,7 +34,7 @@ make adr-check STAGED=1
 # ihn traegt (set -e). Kostet einen Image-Cache-Lauf (~Sekunden).
 make doc-check
 if git diff --cached --name-status --diff-filter=AR -- 'docs/plan/planning/done/' \
-    | awk -F'\t' '{print $NF}' | grep -qE '^docs/plan/planning/done/(.+/)?slice-[0-9]+[^/]*\.md$'; then
+    | awk -F'\t' '{print $NF}' | grep -E '^docs/plan/planning/done/(.+/)?slice-[0-9]+[^/]*\.md$' > /dev/null; then
     echo "pre-commit: Slice-Closure-Uebergang erkannt -- verify-closure-notes" >&2
     make verify-closure-notes
 fi

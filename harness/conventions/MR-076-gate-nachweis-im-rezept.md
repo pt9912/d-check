@@ -11,7 +11,12 @@
   läuft erst, wenn alle Prerequisites grün sind — auch unter `make -k`. Als
   Prerequisite lief der Nachweis unter `make -k` trotz rotem Glied, denn `-k`
   arbeitet nach einem Fehler die übrigen Prerequisites weiter ab, und der
-  Stop-Hook gab danach frei. Die Festlegung des Handoff-Gates steht in
+  Stop-Hook gab danach frei. Unter `make -i`, das jeden Fehler ignoriert,
+  schreibt das Rezept keinen Nachweis und meldet das (`make` endet dort
+  trotzdem mit 0; der Stop-Hook gibt nur frei, wenn ein früherer grüner Lauf
+  denselben Inhalt belegt); Erkennung und Schreiben
+  stehen in einer Rezeptzeile, weil `-i` auch den Abbruch einer eigenen
+  Prüfzeile ignoriert. Die Festlegung des Handoff-Gates steht in
   [`SPEC-094`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge).
 - **Grenze:** Wer `record-gates` von Hand ruft, schreibt einen Nachweis ohne
   Gate-Lauf — das Target urteilt nicht, es schreibt. Der Wächter ist ein

@@ -46,7 +46,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 .PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test image-test-arm64 image-publish blackbox-probe semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave slice-mv selbstpruefung history-range-guard
 
 # Prerequisites laufen nacheinander, in der Reihenfolge ihrer Liste, auch
-# unter `make -j` (MR-005).
+# unter `make -j`.
 .NOTPARALLEL:
 
 help: ## Targets anzeigen.
@@ -113,7 +113,7 @@ image-publish: ## Index linux/amd64+linux/arm64 ohne Tag pushen, gegen die gepru
 # Werkzeug, kein Gate — ob eine Abweichung gewollt ist, entscheidet der Vorgang.
 # VERSION ist auf beiden Seiten 0.0.0-dev: eine exportierte Release-Version
 # erzeugte sonst einen Unterschied, der keine Verhaltensaenderung ist.
-blackbox-probe: ## Vorher/Nachher-Vergleich (REF=<git-ref>): stdout/stderr/Exit getrennt ueber Fixtures und Ausgabeformen; 1 = Abweichung, 2 = gescheitert.
+blackbox-probe: ## Vorher/Nachher-Vergleich (REF=<git-ref>): stdout/stderr/Exit getrennt ueber Fixtures und Ausgabeformen; Skript-Exit 1 = Abweichung, 2 = gescheitert (ueber make beides 2).
 	@$(MAKE) --no-print-directory build VERSION=0.0.0-dev
 	@REF=$(REF) IMAGE=$(IMAGE) bash tools/blackbox-probe.sh
 
@@ -349,10 +349,15 @@ baseline-freshness: ## Upstream-Audit des Baseline-Pins: neuerer Release-Tag ODE
 # Der Nachweis steht im Rezept, nicht in der Prerequisite-Liste: ein Rezept
 # läuft erst, wenn alle Prerequisites grün sind — auch unter `make -k`, das
 # nach einem roten Glied die übrigen Prerequisites weiter abarbeitet
-# (SPEC-094).
+# (SPEC-094, MR-076). `make -i` erklärt jeden Fehler für ignoriert; darunter
+# schreibt das Rezept keinen Nachweis. Erkennung und Schreiben stehen in einer
+# Zeile, denn `-i` ignorierte auch den Abbruch einer eigenen Prüfzeile.
 gates: baseline-verify workflow-pins doc-check lint test arch-check coverage-gate semgrep gate-consistency planning-check ## alle inneren Gates (mandatory vor Handoff).
-	@bash tools/harness/record-gates.sh
-	@echo "[gates] baseline-verify + workflow-pins + doc-check + lint + test + arch-check + coverage-gate + semgrep + gate-consistency + planning-check green"
+	@case "$(firstword -$(MAKEFLAGS))" in \
+	  -*i*) echo "gates: kein Nachweis unter make -i (Fehler werden dort ignoriert)" >&2; exit 2;; \
+	  *) bash tools/harness/record-gates.sh && \
+	     echo "[gates] baseline-verify + workflow-pins + doc-check + lint + test + arch-check + coverage-gate + semgrep + gate-consistency + planning-check green";; \
+	esac
 
 # ci = gates + Image-Integrationstests — das Target, das die
 # Release-Pipeline (slice-011) fährt. fullbuild = volle Closure vor
