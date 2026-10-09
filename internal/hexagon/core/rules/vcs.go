@@ -164,19 +164,21 @@ func baseImmutable(content []byte, when *regexp.Regexp) bool {
 // reflow-invarianten Whitespace-Normalisierung von immutable/pins
 // (DC-FA-VCS-001.a Schritt 4).
 //
-// Mit ignoreLinkTargets wird jedes Link-Ziel geleert, bevor verglichen wird
-// (DC-FA-VCS-001.a Schritt 4): ein reiner Pfad-Nachzug ergibt denselben Core.
+// Mit ignoreLinkTargets wird jedes Link-Ziel einer Prosa-Zeile geleert, bevor
+// verglichen wird (DC-FA-VCS-001.a Schritt 4): ein reiner Pfad-Nachzug ergibt
+// denselben Core; Fenced-Code bleibt unverändert.
 func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string, ignoreLinkTargets bool) string {
 	excluded := excludedRanges(content, excludeSections)
 	lines := splitLines(content)
 	strip := vcsHeadStatusLineNo(content, lines, statusLine)
+	prose := proseLineSet(content)
 	var b strings.Builder
 	for i, raw := range lines {
 		no := i + 1
 		if no == strip || inRanges(excluded, no) {
 			continue
 		}
-		if ignoreLinkTargets {
+		if ignoreLinkTargets && prose[no] {
 			raw = blankLinkTargets(raw)
 		}
 		b.WriteString(raw)
@@ -186,27 +188,68 @@ func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string
 }
 
 // inlineLinkTargetRE trifft einen vollständigen Inline-Link oder ein Bild auf
-// einer Zeile: Linktext in eckigen Klammern, Ziel (auch in Spitzklammern) und
-// ein optionaler Titel bis zur schließenden Klammer; geleert wird nur das Ziel.
-// refDefTargetRE trifft eine Referenz-Definition, deren ganze übrige Zeile ein
-// pfadartiges Ziel (`.`, `/`, `#` oder `:` darin, oder in Spitzklammern) mit
-// optionalem Titel ist; eine Fußnote (`[^…]:`) ist keine.
-// GRENZE: zeilenweise und ohne Code-Kontext -- ein Link in Inline-Code oder
-// einem Codeblock wird ebenso geleert, und eine Zeile der Form
-// `[Wort]: wort.md` gilt als Referenz-Definition, wie Markdown sie liest. Ein
-// Ziel, das die Muster nicht treffen (Linktext mit eckiger Klammer, Ziel auf
-// der Folgezeile, Ziel mit eigener Klammer, Referenz-Ziel ohne Pfadzeichen),
-// bleibt ungeleert: ein Nachzug dort bleibt Drift.
+// einer Zeile: Linktext in eckigen Klammern (escapte Zeichen darin zählen als
+// Text), Ziel (auch in Spitzklammern) und ein optionaler Titel bis zur
+// schließenden Klammer; geleert wird nur das Ziel. refDefTargetRE trifft eine
+// Referenz-Definition, deren ganze übrige Zeile ein pfadartiges Ziel (`.`,
+// `/`, `#` oder `:` darin, oder in Spitzklammern) mit optionalem Titel ist;
+// eine Fußnote (`[^…]:`) ist keine.
+// GRENZE: zeilenweise -- ein Code-Span über mehrere Zeilen schützt nicht, und
+// eine Zeile `[Label]: wort.` mit einem Pfadzeichen gilt als
+// Referenz-Definition, wie Markdown sie liest. Ein Ziel, das die Muster nicht
+// treffen (Linktext mit eckiger Klammer, Ziel auf der Folgezeile, Ziel mit
+// eigener Klammer, Referenz-Ziel ohne Pfadzeichen), bleibt ungeleert: ein
+// Nachzug dort bleibt Drift.
 var (
-	inlineLinkTargetRE = regexp.MustCompile(`(!?\[[^\[\]]*\])\([ \t]*(?:<[^<>]*>|[^()\s<>]*)((?:[ \t]+(?:"[^"]*"|'[^']*'|\([^()]*\)))?[ \t]*\))`)
-	refDefTargetRE     = regexp.MustCompile(`^([ ]{0,3}\[[^\[\]^][^\[\]]*\]:)[ \t]*(?:<[^<>]*>|[^\s<>]*[./#:][^\s<>]*)((?:[ \t]+(?:"[^"]*"|'[^']*'|\([^()]*\)))?[ \t]*)$`)
+	inlineLinkTargetRE = regexp.MustCompile(`(!?\[(?:[^\[\]\\]|\\.)*\])\([ \t]*(?:<[^<>]*>|[^()\s<>]*)((?:[ \t]+(?:"[^"]*"|'[^']*'|\([^()]*\)))?[ \t]*\))`)
+	refDefTargetRE     = regexp.MustCompile(`^([ ]{0,3}\[(?:[^\[\]\\^]|\\.)(?:[^\[\]\\]|\\.)*\]:)[ \t]*(?:<[^<>]*>|[^\s<>]*[./#:][^\s<>]*)((?:[ \t]+(?:"[^"]*"|'[^']*'|\([^()]*\)))?[ \t]*)$`)
 )
 
-// blankLinkTargets leert die Link-Ziele einer Zeile: `[t](ziel "T")` wird
-// `[t]( "T")`, `[l]: ziel` wird `[l]:`.
+// blankLinkTargets leert die Link-Ziele einer Prosa-Zeile: `[t](ziel "T")`
+// wird `[t]( "T")`, `[l]: ziel` wird `[l]:`. Ein Treffer in einem Code-Span
+// oder hinter einer escapten öffnenden Klammer ist kein Link und bleibt.
 func blankLinkTargets(line string) string {
-	line = inlineLinkTargetRE.ReplaceAllString(line, "$1($2")
-	return refDefTargetRE.ReplaceAllString(line, "$1$2")
+	var code [][2]int
+	forEachInlineCodeSpan(line, func(start, end, _, _ int) {
+		code = append(code, [2]int{start, end})
+	})
+	var b strings.Builder
+	last := 0
+	for _, m := range inlineLinkTargetRE.FindAllStringSubmatchIndex(line, -1) {
+		open := m[0]
+		if line[open] == '!' {
+			open++
+		}
+		if escapedAt(line, open) || inSpans(code, m[0]) {
+			continue
+		}
+		b.WriteString(line[last:m[0]])
+		b.WriteString(line[m[2]:m[3]])
+		b.WriteByte('(')
+		b.WriteString(line[m[4]:m[5]])
+		last = m[1]
+	}
+	b.WriteString(line[last:])
+	return refDefTargetRE.ReplaceAllString(b.String(), "$1$2")
+}
+
+// escapedAt meldet, ob vor s[i] eine ungerade Zahl Backslashes steht.
+func escapedAt(s string, i int) bool {
+	n := 0
+	for k := i - 1; k >= 0 && s[k] == '\\'; k-- {
+		n++
+	}
+	return n%2 == 1
+}
+
+// inSpans meldet, ob pos in einem der halboffenen Bereiche liegt.
+func inSpans(spans [][2]int, pos int) bool {
+	for _, sp := range spans {
+		if pos >= sp[0] && pos < sp[1] {
+			return true
+		}
+	}
+	return false
 }
 
 // vcsHeadStatusLineNo liefert die 1-basierte Zeilennummer der **Kopf**-Status-

@@ -154,13 +154,13 @@ type rawImmutable struct {
 // der BASE-Immutabilität), exclude-sections, status-line (Kopf-Status-Zeile)
 // und head-allow (erlaubter Status-Übergang).
 type rawVCS struct {
-	Scope           *rawScope `yaml:"scope"`
-	Paths           []string  `yaml:"paths"`
-	ImmutableWhen   string    `yaml:"immutable-when"`
-	ExcludeSections []string  `yaml:"exclude-sections"`
-	StatusLine      string    `yaml:"status-line"`
-	HeadAllow       string    `yaml:"head-allow"`
-	IgnoreLinkTargets bool    `yaml:"ignore-link-targets"`
+	Scope             *rawScope `yaml:"scope"`
+	Paths             []string  `yaml:"paths"`
+	ImmutableWhen     string    `yaml:"immutable-when"`
+	ExcludeSections   []string  `yaml:"exclude-sections"`
+	StatusLine        string    `yaml:"status-line"`
+	HeadAllow         string    `yaml:"head-allow"`
+	IgnoreLinkTargets bool      `yaml:"ignore-link-targets"`
 }
 
 // rawPlanning trägt die Parameter des Moduls planning (DC-FA-PLAN-001): roadmap

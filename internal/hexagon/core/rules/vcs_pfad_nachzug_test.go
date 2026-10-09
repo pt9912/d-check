@@ -7,8 +7,8 @@ import "testing"
 // eine. Ohne den Schlüssel bleibt jeder Nachzug Drift.
 func TestVCSIgnoreLinkTargets(t *testing.T) {
 	cases := []struct {
-		name       string
-		base, head string
+		name              string
+		base, head        string
 		mitSchalter, ohne int
 	}{
 		{"inline-ziel nachgezogen",
@@ -44,9 +44,15 @@ func TestVCSIgnoreLinkTargets(t *testing.T) {
 		// fail-safe: was die Muster nicht treffen, bleibt Drift
 		{"ziel mit eigener klammer nachgezogen", "[A](a(1).md)", "[A](x/a(1).md)", 1, 1},
 		{"linktext mit eckiger klammer nachgezogen", "[a[0]](a.md)", "[a[0]](x/a.md)", 1, 1},
-		// die benannte Grenze: ohne Code-Kontext wird auch ein Ziel in Inline-Code
-		// geleert
-		{"ziel in inline-code", "`[R](a.md)`", "`[R](x/a.md)`", 0, 1},
+		// Code und Escapes: link-förmiger Text, der kein Link ist, bleibt
+		{"ziel in inline-code", "`[R](a.md)`", "`[R](x/a.md)`", 1, 1},
+		{"funktionsaufruf in inline-code geaendert", "`fns[k](true)`", "`fns[k](false)`", 1, 1},
+		{"escapte klammern geaendert", `\[Ausnahme\](keine)`, `\[Ausnahme\](alle)`, 1, 1},
+		{"escapte oeffnende klammer geaendert", `\[Ausnahme](keine)`, `\[Ausnahme](alle)`, 1, 1},
+		{"link im codeblock nachgezogen", "```\n[R](a.md)\n```", "```\n[R](x/a.md)\n```", 1, 1},
+		{"link neben inline-code nachgezogen", "`x` [R](a.md)", "`x` [R](x/a.md)", 0, 1},
+		{"escapte klammer im linktext nachgezogen", `[a\]b](a.md)`, `[a\]b](x/a.md)`, 0, 1},
+		{"doppelter backslash vor link nachgezogen", `\\[R](a.md)`, `\\[R](x/a.md)`, 0, 1},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
