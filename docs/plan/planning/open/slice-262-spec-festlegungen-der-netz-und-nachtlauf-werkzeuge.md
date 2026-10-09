@@ -30,7 +30,9 @@ ihre Sensor-Dateien verlinken die Kennung: `image-scan` (Plattformen aus dem
 Index, Plattform-Nachweis, Entscheidungslauf), die Versions-Achsen samt der
 Action-Pins (Gleich/Ungleich, Präfix, fail-open), die Digest-Achsen,
 `baseline-freshness` (Currency und Content-Drift) und `nightly-state` (was
-gelesen werden muss, was planmäßig ist).
+gelesen werden muss, was planmäßig ist). Beim Beanspruchen zu prüfen, ob sie
+eine Festlegung treffen: `history-range-guard`, `selbstpruefung` und
+`baseline-probe` — keinem der Slices zugeordnet, als slice-260 geteilt wurde.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 

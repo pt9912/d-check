@@ -57,7 +57,10 @@ Hook-Eingabe mit `awk`, läuft also in derselben Klasse, die er durchsetzt
 
 Ungeprüft bleiben: ein Shell-Schlüsselwort als Segment-Kopf (`if … then
 pip …`), ein Wrapper außerhalb seiner Präfix-Liste (`nohup`, `timeout`), ein
-wort-interner Quote-/Backslash-Splice (`p"i"p`) und escapte Quotes in der
-Verschachtelung erreichen ein gelistetes Werkzeug, ohne dass er es als Kopf
-sieht. Die Regel gilt trotzdem — sie hängt nicht an ihm. Tabelle in
-[`MR-042`](../conventions.md#mr-042).
+wort-interner Quote-/Backslash-Splice (`p"i"p`), escapte Quotes in der
+Verschachtelung und ein Flag hinter einem Präfix (`env -i`, `sudo -u`)
+erreichen ein gelistetes Werkzeug, ohne dass er es als Kopf
+sieht. Die Regel gilt trotzdem — sie hängt nicht an ihm. Tabelle der ersten
+vier in
+[`MR-042`](../conventions.md#mr-042), die Festlegung samt aller Durchlass-Klassen in
+[`SPEC-093`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge).

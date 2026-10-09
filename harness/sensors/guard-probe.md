@@ -18,10 +18,14 @@ er lehnt ab, aber ohne den Exit-Riegel des zweiten Kanals
 
 ## Grenze — was das Grün nicht abdeckt
 
-1. **Die quote-blinde Falsch-Positiv-Klasse** und **die vier
-   Umgehungs-Klassen der Segmentierung** sind geführt, nicht behoben —
-   [`MR-042`](../conventions/MR-042-guard-in-eigener-klasse.md) trägt sie als
-   Tabelle. Der Wächter ist ein **Stolperdraht, keine Sandbox**.
+1. **Die quote-blinde Falsch-Positiv-Klasse** und **die fünf
+   Umgehungs-Klassen der Segmentierung** sind geführt, nicht behoben — die
+   vier ersten trägt
+   [`MR-042`](../conventions/MR-042-guard-in-eigener-klasse.md) als Tabelle, die
+   fünfte (ein Flag hinter einem Präfix, `env -i`) nennt
+   [`SPEC-093`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+   mit dem Wächter-Kommentar.
+   Der Wächter ist ein **Stolperdraht, keine Sandbox**.
 2. **Sein Gegenstand ist eine Werkzeug-Einstellung, keine Repo-Invariante** —
    deshalb ist dieses Target **kein Gate**, obwohl es fail-closed urteilt.
    Kein CI-Lauf ruft den Wächter; ein Lauf ohne dieses Werkzeug ist ungebunden.

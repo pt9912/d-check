@@ -34,6 +34,8 @@
 #      Token-Sicht hier nicht.
 #   4. Verschachtelung mit escapten Quotes: bei `bash -c "bash -c \"…\""`
 #      greift strip_quotes nicht, die Rekursion endet.
+#   5. Ein Flag hinter einem Präfix: `env -i pip …`, `sudo -u x pip …` — das
+#      Flag steht an Befehlsposition, das Werkzeug dahinter nicht.
 # Dazu `find -exec`, `awk`-Programme und jeder Interpreter, den die Liste nicht
 # kennt. Stolperdraht, keine Sandbox.
 #
