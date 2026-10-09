@@ -1967,13 +1967,21 @@ abdeckt:
    Dokument hinterlegter Hash). Normalisierung + SHA-256 wie
    [§DC-FA-PIN-001.a Schritt 3](#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins).
    Mit `vcs.ignore-link-targets` wird vorher in jeder Zeile das Ziel jedes
-   Inline-Links und Bilds geleert (`[text](ziel)` → `[text]()`, bis zum ersten
-   Leerraum oder zur schließenden Klammer; ein Titel dahinter bleibt) und das Ziel
-   jeder Referenz-Definition (`[label]: ziel` → `[label]:`). Ein **reiner
-   Pfad-Nachzug** ergibt so denselben Core; eine Änderung am Linktext, an der
-   übrigen Zeile, am Titel oder an der Zahl der Links bleibt Drift. **Grenze:**
-   zeilenweise und ohne Code-Kontext — auch ein Link-Ziel in Inline-Code oder
-   einem Codeblock wird geleert; ein Ziel mit eigener Klammer nur bis zu ihr.
+   **vollständigen** Inline-Links und Bilds geleert — Linktext in eckigen
+   Klammern, Ziel (auch `<…>`), optionaler Titel, schließende Klammer:
+   `[text](ziel "T")` → `[text]( "T")` — und das Ziel jeder
+   Referenz-Definition, deren übrige Zeile nur ein pfadartiges Ziel (mit `.`,
+   `/`, `#` oder `:`, oder `<…>`) und einen optionalen Titel trägt
+   (`[label]: ziel` → `[label]:`); eine Fußnote (`[^…]:`) ist keine. Ein
+   **reiner Pfad-Nachzug** ergibt so denselben Core; eine Änderung am Linktext,
+   an der übrigen Zeile, am Titel oder an der Zahl der Links bleibt Drift, und
+   eine Zeile ohne vollständigen Link wird nicht verändert. **Grenze:**
+   zeilenweise und ohne Code-Kontext — auch ein Link in Inline-Code oder einem
+   Codeblock wird geleert, und eine Zeile `[Wort]: wort.md` gilt als
+   Referenz-Definition, wie Markdown sie liest. Fail-safe bleibt ein Nachzug
+   Drift, wo die Erkennung den Link nicht trifft: Linktext mit eckiger Klammer,
+   Ziel auf der Folgezeile, Ziel mit eigener Klammer, Referenz-Ziel ohne
+   Pfadzeichen.
 5. **Vergleich.**
    - `core(BASE)` ≠ `core(HEAD)` ⇒ Grund-Code `core-drift-vcs` (Körper geändert).
    - HEAD-Status-Zeile (erstes Vorkommen) erfüllt `vcs.head-allow` **nicht** ⇒
@@ -3462,7 +3470,7 @@ Exit 2 ohne Prüfung
 | `vcs.exclude-sections` | string[] | leer | wie `immutable.exclude-sections` — Heading-Titel, deren Abschnitte nicht zum Core zählen (für ADRs `[Geschichte]`) |
 | `vcs.status-line` | string | leer | Zeilen-Regex der **Kopf**-Status-Zeile; ihr erstes Vorkommen **vor** der ersten `## `-H2 wird aus dem Core entfernt (eine gleichlautende Körper-Zeile bleibt); leer ⇒ keine Status-Zeile gestrippt |
 | `vcs.head-allow` | string | leer | Zeilen-Regex; die HEAD-Status-Zeile (erstes Vorkommen) muss matchen, sonst `core-drift-vcs` (unzulässiger Status-Übergang); leer ⇒ keine Status-Übergangs-Prüfung |
-| `vcs.ignore-link-targets` | bool | `false` | leert beim Bilden des Core jedes Link-Ziel (Inline-Link, Bild, Referenz-Definition): ein reiner Pfad-Nachzug in einer immutablen Datei ist keine Drift, jede Änderung am Linktext oder an der übrigen Zeile bleibt eine. Aus ⇒ byte-identisch |
+| `vcs.ignore-link-targets` | bool | `false` | leert beim Bilden des Core das Ziel jedes vollständigen Inline-Links, Bilds und jeder Referenz-Definition mit pfadartigem Ziel: ein reiner Pfad-Nachzug in einer immutablen Datei ist keine Drift, jede Änderung am Linktext oder an der übrigen Zeile bleibt eine; Grenzen in [§`DC-FA-VCS-001.a`](#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4. Aus ⇒ byte-identisch |
 | `commits.id-patterns` | string[] | leer | Regex-Liste der gültigen Traceability-Kennungen; eine bereinigte Message ohne Match auf **irgendein** Muster ⇒ `commit-untraceable`; jedes Muster muss kompilieren (sonst Exit 2); leer ⇒ Modul inert (Range-Modus) bzw. Exit 2 (Message-Modus, nichts zu prüfen) ([`DC-FA-COMMITS-001`](lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)) |
 | `commits.exempt-pattern` | string | leer | Zeilen-Regex gegen den **Betreff** (erste Zeile); Match ⇒ Message kennungs-frei erlaubt (Selbstkonfig `^(Merge \|Revert )`); muss kompilieren (sonst Exit 2); leer ⇒ keine Ausnahme |
 | `planning.roadmap` | string | leer | `datei` (Wurzel-relativ, innerhalb der Repo-Wurzel); die Roadmap-Datei mit dem Aktiv-Status-Abschnitt. Ihr Verzeichnis ist das Slice-Verzeichnis. Leer ⇒ Modul inert ([`DC-FA-PLAN-001`](lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |

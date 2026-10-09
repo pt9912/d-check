@@ -4,7 +4,7 @@ import "testing"
 
 // Mit ignore-link-targets ist ein reiner Pfad-Nachzug keine Core-Drift; jede
 // Änderung am Linktext, an der übrigen Zeile oder an der Zahl der Links bleibt
-// eine. Ohne den Schlüssel meldet derselbe Nachzug — der Vergleich davor.
+// eine. Ohne den Schlüssel bleibt jeder Nachzug Drift.
 func TestVCSIgnoreLinkTargets(t *testing.T) {
 	cases := []struct {
 		name       string
@@ -30,6 +30,20 @@ func TestVCSIgnoreLinkTargets(t *testing.T) {
 		{"link entfernt", "Siehe [R](a.md).", "Siehe R.", 1, 1},
 		{"link hinzugefuegt", "Siehe R.", "Siehe [R](a.md).", 1, 1},
 		{"referenz-label geaendert", "[rel]: a.md", "[rel2]: x/a.md", 1, 1},
+		{"spitzklammer-ziel mit leerraum nachgezogen",
+			"[A](<alt/a b.md>)", "[A](<neu/a b.md>)", 0, 1},
+		{"referenz-definition mit titel nachgezogen", `[rel]: a.md "T"`, `[rel]: x/a.md "T"`, 0, 1},
+		{"referenz-titel geaendert", `[rel]: a.md "Alt"`, `[rel]: x/a.md "Neu"`, 1, 1},
+		// keine Link-Syntax: das Wort bleibt Teil des Core
+		{"fussnote geaendert", "[^1]: Nicht erlaubt.", "[^1]: Immer erlaubt.", 1, 1},
+		{"fussnote mit pfadwort geaendert", "[^1]: alt.md", "[^1]: neu.md", 1, 1},
+		{"prosa in referenz-form geaendert", "[Hinweis]: Verboten ist das.", "[Hinweis]: Erlaubt ist das.", 1, 1},
+		{"einzelwort ohne pfadzeichen geaendert", "[Hinweis]: Verboten", "[Hinweis]: Erlaubt", 1, 1},
+		{"klammer ohne link geaendert", "f](alt und weiter", "f](neu und weiter", 1, 1},
+		{"offener link ohne schliessende klammer", "[f](alt und weiter", "[f](neu und weiter", 1, 1},
+		// fail-safe: was die Muster nicht treffen, bleibt Drift
+		{"ziel mit eigener klammer nachgezogen", "[A](a(1).md)", "[A](x/a(1).md)", 1, 1},
+		{"linktext mit eckiger klammer nachgezogen", "[a[0]](a.md)", "[a[0]](x/a.md)", 1, 1},
 		// die benannte Grenze: ohne Code-Kontext wird auch ein Ziel in Inline-Code
 		// geleert
 		{"ziel in inline-code", "`[R](a.md)`", "`[R](x/a.md)`", 0, 1},

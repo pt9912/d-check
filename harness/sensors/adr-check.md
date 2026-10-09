@@ -137,8 +137,10 @@ Grün über leerem Prüfbereich (shallow-Klon) kommt so nicht zustande.
 4. **Ein Pfad-Nachzug wird nur an seiner Form erkannt.** Das Gate leert die
    Link-Ziele vor dem Vergleich; ob das neue Ziel dieselbe Sache meint wie das
    alte, sieht es nicht — ein Verweis auf ein anderes Dokument fiele genauso
-   durch. Ein Link-Ziel in Inline-Code oder einem Codeblock wird ebenso
-   geleert. Permanent, solange der Nachzug erlaubt ist
+   durch. Ein Link in Inline-Code oder einem Codeblock wird ebenso geleert,
+   und eine Zeile `[Wort]: wort.md` gilt als Referenz-Definition. Geleert wird
+   nur ein vollständiger Link; trifft die Erkennung einen nicht (Ziel auf der
+   Folgezeile, Ziel mit eigener Klammer), bleibt sein Nachzug Drift. Permanent, solange der Nachzug erlaubt ist
    ([ADR-0103](../../docs/plan/adr/0103-adr-gate-laesst-pfad-nachzug-durch.md)).
 
 ## Bindung

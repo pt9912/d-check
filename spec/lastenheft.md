@@ -2167,7 +2167,10 @@ Referenz-Definition. Eine Änderung, die nur Ziele ändert, ist damit keine
 Drift: ein Referenz-/Pfad-Nachzug ist keine inhaltliche Überschreibung (die
 Baseline nimmt ihn von der Immutabilität einer angenommenen Entscheidung aus).
 Jede Änderung am Linktext, an der übrigen Zeile, am Titel eines Links oder an
-der Zahl der Links bleibt Drift. Das Werkzeug sieht nur die Form: ob das neue
+der Zahl der Links bleibt Drift. Geleert wird nur, was die Link-Syntax trägt — eine
+Fußnote oder eine Zeile ohne vollständigen Link bleibt unverändert Teil des
+Vergleichs; trifft die Erkennung einen Link nicht, bleibt sein Nachzug Drift.
+Das Werkzeug sieht nur die Form: ob das neue
 Ziel dieselbe Sache meint, bleibt ein Urteil.
 
 **Strikt opt-in, fail-closed, diagnose-only:** `vcs` ist nie Default-Modul (wie

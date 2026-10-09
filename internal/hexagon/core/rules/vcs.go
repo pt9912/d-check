@@ -185,22 +185,28 @@ func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string
 	return strings.TrimSpace(pinWhitespaceRE.ReplaceAllString(b.String(), " "))
 }
 
-// inlineLinkTargetRE trifft das Ziel eines Inline-Links oder Bilds bis zum
-// ersten Leerraum oder zur schliessenden Klammer; ein Titel dahinter bleibt
-// Teil des Core. refDefTargetRE trifft das Ziel einer Referenz-Definition.
-// GRENZE: zeilenweise und ohne Code-Kontext -- ein Link-Ziel in Inline-Code
-// oder einem Codeblock wird ebenso geleert; ein Ziel mit eigener Klammer
-// wird nur bis zu ihr geleert.
+// inlineLinkTargetRE trifft einen vollständigen Inline-Link oder ein Bild auf
+// einer Zeile: Linktext in eckigen Klammern, Ziel (auch in Spitzklammern) und
+// ein optionaler Titel bis zur schließenden Klammer; geleert wird nur das Ziel.
+// refDefTargetRE trifft eine Referenz-Definition, deren ganze übrige Zeile ein
+// pfadartiges Ziel (`.`, `/`, `#` oder `:` darin, oder in Spitzklammern) mit
+// optionalem Titel ist; eine Fußnote (`[^…]:`) ist keine.
+// GRENZE: zeilenweise und ohne Code-Kontext -- ein Link in Inline-Code oder
+// einem Codeblock wird ebenso geleert, und eine Zeile der Form
+// `[Wort]: wort.md` gilt als Referenz-Definition, wie Markdown sie liest. Ein
+// Ziel, das die Muster nicht treffen (Linktext mit eckiger Klammer, Ziel auf
+// der Folgezeile, Ziel mit eigener Klammer, Referenz-Ziel ohne Pfadzeichen),
+// bleibt ungeleert: ein Nachzug dort bleibt Drift.
 var (
-	inlineLinkTargetRE = regexp.MustCompile(`\]\([^)\s]*`)
-	refDefTargetRE     = regexp.MustCompile(`^(\s{0,3}\[[^\]]+\]:)\s*\S+`)
+	inlineLinkTargetRE = regexp.MustCompile(`(!?\[[^\[\]]*\])\([ \t]*(?:<[^<>]*>|[^()\s<>]*)((?:[ \t]+(?:"[^"]*"|'[^']*'|\([^()]*\)))?[ \t]*\))`)
+	refDefTargetRE     = regexp.MustCompile(`^([ ]{0,3}\[[^\[\]^][^\[\]]*\]:)[ \t]*(?:<[^<>]*>|[^\s<>]*[./#:][^\s<>]*)((?:[ \t]+(?:"[^"]*"|'[^']*'|\([^()]*\)))?[ \t]*)$`)
 )
 
-// blankLinkTargets leert die Link-Ziele einer Zeile: `[t](ziel)` wird `[t]()`,
-// `[l]: ziel` wird `[l]:`.
+// blankLinkTargets leert die Link-Ziele einer Zeile: `[t](ziel "T")` wird
+// `[t]( "T")`, `[l]: ziel` wird `[l]:`.
 func blankLinkTargets(line string) string {
-	line = inlineLinkTargetRE.ReplaceAllString(line, "](")
-	return refDefTargetRE.ReplaceAllString(line, "$1")
+	line = inlineLinkTargetRE.ReplaceAllString(line, "$1($2")
+	return refDefTargetRE.ReplaceAllString(line, "$1$2")
 }
 
 // vcsHeadStatusLineNo liefert die 1-basierte Zeilennummer der **Kopf**-Status-
