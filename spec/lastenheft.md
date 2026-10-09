@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.102.2
+**Version:** 0.102.3
 
 **Status:** Draft
 
@@ -2167,13 +2167,15 @@ Referenz-Definition. Eine Änderung, die nur Ziele ändert, ist damit keine
 Drift: ein Referenz-/Pfad-Nachzug ist keine inhaltliche Überschreibung (die
 Baseline nimmt ihn von der Immutabilität einer angenommenen Entscheidung aus).
 Jede Änderung am Linktext, an der übrigen Zeile, am Titel eines Links oder an
-der Zahl der Links bleibt Drift. Geleert wird nur, was die Link-Syntax trägt —
-eine Fußnote, Code, ein escapter Link oder eine Zeile ohne vollständigen Link
-bleibt unverändert Teil des Vergleichs; trifft die Erkennung einen Link nicht,
-bleibt sein Nachzug Drift. Die Erkennung ist zeilenweise; ihre benannten Grenzen
-sind ein Code-Span über mehrere Zeilen und eine Absatz-Folgezeile in der Form
-einer Referenz-Definition — beide werden geleert. Das Werkzeug sieht nur die
-Form: ob das neue Ziel dieselbe Sache meint, bleibt ein Urteil.
+der Zahl der Links bleibt Drift. Was ein Link ist, beantwortet dieselbe
+Erkennung wie das Modul `links`
+([`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links));
+eine Fußnote, Code, eingerückte Zeilen, HTML-Blöcke und ein Link mit escapter
+Klammer bleiben unverändert Teil des Vergleichs, und trifft die Erkennung einen
+Link nicht, bleibt sein Nachzug Drift. Benannte Grenze: eine Absatz-Folgezeile
+in der Form einer Referenz-Definition wird geleert, wie die Link-Erkennung sie
+liest. Das Werkzeug sieht nur die Form: ob das neue Ziel dieselbe Sache meint,
+bleibt ein Urteil.
 
 **Strikt opt-in, fail-closed, diagnose-only:** `vcs` ist nie Default-Modul (wie
 `external`); ohne aktives `vcs` ist der Befundsatz byte-identisch
@@ -4140,6 +4142,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.102.3 | 2026-10-09 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) Pfad-Nachzug: was ein Link ist, beantwortet die Link-Erkennung des Moduls `links` statt eigener Muster — ein Link mit Code-Span im Linktext wird wieder geleert; eingerückte Zeilen, HTML-Blöcke und escapte Klammern bleiben Teil des Vergleichs. Anlass: Review | — |
 | 0.102.2 | 2026-10-09 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) Pfad-Nachzug: auch eingerückter Code und ein Code-Span, der den Link berührt, bleiben Teil des Vergleichs; die zwei Grenzen der zeilenweisen Erkennung sind benannt (Code-Span über mehrere Zeilen, Absatz-Folgezeile in Referenz-Form). Anlass: Review | — |
 | 0.102.1 | 2026-10-09 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) präzisiert den Pfad-Nachzug: geleert wird nur, was die Link-Syntax trägt — ein vollständiger Link außerhalb von Code und Escapes, eine Referenz-Definition mit pfadartigem Ziel; Fußnoten und link-förmiger Text bleiben Teil des Vergleichs, ein nicht erkannter Link bleibt Drift. Anlass: Review des Schlüssels, der sonst inhaltliche Änderungen still durchließ | — |
 | 0.102.0 | 2026-10-09 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) erlaubt mit `vcs.ignore-link-targets` einen reinen Pfad-Nachzug: vor dem Vergleich des Core wird jedes Link-Ziel geleert, eine Änderung nur an Zielen ist keine Drift. Anlass: die Baseline nimmt den Referenz-/Pfad-Nachzug von der Immutabilität einer angenommenen Entscheidung aus, das Modul meldete ihn als Körper-Änderung. Opt-in, ohne den Schlüssel byte-identisch; neues Kriterium „Boundary (Pfad-Nachzug)" | — |

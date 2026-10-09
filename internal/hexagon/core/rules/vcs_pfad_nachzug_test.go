@@ -41,9 +41,9 @@ func TestVCSIgnoreLinkTargets(t *testing.T) {
 		{"einzelwort ohne pfadzeichen geaendert", "[Hinweis]: Verboten", "[Hinweis]: Erlaubt", 1, 1},
 		{"klammer ohne link geaendert", "f](alt und weiter", "f](neu und weiter", 1, 1},
 		{"offener link ohne schliessende klammer", "[f](alt und weiter", "[f](neu und weiter", 1, 1},
-		// fail-safe: was die Muster nicht treffen, bleibt Drift
-		{"ziel mit eigener klammer nachgezogen", "[A](a(1).md)", "[A](x/a(1).md)", 1, 1},
-		{"linktext mit eckiger klammer nachgezogen", "[a[0]](a.md)", "[a[0]](x/a.md)", 1, 1},
+		// balancierte Klammern liest die links-Erkennung als Teil von Ziel und Linktext
+		{"ziel mit eigener klammer nachgezogen", "[A](a(1).md)", "[A](x/a(1).md)", 0, 1},
+		{"linktext mit eckiger klammer nachgezogen", "[a[0]](a.md)", "[a[0]](x/a.md)", 0, 1},
 		// Code und Escapes: link-förmiger Text, der kein Link ist, bleibt
 		{"ziel in inline-code", "`[R](a.md)`", "`[R](x/a.md)`", 1, 1},
 		{"funktionsaufruf in inline-code geaendert", "`fns[k](true)`", "`fns[k](false)`", 1, 1},
@@ -51,12 +51,22 @@ func TestVCSIgnoreLinkTargets(t *testing.T) {
 		{"escapte oeffnende klammer geaendert", `\[Ausnahme](keine)`, `\[Ausnahme](alle)`, 1, 1},
 		{"link im codeblock nachgezogen", "```\n[R](a.md)\n```", "```\n[R](x/a.md)\n```", 1, 1},
 		{"link neben inline-code nachgezogen", "`x` [R](a.md)", "`x` [R](x/a.md)", 0, 1},
-		{"escapte klammer im linktext nachgezogen", `[a\]b](a.md)`, `[a\]b](x/a.md)`, 0, 1},
 		{"doppelter backslash vor link nachgezogen", `\\[R](a.md)`, `\\[R](x/a.md)`, 0, 1},
 		{"code-span ab dem linktext geaendert", "[a `b](Nicht)` c", "[a `b](Immer)` c", 1, 1},
 		{"eingerueckter code geaendert", "Text\n\n    [a](Nicht)", "Text\n\n    [a](Immer)", 1, 1},
 		{"tab-eingerueckter code geaendert", "Text\n\n\t[a](Nicht)", "Text\n\n\t[a](Immer)", 1, 1},
 		{"bild hinter escaptem ausrufezeichen nachgezogen", `\![B](a.md)`, `\![B](x/a.md)`, 0, 1},
+		{"code-span im linktext nachgezogen",
+			"Siehe [`releasing.md`](../../user/releasing.md).",
+			"Siehe [`releasing.md`](../../user/maintainer/releasing.md).", 0, 1},
+		{"leerzeichen-tab-einzug geaendert", "Text\n\n \t[a](Nicht)", "Text\n\n \t[a](Immer)", 1, 1},
+		{"html-block geaendert", "<div>\n[a](Nicht)\n</div>", "<div>\n[a](Immer)\n</div>", 1, 1},
+		{"pre-block mit leerzeile geaendert", "<pre>\n\n[a](Nicht)\n</pre>", "<pre>\n\n[a](Immer)\n</pre>", 1, 1},
+		{"link nach html-block nachgezogen", "<div>x</div>\n\n[R](a.md)", "<div>x</div>\n\n[R](x/a.md)", 0, 1},
+		{"escapte schliessende klammer geaendert", `[Ausnahme\](keine)`, `[Ausnahme\](alle)`, 1, 1},
+		// fail-safe: was die Erkennung nicht als Link liest, bleibt Drift
+		{"escapte klammer im linktext nachgezogen", `[a\]b](a.md)`, `[a\]b](x/a.md)`, 1, 1},
+		{"ziel auf der folgezeile nachgezogen", "[R](\na.md)", "[R](\nx/a.md)", 1, 1},
 		// die benannte Grenze: eine Absatz-Folgezeile in Referenz-Form wird geleert
 		{"absatz-folgezeile in referenz-form", "Text\n[Status]: Abgelehnt.", "Text\n[Status]: Angenommen.", 0, 1},
 	}

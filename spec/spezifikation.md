@@ -1966,25 +1966,26 @@ abdeckt:
    **keine** Marker-Zeile (der „Pin" ist hier der BASE-Commit selbst, kein im
    Dokument hinterlegter Hash). Normalisierung + SHA-256 wie
    [§DC-FA-PIN-001.a Schritt 3](#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins).
-   Mit `vcs.ignore-link-targets` wird vorher in jeder Prosa-Zeile (außerhalb
-   von Fenced-Code, ohne Einzug von Tab oder vier Leerzeichen) das Ziel jedes **vollständigen** Inline-Links und Bilds
-   geleert — Linktext in eckigen Klammern, Ziel (auch `<…>`), optionaler Titel,
-   schließende Klammer: `[text](ziel "T")` → `[text]( "T")` — und das Ziel jeder
-   Referenz-Definition, deren übrige Zeile nur ein pfadartiges Ziel (mit `.`,
-   `/`, `#` oder `:`, oder `<…>`) und einen optionalen Titel trägt
-   (`[label]: ziel` → `[label]:`); eine Fußnote (`[^…]:`) ist keine. Kein Link
-   ist, was einen Code-Span der Zeile berührt oder hinter einer escapten
-   öffnenden Klammer (`\[`) steht. Ein **reiner Pfad-Nachzug** ergibt so
-   denselben Core; eine Änderung am Linktext, an der übrigen Zeile, am Titel
-   oder an der Zahl der Links bleibt Drift, und eine Zeile ohne vollständigen
-   Link wird nicht verändert. **Grenze:** zeilenweise — ein Code-Span über
-   mehrere Zeilen schützt nicht, und jede Zeile `[Label]: wort.` mit einem
-   Pfadzeichen wird als Referenz-Definition geleert, auch als Folgezeile eines
-   Absatzes, wo Markdown sie als sichtbaren Text rendert. Fail-safe bleibt ein
-   Nachzug Drift, wo die Erkennung den Link nicht trifft: Linktext mit eckiger
-   Klammer, Ziel auf der Folgezeile, Ziel mit eigener Klammer, Referenz-Ziel
-   ohne Pfadzeichen, Link in Fenced-Code oder in einer eingerückten Zeile (auch
-   in einem eingerückten Listen-Folgeabsatz).
+   Mit `vcs.ignore-link-targets` wird vorher das Ziel jedes Links geleert, den
+   die Link-Erkennung von
+   [§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+   liest — dieselbe Vorverarbeitung (Fenced-Code entfällt, Code-Spans werden
+   absatzweise geleert) und dieselbe Abgrenzung von Inline-Link, Bild und
+   Referenz-Definition. Geleert wird nur das Ziel, ein Titel bleibt:
+   `[text](ziel "T")` → `[text]( "T")`, `[label]: ziel` → `[label]:`. Vier
+   Filter engen das ein, jeder nur in Richtung Drift: eine Zeile mit mindestens
+   vier Spalten Einzug (Tab bis zum nächsten Vielfachen von vier) oder in einem
+   HTML-Block bleibt unverändert; ein Link, dessen öffnende oder schließende
+   Klammer escapt ist, ist keiner; eine Fußnote (`[^…]:`) und eine
+   Referenz-Definition ohne pfadartiges Ziel (kein `.`, `/`, `#`, `:` und kein
+   `<…>`) bleiben stehen. Ein **reiner Pfad-Nachzug** ergibt so denselben
+   Core; eine Änderung am Linktext, an der übrigen Zeile, am Titel oder an der
+   Zahl der Links bleibt Drift. **Grenze:** Eine Absatz-Folgezeile in der Form
+   einer Referenz-Definition wird geleert, wie die Link-Erkennung sie liest,
+   auch wo Markdown sie als Text rendert. Fail-safe bleibt ein Nachzug Drift,
+   wo die Erkennung oder ein Filter den Link nicht durchlässt: Ziel auf der
+   Folgezeile, escapte Klammer im Linktext, eingerückter Listen-Folgeabsatz,
+   eine Absatzzeile, die mit Inline-HTML beginnt (sie gilt als HTML-Block).
 5. **Vergleich.**
    - `core(BASE)` ≠ `core(HEAD)` ⇒ Grund-Code `core-drift-vcs` (Körper geändert).
    - HEAD-Status-Zeile (erstes Vorkommen) erfüllt `vcs.head-allow` **nicht** ⇒
@@ -3473,7 +3474,7 @@ Exit 2 ohne Prüfung
 | `vcs.exclude-sections` | string[] | leer | wie `immutable.exclude-sections` — Heading-Titel, deren Abschnitte nicht zum Core zählen (für ADRs `[Geschichte]`) |
 | `vcs.status-line` | string | leer | Zeilen-Regex der **Kopf**-Status-Zeile; ihr erstes Vorkommen **vor** der ersten `## `-H2 wird aus dem Core entfernt (eine gleichlautende Körper-Zeile bleibt); leer ⇒ keine Status-Zeile gestrippt |
 | `vcs.head-allow` | string | leer | Zeilen-Regex; die HEAD-Status-Zeile (erstes Vorkommen) muss matchen, sonst `core-drift-vcs` (unzulässiger Status-Übergang); leer ⇒ keine Status-Übergangs-Prüfung |
-| `vcs.ignore-link-targets` | bool | `false` | leert beim Bilden des Core das Ziel jedes vollständigen Inline-Links, Bilds und jeder Referenz-Definition mit pfadartigem Ziel: ein reiner Pfad-Nachzug in einer immutablen Datei ist keine Drift, jede Änderung am Linktext oder an der übrigen Zeile bleibt eine; Grenzen in [§`DC-FA-VCS-001.a`](#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4. Aus ⇒ byte-identisch |
+| `vcs.ignore-link-targets` | bool | `false` | leert beim Bilden des Core das Ziel jedes Links, den die Link-Erkennung des Moduls `links` liest (Inline-Link, Bild, Referenz-Definition mit pfadartigem Ziel): ein reiner Pfad-Nachzug in einer immutablen Datei ist keine Drift, jede Änderung am Linktext oder an der übrigen Zeile bleibt eine; Grenzen in [§`DC-FA-VCS-001.a`](#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4. Aus ⇒ byte-identisch |
 | `commits.id-patterns` | string[] | leer | Regex-Liste der gültigen Traceability-Kennungen; eine bereinigte Message ohne Match auf **irgendein** Muster ⇒ `commit-untraceable`; jedes Muster muss kompilieren (sonst Exit 2); leer ⇒ Modul inert (Range-Modus) bzw. Exit 2 (Message-Modus, nichts zu prüfen) ([`DC-FA-COMMITS-001`](lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)) |
 | `commits.exempt-pattern` | string | leer | Zeilen-Regex gegen den **Betreff** (erste Zeile); Match ⇒ Message kennungs-frei erlaubt (Selbstkonfig `^(Merge \|Revert )`); muss kompilieren (sonst Exit 2); leer ⇒ keine Ausnahme |
 | `planning.roadmap` | string | leer | `datei` (Wurzel-relativ, innerhalb der Repo-Wurzel); die Roadmap-Datei mit dem Aktiv-Status-Abschnitt. Ihr Verzeichnis ist das Slice-Verzeichnis. Leer ⇒ Modul inert ([`DC-FA-PLAN-001`](lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |
@@ -3731,6 +3732,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-09 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4: die Leerung liest Links mit der Link-Erkennung von §[`DC-FA-LINK-001.a`](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) statt mit eigenen Mustern — ein Link mit Code-Span im Linktext ist wieder ein Link; vier Filter in Richtung Drift (Einzug, HTML-Block, escapte Klammer, Fußnote und Referenz-Ziel ohne Pfadzeichen). Kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4: geleert wird nur ein vollständiger Link einer Prosa-Zeile — nicht in Fenced-Code, nicht in einer eingerückten Zeile, nicht, wo er einen Code-Span berührt, nicht hinter `\[`; Referenz-Definition nur mit pfadartigem Ziel, Fußnote nie. Grenzen in beide Richtungen benannt. Kein neuer Grund-Code |
 | 2026-10-09 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4 und §2-Schema: `vcs.ignore-link-targets` leert beim Bilden des Core jedes Link-Ziel (Inline-Link, Bild, Referenz-Definition); ein reiner Pfad-Nachzug ist keine Drift. Grenze: zeilenweise, ohne Code-Kontext. Kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritt 3 und §2-Schema: die Vorlagen-Form zählt hinter der Task-Box oder hinter `;` oder `,`, auch über einen Zeilenumbruch, nicht an jedem Zeilenanfang |

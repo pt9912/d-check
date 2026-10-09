@@ -164,22 +164,25 @@ func baseImmutable(content []byte, when *regexp.Regexp) bool {
 // reflow-invarianten Whitespace-Normalisierung von immutable/pins
 // (DC-FA-VCS-001.a Schritt 4).
 //
-// Mit ignoreLinkTargets wird jedes Link-Ziel einer Prosa-Zeile geleert, bevor
-// verglichen wird (DC-FA-VCS-001.a Schritt 4): ein reiner Pfad-Nachzug ergibt
-// denselben Core; Fenced-Code und eingerückte Zeilen bleiben unverändert.
+// Mit ignoreLinkTargets wird vorher das Ziel jedes erkannten Links geleert
+// (DC-FA-VCS-001.a Schritt 4, blankedLinkTargetLines): ein reiner Pfad-Nachzug
+// ergibt denselben Core.
 func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string, ignoreLinkTargets bool) string {
 	excluded := excludedRanges(content, excludeSections)
 	lines := splitLines(content)
 	strip := vcsHeadStatusLineNo(content, lines, statusLine)
-	prose := proseLineSet(content)
+	var blanked map[int]string
+	if ignoreLinkTargets {
+		blanked = blankedLinkTargetLines(content)
+	}
 	var b strings.Builder
 	for i, raw := range lines {
 		no := i + 1
 		if no == strip || inRanges(excluded, no) {
 			continue
 		}
-		if ignoreLinkTargets && prose[no] && !indentedLine(raw) {
-			raw = blankLinkTargets(raw)
+		if repl, ok := blanked[no]; ok {
+			raw = repl
 		}
 		b.WriteString(raw)
 		b.WriteByte('\n')
@@ -187,79 +190,6 @@ func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string
 	return strings.TrimSpace(pinWhitespaceRE.ReplaceAllString(b.String(), " "))
 }
 
-// inlineLinkTargetRE trifft einen vollständigen Inline-Link oder ein Bild auf
-// einer Zeile: Linktext in eckigen Klammern (escapte Zeichen darin zählen als
-// Text), Ziel (auch in Spitzklammern) und ein optionaler Titel bis zur
-// schließenden Klammer; geleert wird nur das Ziel. refDefTargetRE trifft eine
-// Referenz-Definition, deren ganze übrige Zeile ein pfadartiges Ziel (`.`,
-// `/`, `#` oder `:` darin, oder in Spitzklammern) mit optionalem Titel ist;
-// eine Fußnote (`[^…]:`) ist keine.
-// GRENZE: zeilenweise -- ein Code-Span über mehrere Zeilen schützt nicht, und
-// jede Zeile `[Label]: wort.` mit einem Pfadzeichen wird als
-// Referenz-Definition geleert, auch als Folgezeile eines Absatzes, wo Markdown
-// sie als sichtbaren Text rendert. Ein Ziel, das die Muster nicht treffen
-// (Linktext mit eckiger Klammer, Ziel auf der Folgezeile, Ziel mit eigener
-// Klammer, Referenz-Ziel ohne Pfadzeichen), bleibt ungeleert: ein Nachzug dort
-// bleibt Drift.
-var (
-	inlineLinkTargetRE = regexp.MustCompile(`(!?\[(?:[^\[\]\\]|\\.)*\])\([ \t]*(?:<[^<>]*>|[^()\s<>]*)((?:[ \t]+(?:"[^"]*"|'[^']*'|\([^()]*\)))?[ \t]*\))`)
-	refDefTargetRE     = regexp.MustCompile(`^([ ]{0,3}\[(?:[^\[\]\\^]|\\.)(?:[^\[\]\\]|\\.)*\]:)[ \t]*(?:<[^<>]*>|[^\s<>]*[./#:][^\s<>]*)((?:[ \t]+(?:"[^"]*"|'[^']*'|\([^()]*\)))?[ \t]*)$`)
-)
-
-// blankLinkTargets leert die Link-Ziele einer Prosa-Zeile: `[t](ziel "T")`
-// wird `[t]( "T")`, `[l]: ziel` wird `[l]:`. Ein Treffer, der einen Code-Span
-// berührt oder hinter einer escapten öffnenden Klammer steht, ist kein Link und
-// bleibt.
-func blankLinkTargets(line string) string {
-	var code [][2]int
-	forEachInlineCodeSpan(line, func(start, end, _, _ int) {
-		code = append(code, [2]int{start, end})
-	})
-	var b strings.Builder
-	last := 0
-	for _, m := range inlineLinkTargetRE.FindAllStringSubmatchIndex(line, -1) {
-		open := m[0]
-		if line[open] == '!' {
-			open++
-		}
-		if escapedAt(line, open) || overlapsSpan(code, m[0], m[1]) {
-			continue
-		}
-		b.WriteString(line[last:m[0]])
-		b.WriteString(line[m[2]:m[3]])
-		b.WriteByte('(')
-		b.WriteString(line[m[4]:m[5]])
-		last = m[1]
-	}
-	b.WriteString(line[last:])
-	return refDefTargetRE.ReplaceAllString(b.String(), "$1$2")
-}
-
-// escapedAt meldet, ob vor s[i] eine ungerade Zahl Backslashes steht.
-func escapedAt(s string, i int) bool {
-	n := 0
-	for k := i - 1; k >= 0 && s[k] == '\\'; k-- {
-		n++
-	}
-	return n%2 == 1
-}
-
-// overlapsSpan meldet, ob [start,end) einen der halboffenen Bereiche berührt.
-func overlapsSpan(spans [][2]int, start, end int) bool {
-	for _, sp := range spans {
-		if start < sp[1] && sp[0] < end {
-			return true
-		}
-	}
-	return false
-}
-
-// indentedLine meldet eine Zeile mit Tab oder mindestens vier Leerzeichen
-// Einzug. GRENZE: auch ein eingerückter Listen-Folgeabsatz zählt -- ein Link
-// dort wird nicht geleert, sein Nachzug bleibt Drift.
-func indentedLine(line string) bool {
-	return strings.HasPrefix(line, "\t") || strings.HasPrefix(line, "    ")
-}
 // vcsHeadStatusLineNo liefert die 1-basierte Zeilennummer der **Kopf**-Status-
 // Zeile: das erste statusLine-Vorkommen **vor** der ersten `## `-H2; 0 ohne
 // Treffer (oder ohne statusLine). Eine gleichlautende Zeile im Körper (nach der
