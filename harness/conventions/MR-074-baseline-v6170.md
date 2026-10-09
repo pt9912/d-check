@@ -54,16 +54,20 @@
      schärft dessen Spec-Stelle). Die Umnummerierung koppelt an die Ausnahme
      `"7. Historie"` ([`MR-0098`](../conventions.md#mr-0098)) — eine spätere
      Adoption fiele dort laut auf.
-     **Teilweise eingelöst durch slice-259:** §7 der Spezifikation besteht,
+     **Eingelöst in drei Slices — slice-259:** §7 der Spezifikation besteht,
      die Historie ist §8, die Ausnahme folgt
      ([`MR-075`](../conventions.md#mr-075)); eingetragen sind die vier Gates
      `coverage-gate`, `lint`, `semgrep` und `baseline-verify`. Die übrigen
      Werkzeuge übernehmen slice-260 (Wächter, Hooks, Prüfer — eingelöst:
      [`SPEC-093`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) bis
      [`SPEC-096`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)) und slice-262
-     (Netz- und Nachtlauf-Werkzeuge); `history-range-guard`, `selbstpruefung`
-     und `baseline-probe` sind noch keinem zugeordnet — slice-262 prüft beim
-     Beanspruchen, ob sie eine Festlegung treffen.
+     (Netz- und Nachtlauf-Werkzeuge — eingelöst:
+     [`SPEC-097`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) bis
+     [`SPEC-103`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge);
+     `history-range-guard` und `selbstpruefung` mit eigenem Eintrag,
+     `baseline-probe` als Selbsttest der Alias-Frage aus
+     [`SPEC-092`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+     ohne). **Bewegung 2 ist damit eingelöst.**
   3. **Reviewer** — `modul-10-review-harness.md`: kein Stil-Polizist
      (Formatierung oder Benennung ohne Konventions-Anker ist kein Finding),
      kein HIGH- oder MEDIUM-Finding ohne Failure-Szenario; die Fundstelle wird

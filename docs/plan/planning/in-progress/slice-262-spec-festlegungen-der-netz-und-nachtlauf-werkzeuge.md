@@ -46,11 +46,11 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] Je Werkzeug mit eigener Festlegung ein §7-Eintrag, am Code geprüft.
-- [ ] Die Sensor-Dateien verlinken die Kennung statt Schwelle und Randform zu
+- [x] Je Werkzeug mit eigener Festlegung ein §7-Eintrag, am Code geprüft.
+- [x] Die Sensor-Dateien verlinken die Kennung statt Schwelle und Randform zu
       führen; `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft;
       [MR-074](../../../../harness/conventions.md#mr-074) Bewegung 2 mit dem
       Anteil dieses Slice vermerkt (eingelöst, sobald auch slice-260 schließt).
@@ -84,15 +84,41 @@ wellenlos hier geprüft.
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** §7 der Spezifikation führt die Netz- und
+  Nachtlauf-Werkzeuge in sieben Einträgen ([`SPEC-097`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) bis [`SPEC-103`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)), am Code
+  nachgelesen; die Verifikation fuhr je Eintrag mindestens eine Aussage
+  ausführend nach und brach vier Stellen mit der passenden Meldung. Die
+  Sensor-Dateien verlinken die Kennung und führen keine Exit-Tabelle mehr.
+  Mit diesem Slice ist Bewegung 2 aus
+  [`MR-074`](../../../../harness/conventions.md#mr-074) eingelöst.
+- **Was ging anders als geplant:** Die Messung beim Beanspruchen fand
+  Abweichungen zwischen Sensor-Doku und Code in allen sechs Dateien;
+  R1 fand zwei weitere Spiegel außerhalb davon (Kopf von
+  `upstream-drift.yml`, `harness/rules/docker-make-only.md`), die als
+  Plan-Änderung vor dem Text dazukamen, und eine Randform, die der Code trifft,
+  aber kein Text nannte: der `commit-msg`-Hook sperrt ein Repo ohne oder mit
+  einem Commit. Sie ist benannt, nicht behoben — die Abgrenzung schließt
+  Änderungen an den Werkzeugen aus. Zwei Werkzeug-Texte (Kommentar über
+  `check_latest`, Hilfetext von `baseline-freshness`) sagen weiter pauschal
+  „SKIP“ und bleiben aus demselben Grund stehen.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
+  `BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`
+  (verkörpert als Schritt 17 im Workflow-Skelett) trat erneut auf — hier nicht
+  bei einem Mechanismuswechsel, sondern im ruhenden Bestand.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-262.md` in
+  [`BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/state.md);
+  neu
+  [`BEO-HARN/commit-msg-hook-sperrt-junges-repo`](../observations/BEO-HARN/commit-msg-hook-sperrt-junges-repo/state.md)
+  (1×).
+- **Folge-Slices:** keiner geschnitten. Die Behebung der Hook-Sperre und der
+  zwei Werkzeug-Texte ist ein Kandidat; das Register hält sie.
+- **Risiken aus §6:** keine notiert. Trigger-Audit: kein Carveout, kein
+  bootstrap-aware Gate, keine neue ADR; keine Hard Rule mit eingetretenem
+  Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
+  Folge-Slices — keiner genannt; (c) Register — die zwei zitierten
+  Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

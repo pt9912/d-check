@@ -7,7 +7,7 @@
 **Modell-ID:** claude-opus-5-5
 **Datum:** 2026-10-09
 
-**Abgrenzung des Stands:** Im Arbeitsbaum von `dem Arbeitsbaum` lag während des Laufs eine
+**Abgrenzung des Stands:** Im Arbeitsbaum lag während des Laufs eine
 **nicht committete** Änderung an `spec/spezifikation.md` (SPEC-102 „ohne oder mit nur einem Commit“,
 SPEC-103 „schon die beiden Commit-Versuche bauen das Image“), vermutlich die Antwort auf R2. Sie ist
 **nicht** Gegenstand dieser Verifikation. Beide Aussagen stimmen aber mit den Messungen unten überein
