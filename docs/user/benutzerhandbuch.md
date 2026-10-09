@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.84 · **Software-Version:** [v0.84.0](../../version.md#v0.84.0) ·
-**Stand:** 2026-10-07 · **Autor:** pt9912
+**Handbuch-Version:** 1.85 · **Software-Version:** [v0.85.0](../../version.md#v0.85.0) ·
+**Stand:** 2026-10-09 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -64,7 +64,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.84.0
+docker pull ghcr.io/pt9912/d-check:v0.85.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -83,12 +83,12 @@ Ein Digest-Pin gilt deshalb für beide Registries. GHCR bleibt die Quelle;
 Docker Hub folgt ihr.
 
 ```bash
-docker pull pt9912/d-check:v0.84.0
+docker pull pt9912/d-check:v0.85.0
 ```
 
 ### Versionen und Tags
 
-- `:v0.84.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.85.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
@@ -117,7 +117,7 @@ Veröffentlichung je Plattform geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -176,7 +176,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -195,7 +195,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.84.0
+  ghcr.io/pt9912/d-check:v0.85.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -214,7 +214,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.84.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.85.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -233,7 +233,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -253,7 +253,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -262,7 +262,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -281,7 +281,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -309,7 +309,7 @@ und `ai-harness-init` lesen das Lastenheft dafür nicht.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
   --enable ids --disable anchors
 ```
 
@@ -330,7 +330,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
   --enable ids
 ```
 
@@ -351,7 +351,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
   --enable matrix
 ```
 
@@ -452,7 +452,7 @@ unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
   --enable external
 ```
 
@@ -474,7 +474,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
   --enable ids --doctor
 ```
 
@@ -509,7 +509,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
   --enable ids --doctor --json
 ```
 
@@ -557,7 +557,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -593,7 +593,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
     --enable ids --repair | git apply
   ```
 
@@ -610,7 +610,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -630,7 +630,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -692,7 +692,7 @@ Zeile) sind **Konfiguration**; die Felder, Regeln und Fehlerbilder stehen in §5
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -830,7 +830,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -875,7 +875,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.84.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.85.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -893,7 +893,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und dreizehn
 # Benutzerhandbuch (aufgabenorientiert, deutsch):
 #   https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md
 #   https://raw.githubusercontent.com/pt9912/d-check/refs/heads/main/docs/user/benutzerhandbuch.md  (roh, für Werkzeuge/Agenten)
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.84.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.85.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -958,7 +958,7 @@ planning:
 ```
 
 ```bash
-docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
   --config .d-check.closure.yml --enable planning
 ```
 
@@ -1171,7 +1171,7 @@ planning:
 ```
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0 \
   --enable planning
 ```
 
@@ -1505,6 +1505,7 @@ vcs:                           # git-Diff-Immutabilität (opt-in; braucht .git +
   exclude-sections: [Geschichte]        # Abschnitte, die nicht zum Core zählen
   status-line: '^\*\*Status:\*\*'       # Kopf-Status-Zeile (aus dem Core gestrippt)
   head-allow: '^\*\*Status:\*\* (Accepted|Superseded by ADR-[0-9]{4})'  # erlaubter Status-Übergang
+  # ignore-link-targets: true           # reiner Pfad-Nachzug einer umgezogenen Datei ist keine Drift
 commits:                       # Traceability-Kennung in Commit-Messages (opt-in; git)
   id-patterns:                 # gültige Kennungen; eine Message ohne Match ⇒ commit-untraceable
     - 'ADR-\d{4}'
@@ -1791,6 +1792,21 @@ pre-commit); ohne `.git`/Range bricht es ab (fail-closed). Das `--print-mk`-Targ
 make doc-immutable RANGE="$BASE..$HEAD"
 ```
 
+**Eine verlinkte Datei zieht um.** Ohne weitere Einstellung ist jeder geänderte
+Link-Pfad in einer immutablen Datei Drift — auch wenn nur das Ziel einer
+umgezogenen Datei nachgezogen wird. Mit `vcs.ignore-link-targets: true` normiert
+das Modul vor dem Vergleich jedes Link-Ziel, das in BASE oder HEAD auf eine Datei
+oder ein Verzeichnis auflöst, auf Dateiname und Anker; ein reiner Pfad-Nachzug
+ergibt so denselben Core. Drift bleiben: ein Ziel auf eine Datei mit anderem
+Namen oder auf keine existierende, eine Anker-Änderung und jede Änderung am
+Linktext oder an der übrigen Zeile. Was ein Link ist, liest `vcs` wie das Modul
+`links`; in Code, Zitaten und HTML-Blöcken wird nichts normiert. **Grenze:**
+geprüft wird, dass das neue Ziel existiert und denselben Namen trägt, nicht,
+dass es dieselbe Datei ist. **Für den `--staged`-Lauf:** ziehen Sie die
+Verweise im selben Commit nach, der die Datei verschiebt — in einem späteren
+Commit kennt der gestagte Vergleich den alten Pfad nicht mehr, und das alte Ziel
+gilt als Drift.
+
 **Grenze — Pack-Dateien ohne gültiges Hash-Suffix oder ohne passenden Index
 sind unsichtbar.** `vcs` liest die Objektdatenbank über eine reine
 Go-Bibliothek (kein `git`-Binary), und deren `DotGit`-Schicht findet einen
@@ -1960,6 +1976,8 @@ planning:
     min-sentences: 4                   # Satzende-Zeichen außerhalb Code, Default
     boilerplate: []                    # literale Floskeln, case-insensitiv; Default leer
     # placeholder: true                # unausgefüllte Vorlagen-Platzhalter melden; Default AUS
+    # recursive: true                  # auch Unterverzeichnisse von dir lesen; Default AUS
+    # skip-pattern: '(?m)^> \*\*ARCHIVIERT'  # RE2 gegen den Inhalt: Treffer ist keine Kandidatin
 ```
 
 `min-sentences` < 1, ein **explizit** leerer oder ungültiger `glob` und ein
@@ -2643,15 +2661,15 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `versions`  | opt-in        | gepinnte `ghcr`-Image-Verweise tragen die aktuelle Version (aus `version.md#aktuell`), auch in Fences. **Mehrere Muster-Quellen-Paare** über `versions.patterns` (eigenes Release **und** ein fremder gepinnter Stand); die Kurzform `pin-pattern`/`current-from` **ist** die einelementige Liste, beide Schreibweisen zugleich ⇒ Exit 2. Ausnahmen sind paar-lokal, der Zeilen-Marker ist es nicht | `version-stale`                                             |
 | `pins`      | opt-in        | Content-Pin (`<!-- dpin: … -->`): Ziel-Span eines Links unverändert seit dem Verlinken | `link-stale`                                                |
 | `immutable` | opt-in        | Immutabilitäts-Pin (`<!-- immutable: … -->`): normalisierter **Core** einer Datei (ohne Marker-Zeile + `exclude-sections`) unverändert seit dem Pinnen; hermetisch (kein git) | `core-drift`                                                |
-| `vcs`       | opt-in (git)  | git-Diff-Immutabilität: **Core** einer immutablen Datei (`immutable-when`) unverändert über eine Commit-Range (`--range`/`--staged`); liest `.git` read-only (kein git-Binary, kein Netz). `immutable-when` und die Kopf-Status-Zeile gelten nur **außerhalb von Code-Blöcken** — eine Datei, die ihren eigenen Kopf als Beispiel zeigt, wird dadurch nicht immutabel | `core-drift-vcs`                                            |
+| `vcs`       | opt-in (git)  | git-Diff-Immutabilität: **Core** einer immutablen Datei (`immutable-when`) unverändert über eine Commit-Range (`--range`/`--staged`); liest `.git` read-only (kein git-Binary, kein Netz). `immutable-when` und die Kopf-Status-Zeile gelten nur **außerhalb von Code-Blöcken** — eine Datei, die ihren eigenen Kopf als Beispiel zeigt, wird dadurch nicht immutabel. Mit `ignore-link-targets` ist ein reiner **Pfad-Nachzug** keine Drift: ein Link-Ziel, das in BASE oder HEAD auf eine Datei oder ein Verzeichnis auflöst, wird vor dem Vergleich auf Dateiname und Anker normiert — zieht eine verlinkte Datei um, darf die immutable Datei ihr folgen; ein Ziel auf eine Datei mit anderem Namen oder auf keine existierende, jede Änderung am Linktext oder an der übrigen Zeile bleiben Drift | `core-drift-vcs`                                            |
 | `commits`   | opt-in (git)  | Traceability-Kennung (`id-patterns`) in jeder Commit-Message einer Range (`--range`) bzw. der Pending-Message (`--commit-msg`); liest `.git` read-only (kein git-Binary, kein Netz) | `commit-untraceable`                                        |
-| `planning`  | opt-in        | Zwei Seiten derselben Lifecycle-Invariante. **Eintritt:** der Ruhe-Marker (`marker`) steht im `heading`-Block (Default `## Aktuelle Welle`) genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt. **Austritt** (zusätzlich opt-in über `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete — Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine deklarierte Floskel und — opt-in über `placeholder` — kein unausgefüllter Vorlagen-Platzhalter. **Hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null Kandidaten. Überschriften und Marker zählen nur **außerhalb von Code-Blöcken**; die Block-Grenze ist die geteilte Abschnittsgrenze. **Dritte Fähigkeit** (opt-in über `waves.dir`): die Wellen-Register der Roadmap gegen die Wellen-Dateien — Plan-Dokument flach ⟺ aktive Welle (`waves.mode: one`, Default) **oder** Kennungs-Bijektion Aktiv-Block ⟺ flache Dokumente, Marker außen vor (`waves.mode: many`); Vorschau ohne Datei, Abschluss-Register ⟺ Ergebnisnotizen (beidseitig). **Vierte Fähigkeit** (opt-in über `observations.register` **oder** `observations.dir`, mutually exclusive): eine **zitierte** Kennung hat einen Nachweis — im Tabellen-Modus (`register`) eine Zeile im Register, im Verzeichnis-Modus (`dir`) ein Ordner `<zitierter-pfad>/observation.md`; gezählt werden Prosa und Linktext, ein reines Inline-Code-Span nicht (Beispiel statt Behauptung); im Tabellen-Modus deklariert nur die **erste** Tabellenzelle; die Umkehrung („jede Kennung ist zitiert") bleibt in beiden Modi ausgeschlossen | `planning-drift`, `closure-note-missing`, `closure-note-thin`, `closure-note-boilerplate`, `closure-note-placeholder`, `closure-note-ambiguous`, `wave-drift`, `wave-preview-exists`, `wave-results-missing`, `wave-unregistered`, `observation-unregistered` |
+| `planning`  | opt-in        | Zwei Seiten derselben Lifecycle-Invariante. **Eintritt:** der Ruhe-Marker (`marker`) steht im `heading`-Block (Default `## Aktuelle Welle`) genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt. **Austritt** (zusätzlich opt-in über `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete — Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine deklarierte Floskel und — opt-in über `placeholder` — kein unausgefüllter Vorlagen-Platzhalter. Mit `closure.recursive` auch aus den Unterverzeichnissen von `closure.dir`, mit `closure.skip-pattern` ohne Dateien, deren Inhalt das Muster trifft (etwa archivierte Stubs). **Hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null Kandidaten. Überschriften und Marker zählen nur **außerhalb von Code-Blöcken**; die Block-Grenze ist die geteilte Abschnittsgrenze. **Dritte Fähigkeit** (opt-in über `waves.dir`): die Wellen-Register der Roadmap gegen die Wellen-Dateien — Plan-Dokument flach ⟺ aktive Welle (`waves.mode: one`, Default) **oder** Kennungs-Bijektion Aktiv-Block ⟺ flache Dokumente, Marker außen vor (`waves.mode: many`); Vorschau ohne Datei, Abschluss-Register ⟺ Ergebnisnotizen (beidseitig). **Vierte Fähigkeit** (opt-in über `observations.register` **oder** `observations.dir`, mutually exclusive): eine **zitierte** Kennung hat einen Nachweis — im Tabellen-Modus (`register`) eine Zeile im Register, im Verzeichnis-Modus (`dir`) ein Ordner `<zitierter-pfad>/observation.md`; gezählt werden Prosa und Linktext, ein reines Inline-Code-Span nicht (Beispiel statt Behauptung); im Tabellen-Modus deklariert nur die **erste** Tabellenzelle; die Umkehrung („jede Kennung ist zitiert") bleibt in beiden Modi ausgeschlossen | `planning-drift`, `closure-note-missing`, `closure-note-thin`, `closure-note-boilerplate`, `closure-note-placeholder`, `closure-note-ambiguous`, `wave-drift`, `wave-preview-exists`, `wave-results-missing`, `wave-unregistered`, `observation-unregistered` |
 | `tracked`   | opt-in (git)  | Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (gestagt = getrackt, keine `.gitignore`-Interpretation); liest `.git` read-only, **ohne** Range; fail-closed ohne `.git` | `target-untracked`                                          |
 | `targets`   | opt-in        | Deklarations-Konsistenz Doku ↔ Build-Targets: jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`makefiles`), und jede Regel steht in der Autoritäts-Doku (`authority` — ein Pfad oder eine **Liste** wörtlicher Pfade; eine Regel gilt als dokumentiert, wenn sie in mindestens einer davon steht, eine Doppelnennung ist dafür kein Befund, ein leerer oder Null-Listeneintrag ist Exit 2; opt-in prüft `authority-disjoint: true` die **Disjunktheit**: ein Target, das mehr als eine Autoritäts-Datei in der **ersten Zelle** einer Tabellenzeile führt, meldet `gate-declared-twice` an jeder späteren Datei — Erwähnungen in anderen Zellen zählen nicht, `exempt-targets` nimmt nicht aus, läuft auch ohne `makefiles`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed bei fehlender Datei. `makefiles` nimmt auch **Glob-Muster** (`*`, `?`, `[`, `**`): ein Glob ohne Treffer ist Exit 2, eine mehrfach erfasste Datei zählt einmal, Symlinks werden nicht verfolgt (ein passender Symlink ist Exit 2 — wörtlich eintragen), fest übersprungene Verzeichnisse wie `build`/`vendor` unterhalb des festen Muster-Präfixes werden nicht betreten. Tabellenzeilen zählen nur **außerhalb von Code-Blöcken** — ein Beispiel-Block dokumentiert kein Target | `gate-phantom`, `gate-undocumented`, `gate-declared-twice` |
-| `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu **zwölf** Bedingungen mit je eigenem Grund-Code — die siebte ist die **Chronologie-Monotonie** (`table.order`/`table.order-column`): typisierte Schlüsselspalte (ISO-Datum, Punkt-Version), rohe Zellen, nicht-strikt je zusammenhängender Tabelle; die achte die **Überschriften-Form** (`headings-match`/`headings-level`): **jede** Überschrift der geprüften Ebene innerhalb des Abschnitts matcht das Muster, geprüft auf ihrem **Text**, gemeldet **je** Überschrift auf **ihrer** Zeile; die neunte die **Zellenlänge** (`table.column` je Eintrag `name` mit `cell-max-chars`/`cell-min-chars`): jede Zelle einer über ihren **Kopfzeilen-Namen** benannten Spalte liegt in einer Spanne aus **Zeichen**, gemeldet auf **ihrer** Zeile — eine Obergrenze allein ließe die leere Zelle passieren; die **zehnte** die **offenen Task-Items** (`max-open-tasks`): gezählt auf den **rohen** Abschnitts-Zeilen statt auf dem bereinigten Text, ein Befund je Item auf **seiner** Zeile ⇒ `section-tasks-open` — ein überzähliger Backtick im Absatz schaltet sie nicht ab, ein vergessener Schluss-Fence sehr wohl; die **elfte** eine **bedingte Pflicht-Marke** dazu (`open-tasks-require-marker`, nur wirksam, wenn die zehnte bereits einen Überschuss-Fund meldet): eine vorhandene Marke (`hasMarker`-Form wie bei den geforderten Marken) tilgt **alle** `section-tasks-open`-Einzelbefunde des Abschnitts, eine fehlende ersetzt sie durch **einen** `section-open-tasks-marker-missing` auf der Überschriftszeile — `open-tasks-require-marker-section` verlegt die Suche wahlweise in einen **anderen**, benannten Abschnitt derselben Datei (RE2 gegen dieselbe rohe Überschriften-Zeile wie `section-pattern`); trifft das Muster keinen Abschnitt, gilt die Marke als fehlend; die **zwölfte** ein **Zeilenbudget** (`max-lines`): die Zeilenumbrüche im **bereinigten** Abschnittstext (dieselbe Grundmenge wie `min-sentences`, Fenced-Code zählt also nicht mit) liegen bei oder unter der Schwelle ⇒ sonst `section-lines-exceeded` auf der Überschriftszeile; Untergrenze `1`, nicht `0` (ein Abschnitt hat so gut wie nie null bereinigte Zeilen). `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat; **einzige Ausnahme** ist die per `exempt-expect-count` **erklärte** Leermenge, deren Abweichung `section-exempt-mismatch` meldet | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing`, `section-unordered`, `section-cell-untyped`, `section-heading-mismatch`, `section-cell-oversized`, `section-cell-undersized`, `section-column-missing`, `section-exempt-mismatch`, `section-tasks-open`, `section-open-tasks-marker-missing`, `section-lines-exceeded` |
+| `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu **zwölf** Bedingungen mit je eigenem Grund-Code — die siebte ist die **Chronologie-Monotonie** (`table.order`/`table.order-column`): typisierte Schlüsselspalte (ISO-Datum, Punkt-Version), rohe Zellen, nicht-strikt je zusammenhängender Tabelle; die achte die **Überschriften-Form** (`headings-match`/`headings-level`): **jede** Überschrift der geprüften Ebene innerhalb des Abschnitts matcht das Muster, geprüft auf ihrem **Text**, gemeldet **je** Überschrift auf **ihrer** Zeile; die neunte die **Zellenlänge** (`table.column` je Eintrag `name` mit `cell-max-chars`/`cell-min-chars`): jede Zelle einer über ihren **Kopfzeilen-Namen** benannten Spalte liegt in einer Spanne aus **Zeichen**, gemeldet auf **ihrer** Zeile — eine Obergrenze allein ließe die leere Zelle passieren; die **zehnte** die **offenen Task-Items** (`max-open-tasks`): gezählt auf den **rohen** Abschnitts-Zeilen statt auf dem bereinigten Text, ein Befund je Item auf **seiner** Zeile ⇒ `section-tasks-open` — ein überzähliger Backtick im Absatz schaltet sie nicht ab, ein vergessener Schluss-Fence sehr wohl; die **elfte** eine **bedingte Pflicht-Marke** dazu (`open-tasks-require-marker`, nur wirksam, wenn die zehnte bereits einen Überschuss-Fund meldet): eine vorhandene Marke (`hasMarker`-Form wie bei den geforderten Marken) tilgt **alle** `section-tasks-open`-Einzelbefunde des Abschnitts, eine fehlende ersetzt sie durch **einen** `section-open-tasks-marker-missing` auf der Überschriftszeile — `open-tasks-require-marker-section` verlegt die Suche wahlweise in einen **anderen**, benannten Abschnitt derselben Datei (RE2 gegen dieselbe rohe Überschriften-Zeile wie `section-pattern`); trifft das Muster keinen Abschnitt, gilt die Marke als fehlend; die **zwölfte** ein **Zeilenbudget** (`max-lines`): die Zeilenumbrüche im **bereinigten** Abschnittstext (dieselbe Grundmenge wie `min-sentences`, Fenced-Code zählt also nicht mit) liegen bei oder unter der Schwelle ⇒ sonst `section-lines-exceeded` auf der Überschriftszeile; Untergrenze `1`, nicht `0` (ein Abschnitt hat so gut wie nie null bereinigte Zeilen). `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat; **einzige Ausnahme** ist die per `exempt-expect-count` **erklärte** Leermenge, deren Abweichung `section-exempt-mismatch` meldet. Je Regel nimmt `skip-pattern` eine Datei nach ihrem rohen Inhalt aus (etwa archivierte Stubs); den Leerlauf-Befund hebt das nicht aus | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing`, `section-unordered`, `section-cell-untyped`, `section-heading-mismatch`, `section-cell-oversized`, `section-cell-undersized`, `section-column-missing`, `section-exempt-mismatch`, `section-tasks-open`, `section-open-tasks-marker-missing`, `section-lines-exceeded` |
 | `file`      | opt-in        | Zeilen-/Byte-Obergrenzen einer **ganzen** Datei, unabhängig von Dateiart und `scan.roots`/`scan.ignore` — eigenes Modul statt einer Erweiterung von `structure`, weil jenes den **bereinigten** Abschnittstext einer Markdown-Datei zählt und `file` die **rohe** Datei jeder Art. `max-lines` zählt wie `wc -l` plus eine unvollständige Schlusszeile (dieselbe Zählung wie `codepaths`/`citations`) ⇒ `file-lines-exceeded`; `max-bytes` die rohe Byte-Länge (Fenced-/Inline-Code zählt mit) ⇒ `file-bytes-exceeded`. Mindestens eine der beiden Schwellen ist Pflicht, sonst Exit 2. Kandidaten kommen aus **eigenen** `files`-Globs (kein `scope`, wie bei `structure`), abzüglich `exempt-paths`; keine Regel trifft eine Datei ⇒ `file-no-match`. **Hermetisch** (kein git), fail-closed bei unlesbarem Baum | `file-no-match`, `file-lines-exceeded`, `file-bytes-exceeded` |
 | `workflows` | opt-in        | Deklarations-Konsistenz der `uses:`-Referenzen von CI-Workflows unterhalb eines **konfigurierten** Verzeichnisses (`workflows.dir` — der Ort ist nicht verdrahtet, weil er CI-System-spezifisch ist). **Fremde** Referenz: voller 40-stelliger Commit-SHA plus Tag-Kommentar dahinter — ein Tag lässt sich umhängen, ein SHA nicht; geprüft wird die **Form**, nicht die **Gültigkeit** (das wäre Netz). **Derselbe SHA trägt dateiübergreifend überall denselben Tag-Kommentar** — ein Widerspruch meldet jede beteiligte Zeile, welcher Wert stimmt bleibt Netz. **Lokale** Referenz (`./…`): kein Pin nötig — sie löst auf denselben Commit auf wie ihr Aufrufer —, dafür zwei andere Fragen: **existiert** das Ziel, und **bekommt es die Rechte, die es verlangt?** Ein aufgerufener Workflow erhält nur, was der aufrufende **Job** selbst führt; ein Job ohne eigenes `permissions:` erbt zwar den Workflow-Kopf, kann aber nichts weitergeben, was er nicht deklariert. Stufen: `none` < `read` < `write`; ein nicht genannter Scope ist `none`, `read-all`/`write-all` setzen jeden. Die Referenzen kommen aus dem **YAML-Baum**, nicht aus einer Textsuche. **Hermetisch** (kein git, kein Netz, kein Ausführen), fail-closed bei leerer Prüfmenge und bei unlesbarem YAML. **Benannte Grenze:** das Modul liest die **Ziele** lokaler Referenzen, die es nicht scannt — dieselbe Parse-Zusage gilt dort —, und es deckt **eine** Deklarations-Klasse, nicht die Lauffähigkeit | `uses-pin-missing`, `uses-pin-untagged`, `uses-pin-tag-conflict`, `uses-local-missing`, `uses-local-perms-undeclared`, `uses-local-perms-narrow`, `workflow-unparsable` |
-| `reviews`   | opt-in        | Review-Report-Deckung: jeder `done/`-Slice mit einer Review-Zusage (DoD-Haken, dessen Zeile „unabhängiger Review" nennt, jede Bullet-Form, Haken-Zustand egal) braucht mindestens einen Report unter `reviews-dir` mit derselben `slice-<NNN>`-Kennung im Dateinamen (Substring-Match, 1:N zulässig). Beide Verzeichnisse (`done-dir`, `reviews-dir`) **nicht rekursiv** gescannt. Fail-closed bei leerer Kandidatenmenge oder unlesbarem `reviews-dir`, **nicht** bei null gefundenen Zusagen unter vorhandenen Kandidaten | `review-missing`                                             |
+| `reviews`   | opt-in        | Review-Report-Deckung: jeder `done/`-Slice mit einer Review-Zusage braucht mindestens einen Report unter `reviews-dir`. **Zusage** ist ein Checkbox-Punkt (Haken-Zustand egal), auf den `promise-pattern` passt — Default: die Phrase „unabhängiger Review" **oder** die Vorlagen-Form „Review durchgeführt" am Anfang eines Punkt-Teils (hinter der Task-Box, `;` oder `,`, auch über einen Zeilenumbruch). **Zuordnung** über `match`: `id` (Default) über die `slice-<NNN>`-Kennung im Report-Namen — eine Zusage ohne lesbare Kennung im Slice-Namen ist selbst ein Befund —, `name` über den Basisnamen des Slice, gefolgt von einem Zeichen, das weder Buchstabe noch Ziffer ist (für Slug-Kennungen). `done-dir` wird unmittelbar gelesen, mit `recursive` auch die Unterverzeichnisse; `skip-pattern` nimmt eine Datei nach ihrem Inhalt aus (etwa archivierte Stubs). Fail-closed bei leerer Kandidatenmenge oder unlesbarem Verzeichnis; null Zusagen unter vorhandenen Kandidaten sind legitim, außer mit `require-promises` | `review-missing`                                             |
 | `mentions`  | opt-in        | Erwähnungs-Deckung: jedes Mitglied einer über Pfad-Globs konfigurierten **Soll-Menge** (`artifacts`) muss in mindestens einem Dokument der ebenso konfigurierten **Ist-Menge** (`documents`) wörtlich vorkommen. Gesucht wird eine **eigenständige Nennung**: links blockiert Buchstabe, Ziffer, `-` und `.`, rechts nur Buchstabe und Ziffer — Satz-Schlusspunkt, Kompositum, Kursivierung und `../`-relative Verlinkung zählen damit. Preis: ein Unterstrich-Kompositum, eine angehängte Endung und ein fremdes Pfad-Präfix decken das Mitglied darunter. `match: path` (Default, Pfad ab der Scan-Wurzel) oder `basename` (nur der Dateiname) — für Dokumente, die **relativ** verlinken, ist `basename` die richtige Form; kollidierende Suchbegriffe prüft das Modul selbst und bricht ab (Exit 2), statt sie dem Konfigurierenden aufzugeben. **Ein Block ist EIN Paar** — die Ist-Menge wird als Vereinigung gelesen. Fail-closed: fehlende oder leer bleibende Menge und unlesbares Verzeichnis ⇒ Exit 2, nicht „0 Befunde". Die Zusammenfassung nennt die Bezugsmenge (`N von M`) | `artifact-unmentioned` |
 | `external`  | opt-in (Netz) | Erreichbarkeit externer Links                                                            | `external-status`, `external-timeout`, `external-redirects` |
 | `sources`   | opt-in (Netz) | Content-Pin externer Quellen gegen Upstream-Drift: eine auf `sha256` gepinnte `http(s)`-Quelle (Marker `<!-- source-pin: [zip] sha256:… -->` am Link **oder** Config-Block `sources:`; Einzeldatei oder Archiv `unpack: zip`) wird geholt, gehasht, verglichen — Meldung mit vollem Ist-Hash; **zweite** Netz-Tür neben `external`, nie im Default | `source-drift`, `source-unreachable`                        |
@@ -2871,3 +2889,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.82             | v0.83.0          | 2026-10-07 | **`targets` prüft opt-in die Disjunktheit der Autoritäts-Dateien** ([`DC-FA-TGT-001`](../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in), §5-Beispiel, §6-Modultabelle). Mit `targets.authority-disjoint: true` meldet ein Target, das mehr als eine `authority`-Datei in der **ersten Zelle** einer Tabellenzeile führt, den neuen Grund-Code `gate-declared-twice` an jeder späteren Datei; die Meldung nennt die Datei der ersten Nennung. Erwähnungen in anderen Zellen (etwa „eingehängt in `make gates`") zählen nicht, `exempt-targets` nimmt nicht aus, die Prüfung läuft auch ohne `makefiles`. Ohne den Schalter unverändert. Anlass: die Baseline-Konvention führt seit `v6.16.0`, dass kein Target in zwei Teilen des Gate-Index steht |
 | 1.83             | v0.84.0-rc.1     | 2026-10-07 | **Multi-Plattform-Image `linux/amd64` + `linux/arm64`** ([`DC-FA-DIST-001`](../../spec/lastenheft.md#dc-fa-dist-001--docker-image), [`DC-FA-DIST-002`](../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel), §2). Jeder Tag ist ein Index beider Plattformen; Docker wählt die Variante des Rechners selbst, auf Apple Silicon und arm64-Linux ohne Emulation. Der Docker-Hub-Spiegel trägt denselben **Index**-Digest wie GHCR — ein Digest-Pin gilt für beide Registries. Die Identität zur nativen Ausführung wird vor der Veröffentlichung je Plattform geprüft. Vorabversion |
 | 1.84             | v0.84.0          | 2026-10-07 | **Multi-Plattform-Image `linux/amd64` + `linux/arm64` als stabiles Release** ([`DC-FA-DIST-001`](../../spec/lastenheft.md#dc-fa-dist-001--docker-image), [`DC-FA-DIST-002`](../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel), §2). Inhalt wie 1.83, jetzt auch unter `:latest`: jeder Tag ist ein Index beider Plattformen, Docker wählt die Variante des Rechners selbst; der Docker-Hub-Spiegel trägt denselben Index-Digest wie GHCR, ein Digest-Pin gilt für beide Registries |
+| 1.85             | v0.85.0          | 2026-10-09 | **`reviews`, `planning` und `structure` sehen Unterverzeichnisse; `vcs` lässt einen reinen Pfad-Nachzug durch** (§6). `reviews` erkennt im Default zusätzlich die Vorlagen-Form „Review durchgeführt" und meldet eine Zusage ohne lesbare Kennung, statt sie zu überspringen — **nicht rein additiv**: ein Repo mit dieser Form und ohne Report wird rot; neu `promise-pattern`, `match: name` (für Slug-Kennungen), `require-promises`, `recursive`, `skip-pattern` ([`DC-FA-RVW-001`](../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)). `planning.closure.recursive`/`skip-pattern` und `structure[].skip-pattern` nehmen Unterverzeichnisse und archivierte Stubs auf ([`DC-FA-PLAN-001`](../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in), [`DC-FA-STRUCT-001`](../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)). `vcs.ignore-link-targets` normiert ein auflösendes Link-Ziel auf Dateiname und Anker ([`DC-FA-VCS-001`](../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)). Image mit Go 1.27.2 (zwei HIGH-CVEs der Standardbibliothek behoben) |

@@ -26,7 +26,7 @@ sonst unverändert.
 > docs/reviews/ einen Report mit seiner Kennung im Dateinamen hat. Grundlage
 > ist ADR-0048 im Repo. <!-- d-check:ignore (Kennung des Absender-Repos) -->
 >
-> Beobachtet (Pin ghcr.io/pt9912/d-check:v0.84.0, 2026-10-09, Container ohne
+> Beobachtet (Pin ghcr.io/pt9912/d-check:v0.84.0, 2026-10-09, Container ohne <!-- d-check:ignore (Pin des Absenders zum Zeitpunkt der Beobachtung) -->
 > Netz):
 >
 > - Konfiguration: done-dir: docs/plan/planning/done, reviews-dir:

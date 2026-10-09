@@ -4,6 +4,56 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.85.0] — 2026-10-09
+
+### Changed
+
+- slice-265 — **`reviews` erkennt die Zusage der Slice-Vorlage und ordnet
+  Slug-Kennungen zu**
+  ([`DC-FA-RVW-001`](spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)).
+  **Nicht rein additiv — zwei Defaults ändern sich:** Die Zusage erkennt
+  zusätzlich die Vorlagen-Form „Review durchgeführt" am Anfang eines
+  Punkt-Teils, und eine Zusage, deren `slice-<NNN>`-Kennung unter `match: id`
+  nicht lesbar ist, wird als `review-missing` gemeldet statt übersprungen. Ein
+  Repo, das der Vorlage folgt und zu einem Slice keinen Report hat, wird damit
+  rot. Neue Schlüssel: `promise-pattern` (eigene Zusage-Form), `match: name`
+  (Zuordnung über den Basisnamen — **nötig für Slug-Kennungen**),
+  `require-promises` (Kandidaten ohne Zusage sind ein Befund), `recursive` und
+  `skip-pattern` (Unterverzeichnisse ohne archivierte Stubs).
+- Die Releasing-Doku liegt jetzt unter
+  [`docs/maintainer/releasing.md`](docs/maintainer/releasing.md) (slice-268,
+  slice-269; [`MR-077`](harness/conventions.md#mr-077)) — Links von außen auf
+  `docs/user/releasing.md` zeigen ins Leere.
+- Harness dieses Repos, **nicht** das Prüf-Verhalten des Werkzeugs:
+  `image-scan` prüft jede Plattform des Index (slice-257), neues Werkzeug
+  `make blackbox-probe` (slice-258), Festlegungen der Harness-Werkzeuge in der
+  Spezifikation (slice-259, slice-260).
+
+### Added
+
+- slice-267 — **`vcs.ignore-link-targets`: ein reiner Pfad-Nachzug ist keine
+  Drift**
+  ([`DC-FA-VCS-001`](spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in),
+  [ADR-0103](docs/plan/adr/0103-adr-gate-laesst-pfad-nachzug-durch.md)). Zieht
+  eine verlinkte Datei um, darf eine immutable Datei ihr folgen: ein Link-Ziel,
+  das in BASE oder HEAD auflöst, wird vor dem Vergleich auf Dateiname und Anker
+  normiert. Ein Ziel auf eine Datei mit anderem Namen oder auf keine
+  existierende und jede Änderung am Linktext bleiben Drift. Opt-in, ohne den
+  Schlüssel byte-identisch.
+- slice-263 — **Closure-Prüfung über Unterverzeichnisse**
+  ([`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
+  [`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)):
+  `planning.closure.recursive` und `planning.closure.skip-pattern` lesen
+  abgeschlossene Slices auch aus Unterverzeichnissen und lassen archivierte
+  Stubs aus; `structure[].skip-pattern` nimmt eine Datei je Regel nach ihrem
+  Inhalt aus. Opt-in, ohne die Schlüssel byte-identisch.
+
+### Security
+
+- Image mit Go 1.27.2: behebt zwei HIGH-Befunde der Standardbibliothek im
+  publizierten Image (CVE-2026-78667, CVE-2026-97031). Gate-Images:
+  semgrep 1.180.0, a-check v0.23.1.
+
 ## [0.84.0] — 2026-10-07
 
 ### Added

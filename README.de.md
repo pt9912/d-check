@@ -87,7 +87,9 @@ Dokuments:
   ([`DC-FA-IMM-001`](spec/lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in))
 - `vcs` — git-Diff-Immutabilität des Core über eine Commit-Range: mechanisiert die
   ADR-Immutabilität als verteilbares Modul (`core-drift-vcs`), reine-Go-git im
-  read-only `.git` (**kein** git-Binary, **kein** Netz), opt-in
+  read-only `.git` (**kein** git-Binary, **kein** Netz); mit
+  `ignore-link-targets` ist der reine Pfad-Nachzug einer umgezogenen Datei
+  keine Drift, opt-in
   ([`DC-FA-VCS-001`](spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in))
 - `commits` — Traceability-Kennung in Commit-Messages über eine Range (`--range`)
   bzw. der Pending-Message (`--commit-msg`): jede Commit-Message trägt eine
@@ -99,8 +101,9 @@ Dokuments:
   Verzeichnis liegt (`planning-drift`). **Austritt** (zusätzlich opt-in über
   `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete —
   Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine
-  deklarierte Floskel (`closure-note-missing`/`-thin`/`-boilerplate`). Prüft
-  Struktur, nicht Bedeutung. Hermetisch (kein git), fail-closed bei
+  deklarierte Floskel (`closure-note-missing`/`-thin`/`-boilerplate`); mit
+  `closure.recursive` und `closure.skip-pattern` auch in Unterverzeichnissen,
+  ohne archivierte Stubs. Prüft Struktur, nicht Bedeutung. Hermetisch (kein git), fail-closed bei
   fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null
   Kandidaten. **Wellen-Register** (zusätzlich opt-in über `waves.dir`): die
   Wellen-Abschnitte der Roadmap gegen die Wellen-Dateien — aktive Welle ⟺
@@ -210,14 +213,16 @@ Dokuments:
   dem **YAML-Baum**, nicht aus einer Textsuche
   ([`DC-FA-WF-001`](spec/lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in))
 - `reviews` — Review-Report-Deckung: jeder `done/`-Slice-Plan mit einer
-  Review-Zusage (ein DoD-Haken, dessen Zeile „unabhängiger Review" nennt,
-  jede Bullet-Form, Haken-Zustand egal) braucht mindestens einen Report unter
-  einem **konfigurierten** Verzeichnis (`reviews.reviews-dir`) mit derselben
-  `slice-<NNN>`-Kennung im Dateinamen — sonst `review-missing`. Beide
-  Verzeichnisse werden **nicht rekursiv** gescannt: ein bereits archivierter
-  Slice-Stub trägt keine DoD mehr und fällt natürlich aus der
-  Kandidatenmenge. Geprüft wird die **Deckung**, nicht die Qualität des
-  Reports. **Hermetisch** (kein git, kein Netz), opt-in
+  Review-Zusage braucht mindestens einen Report unter einem
+  **konfigurierten** Verzeichnis (`reviews.reviews-dir`) — sonst
+  `review-missing`. Als Zusage zählt ein Checkbox-Punkt, auf den
+  `reviews.promise-pattern` passt; der Default erkennt „unabhängiger Review"
+  und die Vorlagen-Form „Review durchgeführt". Zugeordnet wird über die
+  `slice-<NNN>`-Kennung im Report-Namen oder, mit `match: name`, über den
+  Basisnamen des Slice (für Slug-Kennungen). Mit `recursive` und
+  `skip-pattern` liest das Modul Unterverzeichnisse ohne archivierte Stubs.
+  Geprüft wird die **Deckung**, nicht die Qualität des Reports.
+  **Hermetisch** (kein git, kein Netz), opt-in
   ([`DC-FA-RVW-001`](spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in))
 - `mentions` — Erwähnungs-Deckung einer Artefakt-Menge: jedes Mitglied einer
   über Pfad-Globs konfigurierten **Soll-Menge** (`mentions.artifacts`) muss in
@@ -317,7 +322,7 @@ zusätzlich nach Docker Hub gespiegelt als
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

@@ -88,7 +88,9 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   ([`DC-FA-IMM-001`](spec/lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in))
 - `vcs` — git-diff immutability of the core over a commit range: mechanizes the
   ADR immutability as a distributable module (`core-drift-vcs`), pure-Go git in
-  the read-only `.git` (**no** git binary, **no** network), opt-in
+  the read-only `.git` (**no** git binary, **no** network); with
+  `ignore-link-targets` a pure path follow-up after a file moved is no drift,
+  opt-in
   ([`DC-FA-VCS-001`](spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in))
 - `commits` — traceability identifier in commit messages over a range (`--range`)
   or the pending message (`--commit-msg`): every commit message carries a
@@ -100,8 +102,9 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   (`planning-drift`). **Exit** (additionally opt-in via `closure.dir`): the
   **structure** of closure notes on completed work items — section present,
   enough sentence terminators outside code blocks, no declared boilerplate
-  phrase (`closure-note-missing`/`-thin`/`-boilerplate`). Checks structure, not
-  meaning. Hermetic (no git), fail-closed on a missing/ambiguous heading, a
+  phrase (`closure-note-missing`/`-thin`/`-boilerplate`); with
+  `closure.recursive` and `closure.skip-pattern` also in subdirectories,
+  without archived stubs. Checks structure, not meaning. Hermetic (no git), fail-closed on a missing/ambiguous heading, a
   missing closure directory and on zero candidates. **Wave registers**
   (additionally opt-in via `waves.dir`): the roadmap's wave sections against
   the wave files — active wave ⟺ flat wave document (`waves.mode: one`,
@@ -209,14 +212,15 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   no execution); references come from the **YAML tree**, not from a text search
   ([`DC-FA-WF-001`](spec/lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in))
 - `reviews` — review-report coverage: every `done/` slice plan with a review
-  promise (a DoD checkbox whose line names "unabhängiger Review", any bullet
-  form, checkbox state irrelevant) needs at least one report under a
-  **configured** directory (`reviews.reviews-dir`) whose filename carries the
-  same `slice-<NNN>` identifier — otherwise `review-missing`. Both
-  directories are scanned **non-recursively**: an already-archived slice
-  stub carries no DoD anymore and naturally falls out of the candidate set.
-  Checked is **coverage**, not the quality of the report. **Hermetic** (no
-  git, no network), opt-in
+  promise needs at least one report under a **configured** directory
+  (`reviews.reviews-dir`) — otherwise `review-missing`. A promise is a
+  checkbox item matched by `reviews.promise-pattern`; the default recognizes
+  "unabhängiger Review" and the template form "Review durchgeführt". Reports
+  are matched through the `slice-<NNN>` identifier in their filename or, with
+  `match: name`, through the slice's base name (for slug identifiers). With
+  `recursive` and `skip-pattern` the module reads subdirectories without
+  archived stubs. Checked is **coverage**, not the quality of the report.
+  **Hermetic** (no git, no network), opt-in
   ([`DC-FA-RVW-001`](spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in))
 - `mentions` — mention coverage for a set of artifacts: every member of a
   **target set** configured through path globs (`mentions.artifacts`) must
@@ -315,7 +319,7 @@ works for both registries)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.84.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to
