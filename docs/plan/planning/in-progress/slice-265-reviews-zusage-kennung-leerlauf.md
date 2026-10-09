@@ -152,6 +152,10 @@ Folgezeile" machte eine umbrochene Verneinung zur Zusage (R4 F-1) und hat im
 Bestand keinen Beleg. Sie entfällt; hinter `;` oder `,` gilt die Form auch über
 einen Zeilenumbruch. Ein Test hält die umbrochene Verneinung.)*
 
+*(Plan-Änderung nach der Verifikation, vor dem Code: ein Test hält die
+CR-Abnahme als Ganzes — Slug-Kennungen, Vorlagen-Form, `match: name`,
+`require-promises`, rot ohne Report, grün mit (V-1).)*
+
 ## 4. Trigger
 
 **Start** (`next` → `in-progress`): slice-263 in `done/`; `in-progress/` leer.
