@@ -1,6 +1,7 @@
 package cli_test
 
 import (
+	"go/ast"
 	"go/parser"
 	"go/token"
 	"io/fs"
@@ -54,6 +55,35 @@ func TestManual_RootPaketNurAusDerCompositionRoot(t *testing.T) {
 		})
 		if err != nil {
 			t.Fatal(err)
+		}
+	}
+}
+
+// Das Paket im Modul-Root trägt nur die Einbettung (ADR-0107): kein Import
+// außer embed, keine Funktion. a-check und das Coverage-Gate sehen es nicht.
+func TestManual_RootPaketTraegtNurDieEinbettung(t *testing.T) {
+	dir := filepath.Join("..", "..", "..", "..")
+	files, err := filepath.Glob(filepath.Join(dir, "*.go"))
+	if err != nil || len(files) == 0 {
+		t.Fatalf("keine Go-Datei im Modul-Root: %v", err)
+	}
+	for _, p := range files {
+		if strings.HasSuffix(p, "_test.go") {
+			continue
+		}
+		f, err := parser.ParseFile(token.NewFileSet(), p, nil, 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, imp := range f.Imports {
+			if pfad, _ := strconv.Unquote(imp.Path.Value); pfad != "embed" {
+				t.Errorf("%s importiert %s", p, pfad)
+			}
+		}
+		for _, d := range f.Decls {
+			if _, ok := d.(*ast.FuncDecl); ok {
+				t.Errorf("%s trägt eine Funktion", p)
+			}
 		}
 	}
 }

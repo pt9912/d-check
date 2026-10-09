@@ -30,7 +30,8 @@ layers:
   adapters: { globs: ["internal/adapter/driven/**"], role: adapter }
   # Die mitgelieferten Dokumente (DC-FA-CLI-013, ADR-0107): ein Paket im
   # Modul-Root, weil go:embed nur Dateien unter dem eigenen Verzeichnis
-  # erreicht. Ohne Kante — nur die Composition Root liest es.
+  # erreicht. Ohne ausgehende Kante; dass nur die Composition Root es liest,
+  # haelt ein Test (a-check loest den Importpfad des Modul-Roots nicht auf).
   docs:     { globs: ["manual.go"], role: domain }
 
 # R6 (ADR-0012): model <- rules <- app — model hat keine Ausgänge,

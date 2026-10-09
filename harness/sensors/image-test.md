@@ -61,5 +61,7 @@ falsche ([ADR-0102](../../docs/plan/adr/0102-multi-arch-index-und-spiegel-per-in
 `make image-test-arm64`: Schritt in `release.yml`, nicht in `ci`.
 [`DC-FA-DIST-001`](../../spec/lastenheft.md#dc-fa-dist-001--docker-image) ·
 [`DC-QA-02`](../../spec/lastenheft.md#dc-qa-02--determinismus) ·
+[`DC-FA-CLI-007`](../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus) ·
+[`DC-FA-CLI-008`](../../spec/lastenheft.md#dc-fa-cli-008--reparatur-patch) ·
 [`DC-FA-CLI-013`](../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen) ·
 [ADR-0102](../../docs/plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)

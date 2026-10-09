@@ -41,11 +41,17 @@ Schicht-Zuordnung unsichtbar.
 2. Nur die Composition Root (`internal/adapter/driving/cli`) importiert es.
    Die Abschnitts-Suche liegt im Kern (`app`) und bekommt die Dokumente als
    Werte übergeben.
-3. `.a-check.yml` führt das Paket als eigene Schicht `docs` (Rolle `domain`,
-   ohne Kanten), damit es nicht als „in keiner Schicht“ durchfällt.
+3. `.a-check.yml` führt das Paket als eigene Schicht `docs` ohne Kanten, damit
+   es nicht als „in keiner Schicht“ durchfällt. Die Rolle ist `domain`, die
+   strengste Einstufung: keine ausgehende Kante zu einer anderen Schicht. Dass
+   a-check einen Verstoß als „Kern importiert“ meldet, betrifft nur das Wort —
+   zum Kern gehört das Paket nicht.
 4. Weil a-check den Importpfad des Modul-Roots nicht auflöst, hält ein Test in
    der Composition Root die Kante: Kein Paket unter `internal/hexagon` oder
-   `internal/adapter/driven` importiert das Root-Paket.
+   `internal/adapter/driven` importiert das Root-Paket. Ein zweiter Test hält
+   Entscheidung 1: das Root-Paket importiert nur `embed` und trägt keine
+   Funktion — a-check lässt Importe der Standardbibliothek zu, und das
+   Coverage-Gate misst nur `internal/`.
 
 ## Verglichene Alternativen
 
@@ -56,7 +62,7 @@ tun" ist eine davon (Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR
 | Option | Pro | Contra |
 |---|---|---|
 | Nichts tun: keine Dokumente im Binary | Kein neuer Ort im Layout | Ein netzloses Repo kann die Regeln eines Moduls nur durch Probieren ermitteln (CR eines Adopters) |
-| Dokumente beim Build unter `internal/` kopieren | Das Layout bleibt unverändert | Eine zweite Fassung im Repo oder ein Build-Schritt, den `make test` außerhalb von Docker nicht kennt; Drift möglich |
+| Dokumente beim Build unter `internal/` kopieren | Das Layout bleibt unverändert | Eine zweite Fassung im Repo, die gegen die Quelle driften kann, oder ein Kopierschritt in jeder Dockerfile-Stage, die das Paket übersetzt |
 | Dateien ins Image legen, ohne Einbettung | Kein Code nötig | Das distroless-Image hat kein `cat`; gelesen würde per `docker cp`, und das Binary allein trüge sie nicht |
 | **Gewählt:** Paket im Modul-Root, eigene Schicht, Kante per Test | Eine Quelle, byte-gleich per Konstruktion; die Kante ist geprüft | Ein Ort außerhalb von `internal/`; die Prüfung der Kante liegt in einem Test statt in a-check |
 
@@ -64,7 +70,10 @@ tun" ist eine davon (Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR
 
 - Jede Änderung an Handbuch oder Spezifikation ändert das Binary.
 - **Grenze:** a-check prüft die Kante Kern → Root-Paket nicht; sie hält der
-  Test `TestManual_RootPaketNurAusDerCompositionRoot`. Löst a-check den
+  Test `TestManual_RootPaketNurAusDerCompositionRoot`; dass das Paket nur
+  `embed` importiert und keine Funktion trägt, hält
+  `TestManual_RootPaketTraegtNurDieEinbettung` — weder a-check noch das
+  Coverage-Gate sehen es. Löst a-check den
   Importpfad des Modul-Roots künftig auf, ist der Test entbehrlich.
 
 ## Fitness Function (falls maschinell prüfbar)
