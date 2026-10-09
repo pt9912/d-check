@@ -41,6 +41,19 @@ Follow this exact workflow:
     `AGENTS.md` §3.7: no story of earlier behaviour, no origin prose, no
     external reference. (seit slice-259; permanent — chronicle is a
     judgement, no gate can see it)
+17. When a change replaces a mechanism (a path, a pattern, a place where
+    something runs), grep the old term or pattern over `harness/`,
+    `docs/user/`, `.claude/` and the comments of the touched scripts before
+    the code commit, and list every hit in the plan — the guide docs outside
+    the spec are mirrors too, as in
+    [MR-025](../../harness/conventions.md#mr-025). (seit slice-260; permanent —
+    whether a hit still describes the old mechanism is a judgement)
+18. Every list written into a spec entry, a sensor file's limits or a
+    comment — what is blocked, what fails, what is excluded — is counted
+    against the code, and the counting command stands in the plan next to
+    the number. A list read from another description is not counted. (seit
+    slice-260; permanent — whether a list is complete is a judgement about
+    the subject, no sensor can hold it)
 
 Do not skip gates.
 Do not claim completion without command output.

@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.18.0 · **Datum:** 2026-10-08 ·
+**Version:** 1.19.0 · **Datum:** 2026-10-09 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -18,7 +18,7 @@ gleichen Modul** (Baseline
 die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
 (getrennter Kontext, anderes Prüf-Artefakt).
 
-## Die neunzehn Prüffragen (erste Ebene)
+## Die zwanzig Prüffragen (erste Ebene)
 
 Jede Frage ist so gestellt, dass **„ja" ein Finding ist**. Die Liste trägt alle
 HIGH- und MEDIUM-Klassen; LOW und INFO stehen nur unten. Sie trägt **nicht**,
@@ -47,10 +47,11 @@ Wer nur diese Tabelle liest, meldet die Bestands-Ausnahmen mit.
 | 17 | Zählt eine **Messung** ein Muster, das dem Gegenstand nur ähnelt? | MEDIUM |
 | 18 | Nennt eine **Grenzen-Liste** ihre größte Lücke nicht — steht sie im Vertrag oder im Code daneben? | MEDIUM |
 | 19 | Führt eine **Härtung** einen neuen Leseweg ein (Pipe, Substitution, `2>/dev/null`, `\|\| true`), und ist er nur gegen den Fall gefahren, den er beheben soll — nicht gegen seine Fehlerformen (Teil-Antwort, Exit ≠ 0, stderr)? (seit slice-257) | HIGH im Gate-/Sicherheitspfad, sonst MEDIUM |
+| 20 | Steht neben einer **richtigen** Entscheidung — einer Ausnahme, einem Glob, einer Schwelle, einem Adaptions-Absatz — eine **Begründung**, die am Gegenstand nicht zutrifft? Test: wäre die Begründung falsch, bliebe die Entscheidung dieselbe? (seit slice-260) | MEDIUM |
 
 **Was diese Ebene kostet und was nicht.** Sie ist eine Einstiegs-Ordnung, keine
 Kürzung: das Dokument ist durch sie **länger** geworden, nicht kürzer. Der
-Gewinn ist, dass keine der neunzehn Klassen mehr nur in einem Fließtext-Absatz
+Gewinn ist, dass keine der zwanzig Klassen mehr nur in einem Fließtext-Absatz
 steht, in dem sie beim Überfliegen untergeht. Der Preis ist Drift zwischen den
 Ebenen — deshalb trägt die Tabelle keine Ausnahme und keine Begründung,
 sondern ausschließlich die Frage.

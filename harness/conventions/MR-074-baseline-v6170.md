@@ -58,7 +58,9 @@
      die Historie ist §8, die Ausnahme folgt
      ([`MR-075`](../conventions.md#mr-075)); eingetragen sind die vier Gates
      `coverage-gate`, `lint`, `semgrep` und `baseline-verify`. Die übrigen
-     Werkzeuge übernehmen slice-260 (Wächter, Hooks, Prüfer) und slice-262
+     Werkzeuge übernehmen slice-260 (Wächter, Hooks, Prüfer — eingelöst:
+     [`SPEC-093`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) bis
+     [`SPEC-096`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)) und slice-262
      (Netz- und Nachtlauf-Werkzeuge); `history-range-guard`, `selbstpruefung`
      und `baseline-probe` sind noch keinem zugeordnet — slice-262 prüft beim
      Beanspruchen, ob sie eine Festlegung treffen.

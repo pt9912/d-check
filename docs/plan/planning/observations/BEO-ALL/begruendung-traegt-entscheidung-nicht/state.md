@@ -1,1 +1,1 @@
-**Stand:** offen
+**Stand:** verkörpert — Prüffrage 20 im Reviewer-Skill [`.harness/skills/reviewer.md`](../../../../../../.harness/skills/reviewer.md) (seit slice-260): trifft die Begründung neben einer richtigen Entscheidung am Gegenstand zu? Ausgang zugewiesen beim Lese-Schritt der Closure von slice-260; der Eintrag stand seit slice-222 bei drei Belegen ohne Ausgang. Bleibt wach: der Fund ist ein Urteil am Text.

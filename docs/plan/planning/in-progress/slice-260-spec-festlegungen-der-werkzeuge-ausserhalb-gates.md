@@ -51,11 +51,11 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] Je Werkzeug mit eigener Festlegung ein §7-Eintrag, am Code geprüft.
-- [ ] Die Sensor-Dateien verlinken die Kennung statt Schwelle und Randform zu
+- [x] Je Werkzeug mit eigener Festlegung ein §7-Eintrag, am Code geprüft.
+- [x] Die Sensor-Dateien verlinken die Kennung statt Schwelle und Randform zu
       führen; `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft;
       [MR-074](../../../../harness/conventions.md#mr-074) Bewegung 2 mit dem
       Anteil dieses Slice vermerkt (eingelöst, sobald auch slice-262 schließt).
@@ -163,15 +163,62 @@ wellenlos hier geprüft.
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Vier Festlegungen stehen in §7 der Spezifikation
+  ([`SPEC-093`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+  bis [`SPEC-096`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)),
+  die Sensor-Dateien verlinken sie. Das Nachlesen am Code hat das Wichtigste
+  dieses Slice geliefert: Der Closure-Übergangs-Wächter hatte seit 2026-09-29
+  bei keiner der 20 Closures ausgelöst, der Gate-Nachweis entstand unter
+  `make -k` und `make -i` trotz rotem Glied, und der Stop-Hook gab frei, wo er
+  den Zustand nicht lesen konnte. Alle drei folgen jetzt der Festlegung; die
+  Verifikation hat jeden Fix aus dem richtigen Grund rot gesehen.
+- **Was ging anders als geplant:** Der Schnitt war zu groß und wurde vor dem
+  Beanspruchen geteilt (slice-262). Drei Code-Fixes kamen per Plan-Änderung
+  vor dem Code hinzu, dazu ein Eintrag zur Härtung des Handoff-Gates
+  ([`MR-076`](../../../../harness/conventions.md#mr-076)). R1 fand den
+  schwersten Befund: Der reparierte Wächter löst aus, aber
+  `verify-closure-notes` liest die Unterverzeichnisse von `done/` gar nicht —
+  die Behebung übernimmt slice-263 (Auftraggeber-Entscheid), hier steht sie
+  als Grenze. Zwei Review-Runden und eine Verifikation fanden je eine weitere
+  zu kurze Grenzen-Liste.
+- **Steering-Loop-Eintrag:** Workflow-Skelett um zwei Schritte ergänzt, beide
+  liegen in `.claude/commands/implement-slice.md` (Schritte 17 und 18, je
+  `seit slice-260`): Mechanismus-Wechsel greppt den alten Begriff über die
+  Guide-Doku (Auslöser
+  `BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen` —
+  slice-219, slice-226, slice-260, 3×), und jede Liste wird am Code gezählt,
+  das Kommando steht im Plan (Auslöser
+  `BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen` — nach Verkörperung in
+  jeder Runde von slice-259 und slice-260 wieder aufgetreten; Prosa
+  ausgeschöpft, kein mechanischer Sensor möglich, weil Vollständigkeit ein
+  Urteil über den Gegenstand ist). Dazu liegt die Prüffrage 20 in
+  `.harness/skills/reviewer.md` (`seit slice-260`) für
+  `BEO-ALL/begruendung-traegt-entscheidung-nicht`, der seit slice-222 bei 3×
+  ohne Ausgang stand. Alle drei Ausgänge: Auftraggeber-Entscheid.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-260.md` in
+  [`BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/state.md)
+  (3×, verkörpert),
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md),
+  [`BEO-ALL/module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/state.md)
+  (3×, verkörpert in `AGENTS.md` §3.8) und
+  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md);
+  Ausgang zugewiesen für
+  [`BEO-ALL/begruendung-traegt-entscheidung-nicht`](../observations/BEO-ALL/begruendung-traegt-entscheidung-nicht/state.md).
+- **Folge-Slices:** slice-262 (Netz- und Nachtlauf-Werkzeuge), slice-263
+  (Closure-Prüfung sieht die Unterverzeichnisse von `done/`).
+  [`MR-074`](../../../../harness/conventions.md#mr-074) Bewegung 2 trägt den
+  Anteil dieses Slice.
+- **Risiken aus §6:** keine notiert. Trigger-Audit: kein Carveout, kein
+  bootstrap-aware Gate, keine ADR, keine Hard Rule mit eingetretenem Trigger.
+  Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  Diese Closure liegt nach dem Umzug unter `done/wellenlos/`, wo
+  `verify-closure-notes` sie nicht sieht; sie wird deshalb von Hand gegen das
+  Closure-Profil geprüft (Verifikation V-6).
+- **Drei Paarungen:** (a) Anker — `.claude/commands/implement-slice.md` trägt
+  `seit slice-260` in den Schritten 17 und 18, `.harness/skills/reviewer.md`
+  in Prüffrage 20; (b) Folge-Slices — slice-262 und slice-263 liegen in
+  `open/`; (c) Register — die fünf zitierten Beobachtungen existieren und
+  tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
