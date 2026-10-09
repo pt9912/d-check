@@ -41,7 +41,7 @@ Baseline-Skelett am Ende — der Einstieg gehört an den Anfang:
 | 3 | [`spec/architecture.md`](../spec/architecture.md) | Komponenten/Sequenzen, meilensteinfrei |
 | 4 | [`docs/plan/adr/`](../docs/plan/adr/) | Architekturentscheidungen |
 | 5 | [`docs/plan/planning/in-progress/roadmap.md`](../docs/plan/planning/in-progress/roadmap.md) | Wellen-Sequenzierung (offene Wellen derivativ) |
-| 6 | [`docs/user/`](../docs/user/) | Operations, Releasing (löst [`MR-009`](conventions.md#mr-009--source-precedence-ohne-docsuser-rang) auf) |
+| 6 | [`docs/user/`](../docs/user/), [`docs/maintainer/`](../docs/maintainer/releasing.md) | Operations, Releasing (löst [`MR-009`](conventions.md#mr-009--source-precedence-ohne-docsuser-rang) auf; der zweite Ort: [`MR-077`](conventions.md#mr-077)) |
 | 7 | [`README.md`](../README.md) | Projekt-Überblick |
 | 8 | [`AGENTS.md`](../AGENTS.md) | Agent-Briefing |
 | 9 | diese Datei | Harness-Einstieg |
