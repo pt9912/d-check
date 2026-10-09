@@ -1,1 +1,1 @@
-**Stand:** offen — Gegenmittel: vor pfad-selektiven Commits `git status` auf schon Gestagtes prüfen; Moves/Löschungen erst unmittelbar vor ihrem Commit stagen.
+**Stand:** verkörpert — Schritt 21 im Workflow-Skelett `.claude/commands/implement-slice.md` (seit slice-267, permanent): vor jedem Commit `git diff --cached --stat` lesen und gegen die Botschaft halten. Kein Sensor: was in einen Commit gehört, ist Absicht.

@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.19.0 · **Datum:** 2026-10-09 ·
+**Version:** 1.20.0 · **Datum:** 2026-10-09 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -48,6 +48,7 @@ Wer nur diese Tabelle liest, meldet die Bestands-Ausnahmen mit.
 | 18 | Nennt eine **Grenzen-Liste** ihre größte Lücke nicht — steht sie im Vertrag oder im Code daneben? | MEDIUM |
 | 19 | Führt eine **Härtung** einen neuen Leseweg ein (Pipe, Substitution, `2>/dev/null`, `\|\| true`), und ist er nur gegen den Fall gefahren, den er beheben soll — nicht gegen seine Fehlerformen (Teil-Antwort, Exit ≠ 0, stderr)? (seit slice-257) | HIGH im Gate-/Sicherheitspfad, sonst MEDIUM |
 | 20 | Steht neben einer **richtigen** Entscheidung — einer Ausnahme, einem Glob, einer Schwelle, einem Adaptions-Absatz — eine **Begründung**, die am Gegenstand nicht zutrifft? Test: wäre die Begründung falsch, bliebe die Entscheidung dieselbe? (seit slice-260) | MEDIUM |
+| 21 | Beantwortet neuer Code eine Erkennungsfrage, die das Produkt schon beantwortet — was ein Link, eine Überschrift, ein Code-Span ist — mit einem **eigenen** Muster statt mit der vorhandenen Erkennung? (seit slice-267) | MEDIUM |
 
 **Was diese Ebene kostet und was nicht.** Sie ist eine Einstiegs-Ordnung, keine
 Kürzung: das Dokument ist durch sie **länger** geworden, nicht kürzer. Der

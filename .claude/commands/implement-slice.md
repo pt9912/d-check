@@ -58,13 +58,19 @@ Follow this exact workflow:
     counts as a finding, a promise, a candidate) lists and tests negative
     cases before the code commit: negation, compound word, mid-sentence,
     line break, code block, quote — and runs the pattern over the repo's own
-    corpus, the counting command in the plan. (seit slice-265; permanent —
-    which free text resembles a form is a judgement)
+    corpus, the counting command in the plan. If the product already answers
+    the question (what is a link, a heading, a code span), use that
+    recognition instead of a new pattern. (seit slice-265, slice-267;
+    permanent — which free text resembles a form is a judgement)
 20. Before a fix commit after a review, search each finding by its
     statement, not by its cited location: grep the old term or claim over
     code, docs and plan, and list the hits in the plan-change note. (seit
     slice-265; permanent — whether a hit carries the same statement is a
     judgement)
+21. Before every commit, read `git diff --cached --stat` and hold it against
+    the message: a file staged earlier (for a gate run, a move) travels into
+    whatever commit comes next. (seit slice-267; permanent — what belongs in
+    a commit is intent, no hook sees it)
 
 Do not skip gates.
 Do not claim completion without command output.

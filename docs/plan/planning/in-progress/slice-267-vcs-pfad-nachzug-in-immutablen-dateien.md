@@ -48,14 +48,14 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] `vcs` lässt einen reinen Link-Ziel-Nachzug durch (Schlüssel, Lastenheft,
+- [x] `vcs` lässt einen reinen Link-Ziel-Nachzug durch (Schlüssel, Lastenheft,
       Spezifikation, Tests, die ohne die Änderung aus dem richtigen Grund rot
       sind); eine Änderung am Linktext oder an der übrigen Zeile bleibt ein
       Befund.
-- [ ] Ohne den Schlüssel ist die Ausgabe unverändert; `.d-check.yml` schaltet
+- [x] Ohne den Schlüssel ist die Ausgabe unverändert; `.d-check.yml` schaltet
       ihn für die ADRs ein; `AGENTS.md` §3.5 nachgezogen; `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -109,19 +109,85 @@ hinaus.
 
 - **Nachzug als Tarnung** — eine Link-Ziel-Änderung kann die Aussage einer
   Entscheidung verschieben, wenn das neue Ziel etwas anderes ist. Das Modul
-  sieht nur die Form. — **Ausgang:** *(offen)*
+  sieht nur die Form. — **Ausgang:** *weiter offen* — nach der Normierung auf
+  auflösende Ziele bleibt ein Nachzug auf eine gleichnamige andere Datei oder
+  auf eine, die nur noch in BASE existiert;
+  [`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](../observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/state.md)
+  (1×).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** `vcs.ignore-link-targets` lässt einen reinen
+  Pfad-Nachzug in `Accepted`-ADRs durch: Ein Link-Ziel, das in BASE oder HEAD
+  als Datei oder Verzeichnis auflöst, wird auf Marke, Dateiname und Anker
+  normiert; Inhaltstext löst nicht auf und bleibt Drift. Was ein Link ist,
+  beantwortet die Erkennung des Moduls `links`, dazu Filter, die nur in
+  Richtung Drift wirken. Am Bestand gemessen: der Umzug von
+  `docs/user/releasing.md` samt Nachzug in [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) und der von
+  `harness/conventions.md` (46 Links in 21 ADRs) gehen durch, ein Nachzug auf
+  ein anderes Dokument, auf ein fehlendes Ziel und eine Linktext-Änderung sind
+  Drift, das Löschen einer verlinkten Datei ohne ADR-Änderung bleibt still.
+  Ohne den Schlüssel in 40 Läufen byte-identisch; die Verifikation fuhr zehn
+  Mutationen, jede aus dem richtigen Grund rot.
+- **Was ging anders als geplant:** Acht Review-Runden statt einer. R1 bis R6
+  fanden je neue Markdown-Formen, in denen Inhaltstext als Ziel geleert wurde;
+  jeder Fix schloss die gemeldete Form, einer (Code-Span-Überlappung) machte
+  den Anlassfall selbst zur Drift (R4 H-1). Die Klasse schloss erst die
+  Normierung auf auflösende Ziele (Auftraggeber-Entscheid nach R6). Ihr
+  erster Stand löste BASE und HEAD gegen getrennte Bäume auf und meldete das
+  Löschen einer verlinkten Datei als Drift in unveränderten ADRs — gefunden
+  beim Bearbeiten von R7, gemessen (sechs falsche Befunde), behoben. Die
+  zweite Plan-Änderung in §3 nennt noch die getrennten Bäume; gültig ist die
+  Vereinigung (Verifikation V-1). Der Fix zu R8 M-1 (`00cc1f45`) schreibt nur
+  seinen Befund und lief ohne eigene Review-Runde; die Verifikation hat ihn
+  per Mutation bestätigt (V-2). Zwei Prozessfehler: eine gestagte
+  ADR-Zeile reiste in den R2-Report-Commit mit, und die gepushte Zeile wurde
+  ersetzt statt ergänzt (R3 M-2 bis M-4, append-only wiederhergestellt).
+  [ADR-0103](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md) war im Commit ihrer Entstehung `Accepted`; ihr Körper beschreibt
+  die Leerung, vier Geschichte-Anhänge tragen die Differenz. Ein Ziel mit
+  Query oder Prozent-Kodierung bleibt Drift und steht nur im Code-Kommentar
+  (V-3).
+- **Steering-Loop-Eintrag:** Workflow-Skelett, beide in
+  `.claude/commands/implement-slice.md`: Schritt 19 geschärft — eine Frage,
+  die das Produkt schon beantwortet, wird mit dessen Erkennung beantwortet
+  (Auslöser `BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`,
+  viertes Auftreten nach der Verkörperung; kein mechanischer Sensor, weil die
+  Vollständigkeit einer Negativliste ein Urteil ist), dazu Prüffrage 21 in
+  `.harness/skills/reviewer.md`, liegt in `.harness/skills/reviewer.md`;
+  Schritt 21 neu — vor jedem Commit `git diff --cached --stat` gegen die
+  Botschaft halten (Auslöser `BEO-ALL/path-scoped-commit-carries-staged-rest`,
+  slice-106, slice-108, slice-267, 3×), liegt in
+  `.claude/commands/implement-slice.md`. Beide Ausgänge Auftraggeber-Entscheid.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-267.md` in
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+  (4×, verkörpert, geschärft),
+  [`BEO-ALL/path-scoped-commit-carries-staged-rest`](../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/state.md)
+  (3×, verkörpert),
+  [`BEO-ALL/fix-schliesst-pfad-nicht-klasse`](../observations/BEO-ALL/fix-schliesst-pfad-nicht-klasse/state.md)
+  (2×),
+  [`BEO-ALL/shared-lexicon-drifts-at-edges`](../observations/BEO-ALL/shared-lexicon-drifts-at-edges/state.md),
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md),
+  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+  und
+  [`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md);
+  neu
+  [`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](../observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/state.md),
+  [`BEO-ALL/adr-accepted-bevor-der-mechanismus-steht`](../observations/BEO-ALL/adr-accepted-bevor-der-mechanismus-steht/state.md)
+  und
+  [`BEO-ALL/range-leerfall-mit-lokalem-branchnamen`](../observations/BEO-ALL/range-leerfall-mit-lokalem-branchnamen/state.md)
+  (je 1×; der letzte außerhalb des Gegenstands, ungeprüft).
+- **Folge-Slices:** slice-268 (Umzug von `releasing.md`) — `make adr-check`
+  lässt ihn jetzt durch; [ADR-0097](../../adr/0097-matrix-aussen-adaptionsblock-historie-status-ausnahmen.md) nennt den Pfad als Inline-Code, nicht als
+  Link, das gehört in seinen Plan. Release v0.85.0 mit slice-263, slice-265,
+  diesem Slice und slice-268.
+- **Risiken aus §6:** eines weiter offen (Register, siehe §6). Trigger-Audit:
+  kein Carveout, kein bootstrap-aware Gate; [ADR-0103](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md) neu (Re-Evaluierungs-
+  Trigger nicht eingetreten); keine Hard Rule mit eingetretenem Trigger.
+  Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — `.claude/commands/implement-slice.md` trägt
+  `seit slice-267` in den Schritten 19 und 21, `.harness/skills/reviewer.md`
+  in Prüffrage 21; (b) Folge-Slices — slice-268 liegt in `open/`;
+  (c) Register — die zehn zitierten Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
