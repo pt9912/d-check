@@ -890,7 +890,7 @@ Hub; `:latest` bleibt auf `v0.83.0`.
   nennt dann den veröffentlichten GHCR-Stand, damit der Teil-Zustand nicht
   geraten werden muss. **Betriebliche Vorbedingung:** Repository und die zwei
   Secrets `DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN`; ohne sie schlägt **jedes**
-  Release fehl ([`releasing.md`](docs/user/maintainer/releasing.md) §Vorbedingungen).
+  Release fehl ([`releasing.md`](docs/maintainer/releasing.md) §Vorbedingungen).
   Die Hub-Beschreibungsseite kommt aus `packaging/dockerhub/` und ist
   **nicht** fail-closed — das Bild ist die Zusage, der Beschreibungstext ist
   Präsentation.

@@ -74,7 +74,7 @@ zurückfließt.
   gemessenen Stellen".
 - **Eine geänderte Zusage zählt wie ein neues Feature** — sie steht nicht in
   einem neuen Abschnitt, sondern mitten im alten. Jetzt ein Punkt der
-  [Release-Prep-Checkliste](../../../user/maintainer/releasing.md#release-prep-vor-dem-tag);
+  [Release-Prep-Checkliste](../../../maintainer/releasing.md#release-prep-vor-dem-tag);
   im selben Release trotzdem einmal gerissen und vom Auftraggeber gefunden.
 - **Eine Mutations-Gegenprobe wird am Exit-Code geprüft, nicht am
   grep-Muster.** Ein Rückbau, der einen Compile-Fehler erzeugt, sieht sonst aus

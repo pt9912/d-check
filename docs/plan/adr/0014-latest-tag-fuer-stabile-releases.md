@@ -18,7 +18,7 @@ Tagging-Klausel „kein `latest`"; §1–3 und §5 bleiben unverändert gültig.
 **Schärft:** keine Spec-Stelle — Prozess-/Distributions-ADR; verbindlich für
 die Tagging-Politik in
 [`release.yml`](../../../.github/workflows/release.yml) und
-[`releasing.md`](../../../docs/user/maintainer/releasing.md).
+[`releasing.md`](../../../docs/maintainer/releasing.md).
 
 ## Kontext
 
@@ -28,7 +28,7 @@ Major-/Minor-Tags". Die Release-Pipeline (slice-011) pusht für **stabile**
 Releases jedoch zusätzlich `:latest` — eine bewusste Implementierungs-Wahl
 (Komfort-Einstieg), mit verbindlichem Konsumenten-Verweis auf `@sha256:`-
 Digest-Pins
-([`releasing.md`](../../../docs/user/maintainer/releasing.md)). Code und Betriebs-Doku
+([`releasing.md`](../../../docs/maintainer/releasing.md)). Code und Betriebs-Doku
 fahren also seit slice-011 **Richtung A**, während
 [ADR-0002](0002-distribution-ghcr-image.md) §4 (Source-Precedence Rang 4)
 nie nachgezogen wurde — ein Doku↔Code-Drift, bestätigt im ADR-Audit
@@ -80,7 +80,7 @@ ist `Accepted`/immutable (AGENTS.md §3.5) — die Versöhnung erfolgt per
   [ADR-0002](0002-distribution-ghcr-image.md) trägt die Notiz, §1–3 und §5
   bleiben unberührt. Die ADR-Datei selbst wird nicht editiert (immutable).
 - [`release.yml`](../../../.github/workflows/release.yml) und
-  [`releasing.md`](../../../docs/user/maintainer/releasing.md) verweisen nun auf diese
+  [`releasing.md`](../../../docs/maintainer/releasing.md) verweisen nun auf diese
   ADR (Traceability zur ratifizierenden Entscheidung statt zur abgelösten
   §4-Klausel).
 - **Kein Verhaltens-Delta** (Ratifikation): kein Release/Version-Bump, kein
@@ -94,7 +94,7 @@ ist `Accepted`/immutable (AGENTS.md §3.5) — die Versöhnung erfolgt per
 
 - [`release.yml`](../../../.github/workflows/release.yml) setzt/pusht
   `:latest` nur bei `IS_STABLE=true` (vorhanden);
-  [`releasing.md`](../../../docs/user/maintainer/releasing.md) dokumentiert die
+  [`releasing.md`](../../../docs/maintainer/releasing.md) dokumentiert die
   Digest-Pin-Pflicht. `make doc-check` hält die ADR-/Doku-Verweise
   konsistent.
 - Kein `make`-Gate prüft die CI-YAML selbst — die strukturelle Kontrolle

@@ -629,7 +629,7 @@ matrix:
   # die seit ADR-0102 abgeloest ist, und als Accepted-ADR kann sie den Verweis
   # nicht umschreiben. Gemessener Preis: ausser den drei ADR-0065-Links traegt
   # ihr Koerper nur zwei Links auf AGENTS.md, die heute keinen Befund ergeben.
-  exempt-paths: ["docs/plan/adr/00[01][0-9]-*.md", "docs/plan/adr/002[01]-*.md", "docs/plan/adr/0047-*.md", "docs/plan/adr/0068-*.md", "docs/plan/adr/README.md", "CHANGELOG.md", "docs/user/maintainer/releasing.md"]
+  exempt-paths: ["docs/plan/adr/00[01][0-9]-*.md", "docs/plan/adr/002[01]-*.md", "docs/plan/adr/0047-*.md", "docs/plan/adr/0068-*.md", "docs/plan/adr/README.md", "CHANGELOG.md", "docs/maintainer/releasing.md"]
 
 # Pfade in Inline-Code (DC-FA-CODE-001): ./ und ../ immer; dazu die
 # Wurzel-Präfixe der eigenen Verzeichniskonvention.
@@ -648,10 +648,11 @@ codepaths:
   # - arch-check.sh: abgelöst durch das Schwester-Tool a-check (ADR-0029, slice-058)
   # - gate-consistency.sh: Prüfung 3 (DC-QA-03-Modulliste) → Go-Test, Kern via Modul targets (ADR-0032, slice-064)
   # - harness/closure-outcomes.sh: abgelöst durch structure.forbid-pattern im Closure-Profil (ADR-0059)
-  # - docs/user/releasing.md: umgezogen nach docs/user/maintainer/releasing.md; Accepted-ADRs und geschlossene Slices nennen den alten Pfad in Inline-Code
-  #   GRENZE: der Eintrag wirkt repo-weit -- nennt lebende Doku den alten Pfad
-  #   künftig in Inline-Code, bleibt das still; einen Link darauf meldet links
-  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh", "tools/trace-check.sh", "tools/planning-consistency.sh", "tools/arch-check.sh", "tools/gate-consistency.sh", "tools/harness/closure-outcomes.sh", "docs/user/releasing.md"]
+  # - docs/user/releasing.md: umgezogen nach docs/maintainer/releasing.md; Accepted-ADRs und geschlossene Slices nennen den alten Pfad in Inline-Code
+  # - docs/user/maintainer: Zwischen-Ort derselben Datei; die Closure-Notiz von slice-268 nennt ihn in Inline-Code
+  #   GRENZE: beide Einträge wirken repo-weit -- nennt lebende Doku einen der
+  #   alten Pfade künftig in Inline-Code, bleibt das still; einen Link meldet links
+  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh", "tools/trace-check.sh", "tools/planning-consistency.sh", "tools/arch-check.sh", "tools/gate-consistency.sh", "tools/harness/closure-outcomes.sh", "docs/user/releasing.md", "docs/user/maintainer"]
 
 # Versions-Pin-Konsistenz (DC-FA-VER-001, slice-048): jeder ghcr-Image-Pin in
 # den Live-Docs muss die aktuelle Version aus version.md#aktuell tragen — sonst

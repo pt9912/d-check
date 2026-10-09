@@ -68,7 +68,7 @@ native_exit=0
 "$WORK/d-check" "$WORK/fixture" > "$WORK/native.out" 2> "$WORK/native.err" || native_exit=$?
 if [ "$native_exit" -eq 126 ]; then
   [ "$(uname -s)" = Linux ] \
-    || fail "Host ist $(uname -s), kein Linux — das Linux-Binary läuft hier nicht nativ (Wrapper: docs/user/maintainer/releasing.md)"
+    || fail "Host ist $(uname -s), kein Linux — das Linux-Binary läuft hier nicht nativ (Wrapper: docs/maintainer/releasing.md)"
   fail "Binary für $want_arch auf diesem Host nicht ausführbar — binfmt/QEMU für $want_arch fehlt"
 fi
 container_exit=0
