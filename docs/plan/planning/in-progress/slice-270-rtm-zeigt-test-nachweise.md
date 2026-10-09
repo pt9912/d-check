@@ -26,7 +26,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice.
 
 **Ziel:** Die RTM dieses Repos (`make trace`) zeigt je Anforderung, welche
-Tests sie belegen — in zwei Spalten: **Tests** (die Go-Suite von `make test`)
+Tests sie belegen — in der Spalte `Coverage` mit zwei Labels: **Tests** (die Go-Suite von `make test`)
 und **E2E** (`make image-test` gegen das gebaute Image). Je Spalte eine
 Abdeckungs-Datei mit der Tabelle `Kennung → Test → Datei:Zeile`, eingebunden
 über `trace.coverage` in der `.d-check.yml`. Die Tabelle wird aus den
@@ -51,7 +51,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 ## 2. Definition of Done
 
 - [ ] Zwei Abdeckungs-Dateien (Tests, E2E), aus den Testquellen abgeleitet,
-      über `trace.coverage` eingebunden; `make trace` zeigt beide Spalten.
+      über `trace.coverage` eingebunden; `make trace` zeigt beide Labels.
 - [ ] Ein Test in `make test` hält jede Datei gegen ihre Ableitung — eine
       neue oder entfernte Deklaration ohne nachgezogene Datei ist rot
       (bewusstes Brechen belegt); `make gates` grün.

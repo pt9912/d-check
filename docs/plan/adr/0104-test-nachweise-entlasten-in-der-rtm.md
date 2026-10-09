@@ -11,8 +11,8 @@
 [ADR-0026](0026-completeness-in-product-gate.md); `AGENTS.md` §3.6;
 slice-270 <!-- d-check:status-provenance -->.
 
-**Schärft:** [`DC-FA-COV-001`](../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)
-— welche Quelle in diesem Repo eine Anforderung von der Waise entlastet.
+**Schärft:** — *(keine Spec-Stelle; eine Entscheidung über die Konfiguration
+dieses Repos, nicht über das Produkt)*
 
 **Regeln:** Baseline-Regelwerk `modul-04-adrs.md`
 §Ziel-Form: ADR (MADR).

@@ -70,7 +70,7 @@ COPY . .
 RUN CGO_ENABLED=0 go test ./...
 
 # ---- abdeckung -------------------------------------------------------------
-# Schreibt die Abdeckungs-Dateien der RTM (`make abdeckung`, DC-FA-COV-001);
+# Schreibt die Abdeckungs-Dateien der RTM (`make abdeckung`, ADR-0104);
 # Kopplung: TestAbdeckungsDateienFolgenIhrerAbleitung schreibt mit
 # ABDECKUNG_ZIEL statt zu vergleichen.
 FROM deps AS abdeckung-gen

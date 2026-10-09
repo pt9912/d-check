@@ -429,16 +429,16 @@ hooks: ## git-Hooks installieren (core.hooksPath -> .githooks; commit-msg Tracea
 
 # ---- maintenance -------------------------------------------------------------
 
+abdeckung: ## Abdeckungs-Dateien der RTM aus den Testquellen schreiben (docs/user/abdeckung-*.md; Werkzeug, kein Gate). ADR-0104.
+	$(DOCKER_BUILD) --no-cache-filter abdeckung-gen --target abdeckung --output type=local,dest=docs/user .
+	chmod 644 docs/user/abdeckung-*.md
+
 # go.mod/go.sum pflegen: die Go-Toolchain läuft in Docker (kein Host-Go,
 # §3.1), schreibt als Host-User in ephemere Caches; `go mod tidy` nimmt die
 # importierten Module auf (z. B. go-git für das Modul vcs, ADR-0024) und
 # erneuert go.sum. Bewusster Akt am Dependency-Stand, kein Routine-Gate —
 # go.sum ist der Reproduzierbarkeits-Anker, die deps-Stage prüft ihn beim
 # Build (`-mod=readonly`).
-abdeckung: ## Abdeckungs-Dateien der RTM aus den Testquellen schreiben (docs/user/abdeckung-*.md; Werkzeug, kein Gate). DC-FA-COV-001.
-	$(DOCKER_BUILD) --no-cache-filter abdeckung-gen --target abdeckung --output type=local,dest=docs/user .
-	chmod 644 docs/user/abdeckung-tests.md docs/user/abdeckung-e2e.md
-
 tidy: ## go.mod/go.sum aufräumen (go mod tidy in Docker; Dependency-Pflege).
 	docker run --rm -u "$$(id -u):$$(id -g)" \
 	    -e HOME=/tmp -e GOCACHE=/tmp/gc -e GOMODCACHE=/tmp/gm \

@@ -2,17 +2,15 @@
 
 Abgeleitet aus den Go-Tests unter `internal/` und `cmd/`: eine Zeile je
 Testfunktion, deren Doc-Kommentar unmittelbar über `func Test…` eine
-Anforderungs-Kennung nennt. Eine Kennung an anderer Stelle des Tests zählt
-nicht. Die Datei schreibt `make abdeckung`; `make test` hält sie gegen die
-Testquellen.
+Anforderungs-Kennung nennt. Gezählt wird, was `go test` als Test ausführt;
+eine Kennung an anderer Stelle des Tests zählt nicht. Die Datei schreibt
+`make abdeckung`; `make test` hält sie gegen die Testquellen.
 
 **Grenze:** eine Deklaration, kein Beleg — die Zeile sagt, dass der Test die
 Anforderung prüfen soll, nicht, dass er es tut.
 
 | Kennung | Test | Datei |
 | --- | --- | --- |
-| [`DC-FA-COV-001`](../../spec/lastenheft.md) | `TestGoTestZeilenZaehltNurDenDocKommentarEinerTestfunktion` | [`internal/adapter/driven/configyaml/abdeckung_ableitung_test.go`](../../internal/adapter/driven/configyaml/abdeckung_ableitung_test.go) |
-| [`DC-FA-COV-001`](../../spec/lastenheft.md) | `TestAbdeckungsDateienFolgenIhrerAbleitung` | [`internal/adapter/driven/configyaml/abdeckung_test.go`](../../internal/adapter/driven/configyaml/abdeckung_test.go) |
 | [`DC-FA-DIAG-001`](../../spec/lastenheft.md) | `TestConfigYAMLDiagramsExemptPaths` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
 | [`DC-FA-DIAG-001`](../../spec/lastenheft.md) | `TestConfigYAMLDiagramsExemptPathsSegmentweise` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
 | [`DC-FA-STRUCT-001`](../../spec/lastenheft.md) | `TestConfigYAMLStructureHeadingPattern` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
