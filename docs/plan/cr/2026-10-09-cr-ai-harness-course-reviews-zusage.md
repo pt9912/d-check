@@ -4,8 +4,10 @@
 **Richtung:** ausgehend ([`MR-035`](../../../harness/conventions.md#mr-035))
 **Ziel:** `lab/templates/.d-check.yml` (Block `reviews`)
 **Baseline-Stand:** `v6.17.0`
-**Stand:** **offen** — weitergeleitet am 2026-10-09; die Bitte setzt d-check
-`v0.85.0` voraus.
+**Stand:** **beantwortet** — angenommen mit einer Ergänzung (Slug-Kennungen
+brauchen `match: name`), siehe [Antwort](2026-10-09-antwort-ai-harness-course-reviews-zusage.md);
+Umsetzung nach d-check
+`v0.85.0`.
 
 ---
 
