@@ -1,10 +1,10 @@
-# `make test` — fährt die Go-Testsuite des Hauptmoduls, inklusive zweier Zusagen des Repos über sich selbst
+# `make test` — fährt die Go-Testsuite des Hauptmoduls, inklusive dreier Zusagen des Repos über sich selbst
 
 ## Vertrag
 
 Die Akzeptanzkriterien der bezogenen `DC-FA-*` liegen als Tests vor und laufen
 grün — darunter der **Determinismus-Test** ([`DC-QA-02`](../../spec/lastenheft.md#dc-qa-02--determinismus)),
-eine Produkteigenschaft. Dazu **zwei** Zusagen, die keinen Produktcode prüfen,
+eine Produkteigenschaft. Dazu **drei** Zusagen, die keinen Produktcode prüfen,
 sondern **Aussagen des Repos über sich selbst**:
 
 - **Netzlos-Modullisten-Integrität** der [`.d-check.yml`](../../.d-check.yml)
@@ -18,8 +18,18 @@ sondern **Aussagen des Repos über sich selbst**:
   existiert, der Befehls-Wächter hängt am `Bash`-Werkzeug, und die
   Permission-Sperrliste deckt jeden Namen der Wächter-Sperrliste als **ganze**
   Befehlsklasse.
+- **Abdeckungs-Dateien der RTM**
+  ([ADR-0104](../../docs/plan/adr/0104-test-nachweise-entlasten-in-der-rtm.md)):
+  `docs/user/abdeckung-tests.md` und `docs/user/abdeckung-e2e.md` stimmen mit
+  ihrer Ableitung aus den Testquellen überein — einer Kennung im
+  Doc-Kommentar einer Testfunktion, einem Anker `# abdeckung:` unter jeder
+  Phase von `tools/image-test.sh`. Eine Phase ohne Anker ist rot.
 
 ## Grenze — was das Grün nicht abdeckt
+
+Die dritte Zusage prüft eine **Deklaration, keinen Beleg**: ob ein Test die
+Kennung in seinem Doc-Kommentar wirklich prüft, sieht sie nicht. Permanent —
+das bleibt Review und Verifikation.
 
 Die zweite Zusage ist die mit den meisten Löchern, und sie sind gewollt:
 

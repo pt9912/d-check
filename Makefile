@@ -43,7 +43,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test image-test-arm64 image-publish blackbox-probe semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave slice-mv selbstpruefung history-range-guard
+.PHONY: abdeckung nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test image-test-arm64 image-publish blackbox-probe semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave slice-mv selbstpruefung history-range-guard
 
 # Prerequisites laufen nacheinander, in der Reihenfolge ihrer Liste, auch
 # unter `make -j`.
@@ -435,6 +435,10 @@ hooks: ## git-Hooks installieren (core.hooksPath -> .githooks; commit-msg Tracea
 # erneuert go.sum. Bewusster Akt am Dependency-Stand, kein Routine-Gate —
 # go.sum ist der Reproduzierbarkeits-Anker, die deps-Stage prüft ihn beim
 # Build (`-mod=readonly`).
+abdeckung: ## Abdeckungs-Dateien der RTM aus den Testquellen schreiben (docs/user/abdeckung-*.md; Werkzeug, kein Gate). DC-FA-COV-001.
+	$(DOCKER_BUILD) --no-cache-filter abdeckung-gen --target abdeckung --output type=local,dest=docs/user .
+	chmod 644 docs/user/abdeckung-tests.md docs/user/abdeckung-e2e.md
+
 tidy: ## go.mod/go.sum aufräumen (go mod tidy in Docker; Dependency-Pflege).
 	docker run --rm -u "$$(id -u):$$(id -g)" \
 	    -e HOME=/tmp -e GOCACHE=/tmp/gc -e GOMODCACHE=/tmp/gm \

@@ -64,6 +64,7 @@ printf '# A\n\n[ok](b.md)\n[kaputt](fehlt.md)\n' > "$WORK/fixture/docs/a.md"
 printf 'ziel\n' > "$WORK/fixture/docs/b.md"
 
 # --- (1) Happy: nativ vs. Container byte-identisch ------------------
+# abdeckung: DC-FA-DIST-001, DC-QA-02
 native_exit=0
 "$WORK/d-check" "$WORK/fixture" > "$WORK/native.out" 2> "$WORK/native.err" || native_exit=$?
 if [ "$native_exit" -eq 126 ]; then
@@ -85,6 +86,7 @@ grep -q 'fehlt.md' "$WORK/container.out" || fail "Befund fehlt in der Ausgabe"
 echo "image-test: (1) Happy — nativ und Container byte-identisch, Exit 1"
 
 # --- (2) Boundary: read-only-Mount, sauberes Fixture → Exit 0 -------
+# abdeckung: DC-FA-DIST-001, DC-QA-03
 rm "$WORK/fixture/docs/a.md"
 printf '# A\n\n[ok](b.md)\n' > "$WORK/fixture/docs/a.md"
 ro_exit=0
@@ -94,6 +96,7 @@ docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none -v "$WORK/fixture":/repo:
 echo "image-test: (2) Boundary — read-only-Mount, vollständige Prüfung, Exit 0"
 
 # --- (3) Negative: kein Mount → Exit 2 + Mount-Hinweis --------------
+# abdeckung: DC-FA-DIST-001
 nomount_exit=0
 docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none "$REF" \
   > /dev/null 2> "$WORK/nomount.err" || nomount_exit=$?
@@ -103,6 +106,7 @@ grep -q '/repo gemountet' "$WORK/nomount.err" \
 echo "image-test: (3) Negative — kein Mount, Exit 2 mit Mount-Hinweis"
 
 # --- (4) Modi: --doctor und --repair nativ vs. Container ------------
+# abdeckung: DC-FA-CLI-007, DC-FA-CLI-008, DC-QA-02
 # Eigenes Fixture mit einer nackten Kennung (id-unlinked), damit --repair
 # einen nicht-leeren Patch liefert (ids-Modul + existierendes Target).
 mkdir -p "$WORK/idsfix/docs/plan/adr"

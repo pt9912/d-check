@@ -984,6 +984,14 @@ trace:
     dir: docs/plan/planning
     file-pattern: '^(slice-\d+)-.*\.md$'   # Capture-Gruppe 1 = volle Kennung slice-NNN
     id-prefix: ''                          # leer: der Dateiname trägt die volle Kennung
+  # Test-Nachweise als Spalte der RTM; eine Anforderung mit Test-Nachweis ist
+  # auch ohne Slice keine Waise (ADR-0104). Die Dateien schreibt `make abdeckung`,
+  # `make test` hält sie gegen die Testquellen.
+  coverage:
+    - files: [docs/user/abdeckung-tests.md]
+      label: Tests
+    - files: [docs/user/abdeckung-e2e.md]
+      label: E2E
 
 # Modul workflows (DC-FA-WF-001, ADR-0072): die uses:-Referenzen der eigenen
 # CI-Workflows. Fremde Referenz ⇒ voller SHA mit Tag-Kommentar (AGENTS.md

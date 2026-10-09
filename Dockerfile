@@ -69,6 +69,19 @@ FROM deps AS test
 COPY . .
 RUN CGO_ENABLED=0 go test ./...
 
+# ---- abdeckung -------------------------------------------------------------
+# Schreibt die Abdeckungs-Dateien der RTM (`make abdeckung`, DC-FA-COV-001);
+# Kopplung: TestAbdeckungsDateienFolgenIhrerAbleitung schreibt mit
+# ABDECKUNG_ZIEL statt zu vergleichen.
+FROM deps AS abdeckung-gen
+
+COPY . .
+RUN mkdir -p /out && ABDECKUNG_ZIEL=/out CGO_ENABLED=0 go test -count=1 \
+    -run '^TestAbdeckungsDateienFolgenIhrerAbleitung$' ./internal/adapter/driven/configyaml/
+
+FROM scratch AS abdeckung
+COPY --from=abdeckung-gen /out/ /
+
 # ---- coverage --------------------------------------------------------------
 # Schwelle, Messbasis und Randformen: spec/spezifikation.md §7 (SPEC-089);
 # Verfehlung ⇒ Carveout-Pflicht, Senkung nur per ADR.
