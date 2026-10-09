@@ -16,7 +16,7 @@ Auftraggeber-Entscheid 2026-10-09.
 **Berührte Spec-Stellen:** [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in),
 `AGENTS.md` §3.5.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-10-09.
 
@@ -65,7 +65,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | Kern-Regel `vcs` | update | Pfad-Nachzug erkennen |
 | Konfig-Modell, YAML-Adapter, `--print-config`-Vorlage | update | Schlüssel |
 | `spec/lastenheft.md`, `spec/spezifikation.md` | update | Anforderung und Verfeinerung |
-| `.d-check.yml`, `AGENTS.md` §3.5 | update | Nutzung in diesem Repo |
+| `.d-check.yml`, `AGENTS.md` §3.5, `harness/README.md`, `harness/sensors/adr-check.md` | update | Nutzung in diesem Repo und die Beschreibung des ADR-Gates |
 
 ## 4. Trigger
 
@@ -108,16 +108,43 @@ hinaus.
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** Produkt unter dem Default `*`
-(`ALL`); beim Beanspruchen neu prüfen.
+**Vorgelagert — Sub-Area-Wahl prüfen:** geändert werden Produkt-Kern (`vcs`),
+Konfig-Modell, YAML-Adapter, Konfig-Vorlage, Lastenheft, Spezifikation und die
+Harness-Doku des ADR-Gates — alle unter dem Default `*` (`ALL`); deklariert.
+
+**Spiegel vor dem Editieren** (Schritt 17; gemessen mit
+`grep -n "Geschichte" AGENTS.md harness/README.md harness/sensors/adr-check.md .d-check.yml`
+und `grep -rln` nach `VCSConfig` und der Kennung der Anforderung über Code und Doku): was als
+erlaubte Änderung einer `Accepted`-ADR genannt ist, steht in `AGENTS.md`
+§3.5, `harness/README.md` §Traceability rules, `harness/sensors/adr-check.md`
+(Vertrag und Grenze) und im Kommentar über dem `vcs`-Block der `.d-check.yml`;
+der Schlüssel selbst in Modell, Adapter, `--print-config`-Vorlage, Lastenheft
+und Spezifikation. Das Modul `immutable` ist in diesem Repo nicht aktiv —
+kein Spiegel hier. README und Handbuch ziehen die Release-Prep nach.
+
+**Entwurf vor dem Code:** `vcs.ignore-link-targets` (bool, Default aus):
+beim Vergleich des Core wird das Ziel jedes Inline-Links und jeder
+Referenz-Definition auf eine leere Form gebracht — `[text](ziel)` wird
+`[text]()`, `[label]: ziel` wird `[label]:`. Eine Änderung, die nur Ziele
+ändert, ergibt denselben Core; jede Änderung am Linktext, an der übrigen Zeile
+oder das Hinzufügen und Entfernen eines Links bleibt ein Befund.
 
 <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
 > **Offene Beobachtungen sichten.** Das
 
-**Vorgelagert — offene Beobachtungen sichten:** beim Beanspruchen neu lesen.
+**Vorgelagert — offene Beobachtungen sichten:** gelesen am 2026-10-09.
+[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+(verkörpert als Schritt 19) — die Link-Erkennung ist ein Erkennungsmuster:
+Negativliste vor dem Code (Link im Inline-Code, im Codeblock, Bild,
+verschachtelte Klammern, Ziel mit Titel); [`BEO-ALL/module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/state.md)
+— die Zusage gilt der Core-Bildung, also auch dem gestagten Lauf;
+[`BEO-ALL/review-fix-applied-only-at-cited-site`](../observations/BEO-ALL/review-fix-applied-only-at-cited-site/state.md)
+(verkörpert als Schritt 20).
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
-beim Beanspruchen aus dem jüngsten Lauf lesen.
+gelesen am 2026-10-09 aus dem jüngsten Lauf (`make nightly-state`) —
+`upstream-drift` grün (2026-10-09 07:17 UTC, nach den Pin-Hebungen),
+`image-scan` grün (2026-10-08 10:38 UTC).
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
