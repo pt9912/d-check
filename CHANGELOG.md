@@ -4,6 +4,53 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.86.0] — 2026-10-09
+
+### Added
+
+- slice-266 — **`--manual <begriff>`: Handbuch und Spezifikation ohne Netz aus
+  dem Werkzeug**
+  ([`DC-FA-CLI-013`](spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen),
+  [ADR-0107](docs/plan/adr/0107-mitgelieferte-dokumente-im-modul-root.md)).
+  Gibt die Abschnitte beider Dokumente aus, deren Überschrift den Begriff
+  nennt, samt Unterabschnitten, je mit Kopfzeile `==> <datei>:<zeile>`. Die
+  Dokumente sind ins Binary eingebettet, byte-gleich zum Build-Stand; kein
+  Scan, kein Netz, kein Mount nötig. Die Spezifikation führt jede Anforderung
+  unter ihrer Kennung als Überschrift — `--manual DC-FA-RVW-001` liefert etwa
+  die Erkennungsregel von `reviews`.
+- slice-271 — **`skip-allows-empty`: der Ruhezustand eines archivierenden
+  Repos**
+  ([`DC-FA-RVW-001`](spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in),
+  [`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
+  [`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in),
+  [ADR-0106](docs/plan/adr/0106-skip-allows-empty-erklaert-den-ruhezustand.md)).
+  Neben `skip-pattern` in `reviews`, `planning.closure` und je
+  `structure`-Regel erklärt der Schlüssel eine Kandidatenmenge, die erst
+  `skip-pattern` leert, zum Ruhezustand — dann kein Befund. Ohne ihn bleibt die
+  Leere fail-closed, ohne `skip-pattern` ist er Exit 2. Ein Repo, dessen
+  Slices alle archiviert sind, setzt `skip-pattern` **und**
+  `skip-allows-empty: true`, mit Wellen dazu `recursive: true`.
+- slice-261 — `--suggest-config ai-harness` (und `ai-harness-init`) schlägt
+  für `matrix.exclude-sections` zusätzlich `"8. Historie"` vor, den Ort der
+  Historie einer Spezifikation nach der Baseline-Vorlage
+  ([`DC-FA-CLI-006`](spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)).
+
+### Changed
+
+- slice-272 — **`reviews.match: name` deckt nur den längsten passenden
+  Slice-Namen**
+  ([`DC-FA-RVW-001`](spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)).
+  **Nicht rein additiv:** Trägt ein Report-Name auch einen längeren
+  Slice-Basisnamen, der den kürzeren enthält, deckt er nur den längeren — der
+  Report zu `slice-cache-warmup` deckt `slice-cache` nicht mehr. Gezählt
+  werden alle Slice-Dateien, die das Modul sieht, auch archivierte Stubs. Ein
+  Slice, den bisher nur der Report eines längeren Namens deckte, wird rot.
+- Harness dieses Repos, **nicht** das Prüf-Verhalten des Werkzeugs: der
+  Übergangs-Wächter `make verify-closure-notes` und `make review-coverage`
+  prüfen die Slices in den Unterverzeichnissen von `done/` (slice-264,
+  [ADR-0105](docs/plan/adr/0105-reviews-liest-done-unterverzeichnisse.md));
+  die Spezifikation legt die Netz- und Nachtlauf-Werkzeuge fest (slice-262).
+
 ## [0.85.0] — 2026-10-09
 
 ### Changed

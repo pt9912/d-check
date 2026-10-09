@@ -219,8 +219,10 @@ Dokuments:
   `reviews.promise-pattern` passt; der Default erkennt „unabhängiger Review"
   und die Vorlagen-Form „Review durchgeführt". Zugeordnet wird über die
   `slice-<NNN>`-Kennung im Report-Namen oder, mit `match: name`, über den
-  Basisnamen des Slice (für Slug-Kennungen). Mit `recursive` und
-  `skip-pattern` liest das Modul Unterverzeichnisse ohne archivierte Stubs.
+  Basisnamen des Slice (für Slug-Kennungen; ein Report deckt nur den längsten
+  passenden Namen). Mit `recursive` und
+  `skip-pattern` liest das Modul Unterverzeichnisse ohne archivierte Stubs;
+  `skip-allows-empty` erklärt ein voll archiviertes `done/` zum Ruhezustand.
   Geprüft wird die **Deckung**, nicht die Qualität des Reports.
   **Hermetisch** (kein git, kein Netz), opt-in
   ([`DC-FA-RVW-001`](spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in))
@@ -322,7 +324,7 @@ zusätzlich nach Docker Hub gespiegelt als
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
@@ -332,6 +334,8 @@ zu jedem einzelnen Modul — ist das
 mit Optionen und Exit-Codes steht in
 [`docs/user/operations.md`](docs/user/operations.md), der Release- und
 Digest-Pin-Weg in [`docs/maintainer/releasing.md`](docs/maintainer/releasing.md).
+Ohne Netz liefert `d-check --manual <begriff>` die passenden Abschnitte von
+Handbuch und Spezifikation aus dem Image selbst.
 
 ## Konfiguration (`.d-check.yml`)
 

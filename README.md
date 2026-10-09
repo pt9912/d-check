@@ -217,9 +217,11 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   checkbox item matched by `reviews.promise-pattern`; the default recognizes
   "unabhängiger Review" and the template form "Review durchgeführt". Reports
   are matched through the `slice-<NNN>` identifier in their filename or, with
-  `match: name`, through the slice's base name (for slug identifiers). With
+  `match: name`, through the slice's base name (for slug identifiers; a report
+  covers only the longest matching name). With
   `recursive` and `skip-pattern` the module reads subdirectories without
-  archived stubs. Checked is **coverage**, not the quality of the report.
+  archived stubs; `skip-allows-empty` declares a fully archived `done/` a
+  resting state. Checked is **coverage**, not the quality of the report.
   **Hermetic** (no git, no network), opt-in
   ([`DC-FA-RVW-001`](spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in))
 - `mentions` — mention coverage for a set of artifacts: every member of a
@@ -319,7 +321,7 @@ works for both registries)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.85.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to
@@ -328,6 +330,8 @@ single module — is the [user handbook](docs/user/benutzerhandbuch.md) (German)
 the terse invocation reference with options and exit codes is
 [`docs/user/operations.md`](docs/user/operations.md), the release and
 digest-pin path [`docs/maintainer/releasing.md`](docs/maintainer/releasing.md).
+Without a network, `d-check --manual <term>` prints the matching sections of
+the handbook and the specification from the image itself.
 
 ## Configuration (`.d-check.yml`)
 
