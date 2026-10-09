@@ -147,6 +147,11 @@ der Task-Box, hinter `;` oder `,` und am Anfang einer Folgezeile; Verneinung
 und Kompositum bleiben ausgeschlossen. Die `.d-check.yml` ist ein Spiegel
 (F-2, Zeile in §3); die beiden Plan-Stellen aus F-3 sind nachgezogen.)*
 
+*(Plan-Änderung nach R4, vor dem Code: Die Alternative „am Anfang einer
+Folgezeile" machte eine umbrochene Verneinung zur Zusage (R4 F-1) und hat im
+Bestand keinen Beleg. Sie entfällt; hinter `;` oder `,` gilt die Form auch über
+einen Zeilenumbruch. Ein Test hält die umbrochene Verneinung.)*
+
 ## 4. Trigger
 
 **Start** (`next` → `in-progress`): slice-263 in `done/`; `in-progress/` leer.
