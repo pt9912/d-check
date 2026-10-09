@@ -1,4 +1,4 @@
-# slice-263: Die Closure-Prüfung sieht die Slices in den Unterverzeichnissen von `done/`
+# slice-263: Closure-Prüfung über Unterverzeichnisse und Stub-Ausnahme — Produkt
 
 **Lifecycle:** Der Zustand dieses Slice ist das Verzeichnis, in dem diese
 Datei liegt — eines von `open/`, `next/`, `in-progress/`, `done/`. Er
@@ -14,8 +14,9 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 Auftraggeber-Entscheid 2026-10-09 (eigener Slice statt Mitnahme in slice-260).
 
 **Berührte Spec-Stellen:** [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) (Closure-Kandidaten,
-`planning.closure.dir`), `spec/spezifikation.md` §2 (Schlüssel der
-`planning`-Konfiguration).
+`planning.closure.dir`), [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
+(Dateimenge), `spec/spezifikation.md` §2 (Schlüssel der
+`planning`- und `structure`-Konfiguration).
 
 **Verantwortlich:** —
 
@@ -28,22 +29,32 @@ Auftraggeber-Entscheid 2026-10-09 (eigener Slice statt Mitnahme in slice-260).
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice.
 
-**Ziel:** `make verify-closure-notes` prüft jeden geschlossenen Slice im
-Volltext, gleich ob er direkt unter `done/`, unter `done/wellenlos/` oder unter
-einem Wellen-Verzeichnis liegt — die Closure-Notiz (Modul `planning`) ebenso wie
-die Abschnitts-Invarianten (Modul `structure`). Archivierte Stubs bleiben
-ausgenommen, an ihrer Form erkannt, nicht an ihrem Verzeichnis. Gemessen beim
-Schnitt: seit 2026-09-29 liegen 17 Volltexte unter `done/wellenlos/`, keiner
-davon wurde geprüft; vier tragen einen Risiko-Ausgang außerhalb des
-geschlossenen Wortschatzes (slice-240 bis slice-243).
+**Ziel:** Das Produkt kann geschlossene Slices auch in Unterverzeichnissen
+prüfen und archivierte Stubs dabei an ihrem Inhalt erkennen — zwei
+opt-in-Schlüssel, ohne die der Befundsatz byte-identisch bleibt:
+
+- `planning.closure.recursive` — die Closure-Fähigkeit liest die Kandidaten
+  auch aus den Unterverzeichnissen von `planning.closure.dir`
+  (der Basisnamen-Filter bleibt `planning.closure.glob`).
+- `planning.closure.skip-pattern` und `structure[].skip-pattern` — ein RE2
+  gegen den Datei-Inhalt; ein Kandidat, auf den es passt, ist keiner (ein
+  Stub trägt `> **ARCHIVIERT**`). Die Nullmengen-Regel gilt nach dem Abzug:
+  bleibt kein Kandidat, ist das fail-closed wie bisher.
+
+Gemessen beim Schnitt: unter `done/wellenlos/` liegen 98 Slice-Dateien, 80
+davon Stubs mit Marker und Archiv daneben, 18 Volltexte ohne beides; die
+Verzeichnisse `done/welle-*/` tragen nur Stubs.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
-- **Der Auslöser im Hook und in der CI** — slice-260 hat ihn bereits auf jeden
-  `slice-*.md` unter `done/` erweitert.
+- **Die Konfiguration dieses Repos, die vier Altverstöße und die Rücknahme
+  der Grenz-Aussagen** — slice-264; geteilt beim Schnitt, weil die
+  Stub-Erkennung ein Kriterium im Produkt braucht (Rückführungs-Bedingung aus
+  §4 der ersten Fassung).
 - **Andere Module mit einem `done/`-Verzeichnis** (`reviews.done-dir`) — beim
   Beanspruchen messen; trifft dieselbe Blindheit zu, ist das ein eigener
   Befund mit eigenem Slice.
+- **Ein `**`-Glob für `structure[].files`** — gibt es bereits.
 
 Was hier steht, ist die Grenze, an der ein wachsender Slice sich messen lässt:
 Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
@@ -51,14 +62,14 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] `planning` liest die Closure-Kandidaten auch aus Unterverzeichnissen
-      (rekursiv oder als Liste — Entscheidung im Slice, mit Anforderung oder
-      Verfeinerung); Test, der ohne die Änderung aus dem richtigen Grund rot ist.
-- [ ] `.d-check.closure.yml` trifft die Volltexte in den Unterverzeichnissen
-      und nimmt die Stubs an ihrer Form aus; die vier Altverstöße sind
-      behoben; `make verify-closure-notes` grün.
-- [ ] Ohne die neue Konfiguration ist die Ausgabe unverändert
-      (`make blackbox-probe`); `make gates` grün.
+- [ ] `planning.closure.recursive` und `planning.closure.skip-pattern`:
+      Verfeinerung in der Spezifikation, Konfig-Validierung (Exit 2 bei nicht
+      kompilierendem Muster), Tests, die ohne die Änderung aus dem richtigen
+      Grund rot sind.
+- [ ] `structure[].skip-pattern`: dasselbe für das Modul `structure`.
+- [ ] Ohne die neuen Schlüssel ist die Ausgabe unverändert
+      (`make blackbox-probe REF=<Stand davor>`); `--print-config` und die
+      übrigen Spiegel der Konfiguration nachgezogen; `make gates` grün.
 - [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
 - [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
@@ -67,11 +78,10 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| Modul `planning` (Closure-Kandidaten) | update | Unterverzeichnisse |
-| `spec/lastenheft.md` / `spec/spezifikation.md` | update | Anforderung bzw. Verfeinerung |
-| `.d-check.closure.yml` | update | Globs und Stub-Ausnahme |
-| `done/wellenlos/slice-240` bis `slice-243` | update | Altverstöße |
-| [`SPEC-095`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) (Satz zum ausgelösten Lauf), `harness/sensors/hooks.md` (Vertrag, Grenze 4), `harness/sensors/verify-closure-notes.md` (Vertrag „direkt", Grenze 8, Bindung), GRENZE-Kommentar in `.githooks/pre-commit` | update | die Aussagen, dass der Lauf die Unterverzeichnisse nicht prüft, werden mit der Behebung zurückgenommen |
+| Kern-Regeln `planning` (Closure-Kandidaten) und `structure` (Dateimenge) | update | Rekursion, Inhalts-Ausnahme |
+| Konfig-Modell und YAML-Adapter | update | zwei Schlüssel samt Validierung |
+| `spec/spezifikation.md` (Verfeinerung zu [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) Schritt C2, Verfeinerung zu [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), §2-Schema) | update | Verfeinerung |
+| `--print-config`-Vorlage und weitere Spiegel (beim Beanspruchen per grep gelistet, Schritt 17) | update | Konfig-Oberfläche |
 
 ## 4. Trigger
 
@@ -79,8 +89,9 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 **Rückführungen — vorab benennen:**
 
-- `in-progress` → `next` (zu groß): die Stub-Erkennung braucht ein eigenes
-  Kriterium im Produkt — dann Produkt und Config trennen.
+- `in-progress` → `next` (zu groß): die Spiegel der Konfig-Oberfläche
+  (Vorlage, Vorschlag, Handbuch) reißen mehr als die Kern-Änderung auf — dann
+  `structure` in einen eigenen Slice.
 
 ## 5. Closure-Trigger
 
@@ -90,9 +101,9 @@ hinaus.
 
 ## 6. Risiken und offene Punkte
 
-- **Weitere Altverstöße** — die Messung beim Schnitt galt nur dem Modul
-  `structure`; die `planning`-Hälfte (Platzhalter, Floskeln, dünne Notiz) kann
-  weitere zeigen. — **Ausgang:** *(offen)*
+- **Ein Stub ohne Marker** — ein Stub, den ein älteres Werkzeug ohne
+  `ARCHIVIERT` schrieb, würde als Volltext geprüft. Gemessen beim Schnitt:
+  alle 80 tragen ihn. — **Ausgang:** *(offen)*
 
 ## 7. Closure-Notiz
 
