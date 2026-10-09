@@ -176,9 +176,9 @@ func TestClosureRecursive_SkipDirsBleibenUnbetreten(t *testing.T) {
 	}
 }
 
-// Ohne die neuen Schlüssel bleibt die Meldung eines unlesbaren closure.dir
-// byte-identisch — auch für ein ungereinigtes dir wie "x/".
-func TestClosureDir_UngereinigtMeldungUnveraendert(t *testing.T) {
+// Die Meldung eines unlesbaren closure.dir nennt das Verzeichnis so, wie es
+// konfiguriert ist — auch ein ungereinigtes wie "x/".
+func TestClosureDir_MeldungNenntKonfiguriertesVerzeichnis(t *testing.T) {
 	cfg := closureCfg()
 	cfg.Closure.Dir = "docs/fehlt/"
 	f := CheckPlanningClosure(listErrFS{}, cfg)
