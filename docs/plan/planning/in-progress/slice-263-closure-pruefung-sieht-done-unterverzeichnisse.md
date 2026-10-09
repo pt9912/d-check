@@ -109,6 +109,10 @@ Lastenheft-Absatzes und „wie zuvor" in C2 (F-4); Akzeptanzkriterien für Exit 
 bei `skip-pattern` und das unlesbare Unterverzeichnis, Historie der
 Spezifikation vervollständigt (F-5).)*
 
+*(Plan-Änderung nach der Verifikation, vor dem Code: die Exit-2-Tests prüfen,
+dass die Meldung den Schlüssel nennt (V-2); eine dritte Review-Runde gibt die
+Nachzüge nach R2 frei (V-1).)*
+
 ## 4. Trigger
 
 **Start** (`next` → `in-progress`): `in-progress/` leer.
