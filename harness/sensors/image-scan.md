@@ -30,8 +30,9 @@ Fix** — nur der macht rot.
 3. **Die Plattform steht im Bild, nicht im Flag.** Gemessen: Trivy scannt ein
    Einzel-Manifest-Image bei `--platform linux/arm64` **still als amd64**, mit
    Exit 0. Der Plattform-Nachweis vergleicht deshalb die gemeldete
-   Architektur; weicht sie ab oder fehlt die Plattform im Index, gilt der Scan
-   als gescheitert (Exit 2), nicht als grün.
+   Architektur; weicht sie ab, gilt der Scan als gescheitert (Exit 2), nicht
+   als grün. Eine über `IMAGE_SCAN_PLATFORMS` genannte Plattform prüft das
+   Skript nicht gegen den Index — das fängt erst dieser Nachweis.
 4. **Ohne vollständig lesbaren Index gibt es keinen Scan.** Ein Ref, dessen
    Plattformen sich nicht vollständig aus einem Multi-Plattform-Index lesen
    lassen — ein Einzel-Manifest bis `v0.83.0`, ein Index-Eintrag ohne
@@ -50,19 +51,17 @@ laut, nicht still.
 
 ## Ausgabe und Ausgänge
 
-| Exit | Bedeutung |
-|---|---|
-| 0 | sauber |
-| 1 | behebbare Befunde (`CRITICAL`/`HIGH` mit Fix) |
-| 2 | **Scan gescheitert** — ausdrücklich **kein** grüner Befundstand |
-
-**Das sind die Codes des Skripts.** `make` normalisiert jeden fehlgeschlagenen
-Recipe auf seinen eigenen Exit 2 — über das Target sind 1 und 2 damit nicht
-unterscheidbar; der Nachtlauf liest deshalb die **Ausgabe**, nicht den
-Exit-Code.
+Die Exit-Codes und ihren Vorrang — ein gescheiterter Ref oder eine
+gescheiterte Plattform geht vor Befunden — legt
+[`SPEC-097`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+fest. **Das sind die Codes des Skripts.** `make` normalisiert jeden
+fehlgeschlagenen Recipe auf seinen eigenen Exit 2 — über das Target sind 1 und
+2 damit nicht unterscheidbar; der Nachtlauf liest deshalb die **Ausgabe**,
+nicht den Exit-Code.
 
 ## Bindung
 
 Netz, bewusst **nicht** in `gates`; gerufen vom Nachtlauf
 [`image-scan.yml`](../../.github/workflows/image-scan.yml). Kein Docker-Socket.
-[ADR-0066](../../docs/plan/adr/0066-cve-scan-gegen-das-publizierte-image.md)
+[ADR-0066](../../docs/plan/adr/0066-cve-scan-gegen-das-publizierte-image.md) ·
+[`SPEC-097`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)

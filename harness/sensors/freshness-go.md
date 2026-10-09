@@ -2,18 +2,18 @@
 
 ## Vertrag
 
-**Vier Versions-Achsen über _einen_** parametrierten Sensor
+**Fünf Versions-Achsen über _einen_** parametrierten Sensor
 ([`pin-freshness.sh`](../../tools/harness/pin-freshness.sh)): die
 Toolchain-Version gegen eine **Sonderquelle** — golang/go publiziert keine
 Release-Objekte, der `releases/latest`-Pfad liefe ins Leere —, dazu
-`GOLANGCI_LINT_VERSION`, `SEMGREP_VERSION` und `A_CHECK_VERSION` gegen den
-`releases/latest`-Redirect.
+`GOLANGCI_LINT_VERSION`, `SEMGREP_VERSION`, `A_CHECK_VERSION` und
+`TRIVY_VERSION` gegen den `releases/latest`-Redirect. Die drei Action-Pins
+derselben Mechanik beschreibt [`checkout-pin-freshness`](checkout-pin-freshness.md).
 
-**Der Vergleich ist Gleich/Ungleich, kein Semver-Sort:** Alle vier Reihen sind
-monoton, ein „neuer, aber älter" existiert dort nicht. Ein führendes Präfix
-wird **symmetrisch auf beiden Seiten** gestrippt — das macht den Vergleich
-nicht großzügiger, sondern richtig, weil die Pins es uneinheitlich führen
-(`v2.13.1`, aber `1.175.0`).
+Quellen, Präfix-Behandlung, Vergleich (Gleich/Ungleich, keine
+Versions-Ordnung), fail-open und Exit legt
+[`SPEC-098`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+fest; diese Datei führt sie nicht ein zweites Mal.
 
 ## Grenze — was das Grün nicht abdeckt
 
@@ -25,19 +25,15 @@ nicht großzügiger, sondern richtig, weil die Pins es uneinheitlich führen
    ist, ist **gemessen**, nicht vermutet.
 3. **Gemeldet wird, nicht gehoben** — die Hebung bleibt ein bewusster Akt, und
    bei einer Toolchain-Hebung zieht das `golangci`-Pendant mit.
+4. **`freshness-trivy` läuft nicht im Nachtlauf** — `upstream-drift.yml` führt
+   die anderen vier Achsen; der Scanner-Pin wird nur gemeldet, wer die Achse
+   selbst ruft.
 
 **Netzlos prüfbar** über `--compare <name> <gepinnt> <upstream>`; ohne diesen
 Einstieg wäre die Semantik nur mit Netz zu prüfen und damit gar nicht.
 
-## Ausgabe und Ausgänge
-
-| Exit | Bedeutung |
-|---|---|
-| 0 | Pin aktuell — oder `SKIP` (fail-open) |
-| 3 | veraltet |
-
-Das ist der Code des **Skripts**; `make` normalisiert auf seinen eigenen.
-
 ## Bindung
 
-kein Gate, bewusst **nicht** in `gates`; Netz, gerufen vom Nachtlauf.
+kein Gate, bewusst **nicht** in `gates`; Netz, gerufen vom Nachtlauf
+(außer `freshness-trivy`, Grenze 4).
+[`SPEC-098`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)

@@ -2,10 +2,10 @@
 
 ## Vertrag
 
-Fünf Achsen, ein Sensor: die drei `Dockerfile`-Stages, das semgrep-Gate-Image
-und das a-check-Image. Sie beantworten eine **andere Frage** als die
-Versions-Achsen — nicht „gibt es einen neueren Tag", sondern „trägt derselbe
-Tag inzwischen einen anderen Digest".
+Sechs Achsen, ein Sensor: die drei `Dockerfile`-Stages, das semgrep-Gate-Image,
+das a-check-Image und das Trivy-Image des CVE-Scans. Sie beantworten eine
+**andere Frage** als die Versions-Achsen — nicht „gibt es einen neueren Tag",
+sondern „trägt derselbe Tag inzwischen einen anderen Digest".
 
 **Dass eine Versions-Achse darüber genügte, ist gemessen falsch:**
 `make freshness-go` meldete `ok`, während `golang:1.27.0` einen anderen Digest
@@ -31,19 +31,18 @@ der Registries, nicht die Unmöglichkeit des Handbetriebs.
    ein `SKIP`, kein Befund.
 4. **Fail-open** — jede Netz- oder Werkzeugstörung endet als `SKIP` mit Exit 0.
    Ein Sensor, der bei fremder Störung rot wird, wird abgeschaltet.
+5. **`trivy-digest` läuft nicht im Nachtlauf** — `upstream-drift.yml` führt die
+   anderen fünf Achsen; der Scanner-Digest wird nur gemeldet, wer die Achse
+   selbst ruft.
 
-## Ausgabe und Ausgänge
-
-| Exit | Bedeutung |
-|---|---|
-| 0 | Pin entspricht dem Upstream-Digest — oder `SKIP` (fail-open) |
-| 3 | `ABWEICHEND`: derselbe Tag trägt upstream einen anderen Digest |
-
-Das sind die Codes des **Skripts**; `make` normalisiert einen fehlgeschlagenen
-Recipe auf seinen eigenen Exit 2. Welcher Fall vorliegt, sagt die Ausgabe.
+Quelle, Digest-Form, Vergleich, fail-open und Exit legt
+[`SPEC-099`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+fest; diese Datei führt sie nicht ein zweites Mal.
 
 ## Bindung
 
 kein Gate — meldet, urteilt nicht über den Arbeitsbaum; die Hebung bleibt ein
-bewusster Akt. **Netz**, fail-open, **nicht** in `gates`; gerufen vom Nachtlauf.
-[ADR-0011](../../docs/plan/adr/0011-digest-pins-build-gate-images.md)
+bewusster Akt. **Netz**, fail-open, **nicht** in `gates`; gerufen vom Nachtlauf
+(außer `trivy-digest`, Grenze 5).
+[ADR-0011](../../docs/plan/adr/0011-digest-pins-build-gate-images.md) ·
+[`SPEC-099`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)

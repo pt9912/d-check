@@ -8,6 +8,10 @@ Dieselbe Versions-Frage wie die Toolchain-Achsen, anderer Gegenstand: die
 die der `releases/latest`-Redirect liefert; die Achse brauchte deshalb **keine**
 neue Quellen-Form, nur einen anderen Extraktor.
 
+Extraktor, Vergleich, fail-open und Exit legt
+[`SPEC-098`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+fest, gemeinsam mit den Toolchain-Achsen.
+
 **Sie ergänzt [`workflow-pins`](workflow-pins.md), das die Form hält:** Das
 Pinnen schließt ein umgehängtes Tag aus und macht zugleich blind dafür, dass
 upstream eine Lücke behoben hat. Ein alter Action-Pin ist damit sehr wohl ein
@@ -19,8 +23,12 @@ upstream eine Lücke behoben hat. Ein alter Action-Pin ist damit sehr wohl ein
    Kommentar** — jene Gültigkeitsfrage bleibt die benannte Grenze von
    [`workflow-pins`](workflow-pins.md) ([`AGENTS.md`](../../AGENTS.md) §3.9).
 2. **Fail-open** — jede fremde Störung endet als `SKIP`.
+3. **Gelesen wird die erste passende `uses:`-Zeile aller Workflows** — tragen
+   mehrere Workflows verschiedene Pins derselben Action, sieht die Achse nur
+   einen; findet sie keine, endet sie still als `SKIP`.
 
 ## Bindung
 
 kein Gate, **nicht** in `gates`; Netz, gerufen vom Nachtlauf.
-[`AGENTS.md`](../../AGENTS.md) §3.9
+[`AGENTS.md`](../../AGENTS.md) §3.9 ·
+[`SPEC-098`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)

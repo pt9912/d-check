@@ -111,7 +111,7 @@ behaupten.
 
 | Target | Tut was | Bindung |
 | --- | --- | --- |
-| `make freshness-trivy` · `make trivy-digest` | Scanner-Pin auf beiden Achsen (Version, Digest). **Netz**, fail-open, Nachtlauf | kein Gate |
+| `make freshness-trivy` · `make trivy-digest` | Scanner-Pin auf beiden Achsen (Version, Digest). **Netz**, fail-open, **nicht** im Nachtlauf | kein Gate · [`SPEC-098`](../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge), [`SPEC-099`](../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) |
 | `.github/dependabot.yml` | **kein Target** — der Kanal, der hebt, was `image-scan` meldet; `gomod` und `github-actions`, **nicht** `docker` | kein Gate · [ADR-0067](../docs/plan/adr/0067-dependabot-als-hebender-kanal.md) |
 | [`make freshness-go`](sensors/freshness-go.md) · `make freshness-golangci` · `make freshness-semgrep` · `make freshness-a-check` | meldet, ob upstream ein neuerer Release existiert als der gepinnte | kein Gate · Nutzer-Regel: Go-Bump zieht das `golangci`-Pendant nach |
 | [`make checkout-pin-freshness`](sensors/checkout-pin-freshness.md) · `make login-pin-freshness` · `make hubdesc-pin-freshness` | meldet, ob die drei Action-Pins der Workflows veraltet sind | kein Gate · [`AGENTS.md`](../AGENTS.md) §3.9, §4 |
@@ -127,8 +127,8 @@ behaupten.
 | `make trace` | gibt die Requirements-Traceability-Matrix auf stdout aus | kein Gate · [`DC-FA-CLI-009`](../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) |
 | [`make archive-wave`](sensors/archive-wave.md) | bewegt geschlossene Zeitdokumente ins Archiv und ersetzt sie durch Stubs; ohne `APPLY=1` wird nichts geschrieben | kein Gate |
 | `make slice-mv` | Lifecycle-Wechsel eines Slice: reiner Move-Commit + Verweis-Reparatur (eingehend/ausgehend) als eigener Commit — automatisiert die §3.3-Zweikommits | kein Gate · adoptiert aus ai-harness-init |
-| `make history-range-guard` | Vorlauf-Wächter für history-lesende Targets: angeforderte Range auflösbar und nicht leer (stilles Grün über leerem Prüfbereich, shallow-Clone) | kein Gate · adoptiert aus ai-harness-init |
-| `make selbstpruefung` | Negativ-Selbsttest des commit-msg-Hooks im Wegwerf-Klon: ohne Kennung fällt der Commit, mit Kennung geht er durch, `make gates` läuft im Klon | kein Gate · adoptiert aus ai-harness-init |
+| `make history-range-guard` | Vorlauf-Wächter für history-lesende Targets: angeforderte Range auflösbar und nicht leer (stilles Grün über leerem Prüfbereich, shallow-Clone) | kein Gate · adoptiert aus ai-harness-init · [`SPEC-102`](../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) |
+| `make selbstpruefung` | Negativ-Selbsttest des commit-msg-Hooks im Wegwerf-Klon: ohne Kennung fällt der Commit, mit Kennung geht er durch, `make gates` läuft im Klon | kein Gate · adoptiert aus ai-harness-init · [`SPEC-103`](../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) |
 | `make image-publish` | pusht den Index beider Plattformen ohne Tag, prüft ihn gegen die geprüften Bilder und taggt erst dann; **Netz**, Release-Pfad | kein Gate · [ADR-0102](../docs/plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md) |
 | `make abdeckung` | schreibt die Abdeckungs-Dateien der RTM aus den Testquellen (`docs/user/abdeckung-*.md`); `make test` hält sie gegen ihre Ableitung | kein Gate · [ADR-0104](../docs/plan/adr/0104-test-nachweise-entlasten-in-der-rtm.md) |
 | `make tidy` | pflegt `go.mod`/`go.sum` in Docker — bewusster Akt am Dependency-Stand | kein Gate |

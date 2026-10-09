@@ -16,9 +16,10 @@ verschiedene Fragen.
 
 ## Grenze — was das Grün nicht abdeckt
 
-1. **Fail-open je Teil** — Netz-, Werkzeug- oder Manifest-Ausfall ergibt
-   `SKIP`, mit Zeitgrenzen, damit eine hängende Verbindung nicht zur Job-Decke
-   läuft.
+1. **Fail-open je Teil** — Netz-Ausfall, fehlendes `unzip`/`sha256sum` oder ein
+   fehlendes Manifest ergibt `SKIP`, mit Zeitgrenzen, damit eine hängende
+   Verbindung nicht zur Job-Decke läuft. **Ein fehlendes `curl` ist Exit 1,
+   nicht `SKIP`** — ohne `curl` gibt es keinen der beiden Teile.
 2. **Gemeldet wird, nicht gehoben** — die Hebung bleibt ein bewusster Akt.
 3. **Nicht [`DC-QA-03`](../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)** —
    jene Zusage gilt dem **Produkt**; dass `gates` netzlos bleibt, ist eine
@@ -58,13 +59,9 @@ verschiedene Fragen.
 
 ## Ausgabe und Ausgänge
 
-| Exit | Bedeutung |
-|---|---|
-| 0 | Pin aktuell und Inhalt unverändert — oder `SKIP` |
-| 3 | Currency: ein neuerer Release-Tag existiert — **oder** der Pin steht nicht in der Liste (Stand *unbestimmt*, `seit slice-215`) |
-| 4 | Content-Drift: der gepinnte Tag trägt upstream andere Bytes |
-
-Beides sind Exit-Codes des **Skripts**; `make` normalisiert einen
+Die Exit-Codes beider Teile und ihren Vorrang legt
+[`SPEC-100`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+fest. Es sind Exit-Codes des **Skripts**; `make` normalisiert einen
 fehlgeschlagenen Recipe auf seinen eigenen Exit 2 — **welcher Teil** gemeldet
 hat, sagt die Ausgabe, nicht der Exit.
 
@@ -73,4 +70,5 @@ hat, sagt die Ausgabe, nicht der Exit.
 **Netz**, fail-open, kein Gate, bewusst **nicht** in `gates`/`ci`. Bindepunkt ist der Nachtlauf
 [`upstream-drift.yml`](../../.github/workflows/upstream-drift.yml), von
 `ci.yml` getrennt, damit ein Upstream-Ausfall nie die CI rot färbt.
-[`MR-011`](../conventions/done/MR-011-baseline-pin-release-tag.md)-Kette
+[`MR-011`](../conventions/done/MR-011-baseline-pin-release-tag.md)-Kette ·
+[`SPEC-100`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
