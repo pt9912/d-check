@@ -7,7 +7,9 @@
 **Stand:** **beantwortet** — angenommen mit einer Ergänzung (Slug-Kennungen
 brauchen `match: name`), siehe [Antwort](2026-10-09-antwort-ai-harness-course-reviews-zusage.md);
 Umsetzung nach d-check
-`v0.85.0`.
+`v0.85.0`. Ein
+[Befund](2026-10-09-befund-ai-harness-course-reviews-gleichgewicht.md) zum
+Ruhezustand archivierender Repos folgte; seine Punkte 1 und 2 sind geplant.
 
 ---
 
