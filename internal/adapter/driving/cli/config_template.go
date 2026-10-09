@@ -157,7 +157,7 @@ modules: [links, anchors]
 #   #   boilerplate: []                 # Floskeln, case-insensitiv an WORTGRENZEN; Default LEER (keine Sprach-Annahme)
 #   #   placeholder: false              # unausgefuellte Vorlagen-Platzhalter (<feld>); Default AUS, ignoriert Inline-Code
 #   #   recursive: false                # auch die Unterverzeichnisse von dir lesen (Filter bleibt der Basisname); unlesbar ⇒ fail-closed
-#   #   skip-pattern: '^> \*\*ARCHIVIERT'  # RE2 gegen den rohen INHALT: Treffer ist kein Kandidat (z. B. archivierter Stub); Nullmenge zaehlt danach
+#   #   skip-pattern: '(?m)^> \*\*ARCHIVIERT'  # RE2 gegen den rohen INHALT: Treffer ist kein Kandidat (z. B. archivierter Stub); Nullmenge zaehlt danach
 #   # waves:                            # dritte Fähigkeit: Wellen-Register gegen die Wellen-Dateien (opt-in im opt-in)
 #   #   dir: docs/plan/planning         # Aktivierungs-Schalter; leer ⇒ inert (kein Wellendokument wird geöffnet)
 #   #   done-dir: docs/plan/planning/done  # Ruheort der Ergebnisnotizen (Default: <dir>/done)
@@ -219,7 +219,7 @@ modules: [links, anchors]
 #     #                                           # und zur Hinweis-Zeile in --doctor; gewinnt gegen die
 #     #                                           # modul-eigene Meldung. Leer oder mit Tab/Umbruch ⇒ Exit 2
 #     # exempt-paths: []                            # Globs; Treffer werden von DIESER Regel nicht geprüft
-#     # skip-pattern: '^> \*\*ARCHIVIERT'            # RE2 gegen den rohen INHALT: Treffer ist fuer DIESE Regel keine Kandidatin
+#     # skip-pattern: '(?m)^> \*\*ARCHIVIERT'      # RE2 gegen den rohen INHALT: Treffer ist fuer DIESE Regel keine Kandidatin
 #     # exempt-section-pattern: '^## 9\. Alt'       # Abschnitte, deren ROHE Ueberschriften-Zeile (samt #-Folge, wie bei
 #     #                                             # section-pattern) dieses RE2 trifft, prueft DIESE Regel nicht.
 #     #                                             # Laeuft VOR sections: one; leert es die Menge ⇒ section-missing

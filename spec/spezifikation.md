@@ -2219,7 +2219,11 @@ liefert (und umgekehrt):
   Kandidat und meldet sich als unlesbar. Danach zieht `planning.closure.skip-pattern`
   die Kandidaten ab, deren **rohen Inhalt** es trifft (etwa einen archivierten
   Stub an seinem Marker); eine unlesbare Datei bleibt Kandidatin und meldet sich
-  in C3 fail-closed.
+  in C3 fail-closed. **Zwei Grenzen:** Ein Symlink auf ein Verzeichnis wird
+  nicht verfolgt (Lstat-Sicht, wie in `structure`). Und das Muster sieht den
+  ganzen rohen Text — ein Volltext, der den Marker in einem Codeblock oder Zitat
+  wiedergibt, fällt **still** aus der Prüfung; das Muster gehört deshalb so eng
+  gefasst, dass es nur die Form des Stubs trifft.
   Fehlt das gesetzte Verzeichnis oder ist es unlesbar ⇒ `closure-note-missing`
   mit `file` = `planning.closure.dir` (fail-closed, kein stilles Grün); unter
   `recursive` gilt das für jedes Unterverzeichnis, die Meldung nennt seinen Pfad.
@@ -2374,7 +2378,9 @@ getroffenen Dateien.
    **rohen Datei-Inhalt** — eine Datei, auf die es passt, ist keine Kandidatin
    (etwa ein archivierter Stub, an seinem Marker erkannt). Eine **unlesbare**
    Datei bleibt Kandidatin und meldet `section-missing` auf sich (fail-closed), statt dass
-   die Ausnahme sie still verschluckt; leer ist die Abwesenheit. Die verbleibenden Dateien werden stabil sortiert geprüft
+   die Ausnahme sie still verschluckt; leer ist die Abwesenheit. **Grenze:** das
+   Muster sieht den ganzen rohen Text, auch Codeblöcke und Zitate — eine Datei,
+   die den Marker nur zitiert, fällt still aus der Prüfung. Die verbleibenden Dateien werden stabil sortiert geprüft
    ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
    **Null Kandidaten ⇒ `section-missing`** (`file` = der Glob, `line` = 1,
    `target` = die **Regel-Identität** aus `files` und Abschnitts-Selektor, damit
@@ -3433,7 +3439,7 @@ Exit 2 ohne Prüfung
 | `planning.closure.boilerplate` | string[] | leer | literale Floskel-Phrasen, **case-insensitiv** und an **Wortgrenzen** gegen den bereinigten Abschnitts-Text geprüft; ein Treffer ⇒ `closure-note-boilerplate`. Bewusst **leer** per Default — der Vertrag bringt keine sprach-spezifischen Phrasen mit; ein leerer Eintrag ⇒ Exit 2 (er träfe jeden Text) |
 | `planning.closure.recursive` | bool | `false` | liest die Kandidaten auch aus den Unterverzeichnissen von `planning.closure.dir` (die `SKIP_DIRS` ausgenommen); der Filter bleibt der Basisname nach `planning.closure.glob`. Ein unlesbares Unterverzeichnis ⇒ `closure-note-missing` mit seinem Pfad (fail-closed). Aus ⇒ nur das Verzeichnis selbst, Befundsatz byte-identisch |
 | `planning.closure.skip-pattern` | string | leer (aus) | RE2 gegen den **rohen Inhalt** eines Kandidaten; trifft es, ist die Datei keine Kandidatin (etwa ein archivierter Stub). Eine unlesbare Datei bleibt Kandidatin und meldet sich fail-closed; die Nullmengen-Regel gilt nach dem Abzug, ihre Meldung nennt das Muster. Nicht kompilierend ⇒ Exit 2 |
-| `structure[].files` | string | — | Glob (Pfad, wie `scan.ignore`) über **Wurzel-relative** Pfade des gesamten Baums, unabhängig von `scan.roots`/`scan.ignore`; Pflicht je Regel. Null Kandidaten — auch nach Abzug von `exempt-paths` — ⇒ `section-missing` auf dem Glob ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)) |
+| `structure[].files` | string | — | Glob (Pfad, wie `scan.ignore`) über **Wurzel-relative** Pfade des gesamten Baums, unabhängig von `scan.roots`/`scan.ignore`; Pflicht je Regel. Null Kandidaten — auch nach Abzug von `exempt-paths` und `skip-pattern` — ⇒ `section-missing` auf dem Glob ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)) |
 | `structure[].section` | string | leer | Heading-**Klartext**, exakter Vergleich der getrimmten Überschriften-Zeile **einschließlich `#`-Folge**. Genau eines von `section`/`section-pattern` ist Pflicht — beide oder keines ⇒ Exit 2 |
 | `structure[].section-pattern` | string | leer | RE2 gegen dieselbe getrimmte Zeile; Alternative zu `section` |
 | `structure[].sections` | string | `one` | `one` = genau ein Treffer erwartet (0 ⇒ `section-missing`, > 1 ⇒ `section-ambiguous` + Abbruch für diese Datei); `each` = jeder Treffer wird geprüft (für **wiederkehrende** Abschnitte, 0 ⇒ `section-missing`). Anderer Wert ⇒ Exit 2 |
@@ -3574,7 +3580,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-036` | `core-drift-vcs` | vcs | Core einer immutablen Datei (BASE erfüllt `vcs.immutable-when`) hat sich über die Commit-Range geändert, ihr Status-Übergang ist unzulässig (`vcs.head-allow`), oder die immutable Datei wurde gelöscht/umbenannt |
 | `SPEC-037` | `commit-untraceable` | commits | bereinigte Commit-Message trägt keine Kennung nach `commits.id-patterns` und ist nicht per `commits.exempt-pattern` (Betreff) ausgenommen |
 | `SPEC-038` | `planning-drift` | planning | Roadmap-Aktiv-Status (`planning.marker` im `planning.heading`-Block) und Präsenz von `planning.slice-glob`-Slices sind inkonsistent (`hasActive ≠ hasSlices`), oder die kanonische Überschrift fehlt/ist mehrdeutig bzw. die Roadmap-Datei fehlt (fail-closed) |
-| `SPEC-039` | `closure-note-missing` | planning | Kandidat im `planning.closure.dir` (Filter: `planning.closure.glob`, sonst `planning.slice-glob`) **ohne** einen auf `planning.closure.heading-pattern` passenden Abschnitt — oder das gesetzte `planning.closure.dir` fehlt, ist unlesbar oder enthält **keinen** Kandidaten unter dem effektiven Filter (fail-closed); schließt `closure-note-thin`/`-boilerplate` aus (ohne Abschnitt gibt es nichts zu messen) |
+| `SPEC-039` | `closure-note-missing` | planning | Kandidat im `planning.closure.dir` — unter `planning.closure.recursive` auch in seinen Unterverzeichnissen, nach Abzug von `planning.closure.skip-pattern` — (Filter: `planning.closure.glob`, sonst `planning.slice-glob`) **ohne** einen auf `planning.closure.heading-pattern` passenden Abschnitt — oder das gesetzte `planning.closure.dir` (unter `recursive` auch ein Unterverzeichnis) fehlt, ist unlesbar oder enthält **keinen** Kandidaten unter dem effektiven Filter (fail-closed); schließt `closure-note-thin`/`-boilerplate` aus (ohne Abschnitt gibt es nichts zu messen) |
 | `SPEC-040` | `closure-note-thin` | planning | Closure-Notiz-Abschnitt trägt weniger als `planning.closure.min-sentences` Satzende-Zeichen **außerhalb** der Fenced-Code-Blöcke (Platzhalter, Einzeiler) |
 | `SPEC-041` | `closure-note-boilerplate` | planning | bereinigter Closure-Notiz-Text enthält (case-insensitiv, an Wortgrenzen) eine literale Phrasg aus `planning.closure.boilerplate`; der erste Treffer benennt die Meldung |
 | `SPEC-042` | `closure-note-placeholder` | planning | Closure-Notiz-Abschnitt trägt einen unausgefüllten Vorlagen-Platzhalter in Auszeichnungs-Form (opt-in über `planning.closure.placeholder`); Inline-Code, Autolinks/Adressen und HTML-Tags sind ausgenommen, gemeldet wird der **erste** Treffer je Kandidat |

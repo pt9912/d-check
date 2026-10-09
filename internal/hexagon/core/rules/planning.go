@@ -127,10 +127,16 @@ func CheckPlanningClosure(fsys driven.Filesystem, cfg model.PlanningConfig) []mo
 // closureCandidates liefert die Basisnamen-Treffer unter dir, relativ zu dir
 // (§DC-FA-PLAN-001.a Schritt C2). Mit recursive steigt es in jedes
 // Unterverzeichnis ab, das nicht zu den immer übersprungenen gehört; der Filter
-// bleibt der Basisname. Der Fehler nennt das Verzeichnis, das nicht lesbar war —
+// bleibt der Basisname. GRENZE: ein Symlink auf ein Verzeichnis wird nicht
+// verfolgt (Lstat-Sicht). Der Fehler nennt das Verzeichnis, das nicht lesbar war —
 // auch ein unlesbares Unterverzeichnis ist kein stilles Grün.
 func closureCandidates(fsys driven.Filesystem, dir, sub, glob string, recursive bool) ([]string, error) {
-	cur := path.Join(dir, sub)
+	// Das oberste Verzeichnis geht so an List und in die Meldung, wie es
+	// konfiguriert ist; nur ein Unterverzeichnis wird zusammengesetzt.
+	cur := dir
+	if sub != "" {
+		cur = path.Join(dir, sub)
+	}
 	entries, err := fsys.List(cur)
 	if err != nil {
 		return nil, errors.New(cur)
@@ -138,8 +144,8 @@ func closureCandidates(fsys driven.Filesystem, dir, sub, glob string, recursive 
 	var names []string
 	for _, e := range entries {
 		rel := path.Join(sub, e.Name)
-		// Ohne recursive wird ein Verzeichnis behandelt wie bisher: trifft sein
-		// Name den Filter, ist es Kandidat und meldet sich in C3 als unlesbar.
+		// Ohne recursive ist ein Verzeichnis ein Eintrag wie jeder andere: trifft
+		// sein Name den Filter, ist es Kandidat und meldet sich in C3 als unlesbar.
 		if recursive && e.Kind == driven.KindDir {
 			if isSkipDir(e.Name) {
 				continue

@@ -160,3 +160,30 @@ func TestClosureSkipPattern_UnlesbareDateiBleibtKandidat(t *testing.T) {
 		t.Fatalf("unlesbar ⇒ Kandidat, closure-note-missing auf %s, got %+v", bad, f)
 	}
 }
+
+// Unter recursive bleiben die immer übersprungenen Verzeichnisse
+// unbetreten — und ohne die Ausnahme meldete dieselbe Notiz darin.
+func TestClosureRecursive_SkipDirsBleibenUnbetreten(t *testing.T) {
+	files := map[string]string{
+		closureDir + "/slice-001-a.md":              "# Slice\n\n" + richNote,
+		closureDir + "/node_modules/slice-002-b.md": kaputteNote,
+		closureDir + "/wellenlos/slice-003-c.md":    "# Slice\n\n" + richNote,
+	}
+	cfg := closureCfg()
+	cfg.Closure.Recursive = true
+	if f := CheckPlanningClosure(coretest.NewMemFS(files), cfg); f != nil {
+		t.Fatalf("node_modules/ darf nicht betreten werden, got %+v", f)
+	}
+}
+
+// Ohne die neuen Schlüssel bleibt die Meldung eines unlesbaren closure.dir
+// byte-identisch — auch für ein ungereinigtes dir wie "x/".
+func TestClosureDir_UngereinigtMeldungUnveraendert(t *testing.T) {
+	cfg := closureCfg()
+	cfg.Closure.Dir = "docs/fehlt/"
+	f := CheckPlanningClosure(listErrFS{}, cfg)
+	want := "Closure-Verzeichnis docs/fehlt/ fehlt oder ist unlesbar (fail-closed)"
+	if len(f) != 1 || f[0].Message != want || f[0].File != "docs/fehlt/" {
+		t.Fatalf("Meldung verändert: want %q, got %+v", want, f)
+	}
+}
