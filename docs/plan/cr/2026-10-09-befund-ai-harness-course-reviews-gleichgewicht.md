@@ -126,7 +126,9 @@ eine `.d-check.yml` und die genannten Dateien:
    Umzugs-Wächter abschaltete: ein flacher Stub neben Volltexten, die in ein
    nicht gelesenes Unterverzeichnis umgezogen sind, meldete dann nichts mehr.
    Für die Vorlage des Kurses heißt das: `skip-pattern` **und**
-   `skip-allows-empty: true` setzen.
+   `skip-allows-empty: true` setzen, mit Wellen dazu `recursive: true` — sonst
+   liest `reviews` die Stubs unter `done/<welle-id>/` gar nicht und die
+   Menge bleibt leer, ohne dass `skip-pattern` etwas genommen hat.
 2. **Präfix-Deckung unter `match: name` — angenommen, längster Name
    gewinnt** (slice-272). Ein Report deckt nur den längsten Slice-Basisnamen,
    der in seinem Namen passt; gezählt werden dabei alle Slice-Dateien unter
