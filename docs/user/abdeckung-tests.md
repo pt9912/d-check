@@ -2,9 +2,10 @@
 
 Abgeleitet aus den Go-Tests unter `internal/` und `cmd/`: eine Zeile je
 Testfunktion, deren Doc-Kommentar unmittelbar über `func Test…` eine
-Anforderungs-Kennung nennt. Gezählt wird, was `go test` als Test ausführt;
-eine Kennung an anderer Stelle des Tests zählt nicht. Die Datei schreibt
-`make abdeckung`; `make test` hält sie gegen die Testquellen.
+Anforderungs-Kennung nennt. Gezählt wird, was `go test` unter linux/amd64
+ohne `-tags` als Test ausführt; eine Kennung an anderer Stelle des Tests
+oder im Datei-Kommentar zählt nicht. Die Datei schreibt `make abdeckung`;
+`make test` hält sie gegen die Testquellen.
 
 **Grenze:** eine Deklaration, kein Beleg — die Zeile sagt, dass der Test die
 Anforderung prüfen soll, nicht, dass er es tut.
@@ -43,7 +44,6 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-DIAG-001`](../../spec/lastenheft.md) | `TestDecodeDiagrams` | [`internal/adapter/driven/configyaml/diagrams_test.go`](../../internal/adapter/driven/configyaml/diagrams_test.go) |
 | [`DC-FA-DIAG-001`](../../spec/lastenheft.md) | `TestDecodeDiagramsErrors` | [`internal/adapter/driven/configyaml/diagrams_test.go`](../../internal/adapter/driven/configyaml/diagrams_test.go) |
 | [`DC-FA-CONF-002`](../../spec/lastenheft.md) | `TestDecodeDiagramsScope` | [`internal/adapter/driven/configyaml/diagrams_test.go`](../../internal/adapter/driven/configyaml/diagrams_test.go) |
-| [`DC-FA-CLI-012`](../../spec/lastenheft.md) | `TestQA03_ClosureProfil_KeineZweiteNetzTuer` | [`internal/adapter/driven/configyaml/gate_consistency_test.go`](../../internal/adapter/driven/configyaml/gate_consistency_test.go) |
 | [`DC-FA-CONF-001`](../../spec/lastenheft.md) | `TestDecode_MentionsGlobValidierung` | [`internal/adapter/driven/configyaml/mentions_test.go`](../../internal/adapter/driven/configyaml/mentions_test.go) |
 | [`DC-FA-MENT-001`](../../spec/lastenheft.md) | `TestDecode_MentionsHalberBlockFailClosed` | [`internal/adapter/driven/configyaml/mentions_test.go`](../../internal/adapter/driven/configyaml/mentions_test.go) |
 | [`DC-FA-MENT-001`](../../spec/lastenheft.md) | `TestDecode_MentionsUnbekannterMatch` | [`internal/adapter/driven/configyaml/mentions_test.go`](../../internal/adapter/driven/configyaml/mentions_test.go) |

@@ -2,16 +2,18 @@ package configyaml_test
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"go/ast"
-	"go/build/constraint"
+	"go/build"
 	"go/parser"
 	"go/token"
+	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"sort"
 	"strings"
 	"testing"
@@ -57,9 +59,10 @@ func abdeckungsDateien() []abdeckungsDatei {
 			title: "Test-Abdeckung je Anforderung (Go-Suite)",
 			intro: "Abgeleitet aus den Go-Tests unter `internal/` und `cmd/`: eine Zeile je\n" +
 				"Testfunktion, deren Doc-Kommentar unmittelbar über `func Test…` eine\n" +
-				"Anforderungs-Kennung nennt. Gezählt wird, was `go test` als Test ausführt;\n" +
-				"eine Kennung an anderer Stelle des Tests zählt nicht. Die Datei schreibt\n" +
-				"`make abdeckung`; `make test` hält sie gegen die Testquellen.\n\n" +
+				"Anforderungs-Kennung nennt. Gezählt wird, was `go test` unter linux/amd64\n" +
+				"ohne `-tags` als Test ausführt; eine Kennung an anderer Stelle des Tests\n" +
+				"oder im Datei-Kommentar zählt nicht. Die Datei schreibt `make abdeckung`;\n" +
+				"`make test` hält sie gegen die Testquellen.\n\n" +
 				"**Grenze:** eine Deklaration, kein Beleg — die Zeile sagt, dass der Test die\n" +
 				"Anforderung prüfen soll, nicht, dass er es tut.",
 			derive:  goTestZeilen,
@@ -69,9 +72,11 @@ func abdeckungsDateien() []abdeckungsDatei {
 			path:  "docs/user/abdeckung-e2e.md",
 			title: "E2E-Abdeckung je Anforderung (Image-Test)",
 			intro: "Abgeleitet aus `tools/image-test.sh` (`make image-test`): eine Zeile je\n" +
-				"Phase, die unter ihrer Kopfzeile einen Anker `# abdeckung:` mit ihren\n" +
-				"Kennungen trägt. Geprüft wird das gebaute Image, nativ gegen Container. Die\n" +
-				"Datei schreibt `make abdeckung`; `make test` hält sie gegen das Skript.\n\n" +
+				"Phase. Eine Phase ist eine Kommentarzeile mit mindestens drei Strichen vor\n" +
+				"einer Nummer in Klammern; unter ihr steht ein Anker `# abdeckung:` mit ihren\n" +
+				"Kennungen, sonst ist `make test` rot. Geprüft wird das gebaute Image, nativ\n" +
+				"gegen Container. Die Datei schreibt `make abdeckung`; `make test` hält sie\n" +
+				"gegen das Skript.\n\n" +
 				"**Grenze:** eine Deklaration, kein Beleg — die Zeile sagt, dass die Phase\n" +
 				"die Anforderung prüfen soll, nicht, dass sie es tut.",
 			derive:  imageTestZeilen,
@@ -134,8 +139,10 @@ func liveConfig(t *testing.T, root string) model.Config {
 	return cfg
 }
 
-// abdeckungsListeDecktCoverage verlangt, dass trace.coverage genau die
-// Abdeckungs-Dateien dieser Liste einbindet, je Datei eine Quelle.
+// abdeckungsListeDecktCoverage verlangt, dass trace.coverage jede Datei dieser
+// Liste einbindet und keine weitere unter `docs/user/abdeckung-`.
+// GRENZE: Eine Coverage-Quelle unter anderem Pfad prüft der Abgleich nicht,
+// ebenso wenig Labels und die Aufteilung der Dateien auf Quellen.
 func abdeckungsListeDecktCoverage(liste []abdeckungsDatei, coverage []model.TraceCoverage) error {
 	want := map[string]bool{}
 	for _, d := range liste {
@@ -147,17 +154,28 @@ func abdeckungsListeDecktCoverage(liste []abdeckungsDatei, coverage []model.Trac
 			got[f] = true
 		}
 	}
-	for p := range want {
+	for _, p := range sortierteSchluessel(want) {
 		if !got[p] {
 			return fmt.Errorf("trace.coverage bindet %s nicht ein", p)
 		}
 	}
-	for p := range got {
+	for _, p := range sortierteSchluessel(got) {
 		if strings.HasPrefix(p, "docs/user/abdeckung-") && !want[p] {
 			return fmt.Errorf("trace.coverage bindet %s ein, die Ableitung kennt sie nicht", p)
 		}
 	}
 	return nil
+}
+
+// sortierteSchluessel liefert die Schlüssel einer Menge sortiert — die
+// Meldung bei mehreren Abweichungen ist so jedes Mal dieselbe.
+func sortierteSchluessel(m map[string]bool) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
 }
 
 // nurTabellenKennungen verlangt, dass jede Kennung der Datei aus der Tabelle
@@ -228,7 +246,11 @@ func goTestZeilenAus(file string, src []byte, pat *regexp.Regexp) ([]abdeckungsZ
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", file, err)
 	}
-	if !imStandardBuild(f) {
+	ok, err := gebautVonGoTest(file, src)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", file, err)
+	}
+	if !ok {
 		return nil, nil
 	}
 	testingNames := testingImportNames(f)
@@ -245,27 +267,18 @@ func goTestZeilenAus(file string, src []byte, pat *regexp.Regexp) ([]abdeckungsZ
 	return rows, nil
 }
 
-// imStandardBuild wertet eine `//go:build`-Zeile mit den Tags aus, die ein
-// Lauf ohne `-tags` setzt; ohne Zeile ist die Datei dabei.
-func imStandardBuild(f *ast.File) bool {
-	for _, cg := range f.Comments {
-		if cg.Pos() >= f.Package {
-			break
-		}
-		for _, c := range cg.List {
-			if !constraint.IsGoBuild(c.Text) {
-				continue
-			}
-			expr, err := constraint.Parse(c.Text)
-			if err != nil {
-				return false
-			}
-			return expr.Eval(func(tag string) bool {
-				return tag == runtime.GOOS || tag == runtime.GOARCH || tag == "gc" || strings.HasPrefix(tag, "go1.")
-			})
-		}
-	}
-	return true
+// gebautVonGoTest fragt `go/build`, ob `go test` die Datei baut — dieselbe
+// Antwort wie das Go-Werkzeug: Dateiname (GOOS/GOARCH-Suffix, `_` und `.` am
+// Anfang), `//go:build` und `// +build`. Der Kontext ist fest linux/amd64 ohne
+// cgo und ohne `-tags`, wie `make test` läuft; das Ergebnis hängt so nicht vom
+// Rechner ab.
+// GRENZE: Eine Datei, die nur unter einer anderen Plattform oder mit `-tags`
+// gebaut wird, zählt nicht.
+func gebautVonGoTest(file string, src []byte) (bool, error) {
+	ctx := build.Default
+	ctx.GOOS, ctx.GOARCH, ctx.CgoEnabled, ctx.BuildTags = "linux", "amd64", false, nil
+	ctx.OpenFile = func(string) (io.ReadCloser, error) { return io.NopCloser(bytes.NewReader(src)), nil }
+	return ctx.MatchFile(path.Dir(file), path.Base(file))
 }
 
 // testingImportNames liefert die Namen, unter denen die Datei `testing`
@@ -318,8 +331,8 @@ func istTestName(name string) bool {
 }
 
 var (
-	imageTestPhaseRE = regexp.MustCompile(`^#\s*-+\s*(\(\d+\).*?)[\s-]*$`)
-	imageTestAnkerRE = regexp.MustCompile(`^#\s*abdeckung:(.*)$`)
+	imageTestPhaseRE = regexp.MustCompile(`^\s*#\s*-{3,}\s*(\(\d+[a-z]?\).*?)[\s-]*$`)
+	imageTestAnkerRE = regexp.MustCompile(`^\s*#\s*abdeckung:(.*)$`)
 )
 
 // imageTestZeilen liest die Phasen von tools/image-test.sh.
@@ -331,10 +344,12 @@ func imageTestZeilen(root string, pat *regexp.Regexp) ([]abdeckungsZeile, error)
 	return imageTestZeilenAus("tools/image-test.sh", string(src), pat)
 }
 
-// imageTestZeilenAus verlangt unter jeder Phasen-Kopfzeile — ein Kommentar aus
-// Strichen und einer Nummer in Klammern — einen Anker mit mindestens einer
-// Kennung; eine Phase ohne Anker und ein Anker ohne Phase darüber sind ein
-// Fehler (fail-closed).
+// imageTestZeilenAus verlangt unter jeder Phasen-Kopfzeile — ein Kommentar mit
+// mindestens drei Strichen vor einer Nummer in Klammern — einen Anker mit
+// mindestens einer Kennung; eine Phase ohne Anker und ein Anker ohne Phase
+// darüber sind ein Fehler (fail-closed).
+// GRENZE: Eine Phase, deren Kopfzeile keine drei Striche trägt, ist keine
+// Phase — ohne Anker fällt sie still aus der Ableitung.
 func imageTestZeilenAus(file, src string, pat *regexp.Regexp) ([]abdeckungsZeile, error) {
 	var rows []abdeckungsZeile
 	phase := ""

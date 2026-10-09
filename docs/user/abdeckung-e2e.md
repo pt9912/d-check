@@ -1,9 +1,11 @@
 # E2E-Abdeckung je Anforderung (Image-Test)
 
 Abgeleitet aus `tools/image-test.sh` (`make image-test`): eine Zeile je
-Phase, die unter ihrer Kopfzeile einen Anker `# abdeckung:` mit ihren
-Kennungen trägt. Geprüft wird das gebaute Image, nativ gegen Container. Die
-Datei schreibt `make abdeckung`; `make test` hält sie gegen das Skript.
+Phase. Eine Phase ist eine Kommentarzeile mit mindestens drei Strichen vor
+einer Nummer in Klammern; unter ihr steht ein Anker `# abdeckung:` mit ihren
+Kennungen, sonst ist `make test` rot. Geprüft wird das gebaute Image, nativ
+gegen Container. Die Datei schreibt `make abdeckung`; `make test` hält sie
+gegen das Skript.
 
 **Grenze:** eine Deklaration, kein Beleg — die Zeile sagt, dass die Phase
 die Anforderung prüfen soll, nicht, dass sie es tut.

@@ -83,26 +83,32 @@ func TestOhneKennung(t *testing.T) {}
 	}
 }
 
-// Eine Datei, die ein Build-Constraint aus dem Standard-Lauf nimmt, zählt
-// nicht; eine, die es nicht tut, zählt.
-func TestGoTestZeilenFolgtDemBuildConstraint(t *testing.T) {
+// Eine Datei, die `go test` unter linux/amd64 ohne `-tags` nicht baut, zählt
+// nicht — nach Build-Constraint und nach Dateiname.
+func TestGoTestZeilenFolgtDemBuildDesGoWerkzeugs(t *testing.T) {
 	pat := liveConfig(t, repoRoot()).Trace.ReqPattern
 	body := "package x\n\nimport \"testing\"\n\n// TestX nennt DC-FA-BLD-001.\nfunc TestX(t *testing.T) {}\n"
 	for _, tc := range []struct {
-		constraint string
-		want       int
+		file, constraint string
+		want             int
 	}{
-		{"", 1},
-		{"//go:build integration\n\n", 0},
-		{"//go:build ignore\n\n", 0},
-		{"//go:build !integration\n\n", 1},
+		{"p/x_test.go", "", 1},
+		{"p/x_test.go", "//go:build integration\n\n", 0},
+		{"p/x_test.go", "//go:build ignore\n\n", 0},
+		{"p/x_test.go", "//go:build !integration\n\n", 1},
+		{"p/x_test.go", "// +build integration\n\n", 0},
+		{"p/x_windows_test.go", "", 0},
+		{"p/x_arm64_test.go", "", 0},
+		{"p/x_linux_test.go", "", 1},
+		{"p/_x_test.go", "", 0},
+		{"p/.x_test.go", "", 0},
 	} {
-		rows, err := goTestZeilenAus("x_test.go", []byte(tc.constraint+body), pat)
+		rows, err := goTestZeilenAus(tc.file, []byte(tc.constraint+body), pat)
 		if err != nil {
 			t.Fatal(err)
 		}
 		if len(rows) != tc.want {
-			t.Errorf("Constraint %q: Zeilen = %d, want %d", tc.constraint, len(rows), tc.want)
+			t.Errorf("%s mit %q: Zeilen = %d, want %d", tc.file, tc.constraint, len(rows), tc.want)
 		}
 	}
 }
@@ -137,13 +143,15 @@ func TestGoTestZeilenUeberspringtVerzeichnisseWieGoTest(t *testing.T) {
 // die Ableitung (fail-closed).
 func TestImageTestZeilenVerlangtDenAnkerJederPhase(t *testing.T) {
 	pat := liveConfig(t, repoRoot()).Trace.ReqPattern
-	gut := "# --- (1) Happy: a ----\n# abdeckung: DC-FA-DIST-001, DC-QA-02\ncode\n" +
-		"# --- (2) Boundary: b ---\n# abdeckung: DC-QA-03\n"
+	gut := "#   (1) Happy: Aufzählung ohne Striche, keine Phase\n" +
+		"# --- (1) Happy: a ----\n# abdeckung: DC-FA-DIST-001, DC-QA-02\ncode\n" +
+		"# --- (2) Boundary: b ---\n# abdeckung: DC-QA-03\n" +
+		"  # --- (4b) Eingerückt ---\n  # abdeckung: DC-QA-02\n"
 	rows, err := imageTestZeilenAus("s.sh", gut, pat)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(rows) != 2 || rows[0].test != "(1) Happy: a" || strings.Join(rows[0].ids, ",") != "DC-FA-DIST-001,DC-QA-02" {
+	if len(rows) != 3 || rows[0].test != "(1) Happy: a" || strings.Join(rows[0].ids, ",") != "DC-FA-DIST-001,DC-QA-02" || rows[2].test != "(4b) Eingerückt" {
 		t.Fatalf("Zeilen = %+v", rows)
 	}
 	for _, src := range []string{
@@ -152,6 +160,7 @@ func TestImageTestZeilenVerlangtDenAnkerJederPhase(t *testing.T) {
 		"# --- (1) Happy\ncode\n",
 		"# --- (1) Happy --- \ncode\n",
 		"#--- (1) Happy ---\ncode\n",
+		"    # --- (4b) Eingerückt ---\ncode\n",
 		"code\n# abdeckung: DC-QA-02\n",
 		"# --- (1) Happy ---\n# abdeckung: keine\n",
 	} {

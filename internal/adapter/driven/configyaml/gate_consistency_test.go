@@ -92,7 +92,7 @@ func TestQA03_NetlessModuleList_Live(t *testing.T) {
 
 // TestQA03_ClosureProfil_KeineZweiteNetzTuer prüft das ZWEITE Prüf-Profil
 // (.d-check.closure.yml, gefahren von `make verify-closure-notes` über --config,
-// DC-FA-CLI-012/ADR-0048). Es trägt bewusst NICHT den vollen Netzlos-Doku-Satz —
+// ADR-0048). Es trägt bewusst NICHT den vollen Netzlos-Doku-Satz —
 // es ist ein fokussiertes Profil, das nur `planning` per Kommandozeile
 // dazuschaltet. Die Invariante, die hier zählt, ist die andere Hälfte: eine
 // zweite Config-Datei darf keine zweite **Netz-Tür** aufmachen. Ohne diesen Test
