@@ -27,12 +27,20 @@ samt ihrer `.a`-Algorithmen und der Grund-Code-Zeilen `review-missing`,
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice.
 
-**Ziel:** Ein Repo, dessen abgeschlossene Slices alle archiviert sind, bleibt
-grün. In `reviews`, `planning.closure` und `structure` gilt gleich: Ist die
-Kandidatenmenge nur deshalb leer, weil `skip-pattern` Dateien ausgenommen hat,
-gibt es keinen Befund. `reviews.require-promises` urteilt nur über die nicht
-übersprungenen Kandidaten. Fail-closed bleibt, wenn keine passende Datei
-existiert.
+**Ziel:** Ein Repo, dessen abgeschlossene Slices alle archiviert sind, kann
+grün bleiben. In `reviews`, `planning.closure` und `structure` gilt gleich:
+Der Default bleibt fail-closed — eine Kandidatenmenge, die erst `skip-pattern`
+leert, ist ein Befund. Ein Opt-in-Schlüssel `skip-allows-empty: true` neben
+`skip-pattern` erklärt diese Leere zum Ruhezustand; dann gibt es keinen Befund.
+Ohne `skip-pattern` ist der Schlüssel ein Nutzungsfehler. Fail-closed bleibt in
+jedem Fall die Menge, aus der `skip-pattern` nichts genommen hat.
+
+**Plan-Änderung nach Review R1 (F-1 bis F-3, Auftraggeber-Entscheid):** die
+erste Fassung machte die Leere per Default still. Das lockerte den
+Nullmengen-Wächter aus [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md) und [ADR-0081](../../adr/0081-reviews-modul.md) ohne ADR, schaltete den
+Umzugs-Fall ab (ein flacher Stub neben umgezogenen Volltexten) und behandelte
+`skip-pattern` anders als `exempt-section-pattern`, dessen Leere deklariert
+werden muss ([ADR-0078](../../adr/0078-erklaerte-leermenge-mit-zahl.md)). Jetzt: deklariert statt still, mit Folge-ADR.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
@@ -49,10 +57,14 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 ## 2. Definition of Done
 
 - [ ] Lastenheft (Akzeptanzkriterien) und Spezifikation (Algorithmen,
-      Grund-Code-Zeilen) der drei Anforderungen sagen die neue Regel zu.
-- [ ] Die drei Module folgen ihr, je Modul ein Test für „nur übersprungen ⇒
-      still" und einer für „keine passende Datei ⇒ Befund"; die drei Fälle des
-      Befunds als Tests; `make gates` grün.
+      §2-Schema, Grund-Code-Zeilen) der drei Anforderungen sagen den
+      Opt-in-Schlüssel zu; der Default bleibt fail-closed.
+- [ ] Die drei Module folgen ihr, die Konfiguration weist den Schlüssel ohne
+      `skip-pattern` mit Exit 2 ab; je Modul Tests für „mit Schlüssel und nur
+      übersprungen ⇒ still", „ohne Schlüssel ⇒ Befund" und „keine passende
+      Datei ⇒ Befund"; die drei Fälle des Befunds als Tests; `make gates` grün.
+- [ ] Folge-ADR zu [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md) (Entscheidung 8) und [ADR-0081](../../adr/0081-reviews-modul.md) (Entscheidung 5),
+      bis zur Closure `Proposed`, dann `Accepted`; Index nachgezogen.
 - [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
 - [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft; der
@@ -64,6 +76,8 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 |---|---|---|
 | `spec/lastenheft.md`, `spec/spezifikation.md` | update | Zusage, Algorithmus, Grund-Codes |
 | `internal/hexagon/core/rules/` (`reviews`, `planning`, `structure`) samt Tests | update | Regel |
+| `internal/hexagon/core/model/`, `internal/adapter/driven/configyaml/`, `--print-config`-Vorlage | update | Schlüssel `skip-allows-empty`, Validierung |
+| `docs/plan/adr/` (Folge-ADR), ADR-Index | create/update | **Plan-Änderung nach Review R1:** die Ausnahme vom Nullmengen-Wächter ist deklariert, nicht still |
 
 ## 4. Trigger
 
@@ -82,9 +96,10 @@ hinaus.
 
 ## 6. Risiken und offene Punkte
 
-- **Ein zu breites `skip-pattern` macht das Gate still** — trifft das Muster
-  auch Volltexte, sieht der Lauf nichts mehr und meldet es nicht. Bisher fing
-  die Leere-Regel diesen Fall. — **Ausgang:** *(offen)*
+- **Mit dem Schlüssel wird das Gate still, wo es nicht soll** — trifft das
+  Muster auch Volltexte, oder liegen die Volltexte nach einem Umzug außerhalb
+  der Kandidatenmenge, sieht der Lauf nichts mehr und meldet es nicht. Ohne
+  den Schlüssel fängt die Leere-Regel beides weiter. — **Ausgang:** *(offen)*
 
 ## 7. Closure-Notiz
 

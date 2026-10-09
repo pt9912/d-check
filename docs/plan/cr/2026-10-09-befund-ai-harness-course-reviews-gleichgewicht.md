@@ -115,12 +115,18 @@ eine `.d-check.yml` und die genannten Dateien:
 
 ## Entscheidung je Punkt
 
-1. **Leere Menge nach `skip-pattern` — angenommen, in allen drei Modulen**
-   (slice-271). Ist die Kandidatenmenge nur deshalb leer, weil `skip-pattern`
-   Dateien ausgenommen hat, ist das kein Befund — in `reviews`,
-   `planning.closure` und `structure` gleich; dasselbe gilt für
-   `require-promises`, das nur noch über den nicht übersprungenen Kandidaten
-   urteilt. Fail-closed bleibt, wenn gar keine passende Datei existiert.
+1. **Leere Menge nach `skip-pattern` — angenommen, deklariert, in allen drei
+   Modulen** (slice-271). Der Default bleibt fail-closed. Ein neuer Schlüssel
+   `skip-allows-empty: true` neben `skip-pattern` — in `reviews`,
+   `planning.closure` und je `structure`-Regel — erklärt eine Menge, die erst
+   `skip-pattern` leert, zum Ruhezustand; dann ist sie kein Befund.
+   `require-promises` zählt ohnehin nur die Kandidaten, die `skip-pattern`
+   übrig lässt. Fail-closed bleibt die Menge, aus der `skip-pattern` nichts
+   genommen hat. Deklariert statt per Default still, weil die stille Form den
+   Umzugs-Wächter abschaltete: ein flacher Stub neben Volltexten, die in ein
+   nicht gelesenes Unterverzeichnis umgezogen sind, meldete dann nichts mehr.
+   Für die Vorlage des Kurses heißt das: `skip-pattern` **und**
+   `skip-allows-empty: true` setzen.
 2. **Präfix-Deckung unter `match: name` — angenommen, längster Name
    gewinnt** (slice-272). Ein Report deckt nur den längsten Slice-Basisnamen,
    der in seinem Namen passt; gezählt werden dabei alle Slice-Dateien unter
