@@ -4,7 +4,8 @@
 **Richtung:** ausgehend ([`MR-035`](../../../harness/conventions.md#mr-035))
 **Ziel:** `lab/templates/.d-check.yml` (Block `reviews`)
 **Baseline-Stand:** `v6.17.0`
-**Stand:** **offen** — gestellt; die Bitte setzt d-check `v0.85.0` voraus.
+**Stand:** **offen** — weitergeleitet am 2026-10-09; die Bitte setzt d-check
+`v0.85.0` voraus.
 
 ---
 
