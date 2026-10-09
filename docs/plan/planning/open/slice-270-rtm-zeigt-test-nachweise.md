@@ -14,7 +14,7 @@ Auftraggeber-Entscheid: erzeugt und gewächtert, nicht von Hand gepflegt.
 
 **Berührte Spec-Stellen:** —
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-10-09.
 
@@ -63,25 +63,35 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| Abdeckungs-Datei Tests, Abdeckungs-Datei E2E | neu | die zwei Spalten |
-| Test über die Ableitung (Go, in `make test`) | neu | Wächter gegen Drift |
+| docs/user/abdeckung-tests.md, docs/user/abdeckung-e2e.md | neu | die zwei Labels der Coverage-Spalte |
+| Ableitung und Wächter (Go-Test im Paket der Repo-Selbsttests, `make test`) | neu | Wächter gegen Drift |
+| `make abdeckung` (Werkzeug, kein Gate) | neu | schreibt die Dateien nach dem Muster von `make tidy` |
 | `tools/image-test.sh` | update | jede Phase deklariert ihre Kennungen an Ort und Stelle |
 | `.d-check.yml` (`trace.coverage`) | update | Einbindung |
-| `harness/sensors/test.md` | update | dritte Zusage des Repos über sich selbst |
+| neue ADR (Index), neuer `MR`-Eintrag (Index) | neu | Test-Nachweise entlasten eine Anforderung von der Waise |
+| `harness/sensors/test.md`, `harness/README.md` (Werkzeug-Zeile) | update | dritte Zusage des Repos über sich selbst; das neue Target |
 
-**Beim Beanspruchen zu entscheiden und hier einzutragen:**
+**Entscheidungen beim Beanspruchen (Messungen 2026-10-09):**
 
-- **Die Deklarations-Form im Go-Test** — heute nennen 57 Testdateien
-  56 verschiedene Kennungen an beliebiger Stelle (Kommentar, Testname,
-  Fehlermeldung). Gezählt wird nur eine **feste** Form (etwa die Kennung im
-  Doc-Kommentar direkt über `func Test…`); Messung, wie viele Tests sie schon
-  tragen, und Negativliste vor dem Code (Workflow-Skelett Schritt 19).
-- **Der Ort der Dateien** — die Schwester-Repos legen sie unter `docs/user/`;
-  hier ist Maintainer-Doku seit [`MR-077`](../../../../harness/conventions.md#mr-077)
-  unter `docs/maintainer/`, dessen Geltungsbereich die Releasing-Doku nennt.
-- **Die Tabelle bindet an `Datei:Zeile`** — jede Zeilenverschiebung über einem
-  Test ändert die Datei; die Schwester-Repos nehmen das in Kauf. Abwägen gegen
-  eine Bindung nur an den Testnamen.
+- **Deklarations-Form:** eine Kennung im Doc-Kommentar unmittelbar über
+  `func Test…` — gemessen tragen 356 der 944 Testfunktionen sie schon
+  (`awk` über die `//`-Zeilen direkt vor jedem `func Test`); keine Umschreibung
+  nötig, die Rückführung aus §4 greift nicht. Gelesen wird mit dem Go-Parser
+  (`go/parser`, `go/ast`), nicht mit einem eigenen Muster über den Quelltext
+  (Workflow-Skelett Schritt 19); die Kennung selbst mit
+  `trace.requirements.id-pattern`. Eine Kennung an anderer Stelle (Testname,
+  Fehlermeldung, Kommentar im Rumpf) zählt nicht.
+- **Ort:** `docs/user/`, wie in den Schwester-Repos.
+- **Bindung:** Datei und Testname, keine Zeilennummer — eine Einfügung über
+  einem Test ändert die Tabelle sonst, ohne dass sich an der Abdeckung etwas
+  ändert.
+- **Entlastung** (Auftraggeber-Entscheid): `trace.coverage` macht eine
+  Anforderung mit Test-Nachweis waisenfrei, auch ohne Slice
+  ([`DC-FA-COV-001.a`](../../../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
+  Schritt 5). Das lockert `make completeness-check` (`AGENTS.md` §3.6 ⇒ ADR)
+  und weicht vom Baseline-Vorschlag ab, nach dem der Slice entlastet
+  (Baseline-Regelwerk `grundlagen-traceability.md` §Die zweite Richtung ⇒
+  `MR`). Heute ohne Wirkung: die RTM meldet 0 Waisen.
 
 ## 4. Trigger
 
@@ -123,15 +133,30 @@ wellenlos hier geprüft.
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** beim Beanspruchen.
+**Vorgelagert — Sub-Area-Wahl prüfen:** geändert werden ein Test im Paket
+der Repo-Selbsttests, ein Gate-Skript (`tools/image-test.sh`), das `Makefile`,
+die `.d-check.yml`, zwei neue Doku-Dateien, ADR, `MR` und Harness-Doku — alle
+unter dem Default `*` (`ALL`); deklariert. Kein Produkt-Code.
 
 <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
 > **Offene Beobachtungen sichten.** Das
 
-**Vorgelagert — offene Beobachtungen sichten:** beim Beanspruchen.
+**Vorgelagert — offene Beobachtungen sichten:** gelesen am 2026-10-09.
+[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+(verkörpert als Schritt 19) — der Leser der Deklarationen ist eine Erkennung:
+der Go-Parser statt eines Musters, dazu eine Negativliste (Kennung im
+Rumpf, im Testnamen, in einem Kommentar mit Leerzeile davor, in einem
+`t.Run`-Namen) und der eigene Bestand vor dem Code;
+[`BEO-ALL/shared-lexicon-drifts-at-edges`](../observations/BEO-ALL/shared-lexicon-drifts-at-edges/state.md)
+— die Kennung liest dasselbe `id-pattern` wie die RTM, kein zweites;
+[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+— die Grenze der Spalte steht in den beiden Dateien selbst.
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
-beim Beanspruchen.
+gelesen am 2026-10-09 (`make nightly-state`) — `upstream-drift` grün;
+`image-scan` rot im Lauf vor dem Release v0.85.0; `make image-scan` gegen
+das veröffentlichte Image danach: keine behebbaren CRITICAL/HIGH auf beiden
+Plattformen und beiden Registries.
 
-**Modus-Begründungsblock:** beim Beanspruchen.
+**Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
