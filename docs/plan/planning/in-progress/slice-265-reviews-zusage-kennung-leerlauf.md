@@ -50,7 +50,7 @@ bleibt:
 
 - **Die Doku der Module im Image** (CR-Punkt 4) — slice-266; ein eigener
   Liefer-Gegenstand mit eigener Oberfläche.
-- **Der Default der Phrase** — bleibt „unabhängiger Review"
+- ~~**Der Default der Phrase**~~ — entfallen durch die Plan-Änderung nach R1 (zweiter Teil); ursprünglich: bleibt „unabhängiger Review"
   (Auftraggeber-Entscheid): ein breiterer Default änderte den Befundsatz
   bestehender Nutzer.
 - **Die Konfiguration dieses Repos** für `reviews` — sie setzt die neuen
@@ -86,6 +86,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | Konfig-Modell, YAML-Adapter, `--print-config`-Vorlage | update | Schlüssel und Beschreibung |
 | `spec/lastenheft.md` (Anforderung des Moduls), `spec/spezifikation.md` | update | Anforderung und Verfeinerung |
 | CR-Datei | update | Entscheidung je Punkt |
+| ausgehender CR an den Kurs unter `docs/plan/cr/` | neu | Vorlage der `.d-check.yml` setzt `require-promises` |
 | `harness/sensors/review-coverage.md` | update | die Grenze des eigenen Gates gegen den gemessenen Stand: die Default-Phrase trifft keinen DoD-Punkt dieses Repos |
 
 *(Plan-Änderung vor dem Code-Commit: die Sensor-Datei des eigenen Gates kommt
@@ -106,6 +107,19 @@ Zeichen, das kein Buchstabe und keine Ziffer ist — `slice-26` wird nicht mehr
 vom Report zu `slice-265-…` gedeckt; die Präfix-Grenze mit Bindestrich bleibt
 benannt (F-10). Die Sensor-Datei nennt statt eingefrorener Zahlen, wie die
 Messung zu wiederholen ist (F-9).)*
+
+*(Plan-Änderung nach R1, zweiter Teil, vor dem Code — Auftraggeber-Entscheid
+2026-10-09, der den ersten zum Default revidiert: Die Baseline-Vorlage des
+Slice-Plans formuliert den DoD-Punkt „Review durchgeführt, Report unter
+`docs/reviews/` liegt vor", und ihre mitgelieferte `.d-check.yml` schaltet
+`reviews` ohne Muster ein — jedes Repo, das der Baseline folgt, läuft damit
+grün über einer leeren Menge. Der Default erkennt deshalb **zusätzlich** die
+Vorlagen-Form „Review durchgeführt"; das ändert den Befundsatz dort, wo heute
+nichts geprüft wird, und steht als Default-Änderung im Lastenheft. Dazu ein
+**ausgehender CR** an den Kurs (`docs/plan/cr/`, [`MR-035`](../../../../harness/conventions.md#mr-035)): die
+`.d-check.yml`-Vorlage setzt `require-promises`, sobald v0.85.0 released ist,
+damit ein künftiges Auseinanderlaufen von Vorlage und Default laut wird. Die
+Abgrenzung „Der Default der Phrase bleibt" in §1 entfällt damit.)*
 
 ## 4. Trigger
 
