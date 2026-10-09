@@ -554,6 +554,11 @@ type StructureRule struct {
 	// (DC-FA-CLI-007); dieser Text ist verfasst und wird nie angewendet.
 	Hint        string
 	ExemptPaths []string
+	// SkipPattern nimmt ganze Dateien nach ihrem INHALT aus der Kandidatenmenge
+	// (RE2 gegen den rohen Datei-Text): eine Datei, auf die es passt, ist keine
+	// Kandidatin. Leer ist die Abwesenheit. Die Nullmengen-Haerte gilt nach dem
+	// Abzug. Eine unlesbare Datei bleibt Kandidatin und meldet sich fail-closed.
+	SkipPattern string
 	// TasksIgnorePattern nimmt Task-Items aus der max-tasks-Zaehlung heraus.
 	// Es sieht den ITEM-TEXT hinter Listen-Marker und Checkbox, nicht die rohe
 	// Zeile: gegen die rohe Zeile bezeichnete `^` immer den Listen-Marker, und
@@ -776,6 +781,14 @@ type ClosureConfig struct {
 	MinSentences   int
 	Boilerplate    []string
 	Placeholder    bool
+	// Recursive liest die Kandidaten auch aus den Unterverzeichnissen von Dir;
+	// der Basisnamen-Filter bleibt Glob. Aus: nur Dir selbst (byte-identisch).
+	Recursive bool
+	// SkipPattern nimmt einen Kandidaten nach seinem INHALT aus (RE2 gegen den
+	// rohen Datei-Text) -- etwa einen archivierten Stub. Leer ist die
+	// Abwesenheit. Die Nullmengen-Regel gilt nach dem Abzug; eine unlesbare
+	// Datei bleibt Kandidatin und meldet sich fail-closed.
+	SkipPattern string
 }
 
 // EffectiveHeadingPattern liefert das RE2-Muster der Closure-Notiz-Überschrift

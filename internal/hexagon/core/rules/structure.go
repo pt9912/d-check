@@ -62,18 +62,23 @@ func checkStructureRule(fsys driven.Filesystem, r model.StructureRule, all []str
 		if !matchGlob(r.Files, f) {
 			continue
 		}
-		if structureExempt(r, f) {
+		if structureExempt(r, f) || structureSkipped(fsys, r, f) {
 			continue
 		}
 		cands = append(cands, f)
 	}
 	// Nullmengen-Härte: eine Regel zu setzen IST die Behauptung, dass sie Dateien
-	// trifft — auch dann, wenn erst exempt-paths die Menge geleert hat.
+	// trifft — auch dann, wenn erst exempt-paths oder skip-pattern die Menge
+	// geleert hat.
 	if len(cands) == 0 {
+		abzug := "exempt-paths"
+		if r.SkipPattern != "" {
+			abzug += " und skip-pattern"
+		}
 		return []model.Finding{{
 			File: r.Files, Line: 1, Rule: "structure", Target: r.Identity(),
 			Reason: model.ReasonSectionMissing,
-			Message: "Regel trifft keine Datei (auch nach Abzug von exempt-paths) — " +
+			Message: "Regel trifft keine Datei (auch nach Abzug von " + abzug + ") — " +
 				"das Gate liefe leer",
 		}}
 	}
@@ -99,6 +104,21 @@ func structureExemptSections(r model.StructureRule, lines []string, heads []Sect
 		out = append(out, h)
 	}
 	return out
+}
+
+// structureSkipped nimmt eine Datei nach ihrem Inhalt aus (skip-pattern) —
+// etwa einen archivierten Stub. Eine unlesbare Datei bleibt Kandidatin und
+// meldet sich in checkStructureFile fail-closed, statt dass die Ausnahme sie
+// still verschluckt. Das Muster ist am Config-Rand geprüft.
+func structureSkipped(fsys driven.Filesystem, r model.StructureRule, file string) bool {
+	if r.SkipPattern == "" {
+		return false
+	}
+	content, err := fsys.ReadFile(file)
+	if err != nil {
+		return false
+	}
+	return regexp.MustCompile(r.SkipPattern).Match(content)
 }
 
 func structureExempt(r model.StructureRule, file string) bool {

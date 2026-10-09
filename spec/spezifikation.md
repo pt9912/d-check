@@ -2194,7 +2194,7 @@ liefert (und umgekehrt):
   Fähigkeit. **Exit 2** (Config-Fehler, vor dem Lauf) bei: `dir` absolut oder mit
   `..`-Segment; nicht kompilierendes `heading-pattern`; explizit gesetztes
   `min-sentences` < 1; leerer (oder nur aus Whitespace bestehender)
-  `boilerplate`-Eintrag. Ein **abwesendes** `min-sentences` ist kein Fehler,
+  `boilerplate`-Eintrag; nicht kompilierendes `skip-pattern`. Ein **abwesendes** `min-sentences` ist kein Fehler,
   sondern der Default — die Unterscheidung „nicht gesetzt" vs. „auf 0 gesetzt"
   ist Teil der Zusage, sonst wäre die Null-Schwelle unerreichbar prüfbar.
 - **C2. Kandidaten.** Das Listing von `planning.closure.dir` wird nach Dateien
@@ -2212,8 +2212,17 @@ liefert (und umgekehrt):
   umfassen. Ein gemeinsames Muster koppelt beide so, dass ein Weiten der einen
   Menge die andere verbiegt (im Grenzfall matcht die Roadmap-Datei selbst und
   der Ruhe-Marker ist dauerhaft falsch-rot).
+  Mit `planning.closure.recursive` steigt das Listing in jedes Unterverzeichnis
+  ab (die `SKIP_DIRS` ausgenommen); der Filter bleibt der **Basisname**, und ein
+  Verzeichnis ist dann Abstieg, nicht Kandidat. Ohne den Schlüssel bleibt alles
+  wie zuvor — auch ein Verzeichnis, dessen Name den Filter trifft, ist
+  Kandidat und meldet sich als unlesbar. Danach zieht `planning.closure.skip-pattern`
+  die Kandidaten ab, deren **rohen Inhalt** es trifft (etwa einen archivierten
+  Stub an seinem Marker); eine unlesbare Datei bleibt Kandidatin und meldet sich
+  in C3 fail-closed.
   Fehlt das gesetzte Verzeichnis oder ist es unlesbar ⇒ `closure-note-missing`
-  mit `file` = `planning.closure.dir` (fail-closed, kein stilles Grün).
+  mit `file` = `planning.closure.dir` (fail-closed, kein stilles Grün); unter
+  `recursive` gilt das für jedes Unterverzeichnis, die Meldung nennt seinen Pfad.
   **Ebenso fail-closed: null Kandidaten.** `planning.closure.dir` zu setzen
   **ist** die Behauptung, dass dort Closure-Notizen liegen; findet der Lauf
   keine, stimmt die Behauptung nicht mehr (typischer Auslöser: der Bestand
@@ -2221,6 +2230,8 @@ liefert (und umgekehrt):
   Nullmengen-Logik wie bei den Anforderungsquellen der RTM
   ([`DC-FA-REQ-001`](lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)).
   Ein Repo ohne abgeschlossene Slices setzt den Schlüssel schlicht noch nicht.
+  Die Nullmenge zählt **nach** dem Abzug durch `skip-pattern`; die Meldung nennt
+  dann das Muster.
   Die Kandidaten werden in stabiler Namens-Reihenfolge geprüft — die Sortierung
   liegt im Kern, nicht beim Dateisystem.
 - **C3. Abschnitt bestimmen.** Je Kandidat wird die **erste** Zeile gesucht, die
@@ -2333,7 +2344,7 @@ getroffenen Dateien.
    geöffnet). **Exit 2** vor dem Lauf bei: Regel ohne `files`; ungültiges Glob in
    `files`/`exempt-paths`; weder `section` noch `section-pattern` gesetzt **oder**
    beide; `sections` weder `one` noch `each`; nicht kompilierendes
-   `section-pattern`/`forbid-pattern`/`require-pattern`/`tasks-ignore-pattern`/`exempt-section-pattern`;
+   `section-pattern`/`forbid-pattern`/`require-pattern`/`tasks-ignore-pattern`/`exempt-section-pattern`/`skip-pattern`;
    ein `tasks-ignore-pattern` **ohne** `max-tasks` (halbe Aktivierung wie
    `table.order-column` ohne `table.order`); **explizit** gesetztes
    `min-sentences` < 1, `max-tasks` < 0 oder `max-lines` < 1; leerer Eintrag in `require-all`;
@@ -2359,13 +2370,18 @@ getroffenen Dateien.
    `structure` kennt deshalb **kein** `<modul>.scope`. Kandidaten sind **nur
    Markdown-Dateien** (Endungs-Menge des Scanners) und **keine Symlinks** (§1) —
    eine nur über einen Symlink erreichbare Datei prüft auch dieses Modul nicht.
-   Abgezogen wird `exempt-paths`. Die verbleibenden Dateien werden stabil sortiert geprüft
+   Abgezogen wird `exempt-paths`, danach `skip-pattern`: ein RE2 gegen den
+   **rohen Datei-Inhalt** — eine Datei, auf die es passt, ist keine Kandidatin
+   (etwa ein archivierter Stub, an seinem Marker erkannt). Eine **unlesbare**
+   Datei bleibt Kandidatin und meldet `section-missing` auf sich (fail-closed), statt dass
+   die Ausnahme sie still verschluckt; leer ist die Abwesenheit. Die verbleibenden Dateien werden stabil sortiert geprüft
    ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
    **Null Kandidaten ⇒ `section-missing`** (`file` = der Glob, `line` = 1,
    `target` = die **Regel-Identität** aus `files` und Abschnitts-Selektor, damit
    zwei leer laufende Regeln über derselben Dateimenge nicht unter der
    Befund-Deduplikation zusammenfallen; identische Identität ⇒ Exit 2) —
-   **auch dann, wenn erst `exempt-paths` die Menge geleert hat**: sonst schaltete
+   **auch dann, wenn erst `exempt-paths` oder `skip-pattern` die Menge geleert
+   hat** (die Meldung nennt dann beide Abzüge): sonst schaltete
    ein Ventil die Regel still ab (dieselbe Nullmengen-Logik wie bei den
    Anforderungsquellen der RTM). Ist schon der **Dateibaum** nicht lesbar, meldet
    **jede** Regel `section-missing` mit ihrer Identität (fail-closed) — ein
@@ -3415,6 +3431,8 @@ Exit 2 ohne Prüfung
 | `planning.closure.min-sentences` | int | `4` | Mindestzahl der Satzende-Zeichen (`.`, `!`, `?`) im Abschnitt **nach** Entfernen der Fenced-Code-Blöcke; darunter ⇒ `closure-note-thin`. Wert < 1 ⇒ Exit 2 (eine Schwelle von 0 wäre ein stilles Grün) |
 | `planning.closure.placeholder` | bool | `false` | schaltet die vierte Struktur-Bedingung frei: der unausgefüllte Rumpf einer Vorlage ⇒ `closure-note-placeholder`. Aus ⇒ Schritt C4b entfällt, Befundsatz byte-identisch. Die Erkennung ignoriert **Inline-Code** und verwirft Autolinks/Adressen sowie HTML-Tags per Nachfilter |
 | `planning.closure.boilerplate` | string[] | leer | literale Floskel-Phrasen, **case-insensitiv** und an **Wortgrenzen** gegen den bereinigten Abschnitts-Text geprüft; ein Treffer ⇒ `closure-note-boilerplate`. Bewusst **leer** per Default — der Vertrag bringt keine sprach-spezifischen Phrasen mit; ein leerer Eintrag ⇒ Exit 2 (er träfe jeden Text) |
+| `planning.closure.recursive` | bool | `false` | liest die Kandidaten auch aus den Unterverzeichnissen von `planning.closure.dir` (die `SKIP_DIRS` ausgenommen); der Filter bleibt der Basisname nach `planning.closure.glob`. Ein unlesbares Unterverzeichnis ⇒ `closure-note-missing` mit seinem Pfad (fail-closed). Aus ⇒ nur das Verzeichnis selbst, Befundsatz byte-identisch |
+| `planning.closure.skip-pattern` | string | leer (aus) | RE2 gegen den **rohen Inhalt** eines Kandidaten; trifft es, ist die Datei keine Kandidatin (etwa ein archivierter Stub). Eine unlesbare Datei bleibt Kandidatin und meldet sich fail-closed; die Nullmengen-Regel gilt nach dem Abzug, ihre Meldung nennt das Muster. Nicht kompilierend ⇒ Exit 2 |
 | `structure[].files` | string | — | Glob (Pfad, wie `scan.ignore`) über **Wurzel-relative** Pfade des gesamten Baums, unabhängig von `scan.roots`/`scan.ignore`; Pflicht je Regel. Null Kandidaten — auch nach Abzug von `exempt-paths` — ⇒ `section-missing` auf dem Glob ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)) |
 | `structure[].section` | string | leer | Heading-**Klartext**, exakter Vergleich der getrimmten Überschriften-Zeile **einschließlich `#`-Folge**. Genau eines von `section`/`section-pattern` ist Pflicht — beide oder keines ⇒ Exit 2 |
 | `structure[].section-pattern` | string | leer | RE2 gegen dieselbe getrimmte Zeile; Alternative zu `section` |
@@ -3441,6 +3459,7 @@ Exit 2 ohne Prüfung
 | `structure[].table.column[].cell-min-chars` | int | abwesend (aus) | Untergrenze derselben Zelle; darunter ⇒ `section-cell-undersized` auf **ihrer** Zeile — die **leere** Zelle eingeschlossen, die unter einer Obergrenze allein grün passiert. **Explizit** < 1 ⇒ Exit 2; `cell-min-chars` > `cell-max-chars` ⇒ Exit 2 (keine Zelle erfüllt beides). **Aktivierung:** jeder Eintrag verlangt **mindestens eine** der beiden Grenzen — eine Spalte ohne Schwelle misst nichts ⇒ Exit 2 |
 | `structure[].headings-level` | int | Abschnitts-Ebene + 1 | 1-basierte ATX-Ebene der geprüften Überschriften; außerhalb 1–6 ⇒ Exit 2, gesetzt ohne `headings-match` ⇒ Exit 2. **Nicht** zu verwechseln mit `planning.closure.heading-pattern`: jener ist ein **Selektor** (welcher Abschnitt), dies eine **Bedingung** (welche Form) — beide Blöcke können im selben Profil stehen. Ein Wert **flacher** als der Abschnitt kann in ihm nicht vorkommen — die Bedingung ist dann wirkungslos |
 | `structure[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`) über die Quell-Pfade; Treffer werden von **dieser** Regel nicht geprüft — hebeln den Leerlauf-Befund aber nicht aus |
+| `structure[].skip-pattern` | string | leer (aus) | RE2 gegen den **rohen Inhalt** einer Datei; trifft es, ist sie für **diese** Regel keine Kandidatin (etwa ein archivierter Stub). Eine unlesbare Datei bleibt Kandidatin und meldet sich fail-closed; hebelt den Leerlauf-Befund nicht aus. Nicht kompilierend ⇒ Exit 2 |
 | `structure[].exempt-expect-count` | int | abwesend (Nullmengen-Härte gilt) | **erwartete Anzahl** der von `exempt-section-pattern` abgezogenen Abschnitte. Stimmt sie, ist eine geleerte Menge **kein** Befund (der deklarierte Bestandszustand); weicht sie ab ⇒ `section-exempt-mismatch` (`line` = 1), in **beide** Richtungen und auch bei verbleibender Restmenge. **Zeiger-Semantik:** eine explizit deklarierte **0** bedeutet *„das Muster soll heute noch nichts treffen"* und ist von „nicht deklariert" unterscheidbar. Greift **nur** nach dem Abzug — trifft schon `section-pattern` nichts, bleibt es `section-missing`. Geht **nicht** in die Regel-Identität ein: zwei erwartete Zahlen über derselben Regel sind ein Widerspruch, kein Paar. Ohne `exempt-section-pattern` ⇒ Exit 2; Wert < 0 ⇒ Exit 2 |
 | `structure[].exempt-section-pattern` | string | leer (aus) | RE2 gegen **dieselbe** getrimmte Überschriften-Zeile wie `section-pattern` (**einschließlich `#`-Folge** — ein analog geschriebenes Muster soll nicht still danebengreifen); getroffene Abschnitte prüft **diese** Regel nicht. Geschwister von `exempt-paths` eine Granularitätsstufe tiefer, für Bestände **innerhalb einer Datei**. Läuft **vor** der Kardinalitäts-Prüfung; leert es die Menge ⇒ `section-missing` mit Schlüssel und Zahl in der Meldung — und dieser Befund behält seine modul-eigene Meldung auch neben einem `hint` (die Regel hat dort nicht gemessen). **Sieht Inline-Code**, anders als das Item-Muster: es teilt die Zeichenkette mit `section-pattern`. Ein **gesetztes** Muster geht in die Regel-Identität ein (`… :: ohne <muster>`), ein leeres nicht. Nicht kompilierend ⇒ Exit 2 |
 | `file[].files` | string | — | Glob (Pfad, wie `scan.ignore`) über **Wurzel-relative** Pfade des gesamten Baums, unabhängig von `scan.roots`/`scan.ignore`; Pflicht je Regel. Null Kandidaten — auch nach Abzug von `exempt-paths` — ⇒ `file-no-match` auf dem Glob ([`DC-FA-FILE-001`](lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in)) |
@@ -3645,6 +3664,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-09 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritte C1/C2 und §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritte 1/2 samt §2-Schema: `planning.closure.recursive` liest die Closure-Kandidaten auch aus Unterverzeichnissen, `planning.closure.skip-pattern` und `structure[].skip-pattern` nehmen eine Datei nach ihrem Inhalt aus (etwa einen archivierten Stub). Eine unlesbare Datei bleibt Kandidatin; die Nullmengen-Regel gilt nach dem Abzug. Ohne die Schlüssel byte-identisch; kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[7](#7-festlegungen-der-harness-werkzeuge): [`SPEC-093`](#7-festlegungen-der-harness-werkzeuge) nennt, was der Wächter durchlässt; [`SPEC-094`](#7-festlegungen-der-harness-werkzeuge) — der Nachweis entsteht auch unter `make -i` nicht, und der Stop-Hook blockt, wenn er den Zustand nicht lesen kann (Hash, Nachweis, `git status`); [`SPEC-095`](#7-festlegungen-der-harness-werkzeuge) — der ausgelöste Lauf prüft nur die Slices direkt unter `done/`; [`SPEC-096`](#7-festlegungen-der-harness-werkzeuge) — ein leeres `PROBE_FORMS` heißt Default |
 | 2026-10-08 | §[7](#7-festlegungen-der-harness-werkzeuge) um die lokalen Wächter, Hooks und Prüfer erweitert: [`SPEC-093`](#7-festlegungen-der-harness-werkzeuge) Tool-Call-Wächter, [`SPEC-094`](#7-festlegungen-der-harness-werkzeuge) Handoff-Gate aus `make gates` und Stop-Hook, [`SPEC-095`](#7-festlegungen-der-harness-werkzeuge) git-Hooks, [`SPEC-096`](#7-festlegungen-der-harness-werkzeuge) `make blackbox-probe`. Am Code nachgelesen: der Gate-Nachweis entstand unter `make -k` trotz rotem Glied, und der Closure-Übergangs-Wächter erkannte keinen Slice unter einem Unterverzeichnis von `done/` — beide folgen jetzt der Festlegung |
 | 2026-10-08 | Nachzug nach Review an §[7](#7-festlegungen-der-harness-werkzeuge): [`SPEC-089`](#7-festlegungen-der-harness-werkzeuge) nennt den Build-Parameter der Schwelle — ein Wert, der keine nicht negative Zahl ist, endet mit Exit 2 — und dass ein roter Testlauf vor der Messung rot macht; [`SPEC-090`](#7-festlegungen-der-harness-werkzeuge) führt neben den sechs Pfad-Regeln die drei Ausnahmen der Linter-Einstellungen; [`SPEC-091`](#7-festlegungen-der-harness-werkzeuge) nennt den gemessenen Umfang — nicht ignorierte Go-Dateien des Arbeitsbaums, getrackt oder nicht, ohne die Dateien, die die Voreinstellung von semgrep auslässt; die Exit-Codes beider sind die des Prüfskripts, über `make` endet jedes Scheitern mit 2 |

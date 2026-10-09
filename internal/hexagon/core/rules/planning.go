@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"errors"
 	"path"
 	"regexp"
 	"sort"
@@ -94,20 +95,15 @@ func CheckPlanningClosure(fsys driven.Filesystem, cfg model.PlanningConfig) []mo
 		return closureFinding(dir, 1, dir, model.ReasonClosureNoteMissing,
 			"heading-pattern "+cfg.Closure.EffectiveHeadingPattern()+" ist kein gültiges Regex (fail-closed)")
 	}
-	entries, err := fsys.List(dir)
+	names, err := closureCandidates(fsys, dir, "", cfg.EffectiveClosureGlob(), cfg.Closure.Recursive)
 	if err != nil {
 		// C2 fail-closed: gesetztes, aber fehlendes/unlesbares Verzeichnis ist
 		// kein stilles Grün — sonst schaltete ein Tippfehler im Pfad die ganze
-		// Prüfung ab.
+		// Prüfung ab. Unter recursive gilt das für jedes Unterverzeichnis.
 		return closureFinding(dir, 1, dir, model.ReasonClosureNoteMissing,
-			"Closure-Verzeichnis "+dir+" fehlt oder ist unlesbar (fail-closed)")
+			"Closure-Verzeichnis "+err.Error()+" fehlt oder ist unlesbar (fail-closed)")
 	}
-	names := make([]string, 0, len(entries))
-	for _, e := range entries {
-		if ok, _ := path.Match(cfg.EffectiveClosureGlob(), e.Name); ok {
-			names = append(names, e.Name)
-		}
-	}
+	names = closureSkip(fsys, dir, names, cfg.Closure.SkipPattern)
 	// C2 fail-closed, zweite Hälfte: `closure.dir` ist der Aktivierungs-Schalter —
 	// ihn zu setzen IST die Behauptung, dass dort Closure-Notizen liegen. Null
 	// Kandidaten heißt also nicht „nichts zu tun", sondern „die Behauptung stimmt
@@ -117,6 +113,7 @@ func CheckPlanningClosure(fsys driven.Filesystem, cfg model.PlanningConfig) []mo
 	if len(names) == 0 {
 		return closureFinding(dir, 1, dir, model.ReasonClosureNoteMissing,
 			"Closure-Verzeichnis "+dir+" enthält keine Datei nach "+strconv.Quote(cfg.EffectiveClosureGlob())+
+				closureSkipNote(cfg.Closure.SkipPattern)+
 				" — das Gate liefe leer (fail-closed; ist der Bestand umgezogen?)")
 	}
 	sort.Strings(names) // stabile Reihenfolge (DC-QA-02)
@@ -125,6 +122,72 @@ func CheckPlanningClosure(fsys driven.Filesystem, cfg model.PlanningConfig) []mo
 		out = append(out, checkClosureNote(fsys, cfg, dir, name, re)...)
 	}
 	return out
+}
+
+// closureCandidates liefert die Basisnamen-Treffer unter dir, relativ zu dir
+// (§DC-FA-PLAN-001.a Schritt C2). Mit recursive steigt es in jedes
+// Unterverzeichnis ab, das nicht zu den immer übersprungenen gehört; der Filter
+// bleibt der Basisname. Der Fehler nennt das Verzeichnis, das nicht lesbar war —
+// auch ein unlesbares Unterverzeichnis ist kein stilles Grün.
+func closureCandidates(fsys driven.Filesystem, dir, sub, glob string, recursive bool) ([]string, error) {
+	cur := path.Join(dir, sub)
+	entries, err := fsys.List(cur)
+	if err != nil {
+		return nil, errors.New(cur)
+	}
+	var names []string
+	for _, e := range entries {
+		rel := path.Join(sub, e.Name)
+		// Ohne recursive wird ein Verzeichnis behandelt wie bisher: trifft sein
+		// Name den Filter, ist es Kandidat und meldet sich in C3 als unlesbar.
+		if recursive && e.Kind == driven.KindDir {
+			if isSkipDir(e.Name) {
+				continue
+			}
+			deeper, err := closureCandidates(fsys, dir, rel, glob, recursive)
+			if err != nil {
+				return nil, err
+			}
+			names = append(names, deeper...)
+			continue
+		}
+		if ok, _ := path.Match(glob, e.Name); ok {
+			names = append(names, rel)
+		}
+	}
+	return names, nil
+}
+
+// closureSkip zieht die Kandidaten ab, deren Inhalt skip-pattern trifft — etwa
+// einen archivierten Stub. Eine unlesbare Datei bleibt Kandidatin: Schritt C3
+// meldet sie fail-closed, statt dass die Ausnahme sie still verschluckt. Das
+// Muster ist am Config-Rand geprüft; ein Fehler hier nimmt nichts aus.
+func closureSkip(fsys driven.Filesystem, dir string, names []string, pattern string) []string {
+	if pattern == "" {
+		return names
+	}
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return names
+	}
+	out := names[:0]
+	for _, name := range names {
+		content, err := fsys.ReadFile(path.Join(dir, name))
+		if err == nil && re.Match(content) {
+			continue
+		}
+		out = append(out, name)
+	}
+	return out
+}
+
+// closureSkipNote ergänzt die Nullmengen-Meldung um die Ausnahme, wenn sie
+// gesetzt ist; ohne sie bleibt die Meldung byte-identisch.
+func closureSkipNote(pattern string) string {
+	if pattern == "" {
+		return ""
+	}
+	return " (nach Abzug von skip-pattern " + strconv.Quote(pattern) + ")"
 }
 
 // checkClosureNote prüft eine einzelne Slice-Datei (Spez-Schritte C3–C5).

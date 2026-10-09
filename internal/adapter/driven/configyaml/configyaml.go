@@ -219,6 +219,8 @@ type rawClosure struct {
 	MinSentences   *int     `yaml:"min-sentences"`
 	Boilerplate    []string `yaml:"boilerplate"`
 	Placeholder    bool     `yaml:"placeholder"`
+	Recursive      bool     `yaml:"recursive"`
+	SkipPattern    string   `yaml:"skip-pattern"`
 }
 
 // rawStructure ist eine Regel des Moduls structure (DC-FA-STRUCT-001).
@@ -246,6 +248,9 @@ type rawStructure struct {
 
 	Table       *rawTable `yaml:"table"`
 	ExemptPaths []string  `yaml:"exempt-paths"`
+	// SkipPattern nimmt Dateien nach ihrem Inhalt aus; leer ist die Abwesenheit,
+	// wie bei jedem RE2-Schluessel dieses Moduls.
+	SkipPattern string `yaml:"skip-pattern"`
 
 	// Die beiden Teilmengen-Schluessel: sie VERKLEINERN die geprueften Mengen
 	// und tragen keinen eigenen Grund-Code. Kein Zeiger -- wie bei jedem
@@ -334,6 +339,7 @@ func structureBedingungsFehler(r rawStructure) string {
 		{"tasks-ignore-pattern", r.TasksIgnorePattern},
 		{"exempt-section-pattern", r.ExemptSectionPattern},
 		{"open-tasks-require-marker-section", r.OpenTasksRequireMarkerSection},
+		{"skip-pattern", r.SkipPattern},
 	} {
 		if m.pat == "" {
 			continue
@@ -539,6 +545,7 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 		Table:       applyTable(r.Table),
 		Hint:        derefString(r.Hint),
 		ExemptPaths: r.ExemptPaths,
+		SkipPattern: r.SkipPattern,
 
 		TasksIgnorePattern:   r.TasksIgnorePattern,
 		ExemptSectionPattern: r.ExemptSectionPattern,
@@ -1611,10 +1618,16 @@ func applyClosure(c *rawClosure) (model.ClosureConfig, error) {
 				"%s: planning.closure.boilerplate enthält einen leeren Eintrag (träfe jeden Text)", FileName)
 		}
 	}
+	if c.SkipPattern != "" {
+		if _, err := regexp.Compile(c.SkipPattern); err != nil {
+			return model.ClosureConfig{}, fmt.Errorf(
+				"%s: planning.closure.skip-pattern %q ist kein gültiges Regex: %v", FileName, c.SkipPattern, err)
+		}
+	}
 	return model.ClosureConfig{
 		Dir: c.Dir, Glob: glob, HeadingPattern: c.HeadingPattern,
 		MinSentences: minSentences, Boilerplate: c.Boilerplate,
-		Placeholder: c.Placeholder,
+		Placeholder: c.Placeholder, Recursive: c.Recursive, SkipPattern: c.SkipPattern,
 	}, nil
 }
 

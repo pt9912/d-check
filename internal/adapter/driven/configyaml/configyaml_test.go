@@ -288,6 +288,7 @@ func TestDecode_StructureFehler(t *testing.T) {
 		"tasks-ignore-pattern RE2":        "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-tasks: 3\n    tasks-ignore-pattern: '^(['\n",
 		"tasks-ignore-pattern ohne max":   "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    tasks-ignore-pattern: '^x'\n",
 		"exempt-section-pattern RE2":      "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    exempt-section-pattern: '^(['\n",
+		"skip-pattern RE2":                "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    skip-pattern: '^(['\n",
 		// Die erwartete Anzahl (ADR-0078): halbe Aktivierung und negativer Wert.
 		"exempt-expect-count ohne Muster": "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    exempt-expect-count: 3\n",
 		"exempt-expect-count negativ":     "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    exempt-section-pattern: '^## A'\n    exempt-expect-count: -1\n",
@@ -351,6 +352,7 @@ func TestDecode_ClosureFehler(t *testing.T) {
 		"glob ungültig":       "planning:\n  closure:\n    dir: done\n    glob: '[a-'\n",
 		"leere Floskel":       "planning:\n  closure:\n    dir: done\n    boilerplate: ['']\n",
 		"Floskel nur Space":   "planning:\n  closure:\n    dir: done\n    boilerplate: ['   ']\n",
+		"skip-pattern RE2":    "planning:\n  closure:\n    dir: done\n    skip-pattern: '^(['\n",
 	} {
 		if _, err := configyaml.Decode([]byte(bad)); err == nil {
 			t.Errorf("%s: ungültige closure-Config akzeptiert: %q", name, bad)
@@ -1350,5 +1352,26 @@ func TestDecode_TargetsAuthorityDisjoint(t *testing.T) {
 	}
 	if _, err := configyaml.Decode([]byte("targets:\n  authority-disjoint: ja\n")); err == nil {
 		t.Fatal("authority-disjoint: ja ⇒ Konfigurationsfehler erwartet")
+	}
+}
+
+// Die beiden Schlüssel der Closure-Prüfung über Unterverzeichnisse reichen
+// unverändert in den Kern durch; ohne sie bleiben die Felder leer.
+func TestDecode_ClosureRecursiveUndSkip(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte("planning:\n  closure:\n    dir: done\n    recursive: true\n" +
+		"    skip-pattern: '^> ARCHIVIERT'\nstructure:\n  - files: 'done/**/slice-*.md'\n    section: '## H'\n" +
+		"    skip-pattern: '^> ARCHIVIERT'\n"))
+	if err != nil {
+		t.Fatalf("gültige Config abgewiesen: %v", err)
+	}
+	if !cfg.Planning.Closure.Recursive || cfg.Planning.Closure.SkipPattern != "^> ARCHIVIERT" {
+		t.Fatalf("closure.recursive/skip-pattern nicht durchgereicht: %+v", cfg.Planning.Closure)
+	}
+	if cfg.Structure[0].SkipPattern != "^> ARCHIVIERT" {
+		t.Fatalf("structure[].skip-pattern nicht durchgereicht: %+v", cfg.Structure[0])
+	}
+	leer, err := configyaml.Decode([]byte("planning:\n  closure:\n    dir: done\n"))
+	if err != nil || leer.Planning.Closure.Recursive || leer.Planning.Closure.SkipPattern != "" {
+		t.Fatalf("ohne die Schlüssel müssen die Felder leer bleiben: %+v, %v", leer.Planning.Closure, err)
 	}
 }
