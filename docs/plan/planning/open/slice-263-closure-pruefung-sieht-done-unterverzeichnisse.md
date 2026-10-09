@@ -18,7 +18,7 @@ Auftraggeber-Entscheid 2026-10-09 (eigener Slice statt Mitnahme in slice-260).
 (Dateimenge), `spec/spezifikation.md` §2 (Schlüssel der
 `planning`- und `structure`-Konfiguration).
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-10-09.
 
@@ -124,17 +124,44 @@ hinaus.
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** das Produkt und die
-Closure-Konfiguration unter dem Default `*` (`ALL`); beim Beanspruchen neu
-prüfen.
+**Vorgelagert — Sub-Area-Wahl prüfen:** geändert werden Produkt-Kern
+(`planning`, `structure`), Konfig-Modell, YAML-Adapter, Konfig-Vorlage und die
+Spezifikation — alle unter dem Default `*` (`ALL`); deklariert.
+
+**Spiegel vor dem Editieren** (Schritt 17 des Workflow-Skeletts,
+[`MR-025`](../../../../harness/conventions.md#mr-025); gemessen mit
+`grep -rln "closure\.glob\|closure:\|EffectiveClosureGlob\|ExemptPaths\|exempt-paths"`
+über Code, Spezifikation und Doku): Konfig-Modell, YAML-Adapter samt
+Validierung, Konfig-Vorlage (`--print-config`), die Kern-Regeln, Schritt C2
+und §2-Schema der Spezifikation, `structure`-Schritt 2 und §2-Schema; das
+Benutzerhandbuch zieht die Release-Prep nach (`AGENTS.md` §5 Regel 17). Die
+ADR der Closure-Kandidaten ist `Accepted` und wird nicht angefasst.
+`--suggest-config` schlägt keine `structure`-Regeln und keinen
+`closure`-Block mit Unterverzeichnissen vor — kein Spiegel.
+
+**Gemessen zu `reviews.done-dir`** (§1 Abgrenzung): das Modul `reviews` liest
+`done-dir` per `List` ohne Abstieg, die Konfig-Vorlage nennt das
+ausdrücklich („nicht rekursiv"). Dieselbe Blindheit für die Volltexte unter
+`done/wellenlos/` — ein eigener Befund, nicht in diesem Slice; wird bei der
+Closure als Folge-Slice geschnitten.
 
 <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
 > **Offene Beobachtungen sichten.** Das
 
-**Vorgelagert — offene Beobachtungen sichten:** beim Beanspruchen neu lesen.
+**Vorgelagert — offene Beobachtungen sichten:** gelesen am 2026-10-09.
+[`BEO-ALL/module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/state.md)
+(verkörpert, wach) — der Slice öffnet eine neue Ziel-Achse (Unterverzeichnisse,
+Inhalts-Ausnahme); jede Zusage wird für sie neu geprüft;
+[`BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft`](../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/state.md)
+— der neue Leseweg (Inhalt vor der Kandidatenwahl) wird gegen seine
+Fehlerformen gefahren (unlesbare Datei, ungültiges Muster, alles
+ausgenommen); [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+— jede Liste am Code gezählt (Schritt 18).
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
-beim Beanspruchen aus dem jüngsten Lauf lesen.
+gelesen am 2026-10-09 aus dem jüngsten Lauf (`make nightly-state`) —
+`upstream-drift` grün (2026-10-08 11:37 UTC), `image-scan` grün
+(2026-10-08 10:38 UTC).
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
