@@ -92,15 +92,15 @@ nächsten Release hinaus.
   Vorschläge einem neueren folgen — älter als der Slice und außerhalb seiner
   Abgrenzung.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
-- **Beobachtungs-Register (`../observations/`):** neu
-  [`BEO-ALL/suggest-vorlage-nennt-alten-baseline-stand`](../observations/BEO-ALL/suggest-vorlage-nennt-alten-baseline-stand/state.md)
+- **Beobachtungs-Register (`../../observations/`):** neu
+  [`BEO-ALL/suggest-vorlage-nennt-alten-baseline-stand`](../../observations/BEO-ALL/suggest-vorlage-nennt-alten-baseline-stand/state.md)
   (1×).
 - **Folge-Slices:** keiner. Produkt-Verhalten — geht mit dem nächsten Release
   hinaus.
 - **Risiken aus §6:** keine notiert. Trigger-Audit: kein Carveout, kein
   bootstrap-aware Gate, keine neue ADR; keine Hard Rule mit eingetretenem
   Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
   Folge-Slices — keiner genannt; (c) Register — die zitierte Beobachtung
   existiert und trägt einen Beleg.
@@ -127,7 +127,7 @@ betrifft die Vorschläge von `--suggest-config`.
 Code (die Erzeugung des `matrix`-Blocks) und einmal als Beispiel in §2 der
 Spezifikation; kein Test hält die Zeile heute.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 `upstream-drift` grün (2026-10-09T07:17Z). `image-scan` rot (2026-10-09T10:37Z)
 — der Lauf liegt vor dem Release v0.85.0, das die gemeldeten CVEs behebt.
 
