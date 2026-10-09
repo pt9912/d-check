@@ -100,6 +100,15 @@ Grund-Code-Zeile von `closure-note-missing` und die §2-Zeile
 Vorzustand (F-9). F-6 (Botschaft behauptet zu viel) geht in die
 Closure-Notiz.)*
 
+*(Plan-Änderung nach R2, vor dem Code: nur Wortlaut der Spec und der Tests —
+`skip-pattern` in die Exit-2-Aufzählung von der `structure`-Anforderung (R2 F-1); die
+Nullmengen-Aussage gilt der Gesamtmenge, nicht einem einzelnen
+Unterverzeichnis, in der Grund-Code-Zeile von `closure-note-missing` und im fail-closed-Absatz des Lastenhefts
+(F-2); Chronik-Wörter in den neuen Tests (F-3); Satzbau des umgeschriebenen
+Lastenheft-Absatzes und „wie zuvor" in C2 (F-4); Akzeptanzkriterien für Exit 2
+bei `skip-pattern` und das unlesbare Unterverzeichnis, Historie der
+Spezifikation vervollständigt (F-5).)*
+
 ## 4. Trigger
 
 **Start** (`next` → `in-progress`): `in-progress/` leer.
