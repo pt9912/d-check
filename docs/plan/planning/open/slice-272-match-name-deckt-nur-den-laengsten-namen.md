@@ -14,7 +14,7 @@ Punkt 2 (Auftraggeber-Entscheid: längster Name gewinnt).
 samt `.a`-Algorithmus (Zuordnung unter `match: name`) und seiner Grenze zur
 Präfix-Deckung.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912
 
 **Autor:** pt9912. **Datum:** 2026-10-09.
 
@@ -103,16 +103,30 @@ hinaus.
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** Produkt unter dem Default `*`
-(`ALL`); beim Beanspruchen neu prüfen.
+**Vorgelagert — Sub-Area-Wahl prüfen:** Berührt sind das Modul `reviews` der
+Kern-Regeln und die beiden Spec-Straten — unter dem Default `*` (`ALL`); keine
+eigene Konvention, kein eigener Modus, keine eigene Inventur-Linie.
 
 <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
 > **Offene Beobachtungen sichten.** Das
 
-**Vorgelagert — offene Beobachtungen sichten:** beim Beanspruchen neu lesen.
+**Vorgelagert — offene Beobachtungen sichten:** Eine berührt den Slice.
+[`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
+(verkörpert als [`MR-025`](../../../../harness/conventions.md#mr-025), zuletzt
+in slice-264 und slice-271 wieder aufgetreten): Die Präfix-Grenze steht in
+Lastenheft, Spezifikation, Code-Kommentar, Befund-Datei und im
+sf-connector-CR — die Spiegel werden vor dem Editieren aufgelistet. Keine
+Beobachtung erreicht mit diesem Slice eine neue Schwelle.
+
+**Messung beim Beanspruchen:** Mit dem Stand nach slice-271 meldet der Fall des
+Befunds (`slice-cache` und `slice-cache-warmup`, ein Report
+`2026-10-09-slice-cache-warmup.md`, `match: name`) 0 Befunde — `slice-cache`
+gilt als gedeckt.
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
-beim Beanspruchen aus dem jüngsten Lauf lesen.
+`upstream-drift` grün (2026-10-09T07:17Z). `image-scan` rot (2026-10-09T10:37Z)
+— der Lauf liegt vor dem Release v0.85.0, das die gemeldeten CVEs behebt;
+der Slice berührt das Image nicht.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
