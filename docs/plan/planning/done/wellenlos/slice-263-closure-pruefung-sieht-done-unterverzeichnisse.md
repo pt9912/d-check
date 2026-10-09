@@ -8,13 +8,13 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
 **Bezug:** Befund F-1 (HIGH) aus dem Review von slice-260;
-[`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+[`DC-FA-PLAN-001`](../../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 (Closure-Fähigkeit von `planning`),
-[ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md);
+[ADR-0048](../../../adr/0048-closure-note-struktur-im-planning-modul.md);
 Auftraggeber-Entscheid 2026-10-09 (eigener Slice statt Mitnahme in slice-260).
 
-**Berührte Spec-Stellen:** [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) (Closure-Kandidaten,
-`planning.closure.dir`), [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
+**Berührte Spec-Stellen:** [`DC-FA-PLAN-001`](../../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) (Closure-Kandidaten,
+`planning.closure.dir`), [`DC-FA-STRUCT-001`](../../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
 (Dateimenge), `spec/spezifikation.md` §2 (Schlüssel der
 `planning`- und `structure`-Konfiguration).
 
@@ -80,7 +80,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 |---|---|---|
 | Kern-Regeln `planning` (Closure-Kandidaten) und `structure` (Dateimenge) | update | Rekursion, Inhalts-Ausnahme |
 | Konfig-Modell und YAML-Adapter | update | zwei Schlüssel samt Validierung |
-| `spec/spezifikation.md` (Verfeinerung zu [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) Schritt C2, Verfeinerung zu [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), §2-Schema) | update | Verfeinerung |
+| `spec/spezifikation.md` (Verfeinerung zu [`DC-FA-PLAN-001`](../../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) Schritt C2, Verfeinerung zu [`DC-FA-STRUCT-001`](../../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), §2-Schema) | update | Verfeinerung |
 | `--print-config`-Vorlage und weitere Spiegel (beim Beanspruchen per grep gelistet, Schritt 17) | update | Konfig-Oberfläche |
 | `spec/lastenheft.md` (beide Anforderungen, Versions-Bump und Historie) | update | die Kandidatenmengen sind dort abschließend beschrieben |
 
@@ -165,13 +165,13 @@ hinaus.
   `BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen` — der Schritt
   im Workflow-Skelett stand, wirkte aber nicht vor dem Review; bei einem
   weiteren Auftreten ist die Prosa-Form ausgeschöpft.
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-263.md` in
-  [`BEO-ALL/review-fix-applied-only-at-cited-site`](../observations/BEO-ALL/review-fix-applied-only-at-cited-site/state.md)
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-263.md` in
+  [`BEO-ALL/review-fix-applied-only-at-cited-site`](../../observations/BEO-ALL/review-fix-applied-only-at-cited-site/state.md)
   (2×),
-  [`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`](../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md),
-  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+  [`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`](../../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md),
+  [`BEO-ALL/commit-message-overclaims-work`](../../observations/BEO-ALL/commit-message-overclaims-work/state.md)
   und
-  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md).
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md).
 - **Folge-Slices:** slice-264 (Closure-Profil dieses Repos, vier Altverstöße,
   Rücknahme der Grenz-Aussagen), slice-265 (`reviews` — trägt auch die beim
   Beanspruchen gemessene Blindheit von `reviews.done-dir`), slice-266
@@ -179,7 +179,7 @@ hinaus.
 - **Risiken aus §6:** beide entfallen (siehe §6). Trigger-Audit: kein
   Carveout, kein bootstrap-aware Gate, keine ADR, keine Hard Rule mit
   eingetretenem Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein neuer Steering-Loop-Eintrag, keiner zu
   prüfen; (b) Folge-Slices — slice-264, slice-265 und slice-266 liegen in
   `open/`; (c) Register — die vier zitierten Beobachtungen existieren und
@@ -197,7 +197,7 @@ hinaus.
 Spezifikation — alle unter dem Default `*` (`ALL`); deklariert.
 
 **Spiegel vor dem Editieren** (Schritt 17 des Workflow-Skeletts,
-[`MR-025`](../../../../harness/conventions.md#mr-025); gemessen mit
+[`MR-025`](../../../../../harness/conventions.md#mr-025); gemessen mit
 `grep -rln "closure\.glob\|closure:\|EffectiveClosureGlob\|ExemptPaths\|exempt-paths"`
 über Code, Spezifikation und Doku): Konfig-Modell, YAML-Adapter samt
 Validierung, Konfig-Vorlage (`--print-config`), die Kern-Regeln, Schritt C2
@@ -218,16 +218,16 @@ Closure als Folge-Slice geschnitten.
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:** gelesen am 2026-10-09.
-[`BEO-ALL/module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/state.md)
+[`BEO-ALL/module-promise-only-on-scan-axis`](../../observations/BEO-ALL/module-promise-only-on-scan-axis/state.md)
 (verkörpert, wach) — der Slice öffnet eine neue Ziel-Achse (Unterverzeichnisse,
 Inhalts-Ausnahme); jede Zusage wird für sie neu geprüft;
-[`BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft`](../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/state.md)
+[`BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft`](../../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/state.md)
 — der neue Leseweg (Inhalt vor der Kandidatenwahl) wird gegen seine
 Fehlerformen gefahren (unlesbare Datei, ungültiges Muster, alles
-ausgenommen); [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+ausgenommen); [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
 — jede Liste am Code gezählt (Schritt 18).
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-09 aus dem jüngsten Lauf (`make nightly-state`) —
 `upstream-drift` grün (2026-10-08 11:37 UTC), `image-scan` grün
 (2026-10-08 10:38 UTC).
