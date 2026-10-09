@@ -53,6 +53,12 @@ func TestVCSIgnoreLinkTargets(t *testing.T) {
 		{"link neben inline-code nachgezogen", "`x` [R](a.md)", "`x` [R](x/a.md)", 0, 1},
 		{"escapte klammer im linktext nachgezogen", `[a\]b](a.md)`, `[a\]b](x/a.md)`, 0, 1},
 		{"doppelter backslash vor link nachgezogen", `\\[R](a.md)`, `\\[R](x/a.md)`, 0, 1},
+		{"code-span ab dem linktext geaendert", "[a `b](Nicht)` c", "[a `b](Immer)` c", 1, 1},
+		{"eingerueckter code geaendert", "Text\n\n    [a](Nicht)", "Text\n\n    [a](Immer)", 1, 1},
+		{"tab-eingerueckter code geaendert", "Text\n\n\t[a](Nicht)", "Text\n\n\t[a](Immer)", 1, 1},
+		{"bild hinter escaptem ausrufezeichen nachgezogen", `\![B](a.md)`, `\![B](x/a.md)`, 0, 1},
+		// die benannte Grenze: eine Absatz-Folgezeile in Referenz-Form wird geleert
+		{"absatz-folgezeile in referenz-form", "Text\n[Status]: Abgelehnt.", "Text\n[Status]: Angenommen.", 0, 1},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {

@@ -139,10 +139,11 @@ Grün über leerem Prüfbereich (shallow-Klon) kommt so nicht zustande.
    alte, sieht es nicht — ein Verweis auf ein anderes Dokument fiele genauso
    durch. Die Erkennung ist zeilenweise: ein Code-Span über mehrere Zeilen
    schützt nicht, und eine Zeile `[Label]: wort.` gilt schon mit einem
-   Pfadzeichen als Referenz-Definition, auch wenn Markdown sie nicht rendert.
-   Geleert wird nur ein vollständiger Link außerhalb von Code und Escapes;
-   trifft die Erkennung einen nicht (Ziel auf der Folgezeile, Ziel mit eigener
-   Klammer), bleibt sein Nachzug Drift. Permanent, solange der Nachzug erlaubt ist
+   Pfadzeichen als Referenz-Definition — auch als Absatz-Folgezeile, die
+   Markdown als sichtbaren Text rendert. Geleert wird nur ein vollständiger
+   Link außerhalb von Code (Fenced, eingerückt, Code-Span) und Escapes; trifft
+   die Erkennung einen nicht (Ziel auf der Folgezeile, Ziel mit eigener
+   Klammer, eingerückter Listen-Folgeabsatz), bleibt sein Nachzug Drift. Permanent, solange der Nachzug erlaubt ist
    ([ADR-0103](../../docs/plan/adr/0103-adr-gate-laesst-pfad-nachzug-durch.md)).
 
 ## Bindung

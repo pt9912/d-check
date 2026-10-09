@@ -166,7 +166,7 @@ func baseImmutable(content []byte, when *regexp.Regexp) bool {
 //
 // Mit ignoreLinkTargets wird jedes Link-Ziel einer Prosa-Zeile geleert, bevor
 // verglichen wird (DC-FA-VCS-001.a Schritt 4): ein reiner Pfad-Nachzug ergibt
-// denselben Core; Fenced-Code bleibt unverändert.
+// denselben Core; Fenced-Code und eingerückte Zeilen bleiben unverändert.
 func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string, ignoreLinkTargets bool) string {
 	excluded := excludedRanges(content, excludeSections)
 	lines := splitLines(content)
@@ -178,7 +178,7 @@ func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string
 		if no == strip || inRanges(excluded, no) {
 			continue
 		}
-		if ignoreLinkTargets && prose[no] {
+		if ignoreLinkTargets && prose[no] && !indentedLine(raw) {
 			raw = blankLinkTargets(raw)
 		}
 		b.WriteString(raw)
@@ -195,19 +195,21 @@ func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string
 // `/`, `#` oder `:` darin, oder in Spitzklammern) mit optionalem Titel ist;
 // eine Fußnote (`[^…]:`) ist keine.
 // GRENZE: zeilenweise -- ein Code-Span über mehrere Zeilen schützt nicht, und
-// eine Zeile `[Label]: wort.` mit einem Pfadzeichen gilt als
-// Referenz-Definition, wie Markdown sie liest. Ein Ziel, das die Muster nicht
-// treffen (Linktext mit eckiger Klammer, Ziel auf der Folgezeile, Ziel mit
-// eigener Klammer, Referenz-Ziel ohne Pfadzeichen), bleibt ungeleert: ein
-// Nachzug dort bleibt Drift.
+// jede Zeile `[Label]: wort.` mit einem Pfadzeichen wird als
+// Referenz-Definition geleert, auch als Folgezeile eines Absatzes, wo Markdown
+// sie als sichtbaren Text rendert. Ein Ziel, das die Muster nicht treffen
+// (Linktext mit eckiger Klammer, Ziel auf der Folgezeile, Ziel mit eigener
+// Klammer, Referenz-Ziel ohne Pfadzeichen), bleibt ungeleert: ein Nachzug dort
+// bleibt Drift.
 var (
 	inlineLinkTargetRE = regexp.MustCompile(`(!?\[(?:[^\[\]\\]|\\.)*\])\([ \t]*(?:<[^<>]*>|[^()\s<>]*)((?:[ \t]+(?:"[^"]*"|'[^']*'|\([^()]*\)))?[ \t]*\))`)
 	refDefTargetRE     = regexp.MustCompile(`^([ ]{0,3}\[(?:[^\[\]\\^]|\\.)(?:[^\[\]\\]|\\.)*\]:)[ \t]*(?:<[^<>]*>|[^\s<>]*[./#:][^\s<>]*)((?:[ \t]+(?:"[^"]*"|'[^']*'|\([^()]*\)))?[ \t]*)$`)
 )
 
 // blankLinkTargets leert die Link-Ziele einer Prosa-Zeile: `[t](ziel "T")`
-// wird `[t]( "T")`, `[l]: ziel` wird `[l]:`. Ein Treffer in einem Code-Span
-// oder hinter einer escapten öffnenden Klammer ist kein Link und bleibt.
+// wird `[t]( "T")`, `[l]: ziel` wird `[l]:`. Ein Treffer, der einen Code-Span
+// berührt oder hinter einer escapten öffnenden Klammer steht, ist kein Link und
+// bleibt.
 func blankLinkTargets(line string) string {
 	var code [][2]int
 	forEachInlineCodeSpan(line, func(start, end, _, _ int) {
@@ -220,7 +222,7 @@ func blankLinkTargets(line string) string {
 		if line[open] == '!' {
 			open++
 		}
-		if escapedAt(line, open) || inSpans(code, m[0]) {
+		if escapedAt(line, open) || overlapsSpan(code, m[0], m[1]) {
 			continue
 		}
 		b.WriteString(line[last:m[0]])
@@ -242,16 +244,22 @@ func escapedAt(s string, i int) bool {
 	return n%2 == 1
 }
 
-// inSpans meldet, ob pos in einem der halboffenen Bereiche liegt.
-func inSpans(spans [][2]int, pos int) bool {
+// overlapsSpan meldet, ob [start,end) einen der halboffenen Bereiche berührt.
+func overlapsSpan(spans [][2]int, start, end int) bool {
 	for _, sp := range spans {
-		if pos >= sp[0] && pos < sp[1] {
+		if start < sp[1] && sp[0] < end {
 			return true
 		}
 	}
 	return false
 }
 
+// indentedLine meldet eine Zeile mit Tab oder mindestens vier Leerzeichen
+// Einzug. GRENZE: auch ein eingerückter Listen-Folgeabsatz zählt -- ein Link
+// dort wird nicht geleert, sein Nachzug bleibt Drift.
+func indentedLine(line string) bool {
+	return strings.HasPrefix(line, "\t") || strings.HasPrefix(line, "    ")
+}
 // vcsHeadStatusLineNo liefert die 1-basierte Zeilennummer der **Kopf**-Status-
 // Zeile: das erste statusLine-Vorkommen **vor** der ersten `## `-H2; 0 ohne
 // Treffer (oder ohne statusLine). Eine gleichlautende Zeile im Körper (nach der

@@ -1967,23 +1967,24 @@ abdeckt:
    Dokument hinterlegter Hash). Normalisierung + SHA-256 wie
    [§DC-FA-PIN-001.a Schritt 3](#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins).
    Mit `vcs.ignore-link-targets` wird vorher in jeder Prosa-Zeile (außerhalb
-   von Fenced-Code) das Ziel jedes **vollständigen** Inline-Links und Bilds
+   von Fenced-Code, ohne Einzug von Tab oder vier Leerzeichen) das Ziel jedes **vollständigen** Inline-Links und Bilds
    geleert — Linktext in eckigen Klammern, Ziel (auch `<…>`), optionaler Titel,
    schließende Klammer: `[text](ziel "T")` → `[text]( "T")` — und das Ziel jeder
    Referenz-Definition, deren übrige Zeile nur ein pfadartiges Ziel (mit `.`,
    `/`, `#` oder `:`, oder `<…>`) und einen optionalen Titel trägt
    (`[label]: ziel` → `[label]:`); eine Fußnote (`[^…]:`) ist keine. Kein Link
-   ist, was in einem Code-Span der Zeile liegt oder hinter einer escapten
+   ist, was einen Code-Span der Zeile berührt oder hinter einer escapten
    öffnenden Klammer (`\[`) steht. Ein **reiner Pfad-Nachzug** ergibt so
    denselben Core; eine Änderung am Linktext, an der übrigen Zeile, am Titel
    oder an der Zahl der Links bleibt Drift, und eine Zeile ohne vollständigen
    Link wird nicht verändert. **Grenze:** zeilenweise — ein Code-Span über
-   mehrere Zeilen schützt nicht, und eine Zeile `[Label]: wort.` mit einem
-   Pfadzeichen gilt als Referenz-Definition, wie Markdown sie liest (auch wenn
-   sie nicht gerendert wird). Fail-safe bleibt ein Nachzug Drift, wo die
-   Erkennung den Link nicht trifft: Linktext mit eckiger Klammer, Ziel auf der
-   Folgezeile, Ziel mit eigener Klammer, Referenz-Ziel ohne Pfadzeichen, Link
-   in Fenced-Code.
+   mehrere Zeilen schützt nicht, und jede Zeile `[Label]: wort.` mit einem
+   Pfadzeichen wird als Referenz-Definition geleert, auch als Folgezeile eines
+   Absatzes, wo Markdown sie als sichtbaren Text rendert. Fail-safe bleibt ein
+   Nachzug Drift, wo die Erkennung den Link nicht trifft: Linktext mit eckiger
+   Klammer, Ziel auf der Folgezeile, Ziel mit eigener Klammer, Referenz-Ziel
+   ohne Pfadzeichen, Link in Fenced-Code oder in einer eingerückten Zeile (auch
+   in einem eingerückten Listen-Folgeabsatz).
 5. **Vergleich.**
    - `core(BASE)` ≠ `core(HEAD)` ⇒ Grund-Code `core-drift-vcs` (Körper geändert).
    - HEAD-Status-Zeile (erstes Vorkommen) erfüllt `vcs.head-allow` **nicht** ⇒
@@ -3730,8 +3731,8 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-09 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4: geleert wird nur ein vollständiger Link einer Prosa-Zeile — nicht in Fenced-Code, nicht in einer eingerückten Zeile, nicht, wo er einen Code-Span berührt, nicht hinter `\[`; Referenz-Definition nur mit pfadartigem Ziel, Fußnote nie. Grenzen in beide Richtungen benannt. Kein neuer Grund-Code |
 | 2026-10-09 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4 und §2-Schema: `vcs.ignore-link-targets` leert beim Bilden des Core jedes Link-Ziel (Inline-Link, Bild, Referenz-Definition); ein reiner Pfad-Nachzug ist keine Drift. Grenze: zeilenweise, ohne Code-Kontext. Kein neuer Grund-Code |
-| 2026-10-09 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4: geleert wird nur ein vollständiger Link einer Prosa-Zeile — nicht in Fenced-Code, nicht in einem Code-Span, nicht hinter `\[`; Referenz-Definition nur mit pfadartigem Ziel, Fußnote nie. Grenzen in beide Richtungen benannt. Kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritt 3 und §2-Schema: die Vorlagen-Form zählt hinter der Task-Box oder hinter `;` oder `,`, auch über einen Zeilenumbruch, nicht an jedem Zeilenanfang |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritt 3, §2-Schema und [`SPEC-081`](#4-grund--und-fehler-codes): die Vorlagen-Form zählt am Anfang jedes Teils eines Punkts — hinter der Task-Box, hinter `;` oder `,`, am Anfang einer Folgezeile |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritte 3/4, §2-Schema und [`SPEC-081`](#4-grund--und-fehler-codes): die Vorlagen-Form zählt im Default nur direkt hinter der Task-Box; die Wortgrenze von `match: name` gilt für Buchstaben und Ziffern jeder Schrift, und die Grenze nennt Unterstrich und Punkt neben dem Bindestrich |
