@@ -12,13 +12,14 @@ Default.
 
 ## Grenze — was das Grün nicht abdeckt
 
-1. **Beide Verzeichnisse werden nicht rekursiv gescannt** — ein archivierter
-   Slice-Stub trägt keine DoD mehr und fällt aus der Kandidatenmenge; ebenso
-   aber jeder Volltext unter `done/wellenlos/` und den Wellen-Verzeichnissen.
-   Das Modul kann beides (`reviews.recursive`, `reviews.skip-pattern`,
-   [`DC-FA-RVW-001`](../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in));
-   die Konfiguration dieses Repos setzt es noch nicht — die Volltexte unter
-   `done/wellenlos/` bleiben bis dahin ungeprüft.
+1. **Ein archivierter Stub ist kein Kandidat** — das Modul liest `done/` samt
+   Unterverzeichnissen (`reviews.recursive`) und nimmt den Stub über seinen
+   Marker `> **ARCHIVIERT** — Volltext:` aus (`reviews.skip-pattern`,
+   [`DC-FA-RVW-001`](../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)).
+   Ein Volltext, der diesen Marker am Zeilenanfang zitiert, fällt ebenso still
+   heraus. KOPPLUNG: dieselbe Kandidatenmenge liest
+   [`verify-closure-notes`](verify-closure-notes.md) am Übergang — beide
+   Profile tragen dieselben zwei Schlüssel.
 2. **Ob das Gate überhaupt Zusagen sieht, zeigt kein grüner Lauf.** Die
    DoD-Punkte dieses Repos tragen die Form der Slice-Vorlage („Review
    durchgeführt"), die der Default erkennt; ein Slice mit anderer Formulierung

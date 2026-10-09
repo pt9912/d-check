@@ -66,7 +66,7 @@ erfüllt", nicht „die Notizen sind gut". Die semantische Schicht ist der Skill
    zwei der Kanon-Vorlage); die generische Winkelklammer-Form fängt daneben
    `closure-note-placeholder`, aber **nur im Closure-Abschnitt**.
 8. **Ein archivierter Stub ist kein Kandidat** — er fällt über seinen Marker
-   `> **ARCHIVIERT**` am Zeilenanfang heraus, in `done/` wie in seinen
+   `> **ARCHIVIERT** — Volltext:` am Zeilenanfang heraus, in `done/` wie in seinen
    Unterverzeichnissen. Ein Volltext, der diesen Marker am Zeilenanfang
    zitiert, fällt ebenso still heraus; ein Symlink auf ein Unterverzeichnis
    wird nicht verfolgt

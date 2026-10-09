@@ -1011,26 +1011,21 @@ workflows:
 # Default-Muster trifft: die Phrase "unabhängiger Review" oder "Review
 # durchgeführt" am Anfang eines Punkt-Teils.
 #
-# GRENZE: beide Verzeichnisse werden NICHT rekursiv gescannt -- ein bereits
-# archivierter Stub (done/<welle-id>/) traegt keine DoD mehr und faellt damit
-# natuerlich aus der Kandidatenmenge. Geprueft wird die Deckung, nicht die
-# Qualitaet des Reports.
+# GRENZE: gelesen wird done/ samt Unterverzeichnissen (wellenlos/, die
+# Wellen-Verzeichnisse); ein archivierter Stub traegt keine DoD mehr und
+# faellt ueber seinen Marker aus der Kandidatenmenge -- ebenso ein Volltext,
+# der den Marker am Zeilenanfang zitiert. Geprueft wird die Deckung, nicht die
+# Qualitaet des Reports. KOPPLUNG: der reviews-Block in .d-check.closure.yml
+# traegt dieselben zwei Schluessel; weicht einer ab, antworten der
+# Uebergangs-Waechter und `make review-coverage` verschieden (ADR-0082).
 #
-# BESTANDS-AUSNAHME (analog MR-049/MR-056, feste Dateiliste statt Ziffernbereich
-# -- die Treffer streuen nicht zusammenhaengend): fuenf `done/`-Slices behaupten
-# eine Review-Zusage ohne Report unter docs/reviews/, gemessen beim
-# Scharfschalten (slice-173). Drei davon (168-170) sind der bekannte Anlassfall
-# aus welle-86 §1; slice-141 und slice-188 sind zusaetzliche, unabhaengig davon
-# gemessene Funde derselben Klasse. Kein Nachtrag: ein nachtraeglich erzeugter
-# Report behauptete eine Pruefung, die es nicht gab.
-#
-# Die fuenf Eintraege sind mit slice-200 entfernt: alle fuenf Slices sind
-# archiviert (`-slice=<id> -apply`, MR-064) und liegen jetzt unter
-# `done/wellenlos/`, ausserhalb der nicht-rekursiven Kandidatenmenge dieser
-# Regel (siehe GRENZE oben) -- die Ausnahme ist gegenstandslos geworden.
+# BESTANDS-AUSNAHME: keine. Die fuenf Slices, die beim Scharfschalten eine
+# Review-Zusage ohne Report trugen, sind archivierte Stubs.
 reviews:
   done-dir: docs/plan/planning/done
   reviews-dir: docs/reviews
+  recursive: true
+  skip-pattern: '(?m)^> \*\*ARCHIVIERT\*\* — Volltext:'
 
 # Modul citations (DC-FA-CITE-001): parameterlos, direktiven-getrieben — der
 # Block traegt nur den Scope. Ausgenommen sind die drei EINGEFRORENEN

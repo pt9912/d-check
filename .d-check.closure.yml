@@ -54,7 +54,7 @@ planning:
     # GRENZE: ein Volltext, der den Marker am Zeilenanfang zitiert, faellt
     # ebenso still heraus (DC-FA-PLAN-001).
     recursive: true
-    skip-pattern: '(?m)^> \*\*ARCHIVIERT'
+    skip-pattern: '(?m)^> \*\*ARCHIVIERT\*\* — Volltext:'
     # `closure.glob` bleibt UNGESETZT — die Fähigkeit erbt `slice-glob` und
     # prüft nur `slice-*.md`. Das war eine Entscheidung gegen den ersten
     # Anlauf: dort stand hier `glob: "*.md"` samt `heading-pattern` auf
@@ -131,13 +131,13 @@ structure:
   # Abschnitts ueber denselben geteilten Mechanismus — der Preset-Beleg im
   # eigenen Lauf.
   - files: "docs/plan/planning/done/**/slice-*.md"
-    skip-pattern: '(?m)^> \*\*ARCHIVIERT'
+    skip-pattern: '(?m)^> \*\*ARCHIVIERT\*\* — Volltext:'
     section-pattern: '^#{2,3} .*Closure-Notiz'
     non-empty: true
 
   # Jeder abgeschlossene Slice traegt eine Definition of Done.
   - files: "docs/plan/planning/done/**/slice-*.md"
-    skip-pattern: '(?m)^> \*\*ARCHIVIERT'
+    skip-pattern: '(?m)^> \*\*ARCHIVIERT\*\* — Volltext:'
     section-pattern: '^## [0-9]+\. Definition of Done'
     non-empty: true
 
@@ -163,7 +163,7 @@ structure:
   # Platzhalter-Form, schweigt die Regel; sie gehoert beim naechsten
   # Vorlagen-Bump mitgeprueft.
   - files: "docs/plan/planning/done/**/slice-*.md"
-    skip-pattern: '(?m)^> \*\*ARCHIVIERT'
+    skip-pattern: '(?m)^> \*\*ARCHIVIERT\*\* — Volltext:'
     section-pattern: '^# '
     sections: each
     forbid-pattern: '\(bei Closure\)|wird mit dem Closure-Body gefüllt|<…>|<eingetreten:'
@@ -194,7 +194,7 @@ structure:
   # (107 `section-missing`, weil die aelteren Slices ihr §5 unter anderem Titel
   # fuehren, plus 15 Freitext-Ausgaenge), mit ihr null.
   - files: "docs/plan/planning/done/**/slice-*.md"
-    skip-pattern: '(?m)^> \*\*ARCHIVIERT'
+    skip-pattern: '(?m)^> \*\*ARCHIVIERT\*\* — Volltext:'
     exempt-paths:
       - "docs/plan/planning/done/**/slice-0??-*"
       - "docs/plan/planning/done/**/slice-1[0-3]?-*"
@@ -252,7 +252,7 @@ structure:
   # statt der Einzelbefunde. slice-221 war der Anlassfall und ist seither
   # ueber diese Kopplung gedeckt, kein namentlicher exempt-paths-Eintrag mehr.
   - files: "docs/plan/planning/done/**/slice-*.md"
-    skip-pattern: '(?m)^> \*\*ARCHIVIERT'
+    skip-pattern: '(?m)^> \*\*ARCHIVIERT\*\* — Volltext:'
     exempt-paths:
       - "docs/plan/planning/done/**/slice-0??-*"
       - "docs/plan/planning/done/**/slice-1[0-6]?-*"
@@ -270,19 +270,17 @@ structure:
     non-empty: true
 
 # Review-Report-Deckung wie im Hauptprofil (ADR-0081, ADR-0082) -- ohne
-# diesen Block war ein fehlender Review-Report fuer den lokalen
-# Uebergangs-Waechter unsichtbar; `make gates` deckte ihn ebenfalls nicht,
-# weil `reviews` bewusst ausserhalb der unconditional gates-Zusammensetzung
-# bleibt. Dieselbe Bestands-Ausnahme wie im Hauptprofil -- wird sie dort
-# erweitert, muss sie auch hier nachgezogen werden (benannte Grenze,
-# ADR-0082 Konsequenzen). Die fuenf Eintraege sind mit slice-200 entfernt --
-# siehe die Begruendung im Hauptprofil (.d-check.yml).
-#
-# Abweichend vom Hauptprofil liest dieser Block auch die Unterverzeichnisse von
-# `done/` und nimmt die Stubs aus — der Uebergangs-Waechter prueft dieselbe
-# Kandidatenmenge wie `planning.closure` oben.
+# diesen Block waere ein fehlender Review-Report fuer den lokalen
+# Uebergangs-Waechter unsichtbar; `make gates` deckt ihn nicht, weil `reviews`
+# bewusst ausserhalb der unconditional gates-Zusammensetzung bleibt.
+# KOPPLUNG: Kandidatenmenge (recursive, skip-pattern) und Bestands-Ausnahme
+# gleichen dem Hauptprofil -- wird eines dort geaendert, zieht es hier nach
+# (ADR-0082 Konsequenzen).
+# GRENZE: `reviews.exempt-paths` matcht ueber den ganzen Pfad ohne `**`; eine
+# Ausnahme fuer einen Slice unter einem Unterverzeichnis nennt dessen Pfad
+# ausgeschrieben, nicht in der `**/`-Form der structure-Regeln oben.
 reviews:
   done-dir: docs/plan/planning/done
   reviews-dir: docs/reviews
   recursive: true
-  skip-pattern: '(?m)^> \*\*ARCHIVIERT'
+  skip-pattern: '(?m)^> \*\*ARCHIVIERT\*\* — Volltext:'

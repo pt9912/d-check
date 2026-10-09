@@ -111,19 +111,19 @@ hier geprüft).
 - Eine lebende Referenz sitzt in einer Datei, die auch eine Frozen-Vergangenheits-Aussage
   trägt, und eine Ersetzung hebt sie mit (Über-Hebung, Lehre aus
   [`MR-070`](../../../../../harness/conventions.md#mr-070)). —
-  **Ausgang:** entfallen — §7 meldet keine Über-Hebung; die Frozen-Klassen wurden vorher über die Eigenschaft aufgelistet.
+  **Ausgang:** entfallen — der [R1-Report](../../../../reviews/2026-09-29-slice-240-baseline-v6130-bump-r1.md) belegt im Negativbefund 3 „kein Über-Swap auf frozen Aussagen"; die Mischfundstellen sind zeilenweise getrennt.
 - Die `d-check:cite`-Spannen verschieben sich durch den Re-Vendor
   (`citation-mismatch`, nach [`MR-051`](../../../../../harness/conventions.md#mr-051)). —
-  **Ausgang:** entfallen — eingetreten und im Slice aufgefangen: sieben Spannen neu geankert, Wortlaut identisch (§7).
+  **Ausgang:** eingetreten — im selben Slice behoben: sieben Spannen neu geankert, Wortlaut identisch (§7).
 - Frozen-Dateien tragen Markdown-Links auf den entfernten `v6.9.0`-Baum und
   werden `target-missing` (nach [`MR-069`](../../../../../harness/conventions.md#mr-069)). —
-  **Ausgang:** entfallen — eingetreten und im Slice aufgefangen: vier Links, das Ventil ist gewachsen (§7).
+  **Ausgang:** eingetreten — im selben Slice behoben: vier Links, das Ventil ist gewachsen (§7).
 - Eine Ersetzung trifft die Index-Tabellenzeile des MR-Vorgängers in
   `harness/conventions.md` (dieselbe Klasse wie der Fund aus
   [`MR-072`](../../../../../harness/conventions.md#mr-072)). —
-  **Ausgang:** entfallen — eingetreten und im Slice revertiert (§7).
+  **Ausgang:** eingetreten — im selben Slice revertiert (§7).
 
-*Die Ausgänge sind mit slice-264 aus §7 nachgetragen.*
+*Die Ausgänge sind mit slice-264 nachgetragen, aus §7 und dem [R1-Report](../../../../reviews/2026-09-29-slice-240-baseline-v6130-bump-r1.md).*
 
 ## 7. Closure-Notiz
 
