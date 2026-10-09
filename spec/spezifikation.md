@@ -1970,9 +1970,11 @@ abdeckt:
    der auflöst — gegen die Vereinigung der Pfad-Bäume von BASE und HEAD, auf
    beiden Seiten gleich, sodass ein unveränderter Link auf eine gelöschte Datei
    gleich bleibt. Ein relatives Ziel, das auf eine Datei oder ein Verzeichnis
-   dieses Baums zeigt, wird durch eine Marke, Dateiname und Anker ersetzt
-   (`[R](../user/releasing.md#prep)` → `[R](‹releasing.md#prep›)`; die Marke
-   trägt kein roher Text, ein Ziel, das nur so aussieht, gleicht ihr nie); ein
+   dieses Baums zeigt, wird durch eine Marke (das Zeichen NUL) vor Dateiname
+   und Anker ersetzt (`[R](../user/releasing.md#prep)` → `[R](` + Marke +
+   `releasing.md#prep)`).
+   Trägt eine der beiden Fassungen das Zeichen NUL, wird nicht normiert — ein
+   Ziel, das nur wie eine normierte Form aussieht, gleicht ihr so nie; ein
    Ziel, das nicht auflöst — Inhaltstext, ein fehlendes, absolutes oder
    externes Ziel, ein reiner Anker —, bleibt roh. Ein **reiner Pfad-Nachzug** einer
    umgezogenen Datei ergibt so denselben Core; ein Nachzug auf eine Datei mit
@@ -3752,6 +3754,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-09 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4: die Marke ist das Zeichen NUL; trägt eine der beiden Fassungen es, wird nicht normiert. Kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4 und §2-Schema: aufgelöst wird gegen die Vereinigung der Pfad-Bäume von BASE und HEAD (ein unveränderter Link auf eine gelöschte Datei bleibt gleich), die normierte Form trägt eine Marke (ein Ziel aus bloßem Dateinamen gleicht ihr nicht); Grenzen nachgezogen. Kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4 und §2-Schema: ein Link-Ziel wird nicht mehr geleert, sondern auf Dateiname und Anker normiert, und nur, wenn es im jeweiligen Stand auflöst — Inhaltstext löst nicht auf und bleibt Drift, ebenso ein Nachzug auf eine Datei mit anderem Namen. Weitere Filter: Link im Linktext, Titel einer Referenz-Definition. Kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4: weitere Filter in Richtung Drift — Zitatzeilen, eingerückter Code hinter einer Listenmarke, ein strenger Fence-Automat neben dem der Vorverarbeitung, HTML-Blöcke bis zum Endmarker ihres Typs, gültiger Zielausdruck, öffnende Klammer in einem zeilenlokalen Code-Span; CRLF als Grenze benannt. Kein neuer Grund-Code |

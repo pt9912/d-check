@@ -159,6 +159,9 @@ func TestVCSIgnoreLinkTargetsUmzug(t *testing.T) {
 		{"unveraenderter link auf geloeschte datei", "[R](../../user/releasing.md)", "[R](../../user/releasing.md)", 0},
 		{"neues ziel nur dateiname", "[S](../../../spec/s.md#a)", "[S](s.md#a)", 1},
 		{"neues ziel fehlt in beiden staenden", "[R](../../user/releasing.md)", "[R](../../user/weg/releasing.md)", 1},
+		{"neues ziel traegt die marke", "[R](../../user/releasing.md)", "[R](\x00releasing.md)", 1},
+		// die benannte Grenze: ein Ziel, das nur noch in BASE existiert, löst auf
+		{"nachzug auf datei nur in base", "[R](../../user/maintainer/releasing.md)", "[R](../../user/releasing.md)", 0},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {

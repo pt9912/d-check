@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"bytes"
 	"path"
 	"regexp"
 	"sort"
@@ -9,9 +10,10 @@ import (
 
 // normalizedLinkTargetLines liefert je Zeile, in der ein Link-Ziel normiert
 // wurde, ihre Fassung mit normierten Zielen (DC-FA-VCS-001.a Schritt 4).
-// Normiert wird ein Ziel, das resolve im Stand der Datei auflöst: es wird durch
-// Dateiname und Anker ersetzt, sodass ein reiner Pfad-Nachzug denselben Text
-// ergibt; ein Ziel, das nicht auflöst, bleibt roh. Was ein Link ist,
+// Normiert wird ein Ziel, das resolve auflöst (gegen die Vereinigung der
+// Pfad-Bäume von BASE und HEAD): es wird durch Marke, Dateiname und Anker
+// ersetzt, sodass ein reiner Pfad-Nachzug denselben Text ergibt; ein Ziel, das
+// nicht auflöst, bleibt roh. Was ein Link ist,
 // beantwortet dieselbe Erkennung wie das Modul links: PreprocessMarkdown
 // (Fenced-Code entfällt, Code-Spans absatzweise positionserhaltend geleert),
 // ExtractLinkSpans und definitionRe. Filter engen das ein, jeder nur in
@@ -45,10 +47,20 @@ func normalizedLinkTargetLines(content []byte, resolve func(string) (string, boo
 	return out
 }
 
-// normalizedTargetMark steht vor jedem normierten Ziel: roher Text trägt das
-// Zeichen nicht, ein Ziel, das nur wie eine normierte Form aussieht, gleicht
-// ihr deshalb nie.
+// normalizedTargetMark steht vor jedem normierten Ziel. Normiert wird nur,
+// wenn keine der beiden Fassungen das Zeichen trägt (markFreeTree) -- ein
+// Ziel, das nur wie eine normierte Form aussieht, gleicht ihr deshalb nie.
 const normalizedTargetMark = "\x00"
+
+// markFreeTree liefert tree, wenn keine der beiden Fassungen die Marke trägt,
+// sonst nil: dann wird nicht normiert, und eine rohe Marke im Text kann einer
+// normierten Form nicht gleichen (fail-safe -- der Nachzug bleibt Drift).
+func markFreeTree(tree map[string]bool, base, head []byte) map[string]bool {
+	if bytes.Contains(base, []byte(normalizedTargetMark)) || bytes.Contains(head, []byte(normalizedTargetMark)) {
+		return nil
+	}
+	return tree
+}
 
 // linkTargetResolver liefert für die Datei file die Auflösung ihrer Link-Ziele
 // gegen tree, nil ohne tree. tree ist die Vereinigung der Pfad-Bäume von BASE

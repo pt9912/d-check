@@ -127,8 +127,9 @@ func vcsModified(vcs driven.VCS, cfg model.VCSConfig, base, head, path string, t
 		line = 1
 	}
 	var findings []model.Finding
-	if vcsCore(baseContent, cfg.StatusLine, cfg.ExcludeSections, linkTargetResolver(path, tree)) !=
-		vcsCore(headContent, cfg.StatusLine, cfg.ExcludeSections, linkTargetResolver(path, tree)) {
+	resolve := linkTargetResolver(path, markFreeTree(tree, baseContent, headContent))
+	if vcsCore(baseContent, cfg.StatusLine, cfg.ExcludeSections, resolve) !=
+		vcsCore(headContent, cfg.StatusLine, cfg.ExcludeSections, resolve) {
 		findings = append(findings, model.Finding{
 			File: path, Line: line, Rule: "vcs", Target: path,
 			Reason:  model.ReasonCoreDriftVCS,
