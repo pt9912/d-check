@@ -10,8 +10,10 @@ jeden Commit, [`make verify-closure-notes`](verify-closure-notes.md) an jeden
 Übergang eines Slice nach `done/`. Welcher Hook welche Prüfung ruft und
 welcher Diff den Übergang erkennt, legt
 [`SPEC-095`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
-fest — die Vorbedingungen hängen damit am **Übergang** selbst, nicht nur an
-einer gelegentlichen `fullbuild`-Prüfung.
+fest — für einen Slice direkt unter `done/` hängen die Vorbedingungen damit am
+**Übergang** selbst, nicht nur an
+einer gelegentlichen `fullbuild`-Prüfung; für die Unterverzeichnisse gilt das
+nicht (Grenze 4).
 
 ## Grenze — was das Grün nicht abdeckt
 

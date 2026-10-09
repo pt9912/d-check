@@ -2,7 +2,7 @@
 
 ## Vertrag
 
-Kein Slice liegt in `done/`, dessen Closure-Notiz fehlt, zu dünn ist, aus einer
+Kein Slice liegt **direkt** in `done/`, dessen Closure-Notiz fehlt, zu dünn ist, aus einer
 deklarierten Floskel besteht oder einen unausgefüllten Vorlagen-Platzhalter
 trägt; keiner trägt einen offenen DoD-Haken; kein notiertes Risiko steht ohne
 einen der drei Kanon-Ausgänge da; keine zitierte Beobachtung ist unregistriert;
@@ -64,6 +64,11 @@ erfüllt", nicht „die Notizen sind gut". Die semantische Schicht ist der Skill
    Platzhalter-Regel deckt **vier Formen** (die zwei repo-eigenen und die
    zwei der Kanon-Vorlage); die generische Winkelklammer-Form fängt daneben
    `closure-note-placeholder`, aber **nur im Closure-Abschnitt**.
+8. **Die Unterverzeichnisse von `done/` liest der Lauf nicht** —
+   `done/wellenlos/` und die Wellen-Verzeichnisse. Ein Slice, der dorthin
+   schließt, wird weder von `planning` noch von `structure` gesehen; die
+   Zusage oben gilt nur für die Slices direkt in `done/`. `ls
+   docs/plan/planning/done/*/slice-*.md` zeigt, was außerhalb liegt.
 
 **Von diesen Grenzen gelten dem DoD-Haken-Wächter die Fence-Hälften, nicht die
 Inline-Code-Hälften:** er liest die **rohen** Zeilen, also verschluckt die

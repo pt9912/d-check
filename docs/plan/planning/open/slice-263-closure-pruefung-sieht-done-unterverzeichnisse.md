@@ -71,6 +71,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `spec/lastenheft.md` / `spec/spezifikation.md` | update | Anforderung bzw. Verfeinerung |
 | `.d-check.closure.yml` | update | Globs und Stub-Ausnahme |
 | `done/wellenlos/slice-240` bis `slice-243` | update | Altverstöße |
+| [`SPEC-095`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) (Satz zum ausgelösten Lauf), `harness/sensors/hooks.md` (Vertrag, Grenze 4), `harness/sensors/verify-closure-notes.md` (Vertrag „direkt", Grenze 8, Bindung), GRENZE-Kommentar in `.githooks/pre-commit` | update | die Aussagen, dass der Lauf die Unterverzeichnisse nicht prüft, werden mit der Behebung zurückgenommen |
 
 ## 4. Trigger
 

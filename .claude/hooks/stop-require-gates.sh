@@ -26,7 +26,18 @@ JSON
 fi
 
 if [ ! -f "$state_file" ]; then
-  if [ -z "$(git status --porcelain=v1)" ]; then
+  # Ein `git status`, das scheitert (kein Repository, kaputter Index), liest
+  # den Zustand nicht — leer wäre dann kein sauberer Baum.
+  if ! status="$(git status --porcelain=v1)"; then
+    cat <<'JSON'
+{
+  "decision": "block",
+  "reason": "The working tree state could not be read (git status failed). Fix the cause, then run `make gates`."
+}
+JSON
+    exit 0
+  fi
+  if [ -z "$status" ]; then
     # Frischer Klon ohne lokale Änderungen: kein Nachweis prüfbar.
     cat <<'JSON'
 {"decision":"approve"}
