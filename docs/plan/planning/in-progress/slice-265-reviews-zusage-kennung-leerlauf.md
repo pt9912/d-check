@@ -30,8 +30,10 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 **Ziel:** Das Modul `reviews` prüft einen Bestand, dessen DoD-Zeilen und
 Kennungen anders lauten als der eigene Default, statt grün über einer leeren
-Menge zu laufen — mit opt-in-Schlüsseln, ohne die der Befundsatz byte-identisch
-bleibt:
+Menge zu laufen — mit opt-in-Schlüsseln und einem Default, der zusätzlich die
+Form der Baseline-Slice-Vorlage erkennt. Ohne die Schlüssel ändert sich der
+Befundsatz nur an den zwei benannten Default-Änderungen (§8 und die
+Plan-Änderungen nach R1), sonst ist er byte-identisch:
 
 - **Zusage-Muster** — ein RE2, das statt der festen Phrase „unabhängiger
   Review" den Text eines DoD-Punkts als Review-Zusage erkennt (CR-Punkt 1).
@@ -69,8 +71,10 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
       ist ein Befund statt eines stillen Übersprungs.
 - [ ] Abstieg und Inhalts-Ausnahme für `done-dir`, dieselbe Semantik wie
       slice-263.
-- [ ] Ohne die neuen Schlüssel ist die Ausgabe unverändert
-      (`make blackbox-probe`); Vorlage von `--print-config` beschreibt die
+- [ ] Ohne die neuen Schlüssel ist die Ausgabe unverändert bis auf die zwei
+      benannten Default-Änderungen, gemessen altes gegen neues Image mit
+      eingeschaltetem `reviews`, und jede der beiden ist durch einen Test
+      belegt; Vorlage von `--print-config` beschreibt die
       Erkennung richtig; die Abnahme-Fälle des CR (rot: Zusage ohne Report,
       grün: 0 Befunde) als Test; `make gates` grün.
 - [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
@@ -88,6 +92,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | CR-Datei | update | Entscheidung je Punkt |
 | ausgehender CR an den Kurs unter `docs/plan/cr/` | neu | Vorlage der `.d-check.yml` setzt `require-promises` |
 | `harness/sensors/review-coverage.md` | update | die Grenze des eigenen Gates gegen den gemessenen Stand: die Default-Phrase trifft keinen DoD-Punkt dieses Repos |
+| `Makefile` (Hilfe-Zeile `review-coverage`) | update | nennt die Erkennung |
 
 *(Plan-Änderung vor dem Code-Commit: die Sensor-Datei des eigenen Gates kommt
 dazu — die Messung in diesem Slice zeigt, dass es heute keinen Slice prüft;
@@ -120,6 +125,18 @@ nichts geprüft wird, und steht als Default-Änderung im Lastenheft. Dazu ein
 `.d-check.yml`-Vorlage setzt `require-promises`, sobald v0.85.0 released ist,
 damit ein künftiges Auseinanderlaufen von Vorlage und Default laut wird. Die
 Abgrenzung „Der Default der Phrase bleibt" in §1 entfällt damit.)*
+
+*(Plan-Änderung nach R2, vor dem Code: Die Vorlagen-Form im Default war zu
+breit — „Adaptions-Review durchgeführt" und „kein Review durchgeführt" trafen.
+Sie gilt nur noch, wo sie den Punkt **eröffnet**, direkt hinter der Task-Box,
+wie in der Vorlage (R2 F-1). Vier Spiegel nennen noch die alte Phrase:
+Exit-2-Meldung, Kopfkommentar der Regel, Hilfe-Zeile von `review-coverage`
+im `Makefile`, Vertrag der Sensor-Datei (F-3; das `Makefile` kommt in §3).
+Die Wortgrenze nach dem Basisnamen gilt für jeden Buchstaben und jede Ziffer,
+nicht nur ASCII (F-4); die Vorlage nennt `null` (F-5); Kommentare ohne
+Slice-Nummern als Beispiel (F-6); die Lastenheft-Historie bekommt eine
+berichtigende Zeile (F-7). Die Stellen im Plan, die „ohne die Schlüssel
+unverändert" sagten, sind nachgezogen (F-2).)*
 
 ## 4. Trigger
 
@@ -184,8 +201,10 @@ Slice ohne `.md` enthält; anderer Wert ⇒ Exit 2), `reviews.require-promises`
 (Kandidaten ohne eine einzige Zusage ⇒ Befund), `reviews.recursive` und
 `reviews.skip-pattern` (dieselbe Semantik wie in der Closure-Prüfung). Unter
 `match: id` meldet ein Slice mit Zusage, aus dessen Namen keine Kennung zu
-lesen ist, einen Befund statt still zu fallen — die einzige Änderung am
-Default-Verhalten; sie betrifft nur Dateien, die heute ungeprüft bleiben.
+lesen ist, einen Befund statt still zu fallen — eine Änderung am
+Default-Verhalten; sie betrifft nur Dateien, die heute ungeprüft bleiben. Die
+zweite — der Default erkennt die Vorlagen-Form — trägt die Plan-Änderung nach
+R1, zweiter Teil.
 
 <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
