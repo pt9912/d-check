@@ -58,18 +58,24 @@ func structureTree(fsys driven.Filesystem) ([]string, error) {
 // Datei Abschnitts-Findung, Kardinalität und Bedingungen (Schritte 3–6).
 func checkStructureRule(fsys driven.Filesystem, r model.StructureRule, all []string) []model.Finding {
 	var cands []string
+	skipped := 0
 	for _, f := range all {
-		if !matchGlob(r.Files, f) {
+		if !matchGlob(r.Files, f) || structureExempt(r, f) {
 			continue
 		}
-		if structureExempt(r, f) || structureSkipped(fsys, r, f) {
+		if structureSkipped(fsys, r, f) {
+			skipped++
 			continue
 		}
 		cands = append(cands, f)
 	}
 	// Nullmengen-Härte: eine Regel zu setzen IST die Behauptung, dass sie Dateien
-	// trifft — auch dann, wenn erst exempt-paths oder skip-pattern die Menge
-	// geleert hat.
+	// trifft — auch dann, wenn erst exempt-paths die Menge geleert hat. Leert
+	// erst skip-pattern sie, ist das der Ruhezustand eines Repos, dessen
+	// Dokumente alle archiviert sind — kein Befund (DC-FA-STRUCT-001).
+	if len(cands) == 0 && skipped > 0 {
+		return nil
+	}
 	if len(cands) == 0 {
 		abzug := "exempt-paths"
 		if r.SkipPattern != "" {

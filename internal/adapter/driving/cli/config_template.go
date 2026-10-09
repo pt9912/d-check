@@ -158,7 +158,7 @@ modules: [links, anchors]
 #   #   boilerplate: []                 # Floskeln, case-insensitiv an WORTGRENZEN; Default LEER (keine Sprach-Annahme)
 #   #   placeholder: false              # unausgefuellte Vorlagen-Platzhalter (<feld>); Default AUS, ignoriert Inline-Code
 #   #   recursive: false                # auch die Unterverzeichnisse von dir lesen (Filter bleibt der Basisname); unlesbar ⇒ fail-closed
-#   #   skip-pattern: '(?m)^> \*\*ARCHIVIERT'  # RE2 gegen den rohen INHALT: Treffer ist kein Kandidat (z. B. archivierter Stub); Nullmenge zaehlt danach
+#   #   skip-pattern: '(?m)^> \*\*ARCHIVIERT'  # RE2 gegen den rohen INHALT: Treffer ist kein Kandidat (z. B. archivierter Stub); leert es die Menge, ist das kein Befund (alles archiviert)
 #   # waves:                            # dritte Fähigkeit: Wellen-Register gegen die Wellen-Dateien (opt-in im opt-in)
 #   #   dir: docs/plan/planning         # Aktivierungs-Schalter; leer ⇒ inert (kein Wellendokument wird geöffnet)
 #   #   done-dir: docs/plan/planning/done  # Ruheort der Ergebnisnotizen (Default: <dir>/done)

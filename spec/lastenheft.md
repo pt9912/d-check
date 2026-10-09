@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.102.6
+**Version:** 0.103.0
 
 **Status:** Draft
 
@@ -2670,7 +2670,7 @@ widersprechen.
 - **Boundary (eigener Kandidaten-Filter, Default):** Given `planning.closure.dir` gesetzt und **kein** `planning.closure.glob`, when `d-check --enable planning` läuft, then ist der Befundsatz byte-identisch zu einem Lauf, der `planning.slice-glob` als Kandidaten-Filter verwendet.
 - **Happy Path (Filter entkoppelt):** Given `planning.closure.glob: "*.md"` bei unverändertem `planning.slice-glob`, when `d-check --enable planning` läuft, then werden **alle** Markdown-Dateien im Closure-Verzeichnis auf ihre Notiz geprüft, **ohne** dass sich die Aussage der Lifecycle-Invariante ändert.
 - **Happy Path (Unterverzeichnisse):** Given `planning.closure.recursive: true` und ein Slice mit zu dünner Closure-Notiz unter einem Unterverzeichnis von `planning.closure.dir`, when `d-check --enable planning` läuft, then `closure-note-thin` auf dieser Datei; **ohne** den Schlüssel bleibt das Unterverzeichnis ungelesen und der Befundsatz byte-identisch.
-- **Boundary (Stub ausgenommen):** Given `planning.closure.skip-pattern`, das den Marker eines archivierten Stubs trifft, when `d-check --enable planning` läuft, then meldet der Stub nichts, der Volltext daneben wird geprüft; nimmt das Muster **alle** Kandidaten, gilt die Nullmengen-Regel (`closure-note-missing` auf dem Verzeichnis), und eine unlesbare Datei bleibt Kandidatin.
+- **Boundary (Stub ausgenommen):** Given `planning.closure.skip-pattern`, das den Marker eines archivierten Stubs trifft, when `d-check --enable planning` läuft, then meldet der Stub nichts, der Volltext daneben wird geprüft, und eine unlesbare Datei bleibt Kandidatin. Nimmt das Muster **alle** Kandidaten, ist das **kein** Befund — der Ruhezustand eines Repos, dessen Slices alle archiviert sind; `closure-note-missing` auf dem Verzeichnis bleibt dem Fall vorbehalten, dass es keine einzige passende Datei enthält.
 - **fail-closed (Unterverzeichnis und Muster):** Given `planning.closure.recursive: true` und ein unlesbares Unterverzeichnis, when `d-check --enable planning` läuft, then `closure-note-missing` mit dem Pfad des Unterverzeichnisses; Given ein nicht kompilierendes `planning.closure.skip-pattern`, when `d-check` startet, then Abbruch mit Exit-Code 2 und einer Meldung, die den Schlüssel nennt.
 - **fail-closed (leerer Glob):** Given `planning.closure.glob` **explizit** auf den leeren String gesetzt, when `d-check` startet, then Abbruch mit Exit-Code 2 und einer Meldung, die den Schlüssel nennt.
 - **Boundary (Platzhalter-Erkennung aus):** Given `planning.closure.placeholder` nicht gesetzt oder `false`, when das Modul läuft, then ist der Befundsatz byte-identisch zu einem Lauf ohne diese Bedingung.
@@ -2721,8 +2721,10 @@ Scanner) — `structure` prüft Abschnitts-Struktur, und die gibt es außerhalb 
 Markdown nicht; ein Glob, der ausschließlich anderes trifft, hat damit null
 Kandidaten. Abgezogen wird `exempt-paths` der Regel, danach jede Datei, deren
 Inhalt `skip-pattern` der Regel trifft (etwa ein archivierter Stub); eine
-unlesbare Datei bleibt Kandidatin, und die Nullmengen-Regel unten gilt nach
-beiden Abzügen.
+unlesbare Datei bleibt Kandidatin. Die Nullmengen-Regel unten gilt nach
+beiden Abzügen, mit einer Ausnahme: Hat `skip-pattern` mindestens eine Datei
+ausgenommen, ist eine danach leere Menge **kein** Befund — der Ruhezustand
+eines Repos, dessen Dokumente alle archiviert sind.
 Trifft eine Regel **null** Dateien ⇒ `section-missing` auf dem Glob (`line` = 1):
 eine Regel, die auf nichts zeigt, läuft leer und meldet nicht Erfolg. Der
 Befund-`target` trägt dabei die **Regel-Identität** (`files`-Glob **und**
@@ -3104,7 +3106,7 @@ ein Ventil die Regel still ab.
 - **`sections: each`:** Given eine Datei mit **drei** passenden Abschnitten, von denen einer eine Bedingung verletzt, when `d-check --enable structure` läuft, then **genau ein** Befund — für den verletzenden Abschnitt, mit dessen Zeile — und **kein** `section-ambiguous`.
 - **`sections: one` (Default):** Given eine Datei mit **zwei** passenden Abschnitten, when `d-check --enable structure` läuft, then `section-ambiguous` mit der Zeile des **zweiten**, Exit 1 — und **kein** Bedingungs-Befund für diese Datei.
 - **Negative (Abschnitt fehlt):** Given ein Dokument der Klasse **ohne** passende Überschrift, when `d-check --enable structure` läuft, then `section-missing` (`line` = 1), Exit 1.
-- **Boundary (Inhalts-Ausnahme):** Given eine Regel mit `skip-pattern`, das den Marker eines archivierten Stubs trifft, when `d-check --enable structure` läuft, then wird der Stub nicht geprüft und der Volltext daneben schon; nimmt das Muster **alle** Dateien, gilt die Nullmengen-Regel (`section-missing` auf dem Glob), und eine unlesbare Datei bleibt Kandidatin. **Ohne** den Schlüssel ist der Befundsatz byte-identisch.
+- **Boundary (Inhalts-Ausnahme):** Given eine Regel mit `skip-pattern`, das den Marker eines archivierten Stubs trifft, when `d-check --enable structure` läuft, then wird der Stub nicht geprüft und der Volltext daneben schon, und eine unlesbare Datei bleibt Kandidatin. Nimmt das Muster **alle** übrigen Dateien, ist das **kein** Befund — der Ruhezustand eines archivierenden Repos; `section-missing` auf dem Glob bleibt dem Fall vorbehalten, dass `skip-pattern` keine Datei ausgenommen hat. **Ohne** den Schlüssel ist der Befundsatz byte-identisch.
 - **fail-closed (Inhalts-Ausnahme):** Given eine Regel mit nicht kompilierendem `skip-pattern`, when `d-check` startet, then Abbruch mit Exit-Code 2 und einer Meldung, die den Schlüssel nennt.
 - **Negative (je Bedingung ein Code):** Given einen Abschnitt, der **zwei** Bedingungen zugleich verletzt, when `d-check --enable structure` läuft, then **zwei** Befunde mit **verschiedenen** Grund-Codes — die Deduplikation fasst sie nicht zusammen.
 - **Boundary (fence-treu):** Given einen Abschnitt, dessen Sätze, Task-Items oder Marken **ausschließlich** in einem Fenced-Code-Block stehen, when `d-check --enable structure` läuft, then zählen sie nicht — die Bedingung gilt als verletzt.
@@ -3696,10 +3698,14 @@ Netz.
 ist byte-identisch, [`DC-QA-02`](#dc-qa-02--determinismus)). Ist es aktiv und
 die Kandidatenmenge leer, `reviews.reviews-dir` unlesbar oder unter `recursive`
 ein Unterverzeichnis unlesbar, ist das ein **Befund**, kein stilles Grün.
-**Null gefundene Review-Zusagen unter vorhandenen Kandidaten** ist ohne
+**Ausgenommen ist die Menge, die erst `reviews.skip-pattern` leert:** Hat das
+Muster mindestens eine Datei ausgenommen und bleibt keine übrig, ist das der
+Ruhezustand eines Repos, dessen Slices alle archiviert sind, und **kein**
+Befund. **Null gefundene Review-Zusagen unter vorhandenen Kandidaten** ist ohne
 `reviews.require-promises` **kein** Fail-Closed-Auslöser — ein kleiner oder
 junger Bestand ohne jede Zusage ist ein legitimer Zustand; mit dem Schlüssel
-ist es ein Befund, denn sonst prüfte das Modul über nichts.
+ist es ein Befund, denn sonst prüfte das Modul über nichts. Gezählt werden
+dabei nur die Kandidaten, die `skip-pattern` übrig lässt.
 
 **Exit 2 vor dem Lauf** bei: leerem `reviews.done-dir` (nur Weißraum),
 gesetztem `reviews.done-dir` ohne `reviews.reviews-dir`, ungültigem Glob in
@@ -3723,6 +3729,7 @@ kompilierendem `reviews.skip-pattern`; die Meldung nennt den Schlüssel. Ein
 - **Negative (Default):** Given einen DoD-Punkt, der nur „Adaptions-Review" oder „Review-Report liegt vor" trägt, die Vorlagen-Form hinter einem Wort („Adaptions-Review durchgeführt", „kein Review durchgeführt" auch über einen Zeilenumbruch, „das Review durchgeführt zu haben"), oder die Wortfolge „Review durchgeführt" bzw. „unabhängiger Review" außerhalb eines Checkbox-Punkts, when der Lauf endet, then keine Zusage.
 - **Boundary (Slug-Kennung):** Given einen Slice `slice-<titel>.md` mit Zusage, when `match` nicht gesetzt ist, then `review-missing` mit dem Hinweis auf `match: name` statt eines stillen Übersprungs; mit `match: name` deckt ihn ein Report, dessen Dateiname den Basisnamen gefolgt von einem Zeichen enthält, das weder Buchstabe noch Ziffer ist — eine Kennung `slice-<N>` wird nicht vom Report zu `slice-<N>5-…` gedeckt.
 - **fail-closed (keine Zusage):** Given `reviews.require-promises: true` und Kandidaten ohne eine einzige Zusage, when der Lauf endet, then ein Befund auf `reviews.done-dir`.
+- **Boundary (alles archiviert):** Given `reviews.skip-pattern`, das den Stub-Marker trifft, und ein `reviews.done-dir`, dessen Slices **alle** Stubs sind — flach oder unter Unterverzeichnissen —, when der Lauf endet, then **kein** Befund, auch mit `require-promises: true`; ohne `skip-pattern` bleibt die leere Menge ein Befund, und ein unlesbares `reviews.reviews-dir` ist es weiterhin.
 - **Boundary (Unterverzeichnisse und Stubs):** Given `reviews.recursive: true` und `reviews.skip-pattern`, das den Stub-Marker trifft, when der Lauf endet, then wird der Volltext unter einem Unterverzeichnis geprüft, der Stub daneben nicht; ein unlesbares Unterverzeichnis ist ein Befund mit seinem Pfad, die übrigen Einträge werden weiter geprüft, und ein Leerlauf-Befund entfällt neben ihm.
 
 **Out-of-Scope:** die **Qualität** eines Reports (Selbstauskunft, wie der
@@ -4144,6 +4151,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.103.0 | 2026-10-09 | [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in), [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in), [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): eine Kandidatenmenge, die erst `skip-pattern` leert, ist **kein** Befund mehr — der Ruhezustand eines Repos, dessen Dokumente alle archiviert sind; `require-promises` zählt nur die übrig gelassenen Kandidaten; neues Kriterium „Boundary (alles archiviert)", die Stub-Kriterien von planning und structure entsprechend. Anlass: Befund eines Adopters | — |
 | 0.102.6 | 2026-10-09 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) Pfad-Nachzug: ein Ziel löst auf, wenn es in BASE oder HEAD existiert — ein unveränderter Link auf eine gelöschte Datei ist keine Drift; Kriterium „Boundary (Pfad-Nachzug)" entsprechend. Anlass: Review | — |
 | 0.102.5 | 2026-10-09 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) Pfad-Nachzug: ein Link-Ziel wird nur normiert, wenn es im jeweiligen Stand auflöst, und dann auf Dateiname und Anker — Inhaltstext löst nicht auf und bleibt Drift, ebenso ein Nachzug auf eine Datei mit anderem Namen; Kriterium „Boundary (Pfad-Nachzug)" entsprechend gefasst. Anlass: Review | — |
 | 0.102.4 | 2026-10-09 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) Pfad-Nachzug: auch Zitate und Klammertext ohne gültiges Ziel bleiben Teil des Vergleichs. Anlass: Review | — |

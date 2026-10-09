@@ -562,8 +562,9 @@ type StructureRule struct {
 	ExemptPaths []string
 	// SkipPattern nimmt ganze Dateien nach ihrem INHALT aus der Kandidatenmenge
 	// (RE2 gegen den rohen Datei-Text): eine Datei, auf die es passt, ist keine
-	// Kandidatin. Leer ist die Abwesenheit. Die Nullmengen-Haerte gilt nach dem
-	// Abzug. Eine unlesbare Datei bleibt Kandidatin und meldet sich fail-closed.
+	// Kandidatin. Leer ist die Abwesenheit. Leert es die Menge, ist das kein
+	// Befund (Ruhezustand). Eine unlesbare Datei bleibt Kandidatin und meldet
+	// sich fail-closed.
 	SkipPattern string
 	// TasksIgnorePattern nimmt Task-Items aus der max-tasks-Zaehlung heraus.
 	// Es sieht den ITEM-TEXT hinter Listen-Marker und Checkbox, nicht die rohe
@@ -792,8 +793,8 @@ type ClosureConfig struct {
 	Recursive bool
 	// SkipPattern nimmt einen Kandidaten nach seinem INHALT aus (RE2 gegen den
 	// rohen Datei-Text) -- etwa einen archivierten Stub. Leer ist die
-	// Abwesenheit. Die Nullmengen-Regel gilt nach dem Abzug; eine unlesbare
-	// Datei bleibt Kandidatin und meldet sich fail-closed.
+	// Abwesenheit. Leert es die Menge, ist das kein Befund (Ruhezustand); eine
+	// unlesbare Datei bleibt Kandidatin und meldet sich fail-closed.
 	SkipPattern string
 }
 

@@ -103,7 +103,13 @@ func CheckPlanningClosure(fsys driven.Filesystem, cfg model.PlanningConfig) []mo
 		return closureFinding(dir, 1, dir, model.ReasonClosureNoteMissing,
 			"Closure-Verzeichnis "+err.Error()+" fehlt oder ist unlesbar (fail-closed)")
 	}
+	found := len(names)
 	names = closureSkip(fsys, dir, names, cfg.Closure.SkipPattern)
+	// Leert erst skip-pattern die Menge, ist das der Ruhezustand eines Repos,
+	// dessen Slices alle archiviert sind — kein Befund (DC-FA-PLAN-001).
+	if len(names) == 0 && found > 0 {
+		return nil
+	}
 	// C2 fail-closed, zweite Hälfte: `closure.dir` ist der Aktivierungs-Schalter —
 	// ihn zu setzen IST die Behauptung, dass dort Closure-Notizen liegen. Null
 	// Kandidaten heißt also nicht „nichts zu tun", sondern „die Behauptung stimmt

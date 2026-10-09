@@ -52,7 +52,7 @@ func CheckReviews(fsys driven.Filesystem, cfg model.ReviewsConfig) []model.Findi
 	// Das Muster ist am Config-Rand geprueft (Exit 2), MustCompile trifft hier
 	// gueltige Muster.
 	promiseRE := regexp.MustCompile(cfg.EffectivePromisePattern())
-	candidates, badDirs := reviewCandidates(fsys, cfg)
+	candidates, badDirs, skipped := reviewCandidates(fsys, cfg)
 	reviewNames, listErr := fsys.List(cfg.ReviewsDir)
 	var out []model.Finding
 	for _, d := range badDirs {
@@ -81,8 +81,12 @@ func CheckReviews(fsys driven.Filesystem, cfg model.ReviewsConfig) []model.Findi
 	// er ein Befund, weil die Pruefung sonst ueber nichts gruen meldet. Neben
 	// einem unlesbaren Unterverzeichnis entfaellt der Leerlauf-Befund: die
 	// Menge ist dann nicht leer, sondern unvollstaendig, und das ist gemeldet.
+	// Leert erst skip-pattern die Menge, ist das der Ruhezustand eines Repos,
+	// dessen Slices alle archiviert sind, und kein Befund; require-promises
+	// zaehlt ohnehin nur die uebrig gelassenen Kandidaten.
 	switch {
 	case len(badDirs) > 0:
+	case len(candidates) == 0 && skipped > 0 && listErr == nil:
 	case len(candidates) == 0 || (listErr != nil && promises == 0):
 		out = append(out, model.Finding{File: cfg.DoneDir, Line: 1, Rule: "reviews", Target: cfg.DoneDir,
 			Reason: ReasonReviewMissing,
@@ -176,9 +180,10 @@ func reviewPromise(content string, promiseRE *regexp.Regexp) (line int, ok bool)
 // Verzeichnis wird nicht verfolgt) --, stabil sortiert, abzueglich
 // exempt-paths und der Dateien, deren Inhalt skip-pattern trifft. badDirs
 // nennt die unlesbaren UNTERverzeichnisse, sortiert; die uebrigen Eintraege
-// werden trotzdem gelesen. Ein unlesbares DoneDir selbst ergibt eine leere
+// werden trotzdem gelesen; skipped zaehlt die Dateien, die skip-pattern
+// ausgenommen hat. Ein unlesbares DoneDir selbst ergibt eine leere
 // Menge und damit den Leerlauf-Befund.
-func reviewCandidates(fsys driven.Filesystem, cfg model.ReviewsConfig) (out, badDirs []string) {
+func reviewCandidates(fsys driven.Filesystem, cfg model.ReviewsConfig) (out, badDirs []string, skipped int) {
 	w := reviewWalk{fsys: fsys, cfg: cfg}
 	if cfg.SkipPattern != "" {
 		w.skipRE = regexp.MustCompile(cfg.SkipPattern)
@@ -188,7 +193,7 @@ func reviewCandidates(fsys driven.Filesystem, cfg model.ReviewsConfig) (out, bad
 	}
 	sort.Strings(w.out)
 	sort.Strings(w.badDirs)
-	return w.out, w.badDirs
+	return w.out, w.badDirs, w.skipped
 }
 
 // reviewWalk sammelt die Kandidaten und die unlesbaren Unterverzeichnisse.
@@ -198,6 +203,7 @@ type reviewWalk struct {
 	skipRE  *regexp.Regexp
 	out     []string
 	badDirs []string
+	skipped int
 }
 
 func (w *reviewWalk) visit(dir string, entries []driven.DirEntry) {
@@ -210,7 +216,11 @@ func (w *reviewWalk) visit(dir string, entries []driven.DirEntry) {
 		if e.Kind != driven.KindFile || !strings.HasSuffix(e.Name, ".md") || !strings.HasPrefix(e.Name, "slice-") {
 			continue
 		}
-		if matchAnyGlob(w.cfg.ExemptPaths, rel) || reviewSkipped(w.fsys, w.skipRE, rel) {
+		if matchAnyGlob(w.cfg.ExemptPaths, rel) {
+			continue
+		}
+		if reviewSkipped(w.fsys, w.skipRE, rel) {
+			w.skipped++
 			continue
 		}
 		w.out = append(w.out, rel)
