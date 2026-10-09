@@ -23,7 +23,10 @@ sondern **Aussagen des Repos über sich selbst**:
   `docs/user/abdeckung-tests.md` und `docs/user/abdeckung-e2e.md` stimmen mit
   ihrer Ableitung aus den Testquellen überein — einer Kennung im
   Doc-Kommentar einer Testfunktion, einem Anker `# abdeckung:` unter jeder
-  Phase von `tools/image-test.sh`. Eine Phase ohne Anker ist rot.
+  Phase von `tools/image-test.sh`. Eine Phase — eine Kommentarzeile mit
+  mindestens drei Strichen vor einer Nummer in Klammern (`(1)`, `(4b)`) —
+  ohne Anker ist rot; eine Kopfzeile in anderer Form ist keine Phase und
+  fällt still aus der Ableitung.
 
 ## Grenze — was das Grün nicht abdeckt
 

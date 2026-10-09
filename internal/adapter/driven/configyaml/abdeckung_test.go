@@ -269,14 +269,16 @@ func goTestZeilenAus(file string, src []byte, pat *regexp.Regexp) ([]abdeckungsZ
 
 // gebautVonGoTest fragt `go/build`, ob `go test` die Datei baut — dieselbe
 // Antwort wie das Go-Werkzeug: Dateiname (GOOS/GOARCH-Suffix, `_` und `.` am
-// Anfang), `//go:build` und `// +build`. Der Kontext ist fest linux/amd64 ohne
-// cgo und ohne `-tags`, wie `make test` läuft; das Ergebnis hängt so nicht vom
-// Rechner ab.
+// Anfang), `//go:build` und `// +build`. Der Kontext ist fest linux/amd64
+// (Architektur-Stufe v1) ohne cgo und ohne `-tags`, wie `make test` in der CI
+// läuft; die Datei ist so auf jedem Rechner dieselbe.
 // GRENZE: Eine Datei, die nur unter einer anderen Plattform oder mit `-tags`
-// gebaut wird, zählt nicht.
+// gebaut wird, zählt nicht — auch dann nicht, wenn `make test` auf einem
+// arm64-Rechner sie baut.
 func gebautVonGoTest(file string, src []byte) (bool, error) {
 	ctx := build.Default
 	ctx.GOOS, ctx.GOARCH, ctx.CgoEnabled, ctx.BuildTags = "linux", "amd64", false, nil
+	ctx.ToolTags = []string{"amd64.v1"}
 	ctx.OpenFile = func(string) (io.ReadCloser, error) { return io.NopCloser(bytes.NewReader(src)), nil }
 	return ctx.MatchFile(path.Dir(file), path.Base(file))
 }
@@ -348,8 +350,9 @@ func imageTestZeilen(root string, pat *regexp.Regexp) ([]abdeckungsZeile, error)
 // mindestens drei Strichen vor einer Nummer in Klammern — einen Anker mit
 // mindestens einer Kennung; eine Phase ohne Anker und ein Anker ohne Phase
 // darüber sind ein Fehler (fail-closed).
-// GRENZE: Eine Phase, deren Kopfzeile keine drei Striche trägt, ist keine
-// Phase — ohne Anker fällt sie still aus der Ableitung.
+// GRENZE: Eine Kopfzeile, die dem Muster nicht folgt — keine drei Striche,
+// eine Klammer wie `(4.1)` oder `(4B)`, eine Phase ohne Klammer —, ist keine
+// Phase; ohne Anker fällt sie still aus der Ableitung.
 func imageTestZeilenAus(file, src string, pat *regexp.Regexp) ([]abdeckungsZeile, error) {
 	var rows []abdeckungsZeile
 	phase := ""
