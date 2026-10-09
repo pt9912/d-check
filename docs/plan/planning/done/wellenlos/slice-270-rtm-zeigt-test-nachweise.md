@@ -87,7 +87,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
   ändert.
 - **Entlastung** (Auftraggeber-Entscheid): `trace.coverage` macht eine
   Anforderung mit Test-Nachweis waisenfrei, auch ohne Slice
-  ([`DC-FA-COV-001.a`](../../../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
+  ([`DC-FA-COV-001.a`](../../../../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
   Schritt 5). Das lockert `make completeness-check` (`AGENTS.md` §3.6 ⇒ ADR)
   und weicht vom Baseline-Vorschlag ab, nach dem der Slice entlastet
   (Baseline-Regelwerk `grundlagen-traceability.md` §Die zweite Richtung ⇒
@@ -116,7 +116,7 @@ wellenlos hier geprüft.
   eingetreten und korrigiert (zwei neue Selbsttests, ein bestehender); die
   Verifikation belegte, dass eine einzige Kennung im Doc-Kommentar eine
   Anforderung ohne Slice waisenfrei macht;
-  [`BEO-ALL/deklaration-entlastet-ohne-beleg`](../observations/BEO-ALL/deklaration-entlastet-ohne-beleg/state.md)
+  [`BEO-ALL/deklaration-entlastet-ohne-beleg`](../../observations/BEO-ALL/deklaration-entlastet-ohne-beleg/state.md)
   (1×).
 
 ## 7. Closure-Notiz
@@ -131,14 +131,14 @@ wellenlos hier geprüft.
   beantworten der Go-Parser und `go/build`. Die Verifikation fuhr fünf Brüche
   am Wächter nach und belegte die Entlastung im Klon.
 - **Was ging anders als geplant:** Drei Review-Runden. R1 fand, dass die
-  neuen Selbsttests die Produkt-Anforderung [`DC-FA-COV-001`](../../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in) deklarierten — das
+  neuen Selbsttests die Produkt-Anforderung [`DC-FA-COV-001`](../../../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in) deklarierten — das
   Risiko aus §6, im eigenen Diff; R2 einen bestehenden Selbsttest derselben
   Art und eigene Build-Regeln, die Dateien zählten, die `go test` nicht baut;
   R3 die Architektur-Kennzeichen der Toolchain. Die Entlastung durch
   Test-Nachweise ist eine Lockerung, die beim Lesen der Spezifikation
   auffiel, nicht beim Schnitt — Auftraggeber-Entscheid,
-  [ADR-0104](../../adr/0104-test-nachweise-entlasten-in-der-rtm.md) und
-  [`MR-078`](../../../../harness/conventions.md#mr-078). [ADR-0104](../../adr/0104-test-nachweise-entlasten-in-der-rtm.md) stand bis
+  [ADR-0104](../../../adr/0104-test-nachweise-entlasten-in-der-rtm.md) und
+  [`MR-078`](../../../../../harness/conventions.md#mr-078). [ADR-0104](../../../adr/0104-test-nachweise-entlasten-in-der-rtm.md) stand bis
   zur Closure auf `Proposed`, nach der Lehre aus
   `BEO-ALL/adr-accepted-bevor-der-mechanismus-steht`; ihr Körper beschreibt
   den gelieferten Stand. Die Spalte zählt unter: Tests, die ihre Kennung nur
@@ -149,19 +149,19 @@ wellenlos hier geprüft.
   `BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet` trat erneut auf,
   obwohl Schritt 19 seit slice-267 die Erkennung des Werkzeugs verlangt — die
   Regel steht; sie wurde im ersten Fix nicht angewandt.
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-270.md` in
-  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-270.md` in
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
   und
-  [`BEO-ALL/shared-lexicon-drifts-at-edges`](../observations/BEO-ALL/shared-lexicon-drifts-at-edges/state.md);
+  [`BEO-ALL/shared-lexicon-drifts-at-edges`](../../observations/BEO-ALL/shared-lexicon-drifts-at-edges/state.md);
   neu
-  [`BEO-ALL/deklaration-entlastet-ohne-beleg`](../observations/BEO-ALL/deklaration-entlastet-ohne-beleg/state.md)
+  [`BEO-ALL/deklaration-entlastet-ohne-beleg`](../../observations/BEO-ALL/deklaration-entlastet-ohne-beleg/state.md)
   (1×).
 - **Folge-Slices:** keiner. Produkt-Verhalten unverändert — kein Release
   nötig.
 - **Risiken aus §6:** eines weiter offen (Register, siehe §6). Trigger-Audit:
-  kein Carveout, kein bootstrap-aware Gate; [ADR-0104](../../adr/0104-test-nachweise-entlasten-in-der-rtm.md) neu, ihre Trigger nicht
+  kein Carveout, kein bootstrap-aware Gate; [ADR-0104](../../../adr/0104-test-nachweise-entlasten-in-der-rtm.md) neu, ihre Trigger nicht
   eingetreten; keine Hard Rule mit eingetretenem Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
   Folge-Slices — keiner genannt; (c) Register — die drei zitierten
   Beobachtungen existieren und tragen Belege.
@@ -183,17 +183,17 @@ unter dem Default `*` (`ALL`); deklariert. Kein Produkt-Code.
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:** gelesen am 2026-10-09.
-[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
 (verkörpert als Schritt 19) — der Leser der Deklarationen ist eine Erkennung:
 der Go-Parser statt eines Musters, dazu eine Negativliste (Kennung im
 Rumpf, im Testnamen, in einem Kommentar mit Leerzeile davor, in einem
 `t.Run`-Namen) und der eigene Bestand vor dem Code;
-[`BEO-ALL/shared-lexicon-drifts-at-edges`](../observations/BEO-ALL/shared-lexicon-drifts-at-edges/state.md)
+[`BEO-ALL/shared-lexicon-drifts-at-edges`](../../observations/BEO-ALL/shared-lexicon-drifts-at-edges/state.md)
 — die Kennung liest dasselbe `id-pattern` wie die RTM, kein zweites;
-[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
 — die Grenze der Spalte steht in den beiden Dateien selbst.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-09 (`make nightly-state`) — `upstream-drift` grün;
 `image-scan` rot im Lauf vor dem Release v0.85.0; `make image-scan` gegen
 das veröffentlichte Image danach: keine behebbaren CRITICAL/HIGH auf beiden
