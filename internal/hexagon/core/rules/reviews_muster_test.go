@@ -252,3 +252,26 @@ func TestReviewsDefault_VorlagenFormNurAmTeilanfang(t *testing.T) {
 		t.Fatalf("keine der vier Formen ist eine Zusage, got %+v", f)
 	}
 }
+
+// Die Abnahme eines Bestands mit Slug-Kennungen und der Vorlagen-Form: mit
+// match: name und require-promises ist er ohne Reports laut und mit ihnen
+// still, auch mit Datums-Präfix und Suffixen.
+func TestReviewsAbnahme_SlugKennungMitVorlagenForm(t *testing.T) {
+	cfg := rvCfg()
+	cfg.Match = "name"
+	cfg.RequirePromises = true
+	files := map[string]string{
+		rvDone + "/slice-login-flow.md":   rvVorlage,
+		rvDone + "/slice-export-csv.md":   rvVorlage,
+		rvDone + "/slice-039-abholung.md": rvVorlage,
+	}
+	if f := rvRunCfg(files, cfg); len(f) != 3 {
+		t.Fatalf("ohne Reports: drei review-missing erwartet, got %+v", f)
+	}
+	files["docs/reviews/2026-10-08-slice-login-flow-review.md"] = "# Review\n"
+	files["docs/reviews/2026-10-08-slice-export-csv-korrekturen-review.md"] = "# Review\n"
+	files["docs/reviews/2026-10-08-slice-039-abholung-verifikation.md"] = "# Verifikation\n"
+	if f := rvRunCfg(files, cfg); f != nil {
+		t.Fatalf("mit Reports: kein Befund erwartet, got %+v", f)
+	}
+}
