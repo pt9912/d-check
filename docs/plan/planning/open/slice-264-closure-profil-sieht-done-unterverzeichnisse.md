@@ -14,7 +14,7 @@ F-1 (HIGH) aus dem Review von slice-260;
 **Berührte Spec-Stellen:** [`SPEC-095`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
 (der Satz zum ausgelösten Lauf).
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912
 
 **Autor:** pt9912. **Datum:** 2026-10-09.
 
@@ -36,7 +36,7 @@ der Lauf die Unterverzeichnisse nicht prüft, sind zurückgenommen.
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Die Produkt-Schlüssel** — slice-263.
-- **Die Archivierung der 18 Volltexte unter `done/wellenlos/`** — ein eigener
+- **Die Archivierung der 23 Volltexte unter `done/wellenlos/`** — ein eigener
   Vorgang am Bestand, kein Teil der Prüfung.
 
 Was hier steht, ist die Grenze, an der ein wachsender Slice sich messen lässt:
@@ -107,16 +107,34 @@ wellenlos hier geprüft.
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** die Closure-Konfiguration und die
-Harness-Doku unter dem Default `*` (`ALL`); beim Beanspruchen neu prüfen.
+**Vorgelagert — Sub-Area-Wahl prüfen:** Berührt sind die Closure-Konfiguration,
+vier `done/`-Slices und die Harness-Doku samt Spezifikation §7 — alle unter dem
+Default `*` (`ALL`). Eine eigene Sub-Area erfüllt keine davon: Keine trägt eine
+eigene Konvention, einen eigenen Modus oder eine eigene Inventur-Linie.
 
 <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
 > **Offene Beobachtungen sichten.** Das
 
-**Vorgelagert — offene Beobachtungen sichten:** beim Beanspruchen neu lesen.
+**Vorgelagert — offene Beobachtungen sichten:** Zwei berühren den Slice.
+[`BEO-ALL/messmethode-scope-enger-als-dokumentierte-ziel-form`](../observations/BEO-ALL/messmethode-scope-enger-als-dokumentierte-ziel-form/observation.md)
+(1×) beschreibt genau die Lage, die dieser Slice schließt — ein Scan-Bereich,
+der enger ist als das, wofür sein Grün gelesen wird; der Slice ist ihre
+Behebung, kein zweites Auftreten.
+[`BEO-ALL/leeres-verzeichnis-lokal-verdeckt-ci-befund`](../observations/BEO-ALL/leeres-verzeichnis-lokal-verdeckt-ci-befund/observation.md)
+(1×) betrifft das bewusste Brechen: Es wird auch im frischen Klon gemessen.
+Keine erreicht mit diesem Slice 3×.
+
+**Messung beim Beanspruchen:** Mit Rekursion, `**/`-Globs und der
+Stub-Ausnahme `(?m)^> \*\*ARCHIVIERT` in einer Wegwerf-Kopie des Profils
+meldet der Lauf über 974 Dateien genau **vier** Befunde — den Risiko-Ausgang
+`*(offen)*` in §6 von slice-240 bis slice-243. Die `planning`-Hälfte meldet
+nichts, die `reviews`-Hälfte ebenfalls nichts. Unter `done/wellenlos/` liegen
+23 Volltexte; die Wellen-Verzeichnisse tragen nur Stubs.
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
-beim Beanspruchen aus dem jüngsten Lauf lesen.
+`upstream-drift` grün (2026-10-09T07:17Z). `image-scan` rot (2026-10-09T10:37Z)
+— der Lauf liegt vor dem Release v0.85.0, das die gemeldeten CVEs behebt;
+der Slice berührt das Image nicht.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
