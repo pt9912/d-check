@@ -104,9 +104,9 @@ func TestReviewsMatch_BenannteKennung(t *testing.T) {
 }
 
 // match: name verlangt nach dem Basisnamen ein Zeichen, das weder Buchstabe
-// noch Ziffer ist: slice-x1 wird nicht vom Report zu slice-x12-y gedeckt. Die
-// benannte Grenze: mit Bindestrich deckt der Report zu slice-a-foo-bar auch
-// slice-a-foo.
+// noch Ziffer ist: slice-x1 wird nicht vom Report zu slice-x12-y gedeckt. Ist
+// slice-a-foo-bar keine Slice-Datei, deckt sein Report slice-a-foo weiter
+// (der Laengste-Name-Abgleich kennt nur gesehene Slices).
 func TestReviewsMatch_NameWortgrenze(t *testing.T) {
 	cfg := rvCfg()
 	cfg.Match = "name"
@@ -122,7 +122,7 @@ func TestReviewsMatch_NameWortgrenze(t *testing.T) {
 		"docs/reviews/2026-10-09-slice-a-foo-bar.md": "# Review\n",
 	}
 	if f := rvRunCfg(strich, cfg); f != nil {
-		t.Fatalf("die benannte Grenze: der Report zu slice-a-foo-bar deckt slice-a-foo, got %+v", f)
+		t.Fatalf("ohne Slice-Datei slice-a-foo-bar deckt dessen Report slice-a-foo, got %+v", f)
 	}
 }
 

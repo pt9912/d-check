@@ -3108,7 +3108,12 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    `review-missing`, dessen Meldung auf `match: name` verweist. Mit
    `reviews.match: name` deckt ein Eintrag, dessen Dateiname den Basisnamen
    des Kandidaten ohne `.md` enthält und danach ein Zeichen trägt, das weder
-   Buchstabe noch Ziffer ist (in jeder Schrift), oder endet. Sonst: Befund
+   Buchstabe noch Ziffer ist (in jeder Schrift), oder endet — **außer** der
+   Dateiname trägt in diesem Sinn auch einen **längeren** Basisnamen, der den
+   des Kandidaten enthält. Die Menge der Basisnamen sind alle `slice-*.md`, die
+   Schritt 2 in `reviews.done-dir` sieht, **vor** dem Abzug von `exempt-paths`
+   und `skip-pattern`: der Report eines archivierten längeren Namens deckt den
+   kürzeren nicht. Sonst: Befund
    `review-missing`,
    `file` = die Kandidaten-Datei, `line` = die Zusage-Zeile,
    `target` = `reviews.reviews-dir`.
@@ -3132,11 +3137,11 @@ Agenten-Briefing §3.8): es **scannt** `reviews.done-dir` — mit `recursive`
 samt Unterverzeichnissen — und die unmittelbaren Einträge von
 `reviews.reviews-dir`. Was das Modul **nicht** deckt: die **Qualität** eines
 Reports (Selbstauskunft, wie der DoD-Haken selbst); die zeitliche Reihenfolge
-von Review- und Closure-Commit. Unter `match: name` deckt ein Report auch
-einen Slice, dessen Basisname über einen Bindestrich, Unterstrich oder Punkt
-Präfix des eigenen ist
-(`slice-a-foo` durch den
-Report zu `slice-a-foo-bar`). `skip-pattern` sieht den ganzen rohen Text —
+von Review- und Closure-Commit. Unter `match: name` deckt ein Report, dessen
+Name zwei Basisnamen trägt, von denen einer den anderen enthält, nur den
+längeren; ein Slice, dessen längeres Gegenstück nicht in `reviews.done-dir`
+liegt (etwa ein Stub unter einem Unterverzeichnis ohne `recursive`), wird vom
+Report des längeren weiter gedeckt. `skip-pattern` sieht den ganzen rohen Text —
 eine Datei, die den Marker nur zitiert, fällt still aus. Eine unlesbare
 Kandidaten-Datei fällt still aus der Zusage-Erkennung.
 
@@ -3578,7 +3583,7 @@ Exit 2 ohne Prüfung
 | `reviews.reviews-dir` | string | leer | Verzeichnis der Review-Reports; **Pflicht**, sobald `done-dir` gesetzt ist (sonst Exit 2). Unmittelbar (nicht rekursiv) gelistet; unlesbar ⇒ derselbe fail-closed-Befund wie null Kandidaten |
 | `reviews.exempt-paths` | string[] | leer | Globs über Wurzel-relative Pfade; Treffer werden **nicht** geprüft. Ungültiges Glob ⇒ Exit 2. **Hebt den Leerlauf-Befund nicht aus:** bleiben nach Abzug null Kandidaten, ist das derselbe fail-closed-Befund |
 | `reviews.promise-pattern` | string | Phrase „unabhängiger Review" oder Vorlagen-Form „Review durchgeführt" am Anfang eines Punkt-Teils (hinter der Task-Box, `;` oder `,`, auch über einen Zeilenumbruch) | RE2 gegen den Text eines DoD-Punkts (Checkbox-Zeile ab dem Bullet samt Folgezeilen); ein Treffer ist eine Review-Zusage. **Explizit** leer ⇒ Exit 2 (es träfe jeden Punkt); ohne Wert (YAML-`null`) ⇒ abwesend; nicht kompilierend ⇒ Exit 2 |
-| `reviews.match` | string | `id` | Zuordnung Report → Slice: `id` über die `slice-<NNN>`-Kennung im Report-Namen (ein Slice mit Zusage ohne Kennung im Namen ⇒ `review-missing`), `name` über den Basisnamen des Slice ohne `.md` als Teil des Report-Namens, gefolgt von einem Zeichen, das weder Buchstabe noch Ziffer ist (in jeder Schrift), oder dem Namensende — nötig für Slug-Kennungen. Anderer Wert ⇒ Exit 2 |
+| `reviews.match` | string | `id` | Zuordnung Report → Slice: `id` über die `slice-<NNN>`-Kennung im Report-Namen (ein Slice mit Zusage ohne Kennung im Namen ⇒ `review-missing`), `name` über den Basisnamen des Slice ohne `.md` als Teil des Report-Namens, gefolgt von einem Zeichen, das weder Buchstabe noch Ziffer ist (in jeder Schrift), oder dem Namensende — nötig für Slug-Kennungen; trägt der Report-Name so auch einen längeren Slice-Basisnamen aus `reviews.done-dir`, der den kürzeren enthält, deckt er nur den längeren. Anderer Wert ⇒ Exit 2 |
 | `reviews.require-promises` | bool | `false` | Kandidaten ohne eine einzige Zusage ⇒ `review-missing` auf `reviews.done-dir`; aus ⇒ legitimer Zustand, kein Befund |
 | `reviews.recursive` | bool | `false` | liest auch die Unterverzeichnisse von `reviews.done-dir` (die `SKIP_DIRS` ausgenommen); ein unlesbares Unterverzeichnis ⇒ `review-missing` mit seinem Pfad |
 | `reviews.skip-pattern` | string | leer (aus) | RE2 gegen den **rohen Inhalt** eines Kandidaten; Treffer ist kein Kandidat (etwa ein archivierter Stub); eine unlesbare Datei bleibt Kandidatin; nimmt es alle Kandidaten, gilt die Nullmengen-Regel — außer `reviews.skip-allows-empty` erklärt die Leere zum Ruhezustand. Nicht kompilierend ⇒ Exit 2 |
@@ -3775,6 +3780,8 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-09 | §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritt 4, die Grenze des Moduls und das §2-Schema: unter `reviews.match: name` deckt ein Report einen Slice nicht mehr, wenn sein Name auch einen längeren Slice-Basisnamen trägt, der den kürzeren enthält — gezählt über alle `slice-*.md` in `reviews.done-dir` vor den Abzügen. Kein neuer Grund-Code |
+| 2026-10-09 | Nachzug nach Review an §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C1, §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 1 und §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritt 1: `skip-allows-empty` ohne `skip-pattern` steht in den Exit-2-Aufzählungen |
 | 2026-10-09 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2, §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 2, §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritte 2 und 5, §2-Schema und die Grund-Code-Zeilen [`SPEC-039`](#4-grund--und-fehler-codes), [`SPEC-049`](#4-grund--und-fehler-codes), [`SPEC-081`](#4-grund--und-fehler-codes): der neue Schlüssel `skip-allows-empty` (in `planning.closure`, je `structure`-Regel und in `reviews`) erklärt eine Kandidatenmenge, die erst `skip-pattern` leert, zum Ruhezustand — dann kein Befund; ohne ihn gilt die Nullmengen-Regel unverändert, ohne `skip-pattern` ist er Exit 2. Kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[7](#7-festlegungen-der-harness-werkzeuge) [`SPEC-095`](#7-festlegungen-der-harness-werkzeuge): der Satz zum ausgelösten Lauf nennt die beiden stillen Ausfälle aus §[`DC-FA-PLAN-001.a`](#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) C2 — einen Volltext, der den Marker zitiert, und einen Verzeichnis-Symlink |
 | 2026-10-09 | §[7](#7-festlegungen-der-harness-werkzeuge) [`SPEC-095`](#7-festlegungen-der-harness-werkzeuge): der ausgelöste Lauf prüft jeden Volltext unter `done/` samt Unterverzeichnissen und nimmt archivierte Stubs an ihrem Marker aus — die Aussage, er prüfe nur die Slices direkt unter `done/`, ist zurückgenommen |

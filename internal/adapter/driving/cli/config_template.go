@@ -259,7 +259,8 @@ modules: [links, anchors]
 #   # Geprüft wird die Deckung, nicht die Qualität des Reports.
 #   # promise-pattern: 'Code-Review erledigt'   # RE2 gegen den Punkt-Text ab dem Bullet; explizit leer ⇒ Exit 2, ohne Wert ⇒ Default
 #   # match: name                     # id: slice-<NNN> im Report-Namen (Default) | name: der Basisname des
-#   #                                 # Slice ohne .md steckt im Report-Namen — für Slug-Kennungen (slice-<titel>) nötig
+#   #                                 # Slice ohne .md steckt im Report-Namen — für Slug-Kennungen (slice-<titel>) nötig;
+#   #                                 # trägt der Report-Name auch einen längeren Slice-Namen, deckt er nur diesen
 #   # require-promises: true          # Kandidaten ohne eine einzige Zusage ⇒ review-missing statt grün
 #   # recursive: true                 # auch die Unterverzeichnisse von done-dir (SKIP_DIRS ausgenommen)
 #   # skip-pattern: '(?m)^> \*\*ARCHIVIERT'   # RE2 gegen den rohen INHALT: Treffer ist kein Kandidat (Stub)

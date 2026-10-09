@@ -52,7 +52,8 @@ func CheckReviews(fsys driven.Filesystem, cfg model.ReviewsConfig) []model.Findi
 	// Das Muster ist am Config-Rand geprueft (Exit 2), MustCompile trifft hier
 	// gueltige Muster.
 	promiseRE := regexp.MustCompile(cfg.EffectivePromisePattern())
-	candidates, badDirs, skipped := reviewCandidates(fsys, cfg)
+	menge := reviewCandidates(fsys, cfg)
+	candidates, badDirs, skipped := menge.out, menge.badDirs, menge.skipped
 	reviewNames, listErr := fsys.List(cfg.ReviewsDir)
 	var out []model.Finding
 	for _, d := range badDirs {
@@ -62,7 +63,7 @@ func CheckReviews(fsys driven.Filesystem, cfg model.ReviewsConfig) []model.Findi
 	}
 	promises := 0
 	for _, f := range candidates {
-		finding, isPromise := reviewFinding(fsys, cfg, promiseRE, reviewNames, f)
+		finding, isPromise := reviewFinding(fsys, cfg, promiseRE, reviewNames, menge.names, f)
 		if isPromise {
 			promises++
 		}
@@ -127,7 +128,7 @@ func reviewLeerlauf(cfg model.ReviewsConfig, l reviewLage) *model.Finding {
 // Zuordnung.
 func reviewFinding(
 	fsys driven.Filesystem, cfg model.ReviewsConfig, promiseRE *regexp.Regexp,
-	reviewNames []driven.DirEntry, f string,
+	reviewNames []driven.DirEntry, names []string, f string,
 ) (*model.Finding, bool) {
 	base := path.Base(f)
 	var id string
@@ -145,7 +146,7 @@ func reviewFinding(
 	switch {
 	case cfg.MatchByName():
 		key := strings.TrimSuffix(base, ".md")
-		if hasReviewContaining(reviewNames, key) {
+		if hasReviewContaining(reviewNames, key, longerNames(names, key)) {
 			return nil, true
 		}
 		return &model.Finding{File: f, Line: line, Rule: "reviews", Target: cfg.ReviewsDir,
@@ -201,9 +202,11 @@ func reviewPromise(content string, promiseRE *regexp.Regexp) (line int, ok bool)
 // exempt-paths und der Dateien, deren Inhalt skip-pattern trifft. badDirs
 // nennt die unlesbaren UNTERverzeichnisse, sortiert; die uebrigen Eintraege
 // werden trotzdem gelesen; skipped zaehlt die Dateien, die skip-pattern
-// ausgenommen hat. Ein unlesbares DoneDir selbst ergibt eine leere
+// ausgenommen hat; names traegt die Basisnamen ohne .md ALLER gesehenen
+// slice-*.md, vor beiden Abzuegen (die Zuordnung unter match: name). Ein
+// unlesbares DoneDir selbst ergibt eine leere
 // Menge und damit den Leerlauf-Befund.
-func reviewCandidates(fsys driven.Filesystem, cfg model.ReviewsConfig) (out, badDirs []string, skipped int) {
+func reviewCandidates(fsys driven.Filesystem, cfg model.ReviewsConfig) reviewWalk {
 	w := reviewWalk{fsys: fsys, cfg: cfg}
 	if cfg.SkipPattern != "" {
 		w.skipRE = regexp.MustCompile(cfg.SkipPattern)
@@ -213,7 +216,7 @@ func reviewCandidates(fsys driven.Filesystem, cfg model.ReviewsConfig) (out, bad
 	}
 	sort.Strings(w.out)
 	sort.Strings(w.badDirs)
-	return w.out, w.badDirs, w.skipped
+	return w
 }
 
 // reviewWalk sammelt die Kandidaten und die unlesbaren Unterverzeichnisse.
@@ -224,6 +227,7 @@ type reviewWalk struct {
 	out     []string
 	badDirs []string
 	skipped int
+	names   []string
 }
 
 func (w *reviewWalk) visit(dir string, entries []driven.DirEntry) {
@@ -236,6 +240,7 @@ func (w *reviewWalk) visit(dir string, entries []driven.DirEntry) {
 		if e.Kind != driven.KindFile || !strings.HasSuffix(e.Name, ".md") || !strings.HasPrefix(e.Name, "slice-") {
 			continue
 		}
+		w.names = append(w.names, strings.TrimSuffix(e.Name, ".md"))
 		if matchAnyGlob(w.cfg.ExemptPaths, rel) {
 			continue
 		}
@@ -286,29 +291,55 @@ func hasMatchingReview(reviewNames []driven.DirEntry, id string) bool {
 }
 
 // hasReviewContaining prueft, ob ein Report-Dateiname den Basisnamen des Slice
-// enthaelt (match: name) -- mit Datums-Praefix und beliebigem Suffix. Nach dem
-// Basisnamen steht ein Zeichen, das weder Buchstabe noch Ziffer ist (Unicode),
-// oder das Ende: slice-x1 wird nicht vom Report zu slice-x12-y gedeckt.
-// GRENZE: ein Basisname, der durch ein anderes Zeichen -- Bindestrich,
-// Unterstrich, Punkt -- Praefix eines anderen ist (slice-a-foo und
-// slice-a-foo-bar), wird auch von dessen Report gedeckt; vor dem Basisnamen
-// gilt keine Grenze.
-func hasReviewContaining(reviewNames []driven.DirEntry, key string) bool {
+// enthaelt (match: name) -- mit Datums-Praefix und beliebigem Suffix -- und
+// keinen der laengeren Basisnamen, die ihn enthalten: der Report zu
+// slice-a-foo-bar deckt slice-a-foo nicht, wenn slice-a-foo-bar ein Slice ist.
+// GRENZE: ein Report, der beide Namen traegt, deckt nur den laengeren; vor dem
+// Basisnamen gilt keine Grenze.
+func hasReviewContaining(reviewNames []driven.DirEntry, key string, longer []string) bool {
 	for _, e := range reviewNames {
-		if e.Kind != driven.KindFile {
+		if e.Kind != driven.KindFile || !nameInReport(e.Name, key) {
 			continue
 		}
-		for rest := e.Name; ; {
-			i := strings.Index(rest, key)
-			if i < 0 {
+		covered := true
+		for _, l := range longer {
+			if nameInReport(e.Name, l) {
+				covered = false
 				break
 			}
-			if r, _ := utf8.DecodeRuneInString(rest[i+len(key):]); r == utf8.RuneError ||
-				!unicode.IsLetter(r) && !unicode.IsDigit(r) {
-				return true
-			}
-			rest = rest[i+1:]
+		}
+		if covered {
+			return true
 		}
 	}
 	return false
+}
+
+// nameInReport prueft, ob report den Basisnamen key traegt: nach ihm steht ein
+// Zeichen, das weder Buchstabe noch Ziffer ist (Unicode), oder das Ende --
+// slice-x1 steht nicht in slice-x12-y.
+func nameInReport(report, key string) bool {
+	for rest := report; ; {
+		i := strings.Index(rest, key)
+		if i < 0 {
+			return false
+		}
+		if r, _ := utf8.DecodeRuneInString(rest[i+len(key):]); r == utf8.RuneError ||
+			!unicode.IsLetter(r) && !unicode.IsDigit(r) {
+			return true
+		}
+		rest = rest[i+1:]
+	}
+}
+
+// longerNames liefert die Basisnamen, die key enthalten und laenger sind --
+// die Namen, deren Report key nicht mitdeckt.
+func longerNames(names []string, key string) []string {
+	var out []string
+	for _, n := range names {
+		if len(n) > len(key) && strings.Contains(n, key) {
+			out = append(out, n)
+		}
+	}
+	return out
 }

@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.103.1
+**Version:** 0.104.0
 
 **Status:** Draft
 
@@ -3688,9 +3688,13 @@ unterhalb zweier **konfigurierter** Verzeichnisse (`reviews.done-dir`,
 `reviews.reviews-dir`) — beide sind Repo-Konvention, nicht verdrahtet.
 Geprüft wird die **Deckung** (ein Report existiert), nicht seine **Qualität**
 — dieselbe Grenze wie beim DoD-Haken selbst: eine Selbstauskunft. Unter
-`match: name` deckt ein Report auch einen Slice, dessen Basisname über einen
-Bindestrich, Unterstrich oder Punkt Präfix des
-eigenen ist (`slice-a-foo` durch den Report zu `slice-a-foo-bar`). Als
+`match: name` deckt ein Report einen Slice **nicht**, wenn sein Name auch
+einen **längeren** Slice-Basisnamen trägt, der den kürzeren enthält: der
+Report zu `slice-a-foo-bar` deckt `slice-a-foo` nicht. Gezählt werden alle
+Slice-Dateien, die das Modul in `reviews.done-dir` sieht, auch die von
+`exempt-paths` oder `skip-pattern` ausgenommenen — sonst deckte der Report
+eines archivierten längeren Namens wieder den kürzeren. **Grenze:** ein
+Report, dessen Name beide Basisnamen trägt, deckt nur den längeren. Als
 DoD-Punkt zählt jeder Checkbox-Punkt der Datei, auch einer außerhalb des
 DoD-Abschnitts oder in einem Codeblock.
 
@@ -3735,7 +3739,7 @@ kompilierendem `reviews.skip-pattern` und `reviews.skip-allows-empty` ohne
 - **Happy Path (Vorlagen-Form):** Given einen Slice, dessen DoD-Punkt „Review durchgeführt, Report unter `docs/reviews/` liegt vor" trägt, und **kein** `promise-pattern`, when der Lauf endet, then `review-missing` ohne passenden Report — ebenso für „`make gates` grün; Review durchgeführt", auch mit Zeilenumbruch nach dem `;` — und kein Befund mit dem Report `<datum>-slice-<NNN>-<titel>-review.md`.
 - **Happy Path (eigenes Muster):** Given `reviews.promise-pattern: 'Code-Review erledigt'` und einen Slice, dessen DoD-Punkt diese Wortfolge trägt, when der Lauf endet, then `review-missing` ohne passenden Report; ohne den Schlüssel ist derselbe Punkt keine Zusage.
 - **Negative (Default):** Given einen DoD-Punkt, der nur „Adaptions-Review" oder „Review-Report liegt vor" trägt, die Vorlagen-Form hinter einem Wort („Adaptions-Review durchgeführt", „kein Review durchgeführt" auch über einen Zeilenumbruch, „das Review durchgeführt zu haben"), oder die Wortfolge „Review durchgeführt" bzw. „unabhängiger Review" außerhalb eines Checkbox-Punkts, when der Lauf endet, then keine Zusage.
-- **Boundary (Slug-Kennung):** Given einen Slice `slice-<titel>.md` mit Zusage, when `match` nicht gesetzt ist, then `review-missing` mit dem Hinweis auf `match: name` statt eines stillen Übersprungs; mit `match: name` deckt ihn ein Report, dessen Dateiname den Basisnamen gefolgt von einem Zeichen enthält, das weder Buchstabe noch Ziffer ist — eine Kennung `slice-<N>` wird nicht vom Report zu `slice-<N>5-…` gedeckt.
+- **Boundary (Slug-Kennung):** Given einen Slice `slice-<titel>.md` mit Zusage, when `match` nicht gesetzt ist, then `review-missing` mit dem Hinweis auf `match: name` statt eines stillen Übersprungs; mit `match: name` deckt ihn ein Report, dessen Dateiname den Basisnamen gefolgt von einem Zeichen enthält, das weder Buchstabe noch Ziffer ist — eine Kennung `slice-<N>` wird nicht vom Report zu `slice-<N>5-…` gedeckt, und `slice-cache` nicht vom Report zu `slice-cache-warmup`, wenn `slice-cache-warmup` ebenfalls als Slice-Datei existiert, auch als archivierter Stub; existiert er nicht, deckt der Report `slice-cache` weiter.
 - **fail-closed (keine Zusage):** Given `reviews.require-promises: true` und Kandidaten ohne eine einzige Zusage, when der Lauf endet, then ein Befund auf `reviews.done-dir`.
 - **Boundary (alles archiviert):** Given `reviews.skip-pattern`, das den Stub-Marker trifft, `reviews.skip-allows-empty: true` und ein `reviews.done-dir`, dessen Slices **alle** Stubs sind — flach, oder unter Unterverzeichnissen mit `reviews.recursive: true` —, when der Lauf endet, then **kein** Befund, auch mit `require-promises: true`; **ohne** `skip-allows-empty` bleibt die geleerte Menge ein Befund, ebenso eine Menge, aus der `skip-pattern` nichts genommen hat, und ein unlesbares `reviews.reviews-dir`.
 - **fail-closed (halbe Aktivierung):** Given `reviews.skip-allows-empty: true` ohne `reviews.skip-pattern`, when `d-check` startet, then Abbruch mit Exit-Code 2 und einer Meldung, die den Schlüssel nennt.
@@ -4160,6 +4164,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.104.0 | 2026-10-09 | [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): unter `match: name` deckt ein Report einen Slice nicht mehr, wenn sein Name auch einen längeren Slice-Basisnamen trägt, der den kürzeren enthält — gezählt über alle Slice-Dateien in `reviews.done-dir`, auch die ausgenommenen; die Grenze zur Präfix-Deckung entfällt, Kriterium „Boundary (Slug-Kennung)" entsprechend. Anlass: Befund eines Adopters | — |
 | 0.103.1 | 2026-10-09 | Nachzug nach Verifikation an [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): das Kriterium „Boundary (alles archiviert)" nennt für Stubs unter Unterverzeichnissen `reviews.recursive: true` — ohne liest das Modul sie nicht, und die Menge bleibt leer, ohne dass `skip-pattern` etwas genommen hat | — |
 | 0.103.0 | 2026-10-09 | [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in), [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in), [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): der neue Schlüssel `skip-allows-empty` neben `skip-pattern` erklärt eine Kandidatenmenge, die erst `skip-pattern` leert, zum Ruhezustand eines Repos, dessen Dokumente alle archiviert sind — dann **kein** Befund; ohne ihn bleibt die Nullmengen-Regel, ohne `skip-pattern` ist er ein Nutzungsfehler; neue Kriterien „Boundary (alles archiviert)" und „fail-closed (halbe Aktivierung)", die Stub-Kriterien von planning und structure entsprechend. Anlass: Befund eines Adopters | — |
 | 0.102.6 | 2026-10-09 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) Pfad-Nachzug: ein Ziel löst auf, wenn es in BASE oder HEAD existiert — ein unveränderter Link auf eine gelöschte Datei ist keine Drift; Kriterium „Boundary (Pfad-Nachzug)" entsprechend. Anlass: Review | — |
