@@ -12,6 +12,9 @@
 #                 byte-identisch (DC-QA-02; CLI-Optionen als Container-
 #                 Argumente identisch zur nativen Ausführung,
 #                 DC-FA-DIST-001 / DC-FA-CLI-007 / DC-FA-CLI-008).
+#   (5) Doku:     --manual ohne Netz und ohne Mount → Abschnitte aus
+#                 Handbuch und Spezifikation, nativ vs. Container
+#                 byte-identisch (DC-FA-CLI-013).
 #
 # „Nativ" in einem Docker-only-Repo: das statische Binary wird aus dem
 # Runtime-Image extrahiert (docker cp) und direkt ausgeführt — kein
@@ -136,5 +139,22 @@ done
 grep -q 'Diagnose' "$WORK/c.doctor.out" || fail "--doctor: Diagnose-Ausgabe fehlt"
 grep -q '+nacktes \[`ADR-0042`\]' "$WORK/c.repair.out" || fail "--repair: erwarteter Hunk fehlt"
 echo "image-test: (4) Modi — --doctor/--repair nativ == Container, Exit 1"
+
+# --- (5) Doku aus dem Image: --manual netzlos, nativ vs. Container ---
+# abdeckung: DC-FA-CLI-013, DC-QA-02
+nx=0
+"$WORK/d-check" --manual planning > "$WORK/n.manual.out" 2> "$WORK/n.manual.err" || nx=$?
+cx=0
+docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none "$REF" --manual planning \
+  > "$WORK/c.manual.out" 2> "$WORK/c.manual.err" || cx=$?
+[ "$cx" -eq 0 ] || fail "--manual: Exit $cx im Container ohne Netz und ohne Mount, want 0"
+[ "$nx" -eq "$cx" ] || fail "--manual: Exit nativ $nx != Container $cx"
+cmp -s "$WORK/n.manual.out" "$WORK/c.manual.out" \
+  || fail "--manual: stdout nativ vs. Container nicht byte-identisch (DC-QA-02)"
+grep -q '^==> docs/user/benutzerhandbuch.md:' "$WORK/c.manual.out" \
+  || fail "--manual: kein Abschnitt aus dem Handbuch"
+grep -q '^==> spec/spezifikation.md:' "$WORK/c.manual.out" \
+  || fail "--manual: kein Abschnitt aus der Spezifikation"
+echo "image-test: (5) --manual — netzlos im Container, nativ == Container, Exit 0"
 
 echo "image-test: OK — DC-FA-DIST-001-Akzeptanzkriterien erfüllt"

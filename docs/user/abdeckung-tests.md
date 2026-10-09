@@ -149,6 +149,8 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-CLI-010`](../../spec/lastenheft.md) | `TestCLI010_PrintMKNenntHandbuch` | [`internal/adapter/driving/cli/cli_handbuch_link_test.go`](../../internal/adapter/driving/cli/cli_handbuch_link_test.go) |
 | [`DC-FA-CLI-004`](../../spec/lastenheft.md) | `TestHint_TabUndUmbruchWerdenAbgewiesen` | [`internal/adapter/driving/cli/cli_hint_test.go`](../../internal/adapter/driving/cli/cli_hint_test.go) |
 | [`DC-FA-CLI-004`](../../spec/lastenheft.md) | `TestHint_VierteSpalteInDerBefundZeile` | [`internal/adapter/driving/cli/cli_hint_test.go`](../../internal/adapter/driving/cli/cli_hint_test.go) |
+| [`DC-FA-CLI-013`](../../spec/lastenheft.md) | `TestManual_GibtAbschnitteAus` | [`internal/adapter/driving/cli/cli_manual_test.go`](../../internal/adapter/driving/cli/cli_manual_test.go) |
+| [`DC-FA-CLI-013`](../../spec/lastenheft.md) | `TestManual_Nutzungsfehler` | [`internal/adapter/driving/cli/cli_manual_test.go`](../../internal/adapter/driving/cli/cli_manual_test.go) |
 | [`DC-FA-REF-001`](../../spec/lastenheft.md), [`DC-QA-02`](../../spec/lastenheft.md) | `TestRefs_DefaultAusByteIdentisch` | [`internal/adapter/driving/cli/cli_refs_test.go`](../../internal/adapter/driving/cli/cli_refs_test.go) |
 | [`DC-FA-REF-001`](../../spec/lastenheft.md) | `TestRefs_KeepUndTippfehlerEndToEnd` | [`internal/adapter/driving/cli/cli_refs_test.go`](../../internal/adapter/driving/cli/cli_refs_test.go) |
 | [`DC-FA-LINK-002`](../../spec/lastenheft.md), [`DC-FA-REF-001`](../../spec/lastenheft.md) | `TestRefs_SymlinkBleibtTrotzVentil` | [`internal/adapter/driving/cli/cli_refs_test.go`](../../internal/adapter/driving/cli/cli_refs_test.go) |

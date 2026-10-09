@@ -858,6 +858,40 @@ setzt vor Schritt „Konfiguration laden" von
    konventionellen Namen (sonst zeigte die Meldung auf eine Datei, die der Lauf
    nie gelesen hat).
 
+### DC-FA-CLI-013.a — Handbuch und Spezifikation ausgeben (`--manual`)
+
+`--manual <begriff>`
+([`DC-FA-CLI-013`](lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen))
+ist ein repo-freier Modus wie `--print-config`: er liest weder Konfiguration
+noch Scan-Wurzel und öffnet keine Netzverbindung.
+
+1. **Prüfen.** Ein leerer oder nur aus Weißraum bestehender Begriff ⇒ **Exit 2**.
+   `--manual` zusammen mit `--json`, `--yaml`, `--doctor`, `--repair`,
+   `--repair-broad`, `--trace`, `--require-complete`, `--print-config`,
+   `--print-mk`, `--suggest-config`, `--commit-msg`, `--range` oder `--staged`
+   ⇒ **Exit 2**. Der Begriff wird getrimmt.
+2. **Dokumente.** Das Benutzerhandbuch (`docs/user/benutzerhandbuch.md`), dann
+   die Spezifikation (`spec/spezifikation.md`) — in dieser Reihenfolge, in der
+   Fassung, die beim Build eingebettet wurde.
+3. **Treffer.** Je Dokument die echten ATX-Überschriften außerhalb von
+   Fenced-Code-Blöcken — dieselbe Erkennung wie bei den Abschnitten des Moduls
+   `structure` ([`DC-FA-STRUCT-001.a`](#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)) —,
+   deren Text ohne die führende `#`-Folge den Begriff enthält; verglichen wird
+   nach Umwandlung beider Seiten in Kleinbuchstaben.
+4. **Abschnitt.** Ein Treffer reicht von seiner Überschrift bis vor die nächste
+   echte Überschrift gleicher oder höherer Ebene außerhalb von Fenced-Code, sonst
+   bis zum Dokumentende. Ein Treffer, der in einem bereits ausgegebenen
+   Abschnitt liegt, wird nicht noch einmal ausgegeben.
+5. **Ausgabe.** Je Abschnitt eine Kopfzeile `==> <pfad>:<zeile>` (die Zeile der
+   Überschrift, 1-basiert), dann der Abschnitt unverändert, ohne Leerzeilen an
+   seinem Ende; zwischen zwei Abschnitten eine Leerzeile. Exit 0.
+6. **Kein Treffer.** Keine Ausgabe auf stdout, ein Hinweis auf stderr, der die
+   Titel beider Dokumente als Begriff für das ganze Dokument nennt, **Exit 2**.
+
+**Grenze:** Gesucht wird nur in Überschriften, nicht im Abschnittstext; ein
+Begriff, den nur der Fließtext nennt, findet nichts. Die Dokumente sind die des
+Build-Stands, nicht die des geprüften Repos.
+
 ### DC-FA-REF-001.a — Geteiltes Referenz-Ventil (`ignore-refs`)
 
 Anwendbar in `links`
@@ -3780,6 +3814,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-09 | Neue Verfeinerung §[`DC-FA-CLI-013.a`](spezifikation.md#dc-fa-cli-013a--handbuch-und-spezifikation-ausgeben---manual): `--manual <begriff>` — Treffer in den Überschriften von Handbuch und Spezifikation, Abschnitt bis zur nächsten Überschrift gleicher oder höherer Ebene, Kopfzeile je Abschnitt, kein Treffer ⇒ Exit 2. Kein neuer Grund-Code |
 | 2026-10-09 | §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritt 4, die Grenze des Moduls und das §2-Schema: unter `reviews.match: name` deckt ein Report einen Slice nicht mehr, wenn sein Name auch einen längeren Slice-Basisnamen trägt, der den kürzeren enthält — gezählt über alle `slice-*.md` in `reviews.done-dir` vor den Abzügen. Kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C1, §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 1 und §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritt 1: `skip-allows-empty` ohne `skip-pattern` steht in den Exit-2-Aufzählungen |
 | 2026-10-09 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2, §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 2, §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritte 2 und 5, §2-Schema und die Grund-Code-Zeilen [`SPEC-039`](#4-grund--und-fehler-codes), [`SPEC-049`](#4-grund--und-fehler-codes), [`SPEC-081`](#4-grund--und-fehler-codes): der neue Schlüssel `skip-allows-empty` (in `planning.closure`, je `structure`-Regel und in `reviews`) erklärt eine Kandidatenmenge, die erst `skip-pattern` leert, zum Ruhezustand — dann kein Befund; ohne ihn gilt die Nullmengen-Regel unverändert, ohne `skip-pattern` ist er Exit 2. Kein neuer Grund-Code |

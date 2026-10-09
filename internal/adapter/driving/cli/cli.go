@@ -64,6 +64,8 @@ type options struct {
 	vcsStaged       bool
 	commitMsg       string
 	configPath      string
+	manual          string
+	manualSet       bool
 }
 
 // reorderArgs erlaubt Optionen auch NACH dem Pfad-Argument — nötig
@@ -80,6 +82,7 @@ func reorderArgs(args []string) ([]string, error) {
 		"-range": true, "--range": true,
 		"-commit-msg": true, "--commit-msg": true,
 		"-config": true, "--config": true,
+		"-manual": true, "--manual": true,
 	}
 	var flagArgs, positionals []string
 	for i := 0; i < len(args); i++ {
@@ -190,6 +193,9 @@ func comboError(o options) string {
 	case o.requireComplete && !o.trace:
 		return "--require-complete erfordert --trace"
 	}
+	if msg := manualComboError(o); msg != "" {
+		return msg
+	}
 	return gitComboError(o)
 }
 
@@ -206,19 +212,21 @@ func gitComboError(o options) string {
 	return ""
 }
 
-// earlyGenerators behandelt die repo-freien stdout-Generatoren
-// (--print-config/--print-mk) — Kurzschluss vor jedem Repo-Zugriff;
-// true ⇒ behandelt (Run endet mit Exit 0; DC-FA-CLI-005/010).
-func earlyGenerators(o options, stdout io.Writer) bool {
+// earlyGenerators behandelt die repo-freien Modi --manual, --print-config und
+// --print-mk — Kurzschluss vor jedem Repo-Zugriff; handled ⇒ Run endet mit
+// code (DC-FA-CLI-005/010/013).
+func earlyGenerators(o options, stdout, stderr io.Writer) (code int, handled bool) {
 	switch {
+	case o.manualSet:
+		return runManual(o.manual, stdout, stderr), true
 	case o.printConfig:
 		fmt.Fprint(stdout, configTemplate)
 	case o.printMK:
 		fmt.Fprint(stdout, makefileFragment())
 	default:
-		return false
+		return 0, false
 	}
-	return true
+	return 0, true
 }
 
 // runTrace gibt die Requirements Traceability Matrix aus (DC-FA-CLI-009) —
@@ -333,6 +341,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	commitMsg := flags.String("commit-msg", "", "Modul commits: eine Commit-Message aus <datei> (oder - für stdin) auf eine Traceability-Kennung prüfen (commit-msg-Hook; DC-FA-COMMITS-001)")
 	suggestConfig := flags.String("suggest-config", "", "Config aus Autoritäts-Quellen (kommagetrennt) vorschlagen und beenden")
 	idPrefix := flags.String("id-prefix", "", "Kennungs-Präfix für --suggest-config ai-harness[-init] (z. B. AC); ohne Angabe Platzhalter <PREFIX>")
+	manual := flags.String("manual", "", "Abschnitte von Benutzerhandbuch und Spezifikation ausgeben, deren Überschrift den Begriff nennt (netzlos, aus dem Werkzeug selbst), und beenden")
 	configPath := flags.String("config", "", "Konfigurationsdatei statt der konventionellen "+configyaml.FileName+" der Scan-Wurzel (Pfad relativ zur Wurzel; ersetzt, ergänzt nicht; fehlt sie ⇒ Exit 2)")
 	flags.Var(&enable, "enable", "Regelmodul aktivieren (wiederholbar)")
 	flags.Var(&disable, "disable", "Regelmodul deaktivieren (wiederholbar)")
@@ -370,7 +379,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 		enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig,
 		idPrefix: *idPrefix, trace: *traceOut, printMK: *printMK, requireComplete: *requireComplete,
 		vcsRange: *vcsRange, vcsStaged: *vcsStaged, commitMsg: *commitMsg,
-		configPath: *configPath}
+		configPath: *configPath, manual: *manual, manualSet: flagWasSet(flags, "manual")}
 	if flags.NArg() == 1 {
 		opts.root = flags.Arg(0)
 	}
@@ -576,12 +585,11 @@ func Run(args []string, stdout, stderr io.Writer) int {
 	if done {
 		return code
 	}
-	// DC-FA-CLI-005: Kurzschluss VOR jedem Repo-Zugriff (kein Scan,
-	// kein Lesen/Schreiben) — statisches Gerüst auf stdout, Exit 0.
-	// Repo-freie stdout-Generatoren (--print-config/--print-mk): Kurzschluss
-	// vor jedem Repo-Zugriff (DC-FA-CLI-005/010), dann Exit 0.
-	if earlyGenerators(opts, stdout) {
-		return 0
+	// Repo-freie Modi (--manual, --print-config, --print-mk): Kurzschluss vor
+	// jedem Repo-Zugriff, kein Scan, kein Lesen oder Schreiben
+	// (DC-FA-CLI-005/010/013).
+	if code, handled := earlyGenerators(opts, stdout, stderr); handled {
+		return code
 	}
 	fsys, ok := openRoot(opts.root, stderr)
 	if !ok {

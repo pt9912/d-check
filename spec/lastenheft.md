@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.104.0
+**Version:** 0.105.0
 
 **Status:** Draft
 
@@ -617,6 +617,36 @@ unverändert und byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 angegebene Datei ersetzt vollständig); mehrere `--config`-Angaben in einem Lauf;
 Konfigurationen außerhalb der Scan-Wurzel (der read-only-Mount ist die Grenze);
 Profil-Namen oder eine Profil-Registry innerhalb einer Datei.
+
+---
+
+### DC-FA-CLI-013 — Handbuch und Spezifikation aus dem Werkzeug lesen
+
+**Beschreibung:** Mit der Option `--manual <begriff>` gibt `d-check` die
+Abschnitte des Benutzerhandbuchs und der Spezifikation auf **stdout** aus,
+deren Überschrift den Begriff nennt, jeweils samt Unterabschnitten, und endet
+mit Exit-Code 0 — **ohne Netz** und **ohne das geprüfte Repository zu lesen**.
+Beide Dokumente trägt das Werkzeug selbst, byte-gleich zu den Fassungen seines
+Build-Stands; eine zweite Beschreibung neben ihnen gibt es nicht. Wer nur das
+Image hat und kein Netz, kann damit nachlesen, was ein Modul prüft und welche
+Schlüssel es nimmt. Die Ausgabe ist deterministisch
+([`DC-QA-02`](#dc-qa-02--determinismus)) und read-only
+([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given ein beliebiger Aufruf-Kontext ohne Netz, when `d-check --manual planning` läuft, then liegen auf stdout die Abschnitte beider Dokumente, deren Überschrift „planning" nennt (Groß-/Kleinschreibung egal), jeder mit einer Kopfzeile, die Dokument und Zeile nennt, und Exit-Code 0.
+- **Boundary (ganzes Dokument):** Given den Titel eines der beiden Dokumente als Begriff, when `d-check --manual <titel>` läuft, then steht das ganze Dokument auf stdout.
+- **Boundary (verschachtelt):** Given einen Begriff, den eine Überschrift und eine ihrer Unterüberschriften nennen, when der Lauf endet, then steht der Abschnitt **einmal** auf stdout.
+- **Boundary (Code-Block):** Given eine Zeile, die wie eine Überschrift aussieht, in einem Fenced-Code-Block, when der Lauf endet, then ist sie weder Treffer noch Abschnittsgrenze.
+- **Negative (kein Treffer):** Given einen Begriff, den keine Überschrift nennt, when `d-check --manual <begriff>` läuft, then Exit-Code 2 und ein Hinweis auf stderr, der die Titel beider Dokumente nennt.
+- **Negative (leerer Begriff):** Given `--manual` mit leerem oder nur aus Weißraum bestehendem Begriff, when `d-check` startet, then Exit-Code 2.
+- **Negative (Kombination):** Given `--manual` zusammen mit einer anderen Modus-Option (`--json`, `--yaml`, `--doctor`, `--repair`, `--repair-broad`, `--trace`, `--require-complete`, `--print-config`, `--print-mk`, `--suggest-config`, `--commit-msg`, `--range`, `--staged`), when `d-check` startet, then Exit-Code 2.
+- **Drift:** Given einen Build, when die ausgegebenen Dokumente mit den Quelldateien desselben Stands verglichen werden, then sind sie byte-gleich.
+
+**Out-of-Scope:** Eine eigene, gekürzte Modul-Hilfe neben den Dokumenten (sie
+wäre eine zweite Beschreibung); Volltextsuche im Abschnittstext; andere
+Dokumente als Handbuch und Spezifikation; eine Ausgabe in anderen Sprachen.
 
 ---
 
@@ -4164,6 +4194,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.105.0 | 2026-10-09 | Neue Anforderung [`DC-FA-CLI-013`](#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen): `--manual <begriff>` gibt die Abschnitte von Benutzerhandbuch und Spezifikation aus, deren Überschrift den Begriff nennt — netzlos, aus dem Werkzeug selbst, byte-gleich zu den Quelldateien des Build-Stands. Anlass: CR eines Adopters (Arbeit ohne Netz) | — |
 | 0.104.0 | 2026-10-09 | [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): unter `match: name` deckt ein Report einen Slice nicht mehr, wenn sein Name auch einen längeren Slice-Basisnamen trägt, der den kürzeren enthält — gezählt über alle Slice-Dateien in `reviews.done-dir`, auch die ausgenommenen; die Grenze zur Präfix-Deckung entfällt, Kriterium „Boundary (Slug-Kennung)" entsprechend. Anlass: Befund eines Adopters | — |
 | 0.103.1 | 2026-10-09 | Nachzug nach Verifikation an [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): das Kriterium „Boundary (alles archiviert)" nennt für Stubs unter Unterverzeichnissen `reviews.recursive: true` — ohne liest das Modul sie nicht, und die Menge bleibt leer, ohne dass `skip-pattern` etwas genommen hat | — |
 | 0.103.0 | 2026-10-09 | [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in), [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in), [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): der neue Schlüssel `skip-allows-empty` neben `skip-pattern` erklärt eine Kandidatenmenge, die erst `skip-pattern` leert, zum Ruhezustand eines Repos, dessen Dokumente alle archiviert sind — dann **kein** Befund; ohne ihn bleibt die Nullmengen-Regel, ohne `skip-pattern` ist er ein Nutzungsfehler; neue Kriterien „Boundary (alles archiviert)" und „fail-closed (halbe Aktivierung)", die Stub-Kriterien von planning und structure entsprechend. Anlass: Befund eines Adopters | — |
