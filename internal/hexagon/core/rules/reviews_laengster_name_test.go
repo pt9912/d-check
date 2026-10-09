@@ -97,3 +97,27 @@ func TestReviewsMatchName_StubImUnterverzeichnis(t *testing.T) {
 		t.Fatalf("mit recursive zählt der Stub als längerer Name, got %+v", f)
 	}
 }
+
+// Der längere Name enthält den kürzeren nicht nur als Präfix: auch
+// slice-b-slice-a deckt slice-a nicht. Ein Report, der beide Namen trägt,
+// deckt nur den längeren.
+func TestReviewsMatchName_EnthaltenNichtNurPraefix(t *testing.T) {
+	cfg := rvCfg()
+	cfg.Match = "name"
+	mitte := map[string]string{
+		rvDone + "/slice-a.md":                       rvZusage,
+		rvDone + "/slice-b-slice-a.md":               rvZusage,
+		"docs/reviews/2026-10-09-slice-b-slice-a.md": "# Review\n",
+	}
+	if f := rvRunCfg(mitte, cfg); len(f) != 1 || f[0].File != rvDone+"/slice-a.md" {
+		t.Fatalf("der Report zu slice-b-slice-a deckt slice-a nicht, got %+v", f)
+	}
+	beide := map[string]string{
+		rvDone + "/slice-cache.md":        rvZusage,
+		rvDone + "/slice-cache-warmup.md": rvZusage,
+		"docs/reviews/2026-10-09-slice-cache-warmup-und-slice-cache.md": "# Review\n",
+	}
+	if f := rvRunCfg(beide, cfg); len(f) != 1 || f[0].File != rvDone+"/slice-cache.md" {
+		t.Fatalf("ein Report mit beiden Namen deckt nur den längeren, got %+v", f)
+	}
+}
