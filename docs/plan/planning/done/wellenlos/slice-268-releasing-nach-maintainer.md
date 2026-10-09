@@ -64,14 +64,14 @@ Gemessen im Wegwerf-Klon mit dem reinen Umzug und `make doc-check`
 (`docker run … d-check:latest` über den Klon, Befunde nach Grund und Datei
 gezählt): 39 `target-missing` — 23 eigene Links der Datei, 16 eingehende
 (CHANGELOG, README und README.de je zwei, Benutzerhandbuch zwei,
-Docker-Hub-Beschreibung, [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) vier, [ADR-0067](../../adr/0067-dependabot-als-hebender-kanal.md) einer in `## Geschichte`,
+Docker-Hub-Beschreibung, [ADR-0014](../../../adr/0014-latest-tag-fuer-stabile-releases.md) vier, [ADR-0067](../../../adr/0067-dependabot-als-hebender-kanal.md) einer in `## Geschichte`,
 drei Wellen-Ergebnisnotizen) — und 19 `codepath-missing`: der Pfad als
 Inline-Code in zwei `Accepted`-ADRs, in geschlossenen Slices, Register-Belegen,
 einem aufgelösten MR, einem alten CHANGELOG-Eintrag und in diesem Plan. Die
 Links werden nachgezogen. Die Inline-Code-Erwähnungen sind historischer Text
 — in den ADRs dürfen sie sich nicht ändern, Inline-Code ist kein Link —; der
 alte Pfad kommt deshalb ins Tombstone-Register `codepaths.ignore-refs`
-([ADR-0025](../../adr/0025-codepaths-ignore-refs.md)). Dazu die Erwähnungen,
+([ADR-0025](../../../adr/0025-codepaths-ignore-refs.md)). Dazu die Erwähnungen,
 die kein Doku-Gate liest: `.github/dependabot.yml`, zwei in `release.yml`,
 eine in `hub-description.yml`, `tools/image-test.sh`; und der
 `matrix.exempt-paths`-Eintrag der `.d-check.yml`.)*
@@ -97,7 +97,7 @@ wellenlos hier geprüft.
   Docker-Hub-Seite (`packaging/dockerhub/overview.md`) verlinkt die Datei
   nicht; Links von Adoptern sind von hier aus nicht messbar, die Release-Notiz
   nennt den Umzug;
-  [`BEO-ALL/externer-link-auf-umgezogene-datei`](../observations/BEO-ALL/externer-link-auf-umgezogene-datei/state.md)
+  [`BEO-ALL/externer-link-auf-umgezogene-datei`](../../observations/BEO-ALL/externer-link-auf-umgezogene-datei/state.md)
   (1×).
 
 ## 7. Closure-Notiz
@@ -106,17 +106,17 @@ wellenlos hier geprüft.
   `docs/user/maintainer/`; Git erkennt den Rename (R100). Jeder Link folgt der
   Datei — 23 eigene, 16 eingehende, in den `Accepted`-ADRs 0014 und 0067 nur
   das Ziel, ohne Folge-ADR (Pfad-Nachzug nach
-  [ADR-0103](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md)); die
+  [ADR-0103](../../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md)); die
   Verifikation löste alle 39 alten und neuen Ziele auf dieselbe Datei auf. Die
   19 Inline-Code-Nennungen des alten Pfads bleiben als historischer Text im
   Tombstone-Register von `codepaths`
-  ([ADR-0025](../../adr/0025-codepaths-ignore-refs.md)). Erster echter Lauf des
+  ([ADR-0025](../../../adr/0025-codepaths-ignore-refs.md)). Erster echter Lauf des
   Pfad-Nachzugs aus slice-267, im Hook und in der CI grün.
 - **Was ging anders als geplant:** Die Zählung beim Schnitt las nur Links;
   der Umzug im Wegwerf-Klon zeigte die 19 Inline-Code-Nennungen dazu — die
   Plan-Änderung stand vor dem Code. Anders als in §1 und der DoD beschrieben
   reisen die eingehenden Verweise im Move-Commit mit: getrennt gestagt, prüfte
-  der gestagte ADR-Check den Nachzug in [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) gegen einen BASE-Stand ohne den
+  der gestagte ADR-Check den Nachzug in [ADR-0014](../../../adr/0014-latest-tag-fuer-stabile-releases.md) gegen einen BASE-Stand ohne den
   alten Pfad und meldete Drift. Der Schnitt steht nur in der Commit-Botschaft,
   nicht als Plan-Änderung, und `AGENTS.md` §3.3 erlaubt das Mitreisen dem
   Wortlaut nach nur beim Übergang nach `done/` (R1 LOW-1, Verifikation V-1).
@@ -125,19 +125,19 @@ wellenlos hier geprüft.
 - **Steering-Loop-Eintrag:** keiner mit Schwelle. Die Lücke zwischen §3.3 und
   dem ADR-Gate ist neu im Register — ändert sie §3.3, ist das eine Frage an
   den Auftraggeber, nicht an diesen Slice.
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-268.md` in
-  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/state.md);
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-268.md` in
+  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/state.md);
   neu
-  [`BEO-ALL/umzug-mit-adr-nachzug-braucht-mitreisende-verweise`](../observations/BEO-ALL/umzug-mit-adr-nachzug-braucht-mitreisende-verweise/state.md)
+  [`BEO-ALL/umzug-mit-adr-nachzug-braucht-mitreisende-verweise`](../../observations/BEO-ALL/umzug-mit-adr-nachzug-braucht-mitreisende-verweise/state.md)
   und
-  [`BEO-ALL/externer-link-auf-umgezogene-datei`](../observations/BEO-ALL/externer-link-auf-umgezogene-datei/state.md)
+  [`BEO-ALL/externer-link-auf-umgezogene-datei`](../../observations/BEO-ALL/externer-link-auf-umgezogene-datei/state.md)
   (je 1×).
 - **Folge-Slices:** keiner. Release v0.85.0 mit slice-263, slice-265,
   slice-267 und diesem Slice; die Release-Notiz nennt den Umzug.
 - **Risiken aus §6:** eines weiter offen (Register, siehe §6). Trigger-Audit:
   kein Carveout, kein bootstrap-aware Gate, keine ADR, keine Hard Rule mit
   eingetretenem Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8 —
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8 —
   `image-scan` rot bis zum nächsten Release.
 - **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b) Folge-Slices
   — keiner genannt; (c) Register — die drei zitierten Beobachtungen existieren
@@ -160,16 +160,16 @@ Workflows, ein Gate-Skript und die `.d-check.yml` — alle unter dem Default
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:** gelesen am 2026-10-09.
-[`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](../observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/state.md)
+[`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](../../observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/state.md)
 (1×) — jeder Nachzug in einer `Accepted`-ADR zeigt auf dieselbe umgezogene
 Datei, im Review gegen das alte Ziel lesen;
-[`BEO-ALL/mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/state.md)
-([`MR-070`](../../../../harness/conventions.md#mr-070)) — die Frozen-Klassen
+[`BEO-ALL/mechanical-id-rewrite-misses-frozen-classes`](../../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/state.md)
+([`MR-070`](../../../../../harness/conventions.md#mr-070)) — die Frozen-Klassen
 sind vor der Ersetzung über ihre Eigenschaft aufgelistet (Plan-Änderung in §3);
-[`BEO-ALL/path-scoped-commit-carries-staged-rest`](../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/state.md)
+[`BEO-ALL/path-scoped-commit-carries-staged-rest`](../../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/state.md)
 (verkörpert als Schritt 21) — Move-Commit und Nachzug-Commit getrennt stagen.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-09 aus dem jüngsten Lauf (`make nightly-state`) —
 `upstream-drift` grün (2026-10-09 07:17 UTC); `image-scan` rot (2026-10-09
 10:37 UTC): zwei behebbare HIGH in der Standardbibliothek des publizierten
