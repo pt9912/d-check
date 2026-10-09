@@ -74,6 +74,21 @@ einen Link-Ziel-Nachzug durchlässt, lockert eine Prüfregel — nach `AGENTS.md
 trägt die Entscheidung, den Schlüssel für die ADRs dieses Repos einzuschalten,
 und ihre Grenze.)*
 
+*(Plan-Änderung vor dem Code-Commit, Auftraggeber-Entscheid nach R6: Ein
+erkanntes Link-Ziel wird nicht mehr geleert, sondern auf `Dateiname#Anker`
+normiert — und nur, wenn es im jeweiligen Stand als Datei oder Verzeichnis
+auflöst (BASE gegen den BASE-Baum, HEAD gegen den HEAD-Baum). Grund: sechs
+Review-Runden fanden je neue Markdown-Formen, in denen Inhaltstext als
+Link-Ziel geleert wurde; ein Inhaltswort löst nicht als Datei auf, damit ist
+die Klasse strukturell geschlossen statt Form für Form. Die Rückführung aus
+§4 (Zeilen-Paarung) greift nicht: die Normierung braucht keine Paarung. Der
+Slice wächst damit über eine Review-Sitzung, ohne zurückgeführt zu werden
+([`MR-066`](../../../../harness/conventions.md#mr-066)): Grund — der
+Gegenstand ist ein gelockertes Gate, ein halber Stand wäre schlechter als
+keiner; Ersatz-Form der Prüfung — jede Runde misst am gebauten Image beide
+Richtungen, Umgehung und unveränderten Bestand. [ADR-0103](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md) bekommt einen
+Geschichte-Anhang; Entscheidung und Anlass bleiben.)*
+
 ## 4. Trigger
 
 **Start** (`next` → `in-progress`): slice-265 in `done/`; `in-progress/` leer.
