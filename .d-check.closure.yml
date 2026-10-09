@@ -275,10 +275,12 @@ structure:
 # bewusst ausserhalb der unconditional gates-Zusammensetzung bleibt.
 # KOPPLUNG: Kandidatenmenge (recursive, skip-pattern) und Bestands-Ausnahme
 # gleichen dem Hauptprofil -- wird eines dort geaendert, zieht es hier nach
-# (ADR-0082 Konsequenzen).
-# GRENZE: `reviews.exempt-paths` matcht ueber den ganzen Pfad ohne `**`; eine
-# Ausnahme fuer einen Slice unter einem Unterverzeichnis nennt dessen Pfad
-# ausgeschrieben, nicht in der `**/`-Form der structure-Regeln oben.
+# (ADR-0082 Konsequenzen, ADR-0105).
+# GRENZE: `reviews.exempt-paths` matcht mit blankem path.Match -- `**` steht
+# dort fuer genau ein Segment, nicht fuer beliebig viele. Die `**/`-Form der
+# structure-Regeln oben trifft hier nur einen Slice eine Ebene unter done/,
+# weder einen direkt in done/ noch einen tiefer; eine Ausnahme nennt deshalb
+# den Pfad ausgeschrieben.
 reviews:
   done-dir: docs/plan/planning/done
   reviews-dir: docs/reviews

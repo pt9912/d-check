@@ -112,6 +112,7 @@ Register (Baseline-Vorlage `templates/docs/plan/adr/README.template.md`).
 | [ADR-0102](0102-multi-arch-index-und-spiegel-per-index-digest.md) | Das Image ist ein Multi-Arch-Index, und der Spiegel kopiert ihn samt Index-Digest | Accepted | 2026-10-07 | [`DC-FA-DIST-001`](../../../spec/lastenheft.md#dc-fa-dist-001--docker-image), [`DC-FA-DIST-002`](../../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel) |
 | [ADR-0103](0103-adr-gate-laesst-pfad-nachzug-durch.md) | Das ADR-Gate lässt einen reinen Pfad-Nachzug durch | Accepted | 2026-10-09 | [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) |
 | [ADR-0104](0104-test-nachweise-entlasten-in-der-rtm.md) | Test-Nachweise entlasten eine Anforderung in der RTM | Accepted | 2026-10-09 | [`DC-FA-COV-001`](../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in) |
+| [ADR-0105](0105-reviews-liest-done-unterverzeichnisse.md) | Die Review-Deckung liest `done/` samt Unterverzeichnissen und nimmt Stubs am Marker aus (supersedes ADR-0081, Entscheidung 4) | Proposed | 2026-10-09 | [`DC-FA-RVW-001`](../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in), [ADR-0081](0081-reviews-modul.md) |
 
 ## Konventionen
 

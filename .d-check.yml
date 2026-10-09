@@ -1017,7 +1017,8 @@ workflows:
 # der den Marker am Zeilenanfang zitiert. Geprueft wird die Deckung, nicht die
 # Qualitaet des Reports. KOPPLUNG: der reviews-Block in .d-check.closure.yml
 # traegt dieselben zwei Schluessel; weicht einer ab, antworten der
-# Uebergangs-Waechter und `make review-coverage` verschieden (ADR-0082).
+# Uebergangs-Waechter und `make review-coverage` verschieden (ADR-0082,
+# ADR-0105).
 #
 # BESTANDS-AUSNAHME: keine. Die fuenf Slices, die beim Scharfschalten eine
 # Review-Zusage ohne Report trugen, sind archivierte Stubs.

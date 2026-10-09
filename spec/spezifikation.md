@@ -3754,6 +3754,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-09 | Nachzug nach Review an §[7](#7-festlegungen-der-harness-werkzeuge) [`SPEC-095`](#7-festlegungen-der-harness-werkzeuge): der Satz zum ausgelösten Lauf nennt die beiden stillen Ausfälle aus §[`DC-FA-PLAN-001.a`](#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) C2 — einen Volltext, der den Marker zitiert, und einen Verzeichnis-Symlink |
 | 2026-10-09 | §[7](#7-festlegungen-der-harness-werkzeuge) [`SPEC-095`](#7-festlegungen-der-harness-werkzeuge): der ausgelöste Lauf prüft jeden Volltext unter `done/` samt Unterverzeichnissen und nimmt archivierte Stubs an ihrem Marker aus — die Aussage, er prüfe nur die Slices direkt unter `done/`, ist zurückgenommen |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4: die Marke ist das Zeichen NUL; trägt eine der beiden Fassungen es, wird nicht normiert. Kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4 und §2-Schema: aufgelöst wird gegen die Vereinigung der Pfad-Bäume von BASE und HEAD (ein unveränderter Link auf eine gelöschte Datei bleibt gleich), die normierte Form trägt eine Marke (ein Ziel aus bloßem Dateinamen gleicht ihr nicht); Grenzen nachgezogen. Kein neuer Grund-Code |

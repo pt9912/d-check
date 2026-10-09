@@ -31,12 +31,9 @@ Default.
 3. **Fail-closed bei leerer Kandidatenmenge oder unlesbarem `reviews-dir`**,
    **nicht** bei null gefundenen Zusagen unter vorhandenen Kandidaten — ein
    junger Bestand ohne jede Zusage ist legitim.
-4. **Bestands-Ausnahme mit fester Dateiliste** (fünf Funde beim
-   Scharfschalten, davon zwei mit geschlossenem Haken — für den Haken-Wächter
-   unsichtbar).
-5. **Geprüft ist die Existenz eines Reports, nicht sein Inhalt** — die
+4. **Geprüft ist die Existenz eines Reports, nicht sein Inhalt** — die
    Kategorisierung eines Findings bleibt inferential.
-6. **Der Abgleich vergleicht die **erste** Kennung im Dateinamen, und nur
+5. **Der Abgleich vergleicht die **erste** Kennung im Dateinamen, und nur
    sie** — das Modul zieht per Muster die `slice-<NNN>`-Kennung aus dem Namen
    und vergleicht sie auf **Gleichheit**. Ein Report, dessen Name **zwei**
    Kennungen trägt, deckt deshalb nur die **erste**; die zweite Zusage bleibt
@@ -49,4 +46,5 @@ kein Gate in `gates`/`ci` — **bewusst**: eine neue Modul-Klasse startet als
 eigenständiger Fokus-Lauf, dieselbe Vorsicht wie bei `trace-check`. Netzlos,
 hermetisch.
 [ADR-0081](../../docs/plan/adr/0081-reviews-modul.md) ·
+[ADR-0105](../../docs/plan/adr/0105-reviews-liest-done-unterverzeichnisse.md) ·
 [`DC-FA-RVW-001`](../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)
