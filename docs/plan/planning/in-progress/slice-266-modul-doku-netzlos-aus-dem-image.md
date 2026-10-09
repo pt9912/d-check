@@ -56,6 +56,8 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
       Lastenheft zugesagt und durch einen Test gehalten.
 - [ ] Ein Sensor oder Test hält die mitgelieferte Doku gegen ihre Quelle, damit
       sie nicht driftet; `make gates` grün.
+- [ ] Folge-ADR zu [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md) für das Paket im Modul-Root, bis zur Closure
+      `Proposed`; `.a-check.yml` gibt ihm eine Schicht.
 - [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
 - [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft; der CR
@@ -68,6 +70,8 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | Paket im Modul-Root (Einbettung), CLI (`--manual`), Tests | create/update | Ausgabe aus den eingebetteten Dokumenten |
 | `tools/image-test.sh` | update | eine Phase: `--manual` netzlos im Container |
 | `spec/lastenheft.md`, `spec/spezifikation.md` | update | Zusage |
+| `.a-check.yml`, Folge-ADR zu [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md), ADR-Index | create/update | **Plan-Änderung nach Review R1 F-1:** das Paket im Modul-Root bekommt eine Schicht und eine Entscheidung, sonst bleibt es ungeprüft |
+| Hilfe-Ausgabe, `harness/sensors/image-test.md` | update | **Plan-Änderung nach Review R1 F-3/F-4:** die Spiegel der neuen Option |
 
 ## 4. Trigger
 
