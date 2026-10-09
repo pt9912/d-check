@@ -7,12 +7,12 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
-**Bezug:** [Befund von `ai-harness-course`](../../cr/2026-10-09-befund-ai-harness-course-reviews-gleichgewicht.md),
+**Bezug:** [Befund von `ai-harness-course`](../../../cr/2026-10-09-befund-ai-harness-course-reviews-gleichgewicht.md),
 Punkt 1 (Auftraggeber-Entscheid: alle drei Module).
 
-**Berührte Spec-Stellen:** [`DC-FA-RVW-001`](../../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in),
-[`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
-[`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
+**Berührte Spec-Stellen:** [`DC-FA-RVW-001`](../../../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in),
+[`DC-FA-PLAN-001`](../../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
+[`DC-FA-STRUCT-001`](../../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
 samt ihrer `.a`-Algorithmen und der Grund-Code-Zeilen `review-missing`,
 `closure-note-missing`, `section-missing`.
 
@@ -37,10 +37,10 @@ jedem Fall die Menge, aus der `skip-pattern` nichts genommen hat.
 
 **Plan-Änderung nach Review R1 (F-1 bis F-3, Auftraggeber-Entscheid):** die
 erste Fassung machte die Leere per Default still. Das lockerte den
-Nullmengen-Wächter aus [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md) und [ADR-0081](../../adr/0081-reviews-modul.md) ohne ADR, schaltete den
+Nullmengen-Wächter aus [ADR-0048](../../../adr/0048-closure-note-struktur-im-planning-modul.md) und [ADR-0081](../../../adr/0081-reviews-modul.md) ohne ADR, schaltete den
 Umzugs-Fall ab (ein flacher Stub neben umgezogenen Volltexten) und behandelte
 `skip-pattern` anders als `exempt-section-pattern`, dessen Leere deklariert
-werden muss ([ADR-0078](../../adr/0078-erklaerte-leermenge-mit-zahl.md)). Jetzt: deklariert statt still, mit Folge-ADR.
+werden muss ([ADR-0078](../../../adr/0078-erklaerte-leermenge-mit-zahl.md)). Jetzt: deklariert statt still, mit Folge-ADR.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
@@ -63,7 +63,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
       `skip-pattern` mit Exit 2 ab; je Modul Tests für „mit Schlüssel und nur
       übersprungen ⇒ still", „ohne Schlüssel ⇒ Befund" und „keine passende
       Datei ⇒ Befund"; die drei Fälle des Befunds als Tests; `make gates` grün.
-- [x] Folge-ADR zu [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md) (Entscheidung 8) und [ADR-0081](../../adr/0081-reviews-modul.md) (Entscheidung 5),
+- [x] Folge-ADR zu [ADR-0048](../../../adr/0048-closure-note-struktur-im-planning-modul.md) (Entscheidung 8) und [ADR-0081](../../../adr/0081-reviews-modul.md) (Entscheidung 5),
       bis zur Closure `Proposed`, dann `Accepted`; Index nachgezogen.
 - [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
 - [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
@@ -100,8 +100,8 @@ hinaus.
   Muster auch Volltexte, oder liegen die Volltexte nach einem Umzug außerhalb
   der Kandidatenmenge, sieht der Lauf nichts mehr und meldet es nicht. Ohne
   den Schlüssel fängt die Leere-Regel beides weiter. — **Ausgang:** weiter
-  offen — als Grenze in [ADR-0106](../../adr/0106-skip-allows-empty-erklaert-den-ruhezustand.md) benannt; beobachtet in
-  [`BEO-ALL/skip-allows-empty-macht-umzug-still`](../observations/BEO-ALL/skip-allows-empty-macht-umzug-still/observation.md).
+  offen — als Grenze in [ADR-0106](../../../adr/0106-skip-allows-empty-erklaert-den-ruhezustand.md) benannt; beobachtet in
+  [`BEO-ALL/skip-allows-empty-macht-umzug-still`](../../observations/BEO-ALL/skip-allows-empty-macht-umzug-still/observation.md).
 
 ## 7. Closure-Notiz
 
@@ -116,33 +116,33 @@ hinaus.
   Default still — der Auftrag „in allen drei Modulen kein Befund" las sich
   wie eine Erlaubnis, eine Regel zu lockern, die zwei akzeptierte ADRs ohne
   Ausnahme festlegen. Review R1 (HIGH) fand das und maß, dass der
-  Umzugs-Fall aus [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md)
+  Umzugs-Fall aus [ADR-0048](../../../adr/0048-closure-note-struktur-im-planning-modul.md)
   abgeschaltet war; nach Auftraggeber-Entscheid wurde daraus der
-  Opt-in-Schlüssel mit [ADR-0106](../../adr/0106-skip-allows-empty-erklaert-den-ruhezustand.md),
+  Opt-in-Schlüssel mit [ADR-0106](../../../adr/0106-skip-allows-empty-erklaert-den-ruhezustand.md),
   als Plan-Änderung vor dem Code. R2 fand fünf Exit-2-Aufzählungen ohne den
-  neuen Fall und die Zahl-Form aus [ADR-0078](../../adr/0078-erklaerte-leermenge-mit-zahl.md)
+  neuen Fall und die Zahl-Form aus [ADR-0078](../../../adr/0078-erklaerte-leermenge-mit-zahl.md)
   als ungenannte Alternative; die Verifikation, dass Repos mit Wellen auch
   `recursive` brauchen (Lastenheft 0.103.1). Drei Lint-Überschreitungen
   (gocyclo, gocognit) lösten zwei Auslagerungen aus.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
   `BEO-ALL/semantic-change-body-only-edges-stale` ist als
-  [`MR-025`](../../../../harness/conventions.md#mr-025) verkörpert und trat
+  [`MR-025`](../../../../../harness/conventions.md#mr-025) verkörpert und trat
   erneut auf (Exit-2-Aufzählungen).
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-271.md` in
-  [`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md);
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-271.md` in
+  [`BEO-ALL/semantic-change-body-only-edges-stale`](../../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md);
   neu
-  [`BEO-ALL/adopter-fix-lockert-waechter-ohne-adr`](../observations/BEO-ALL/adopter-fix-lockert-waechter-ohne-adr/state.md)
+  [`BEO-ALL/adopter-fix-lockert-waechter-ohne-adr`](../../observations/BEO-ALL/adopter-fix-lockert-waechter-ohne-adr/state.md)
   (1×) und
-  [`BEO-ALL/skip-allows-empty-macht-umzug-still`](../observations/BEO-ALL/skip-allows-empty-macht-umzug-still/state.md)
+  [`BEO-ALL/skip-allows-empty-macht-umzug-still`](../../observations/BEO-ALL/skip-allows-empty-macht-umzug-still/state.md)
   (1×, das Risiko aus §6).
 - **Folge-Slices:** keiner. Produkt-Verhalten — geht mit dem nächsten Release
   hinaus; die Release-Notiz nennt den Schlüssel und für Repos mit Wellen
   `recursive: true`.
 - **Risiken aus §6:** weiter offen (siehe §6). Trigger-Audit: kein Carveout,
-  kein bootstrap-aware Gate; [ADR-0106](../../adr/0106-skip-allows-empty-erklaert-den-ruhezustand.md)
+  kein bootstrap-aware Gate; [ADR-0106](../../../adr/0106-skip-allows-empty-erklaert-den-ruhezustand.md)
   neu und `Accepted`, ihre Trigger nicht eingetreten; keine Hard Rule mit
   eingetretenem Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
   Folge-Slices — keiner genannt; (c) Register — die drei zitierten
   Beobachtungen existieren und tragen Belege.
@@ -164,7 +164,7 @@ Inventur-Linie; eine eigene Sub-Area erfüllt das Kriterium nicht.
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:** Eine berührt den Slice.
-[`BEO-ALL/stilles-gruen-ueber-leerer-range`](../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/observation.md)
+[`BEO-ALL/stilles-gruen-ueber-leerer-range`](../../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/observation.md)
 (1×) ist dieselbe Familie mit umgekehrtem Vorzeichen: Dort ist Grün über
 einer leeren Menge der Fehler, hier wird es für die durch `skip-pattern`
 geleerte Menge gewollt. Der Slice muss die beiden Fälle trennbar halten — das
@@ -175,7 +175,7 @@ des Befunds rot (`review-missing` zweimal als leere Menge, einmal als
 Kandidat ohne Zusage), auf demselben Baum `closure-note-missing` und
 `section-missing` (Befund-Datei §Einordnung).
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 `upstream-drift` grün (2026-10-09T07:17Z). `image-scan` rot (2026-10-09T10:37Z)
 — der Lauf liegt vor dem Release v0.85.0, das die gemeldeten CVEs behebt;
 der Slice berührt das Image nicht.
