@@ -60,7 +60,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | docs/user/maintainer/releasing.md → docs/maintainer/releasing.md | move | Umzug |
 | alle Dateien mit Verweis auf die Datei | update | Pfad-Nachzug |
 | `.d-check.yml` | update | `matrix.exempt-paths`, Tombstone |
-| [`MR-077`](../../../../harness/conventions/MR-077-releasing-doku-unter-docs-maintainer.md), `harness/conventions.md` | neu, update | der neue Ort weicht vom Baseline-Rang 6 ab |
+| [`MR-077`](../../../../../harness/conventions/MR-077-releasing-doku-unter-docs-maintainer.md), `harness/conventions.md` | neu, update | der neue Ort weicht vom Baseline-Rang 6 ab |
 | `AGENTS.md` §2, `harness/README.md` §Source precedence | update | Rang 6 nennt beide Verzeichnisse |
 
 Gemessen im Wegwerf-Klon mit dem reinen Umzug, dem gelöschten leeren
@@ -69,11 +69,11 @@ gezählt): 40 Befunde. 23 eigene Links (12 `target-missing`, 11 `repo-escape`),
 16 eingehende `target-missing` in denselben Dateien wie bei slice-268
 (CHANGELOG einer, README und README.de je zwei, Benutzerhandbuch zwei,
 Docker-Hub-Beschreibung,
-[ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) vier,
-[ADR-0067](../../adr/0067-dependabot-als-hebender-kanal.md) einer, drei
+[ADR-0014](../../../adr/0014-latest-tag-fuer-stabile-releases.md) vier,
+[ADR-0067](../../../adr/0067-dependabot-als-hebender-kanal.md) einer, drei
 Wellen-Ergebnisnotizen) und ein `codepath-missing`: die Closure-Notiz von
 slice-268 nennt das Zwischen-Verzeichnis in Inline-Code — es kommt ins
-Tombstone-Register ([ADR-0025](../../adr/0025-codepaths-ignore-refs.md)).
+Tombstone-Register ([ADR-0025](../../../adr/0025-codepaths-ignore-refs.md)).
 Ohne Doku-Gate: `.github/dependabot.yml`, `release.yml` (zwei),
 `hub-description.yml`, `tools/image-test.sh`, der Kommentar zum
 Tombstone-Eintrag des ursprünglichen Pfads.
@@ -123,7 +123,7 @@ wellenlos hier geprüft.
   Umzug abgefangen: das Verzeichnis ist entfernt, die Nennung steht im
   Tombstone-Register, `doc-check` und der ADR-Check sind im frischen Klon
   grün. Die Klasse steht im Register
-  ([`BEO-ALL/leeres-verzeichnis-lokal-verdeckt-ci-befund`](../observations/BEO-ALL/leeres-verzeichnis-lokal-verdeckt-ci-befund/state.md)).
+  ([`BEO-ALL/leeres-verzeichnis-lokal-verdeckt-ci-befund`](../../observations/BEO-ALL/leeres-verzeichnis-lokal-verdeckt-ci-befund/state.md)).
 
 ## 7. Closure-Notiz
 
@@ -132,14 +132,14 @@ wellenlos hier geprüft.
   erkennt den Rename (100 %). Der Schnitt aus dem Register von slice-268 —
   eingehende Verweise im Move-Commit, die bewegte Datei unverändert — stand
   diesmal vor dem Code im Plan und lief im Hook beim ersten Anlauf grün. Der
-  zweite Pfad-Nachzug in [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md)
-  und [ADR-0067](../../adr/0067-dependabot-als-hebender-kanal.md) ging durch
+  zweite Pfad-Nachzug in [ADR-0014](../../../adr/0014-latest-tag-fuer-stabile-releases.md)
+  und [ADR-0067](../../../adr/0067-dependabot-als-hebender-kanal.md) ging durch
   `make adr-check`. Im frischen Klon gemessen: `doc-check` und der ADR-Check
   über die Range grün.
 - **Was ging anders als geplant:** R1 fand, dass die Datei mit dem Umzug
   den Rang 6 der Source Precedence verliert — `docs/user/` war dort
   „Operations, Releasing". Die Plan-Änderung kam vor dem Code:
-  [`MR-077`](../../../../harness/conventions.md#mr-077) deklariert den neuen
+  [`MR-077`](../../../../../harness/conventions.md#mr-077) deklariert den neuen
   Ort, beide Rangtabellen nennen ihn. Der Slice selbst existiert, weil
   slice-268 ein falsch übermitteltes Ziel umgesetzt hatte; die Korrektur kam,
   als dessen Closure lokal schon committet war, und lief vorwärts statt über
@@ -152,18 +152,18 @@ wellenlos hier geprüft.
 - **Steering-Loop-Eintrag:** keiner mit Schwelle.
   `BEO-ALL/pipe-swallows-gate-exit-code` ist in welle-79 als Hook verkörpert,
   und der Hook hat hier getragen.
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-269.md` in
-  [`BEO-ALL/pipe-swallows-gate-exit-code`](../observations/BEO-ALL/pipe-swallows-gate-exit-code/state.md);
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-269.md` in
+  [`BEO-ALL/pipe-swallows-gate-exit-code`](../../observations/BEO-ALL/pipe-swallows-gate-exit-code/state.md);
   neu
-  [`BEO-ALL/leeres-verzeichnis-lokal-verdeckt-ci-befund`](../observations/BEO-ALL/leeres-verzeichnis-lokal-verdeckt-ci-befund/state.md)
+  [`BEO-ALL/leeres-verzeichnis-lokal-verdeckt-ci-befund`](../../observations/BEO-ALL/leeres-verzeichnis-lokal-verdeckt-ci-befund/state.md)
   (1×).
 - **Folge-Slices:** keiner. Release v0.85.0 mit slice-263, slice-265,
   slice-267, slice-268 und diesem Slice; die Release-Notiz nennt
   docs/maintainer/releasing.md als neuen Ort.
 - **Risiken aus §6:** eines entfallen (siehe §6). Trigger-Audit: kein
-  Carveout, kein bootstrap-aware Gate, keine ADR; [`MR-077`](../../../../harness/conventions.md#mr-077) neu, sein Trigger
+  Carveout, kein bootstrap-aware Gate, keine ADR; [`MR-077`](../../../../../harness/conventions.md#mr-077) neu, sein Trigger
   nicht eingetreten; keine Hard Rule mit eingetretenem Trigger.
-  Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie
+  Nachtlauf-Stand ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie
   in §8 — `image-scan` rot bis zum nächsten Release.
 - **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
   Folge-Slices — keiner genannt; (c) Register — die zwei zitierten
@@ -186,14 +186,14 @@ Default `*` (`ALL`); deklariert.
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:** gelesen am 2026-10-09.
-[`BEO-ALL/umzug-mit-adr-nachzug-braucht-mitreisende-verweise`](../observations/BEO-ALL/umzug-mit-adr-nachzug-braucht-mitreisende-verweise/state.md)
+[`BEO-ALL/umzug-mit-adr-nachzug-braucht-mitreisende-verweise`](../../observations/BEO-ALL/umzug-mit-adr-nachzug-braucht-mitreisende-verweise/state.md)
 (1×) — der Schnitt dieses Slice folgt ihr und steht deshalb schon in §1;
-[`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](../observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/state.md)
+[`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](../../observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/state.md)
 (1×) — jeder Nachzug zeigt auf dieselbe Datei;
-[`BEO-ALL/externer-link-auf-umgezogene-datei`](../observations/BEO-ALL/externer-link-auf-umgezogene-datei/state.md)
+[`BEO-ALL/externer-link-auf-umgezogene-datei`](../../observations/BEO-ALL/externer-link-auf-umgezogene-datei/state.md)
 (1×) — die Release-Notiz nennt den endgültigen Ort.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-09 (`make nightly-state`) — `upstream-drift` grün;
 `image-scan` rot (zwei HIGH in der Standardbibliothek des publizierten
 Images, behoben ab Go 1.27.2, der Pin ist auf `main`).
