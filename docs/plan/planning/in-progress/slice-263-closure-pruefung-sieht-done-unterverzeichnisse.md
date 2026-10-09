@@ -82,6 +82,23 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | Konfig-Modell und YAML-Adapter | update | zwei Schlüssel samt Validierung |
 | `spec/spezifikation.md` (Verfeinerung zu [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) Schritt C2, Verfeinerung zu [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), §2-Schema) | update | Verfeinerung |
 | `--print-config`-Vorlage und weitere Spiegel (beim Beanspruchen per grep gelistet, Schritt 17) | update | Konfig-Oberfläche |
+| `spec/lastenheft.md` (beide Anforderungen, Versions-Bump und Historie) | update | die Kandidatenmengen sind dort abschließend beschrieben |
+
+*(Plan-Änderung nach R1, vor dem Code: Das Lastenheft beschreibt die
+Kandidatenmengen beider Module abschließend („ausschließlich
+`planning.closure.dir`", „abgezogen wird `exempt-paths`"); die neuen Schlüssel
+gehören deshalb dorthin, nicht nur in die Spezifikation (R1 F-2,
+`AGENTS.md` §5 Regel 3) — Version 0.99.0 mit Historie-Zeile. Dazu: die
+Fehlermeldung eines unlesbaren `closure.dir` bleibt ohne die Schlüssel
+byte-identisch, das oberste Verzeichnis geht ungereinigt an `List` und in die
+Meldung (F-1); das `--print-config`-Beispiel trägt `(?m)` (F-3); die stille
+Richtung von `skip-pattern` — ein Volltext, der den Marker zitiert, fällt aus —
+und der nicht verfolgte Symlink auf ein Unterverzeichnis stehen als Grenze in
+der Spezifikation (F-4, F-7); ein Test hält die `SKIP_DIRS`-Ausnahme (F-5); die
+Grund-Code-Zeile von `closure-note-missing` und die §2-Zeile
+`structure[].files` ziehen nach (F-8); ein Kommentar ohne Bezug auf den
+Vorzustand (F-9). F-6 (Botschaft behauptet zu viel) geht in die
+Closure-Notiz.)*
 
 ## 4. Trigger
 
@@ -101,6 +118,8 @@ hinaus.
 
 ## 6. Risiken und offene Punkte
 
+- **Ein Volltext, der den Marker zitiert** — in einem Codeblock oder Zitat —,
+  fällt mit `skip-pattern` still aus der Prüfung (R1 F-4). — **Ausgang:** *(offen)*
 - **Ein Stub ohne Marker** — ein Stub, den ein älteres Werkzeug ohne
   `ARCHIVIERT` schrieb, würde als Volltext geprüft. Gemessen beim Schnitt:
   alle 80 tragen ihn. — **Ausgang:** *(offen)*
