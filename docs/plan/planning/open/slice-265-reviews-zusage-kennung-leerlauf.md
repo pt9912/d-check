@@ -17,7 +17,7 @@ Phrase bleibt, ein Release mit slice-263).
 `spec/spezifikation.md` §2 (Schlüssel `reviews.*`) und die Grund-Code-Zeile von
 `review-missing`.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-10-09.
 
@@ -127,16 +127,50 @@ slice-263 hinaus.
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** Produkt unter dem Default `*`
-(`ALL`); beim Beanspruchen neu prüfen.
+**Vorgelagert — Sub-Area-Wahl prüfen:** geändert werden Produkt-Kern
+(`reviews`), Konfig-Modell, YAML-Adapter, Konfig-Vorlage, Lastenheft und
+Spezifikation — alle unter dem Default `*` (`ALL`); deklariert.
+
+**Spiegel vor dem Editieren** (Schritt 17,
+[`MR-025`](../../../../harness/conventions.md#mr-025); gemessen mit
+`grep -rln "reviews\.\(done-dir\|reviews-dir\)\|ReviewsConfig\|unabhängiger Review\|review-missing"`
+über Code und Doku, ohne eingefrorene Verzeichnisse): Kern-Regel und ihr Test,
+Konfig-Modell, YAML-Adapter, Konfig-Vorlage, CLI-Abnahmetest, Lastenheft,
+Spezifikation, `harness/sensors/review-coverage.md`; README (beide Sprachen)
+und Benutzerhandbuch ziehen die Release-Prep nach (`AGENTS.md` §5 Regel 17).
+`.d-check.yml` und `verify-closure-notes.md` nennen das Modul, ohne seine
+Erkennung zu beschreiben — kein Spiegel.
+
+**Entwurf vor dem Code** (die Liefer-Punkte aus §2 in Schlüssel übersetzt):
+`reviews.promise-pattern` (RE2 gegen den Text eines DoD-Punkts; abwesend ⇒ die
+Phrase „unabhängiger Review"; explizit leer oder nicht kompilierend ⇒ Exit 2),
+`reviews.match` (`id` — Default, die `slice-<NNN>`-Kennung wie bisher — oder
+`name`: ein Report deckt einen Slice, dessen Dateiname den Basisnamen des
+Slice ohne `.md` enthält; anderer Wert ⇒ Exit 2), `reviews.require-promises`
+(Kandidaten ohne eine einzige Zusage ⇒ Befund), `reviews.recursive` und
+`reviews.skip-pattern` (dieselbe Semantik wie in der Closure-Prüfung). Unter
+`match: id` meldet ein Slice mit Zusage, aus dessen Namen keine Kennung zu
+lesen ist, einen Befund statt still zu fallen — die einzige Änderung am
+Default-Verhalten; sie betrifft nur Dateien, die heute ungeprüft bleiben.
 
 <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
 > **Offene Beobachtungen sichten.** Das
 
-**Vorgelagert — offene Beobachtungen sichten:** beim Beanspruchen neu lesen.
+**Vorgelagert — offene Beobachtungen sichten:** gelesen am 2026-10-09.
+[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+(offen) — das Zusage-Muster wird gegen Negativfälle getestet, nicht nur gegen
+die Formen aus dem CR; [`BEO-ALL/review-fix-applied-only-at-cited-site`](../observations/BEO-ALL/review-fix-applied-only-at-cited-site/state.md)
+(2×) — Review-Befunde werden über ihre Klasse gesucht, ein dritter Treffer
+wäre eine Lücke; [`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`](../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md)
+— nach Verkörperung schon wieder aufgetreten; vor jedem Code-Commit greppt der
+Lauf die neuen Kommentare und Testtexte nach Chronik-Wörtern;
+[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+— die Grenzen der neuen Schlüssel werden am Code gezählt.
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
-beim Beanspruchen aus dem jüngsten Lauf lesen.
+gelesen am 2026-10-09 aus dem jüngsten Lauf (`make nightly-state`) —
+`upstream-drift` grün (2026-10-08 11:37 UTC), `image-scan` grün
+(2026-10-08 10:38 UTC).
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
