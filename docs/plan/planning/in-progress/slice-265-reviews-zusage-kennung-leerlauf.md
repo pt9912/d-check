@@ -93,6 +93,20 @@ dazu — die Messung in diesem Slice zeigt, dass es heute keinen Slice prüft;
 ihre Grenze sagte „Gewollt". Die Einordnung im CR wird mit derselben Messung
 berichtigt.)*
 
+*(Plan-Änderung nach R1, vor dem Code: Ein unlesbares Unterverzeichnis bricht
+den Walk nicht mehr ab — es wird gemeldet, die übrigen Einträge werden weiter
+gelesen, und der Leerlauf-Befund entfällt neben ihm (F-1). Kommentare und
+Testtexte ohne Herkunft und Chronik, über die ganze Klasse gesucht (F-2, F-8,
+F-11, F-7). Ein Negativtest hält die `SKIP_DIRS`-Ausnahme (F-3). Die
+Byte-Identität wird mit eingeschaltetem `reviews` gemessen, altes gegen neues
+Image (F-4). Die Grenzen nennen, dass das Muster jeden Checkbox-Punkt der Datei
+sieht, auch in einem Codeblock, und den Punkt ab dem Bullet (F-5); YAML-`null`
+gilt als abwesend (F-6). `match: name` verlangt nach dem Basisnamen ein
+Zeichen, das kein Buchstabe und keine Ziffer ist — `slice-26` wird nicht mehr
+vom Report zu `slice-265-…` gedeckt; die Präfix-Grenze mit Bindestrich bleibt
+benannt (F-10). Die Sensor-Datei nennt statt eingefrorener Zahlen, wie die
+Messung zu wiederholen ist (F-9).)*
+
 ## 4. Trigger
 
 **Start** (`next` → `in-progress`): slice-263 in `done/`; `in-progress/` leer.
