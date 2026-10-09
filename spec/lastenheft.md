@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.99.0
+**Version:** 0.99.1
 
 **Status:** Draft
 
@@ -2352,12 +2352,12 @@ Lifecycle-Invariante hat eine zweite Seite: ein Slice, der den Lifecycle
 aber **nur**, wenn `planning.closure.dir` gesetzt ist (opt-in **innerhalb** des
 opt-in Moduls; ohne den Schlüssel ist die Fähigkeit inert und der Befundsatz
 byte-identisch, [`DC-QA-02`](#dc-qa-02--determinismus)). Geprüft wird jede Datei
-in `planning.closure.dir`, deren Basisname `planning.closure.glob` matcht — ein
-**eigener** Kandidaten-Filter, dessen Default `planning.slice-glob` ist —; mit
-`planning.closure.recursive` auch in seinen Unterverzeichnissen, und ohne die
-Dateien, deren Inhalt `planning.closure.skip-pattern` trifft (etwa ein
-archivierter Stub). Verlangt wird in ihr
-**genau ein** Abschnitt, dessen Überschrift auf `planning.closure.heading-pattern`
+in `planning.closure.dir`, deren Basisname `planning.closure.glob` matcht (ein
+**eigener** Kandidaten-Filter, dessen Default `planning.slice-glob` ist). Mit
+`planning.closure.recursive` zählen auch die Dateien in den Unterverzeichnissen
+von `planning.closure.dir`; eine Datei, deren Inhalt
+`planning.closure.skip-pattern` trifft (etwa ein archivierter Stub), zählt
+nicht. Verlangt wird in jeder geprüften Datei **genau ein** Abschnitt, dessen Überschrift auf `planning.closure.heading-pattern`
 passt (RE2, Default `^#{2,3} .*Closure-Notiz`), reichend bis zur nächsten
 Überschrift gleicher oder höherer Ebene — mehrere Treffer sind mehrdeutig und
 werden nicht gemessen (siehe unten). Drei Struktur-Bedingungen:
@@ -2450,10 +2450,9 @@ Platzhalter derselben Notiz sind dieselbe Reparatur. Diese Bedingung liest
 denselben **einmal bereinigten** Abschnitt wie die drei anderen; eine eigene,
 engere Sicht führt sie nicht mehr.
 
-Geprüft wird **ausschließlich** `planning.closure.dir`, mit `recursive` samt
-seinen Unterverzeichnissen (per Konvention das
-Verzeichnis der abgeschlossenen Slices) — ein Slice in Arbeit trägt noch keine
-Closure-Pflicht. Als Abschnitts-Überschrift zählt nur eine **echte
+Geprüft wird **ausschließlich** `planning.closure.dir` (per Konvention das
+Verzeichnis der abgeschlossenen Slices), mit `recursive` samt seinen
+Unterverzeichnissen — ein Slice in Arbeit trägt noch keine Closure-Pflicht. Als Abschnitts-Überschrift zählt nur eine **echte
 ATX-Überschrift außerhalb von Fenced-Code**; eine Fließtext-Zeile, die bloß mit
 `#` beginnt, eröffnet und beendet keinen Abschnitt. Kommt die Überschrift
 **mehrfach** vor, ist der Abschnitt mehrdeutig ⇒ `closure-note-ambiguous`, und
@@ -2472,8 +2471,9 @@ zugleich.
 **fail-closed** in zwei Stufen. Zur **Laufzeit** (`closure-note-missing`, Exit 1):
 ein gesetztes, aber fehlendes oder unlesbares `planning.closure.dir` (unter
 `recursive` auch ein unlesbares Unterverzeichnis) — **und
-ebenso ein Verzeichnis ohne einen einzigen Kandidaten, auch wenn erst
-`skip-pattern` die Menge geleert hat.** Den Schlüssel zu setzen
+ebenso eine Kandidatenmenge ohne einen einzigen Eintrag, auch wenn erst
+`skip-pattern` sie geleert hat.** Gezählt wird die Gesamtmenge; ein einzelnes
+Unterverzeichnis ohne Kandidaten ist kein Befund. Den Schlüssel zu setzen
 **ist** die Behauptung, dass dort Closure-Notizen liegen; findet der Lauf keine,
 liefe das Gate fortan leer und grün. Am **Config-Rand** (Exit 2): ein `dir`
 außerhalb der Repo-Wurzel (absolut oder mit `..`), ein nicht kompilierendes
@@ -2652,6 +2652,7 @@ widersprechen.
 - **Happy Path (Filter entkoppelt):** Given `planning.closure.glob: "*.md"` bei unverändertem `planning.slice-glob`, when `d-check --enable planning` läuft, then werden **alle** Markdown-Dateien im Closure-Verzeichnis auf ihre Notiz geprüft, **ohne** dass sich die Aussage der Lifecycle-Invariante ändert.
 - **Happy Path (Unterverzeichnisse):** Given `planning.closure.recursive: true` und ein Slice mit zu dünner Closure-Notiz unter einem Unterverzeichnis von `planning.closure.dir`, when `d-check --enable planning` läuft, then `closure-note-thin` auf dieser Datei; **ohne** den Schlüssel bleibt das Unterverzeichnis ungelesen und der Befundsatz byte-identisch.
 - **Boundary (Stub ausgenommen):** Given `planning.closure.skip-pattern`, das den Marker eines archivierten Stubs trifft, when `d-check --enable planning` läuft, then meldet der Stub nichts, der Volltext daneben wird geprüft; nimmt das Muster **alle** Kandidaten, gilt die Nullmengen-Regel (`closure-note-missing` auf dem Verzeichnis), und eine unlesbare Datei bleibt Kandidatin.
+- **fail-closed (Unterverzeichnis und Muster):** Given `planning.closure.recursive: true` und ein unlesbares Unterverzeichnis, when `d-check --enable planning` läuft, then `closure-note-missing` mit dem Pfad des Unterverzeichnisses; Given ein nicht kompilierendes `planning.closure.skip-pattern`, when `d-check` startet, then Abbruch mit Exit-Code 2 und einer Meldung, die den Schlüssel nennt.
 - **fail-closed (leerer Glob):** Given `planning.closure.glob` **explizit** auf den leeren String gesetzt, when `d-check` startet, then Abbruch mit Exit-Code 2 und einer Meldung, die den Schlüssel nennt.
 - **Boundary (Platzhalter-Erkennung aus):** Given `planning.closure.placeholder` nicht gesetzt oder `false`, when das Modul läuft, then ist der Befundsatz byte-identisch zu einem Lauf ohne diese Bedingung.
 - **Negative (Template-Rumpf):** Given eine Closure-Notiz mit vier Platzhalter-Sätzen und aktivem Schalter, when das Modul läuft, then **genau ein** Befund `closure-note-placeholder` (erster Treffer), Exit-Code 1.
@@ -3046,7 +3047,7 @@ Regeln ist der Befundsatz byte-identisch
 `--repair`-Hunk. **fail-closed** (Exit 2, vor dem Lauf): Regel ohne `files`;
 ungültiges Glob in `files`/`exempt-paths`; weder `section` noch
 `section-pattern` **oder** beide; unbekannter `sections`-Wert; nicht
-kompilierendes `section-pattern`/`forbid-pattern`/`require-pattern`/`tasks-ignore-pattern`/`exempt-section-pattern`/`open-tasks-require-marker-section`;
+kompilierendes `section-pattern`/`forbid-pattern`/`require-pattern`/`tasks-ignore-pattern`/`exempt-section-pattern`/`open-tasks-require-marker-section`/`skip-pattern`;
 ein `exempt-expect-count` **ohne** `exempt-section-pattern` oder mit einem Wert **< 0**;
 ein `tasks-ignore-pattern` **ohne** `max-tasks` (dieselbe halbe Aktivierung wie
 `table.order-column` ohne `table.order`); ein `open-tasks-require-marker`
@@ -3085,6 +3086,7 @@ ein Ventil die Regel still ab.
 - **`sections: one` (Default):** Given eine Datei mit **zwei** passenden Abschnitten, when `d-check --enable structure` läuft, then `section-ambiguous` mit der Zeile des **zweiten**, Exit 1 — und **kein** Bedingungs-Befund für diese Datei.
 - **Negative (Abschnitt fehlt):** Given ein Dokument der Klasse **ohne** passende Überschrift, when `d-check --enable structure` läuft, then `section-missing` (`line` = 1), Exit 1.
 - **Boundary (Inhalts-Ausnahme):** Given eine Regel mit `skip-pattern`, das den Marker eines archivierten Stubs trifft, when `d-check --enable structure` läuft, then wird der Stub nicht geprüft und der Volltext daneben schon; nimmt das Muster **alle** Dateien, gilt die Nullmengen-Regel (`section-missing` auf dem Glob), und eine unlesbare Datei bleibt Kandidatin. **Ohne** den Schlüssel ist der Befundsatz byte-identisch.
+- **fail-closed (Inhalts-Ausnahme):** Given eine Regel mit nicht kompilierendem `skip-pattern`, when `d-check` startet, then Abbruch mit Exit-Code 2 und einer Meldung, die den Schlüssel nennt.
 - **Negative (je Bedingung ein Code):** Given einen Abschnitt, der **zwei** Bedingungen zugleich verletzt, when `d-check --enable structure` läuft, then **zwei** Befunde mit **verschiedenen** Grund-Codes — die Deduplikation fasst sie nicht zusammen.
 - **Boundary (fence-treu):** Given einen Abschnitt, dessen Sätze, Task-Items oder Marken **ausschließlich** in einem Fenced-Code-Block stehen, when `d-check --enable structure` läuft, then zählen sie nicht — die Bedingung gilt als verletzt.
 - **Teilmenge (`tasks-ignore-pattern`):** Given einen Abschnitt mit sieben Task-Items, von denen vier dem Muster genügen, und `max-tasks: 3`, when `d-check --enable structure` läuft, then kein Befund; **ohne** den Schlüssel `section-oversized`, und die Meldung ist dann **byte-identisch** zu der vor dieser Fähigkeit. Ein fünfter, **nicht** getroffener Punkt ⇒ wieder `section-oversized`, dessen Meldung die Zahl der ignorierten nennt — auch wenn sie null ist.
@@ -4090,6 +4092,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.99.1 | 2026-10-09 | Nachzug nach Review an [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) und [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): die Nullmengen-Regel gilt der **gesamten** Kandidatenmenge, ein einzelnes Unterverzeichnis ohne Kandidaten ist kein Befund; `skip-pattern` steht in der Exit-2-Aufzählung von `structure`; zwei neue Kriterien „fail-closed (Unterverzeichnis und Muster)" und „fail-closed (Inhalts-Ausnahme)"; der Absatz zur Kandidatenmenge in kürzeren Sätzen | — |
 | 0.99.0 | 2026-10-09 | [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) liest die Closure-Kandidaten mit `planning.closure.recursive` auch aus den Unterverzeichnissen von `planning.closure.dir` und nimmt mit `planning.closure.skip-pattern` eine Datei nach ihrem Inhalt aus; [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) zieht mit `skip-pattern` dasselbe ab. Anlass: abgeschlossene Slices liegen in Unterverzeichnissen neben archivierten Stubs, und die Prüfung sah sie nicht. Beide Schlüssel opt-in, ohne sie byte-identisch; die Nullmengen-Regel gilt nach dem Abzug, eine unlesbare Datei bleibt Kandidatin. Neue Kriterien „Happy Path (Unterverzeichnisse)", „Boundary (Stub ausgenommen)", „Boundary (Inhalts-Ausnahme)" | — |
 | 0.98.0 | 2026-10-07 | [`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image) sagt einen **Multi-Plattform-Index** (`linux/amd64`, `linux/arm64`) zu; die Identität zur nativen Ausführung gilt je Plattform, neues Kriterium „Boundary (Plattform)", weitere Plattformen ausdrücklich Out-of-Scope. [`DC-FA-DIST-002`](#dc-fa-dist-002--docker-hub-spiegel) wechselt die Prüfgröße vom Config-Digest auf den **Index-Digest**: ein Index hat keinen einzelnen Config-Digest, und ein Spiegel, der den Index samt Blobs unverändert kopiert, erhält dessen Digest — die Zusage wird damit schärfer (ein Pin für beide Registries), der Out-of-Scope-Punkt „Gleichheit des Manifest-Digests" entfällt. Begründung in begleitender ADR | — |
 | 0.97.2 | 2026-10-07 | Nachzug nach Verifikation, **vor** der ersten Closure dieser Erweiterung: in [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) einen doppelten Satzrest gestrichen und das Akzeptanzkriterium „Disjunktheit (Negative)" auf die führende erste Zelle präzisiert (es nannte noch jede Tabellenzeile). Keine Verhaltensänderung der Zusage | — |

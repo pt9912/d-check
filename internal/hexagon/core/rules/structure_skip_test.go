@@ -25,7 +25,7 @@ func TestStructureSkipPattern_NimmtStubAus(t *testing.T) {
 	r := skipRule()
 	f := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r})
 	if got := strings.Join(filesOf(f), ","); !strings.Contains(got, "slice-001-a.md") {
-		t.Fatalf("VORZUSTAND: ohne skip-pattern meldet der Stub, got %v", got)
+		t.Fatalf("ohne skip-pattern meldet der Stub, got %v", got)
 	}
 	r.SkipPattern = stubPattern
 	f = CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r})

@@ -53,7 +53,7 @@ func filesOf(fs []model.Finding) []string {
 	return out
 }
 
-// Ohne recursive bleibt ein Unterverzeichnis unsichtbar — der Vorzustand, und
+// Ohne recursive bleibt ein Unterverzeichnis unsichtbar, und
 // in derselben Funktion die Umkehr: mit recursive meldet derselbe Baum die
 // dünne Notiz unter wellenlos/.
 func TestClosureRecursive_SiehtUnterverzeichnis(t *testing.T) {
@@ -63,7 +63,7 @@ func TestClosureRecursive_SiehtUnterverzeichnis(t *testing.T) {
 	}
 	cfg := closureCfg()
 	if f := CheckPlanningClosure(coretest.NewMemFS(files), cfg); f != nil {
-		t.Fatalf("VORZUSTAND: ohne recursive ist wellenlos/ unsichtbar, got %+v", f)
+		t.Fatalf("ohne recursive ist wellenlos/ unsichtbar, got %+v", f)
 	}
 	cfg.Closure.Recursive = true
 	f := CheckPlanningClosure(coretest.NewMemFS(files), cfg)
@@ -73,9 +73,9 @@ func TestClosureRecursive_SiehtUnterverzeichnis(t *testing.T) {
 	}
 }
 
-// Ohne recursive bleibt ein Verzeichnis, dessen Name den Filter trifft,
-// Kandidat wie bisher (byte-identisch) — mit recursive wird es betreten.
-func TestClosureRecursive_VerzeichnisNameOhneSchalterUnveraendert(t *testing.T) {
+// Ohne recursive ist ein Verzeichnis, dessen Name den Filter trifft,
+// Kandidat und meldet sich als unlesbar — mit recursive wird es betreten.
+func TestClosureRecursive_VerzeichnisNameOhneSchalterIstKandidat(t *testing.T) {
 	files := map[string]string{
 		closureDir + "/slice-001-a.md":          "# Slice\n\n" + richNote,
 		closureDir + "/slice-900-dir.md/slice-x.md": "# Slice\n\n" + richNote,
@@ -83,7 +83,7 @@ func TestClosureRecursive_VerzeichnisNameOhneSchalterUnveraendert(t *testing.T) 
 	cfg := closureCfg()
 	f := CheckPlanningClosure(coretest.NewMemFS(files), cfg)
 	if len(f) != 1 || f[0].File != closureDir+"/slice-900-dir.md" {
-		t.Fatalf("ohne recursive: das Verzeichnis ist Kandidat und unlesbar wie bisher, got %+v", f)
+		t.Fatalf("ohne recursive: das Verzeichnis ist Kandidat und unlesbar, got %+v", f)
 	}
 	cfg.Closure.Recursive = true
 	if f := CheckPlanningClosure(coretest.NewMemFS(files), cfg); f != nil {
@@ -120,7 +120,7 @@ func TestClosureSkipPattern_NimmtStubAus(t *testing.T) {
 	cfg.Closure.Recursive = true
 	f := CheckPlanningClosure(coretest.NewMemFS(files), cfg)
 	if got := strings.Join(filesOf(f), ","); !strings.Contains(got, "slice-002-b.md") {
-		t.Fatalf("VORZUSTAND: ohne skip-pattern meldet der Stub, got %v", got)
+		t.Fatalf("ohne skip-pattern meldet der Stub, got %v", got)
 	}
 	cfg.Closure.SkipPattern = stubPattern
 	f = CheckPlanningClosure(coretest.NewMemFS(files), cfg)

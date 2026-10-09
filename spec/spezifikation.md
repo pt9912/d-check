@@ -2214,8 +2214,8 @@ liefert (und umgekehrt):
   der Ruhe-Marker ist dauerhaft falsch-rot).
   Mit `planning.closure.recursive` steigt das Listing in jedes Unterverzeichnis
   ab (die `SKIP_DIRS` ausgenommen); der Filter bleibt der **Basisname**, und ein
-  Verzeichnis ist dann Abstieg, nicht Kandidat. Ohne den Schlüssel bleibt alles
-  wie zuvor — auch ein Verzeichnis, dessen Name den Filter trifft, ist
+  Verzeichnis ist dann Abstieg, nicht Kandidat. Ohne den Schlüssel ist ein
+  Verzeichnis ein Eintrag wie jeder andere — trifft sein Name den Filter, ist es
   Kandidat und meldet sich als unlesbar. Danach zieht `planning.closure.skip-pattern`
   die Kandidaten ab, deren **rohen Inhalt** es trifft (etwa einen archivierten
   Stub an seinem Marker); eine unlesbare Datei bleibt Kandidatin und meldet sich
@@ -2234,7 +2234,9 @@ liefert (und umgekehrt):
   Nullmengen-Logik wie bei den Anforderungsquellen der RTM
   ([`DC-FA-REQ-001`](lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)).
   Ein Repo ohne abgeschlossene Slices setzt den Schlüssel schlicht noch nicht.
-  Die Nullmenge zählt **nach** dem Abzug durch `skip-pattern`; die Meldung nennt
+  Die Nullmenge zählt **nach** dem Abzug durch `skip-pattern` und über die
+  **gesamte** Kandidatenmenge — ein Unterverzeichnis ohne Kandidaten ist kein
+  Befund; die Meldung nennt
   dann das Muster.
   Die Kandidaten werden in stabiler Namens-Reihenfolge geprüft — die Sortierung
   liegt im Kern, nicht beim Dateisystem.
@@ -3580,7 +3582,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-036` | `core-drift-vcs` | vcs | Core einer immutablen Datei (BASE erfüllt `vcs.immutable-when`) hat sich über die Commit-Range geändert, ihr Status-Übergang ist unzulässig (`vcs.head-allow`), oder die immutable Datei wurde gelöscht/umbenannt |
 | `SPEC-037` | `commit-untraceable` | commits | bereinigte Commit-Message trägt keine Kennung nach `commits.id-patterns` und ist nicht per `commits.exempt-pattern` (Betreff) ausgenommen |
 | `SPEC-038` | `planning-drift` | planning | Roadmap-Aktiv-Status (`planning.marker` im `planning.heading`-Block) und Präsenz von `planning.slice-glob`-Slices sind inkonsistent (`hasActive ≠ hasSlices`), oder die kanonische Überschrift fehlt/ist mehrdeutig bzw. die Roadmap-Datei fehlt (fail-closed) |
-| `SPEC-039` | `closure-note-missing` | planning | Kandidat im `planning.closure.dir` — unter `planning.closure.recursive` auch in seinen Unterverzeichnissen, nach Abzug von `planning.closure.skip-pattern` — (Filter: `planning.closure.glob`, sonst `planning.slice-glob`) **ohne** einen auf `planning.closure.heading-pattern` passenden Abschnitt — oder das gesetzte `planning.closure.dir` (unter `recursive` auch ein Unterverzeichnis) fehlt, ist unlesbar oder enthält **keinen** Kandidaten unter dem effektiven Filter (fail-closed); schließt `closure-note-thin`/`-boilerplate` aus (ohne Abschnitt gibt es nichts zu messen) |
+| `SPEC-039` | `closure-note-missing` | planning | ein Kandidat (Schritt C2) **ohne** einen auf `planning.closure.heading-pattern` passenden Abschnitt; oder das gesetzte `planning.closure.dir` bzw. unter `recursive` eines seiner Unterverzeichnisse fehlt oder ist unlesbar; oder die **gesamte** Kandidatenmenge ist leer, auch nach Abzug von `skip-pattern` (fail-closed). Schließt `closure-note-thin`/`-boilerplate` aus (ohne Abschnitt gibt es nichts zu messen) |
 | `SPEC-040` | `closure-note-thin` | planning | Closure-Notiz-Abschnitt trägt weniger als `planning.closure.min-sentences` Satzende-Zeichen **außerhalb** der Fenced-Code-Blöcke (Platzhalter, Einzeiler) |
 | `SPEC-041` | `closure-note-boilerplate` | planning | bereinigter Closure-Notiz-Text enthält (case-insensitiv, an Wortgrenzen) eine literale Phrasg aus `planning.closure.boilerplate`; der erste Treffer benennt die Meldung |
 | `SPEC-042` | `closure-note-placeholder` | planning | Closure-Notiz-Abschnitt trägt einen unausgefüllten Vorlagen-Platzhalter in Auszeichnungs-Form (opt-in über `planning.closure.placeholder`); Inline-Code, Autolinks/Adressen und HTML-Tags sind ausgenommen, gemeldet wird der **erste** Treffer je Kandidat |
@@ -3670,6 +3672,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-09 | Nachzug nach Review an §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2, §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 2 und der Grund-Code-Zeile [`SPEC-039`](#4-grund--und-fehler-codes): zwei Grenzen benannt — ein Symlink auf ein Unterverzeichnis wird nicht verfolgt, und ein Volltext, der den Stub-Marker zitiert, fällt mit `skip-pattern` still aus der Prüfung; die Nullmenge zählt über die **gesamte** Kandidatenmenge; die §2-Zeile `structure[].files` nennt beide Abzüge; die Meldung eines unlesbaren `closure.dir` bleibt ohne die Schlüssel byte-identisch |
 | 2026-10-09 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritte C1/C2 und §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritte 1/2 samt §2-Schema: `planning.closure.recursive` liest die Closure-Kandidaten auch aus Unterverzeichnissen, `planning.closure.skip-pattern` und `structure[].skip-pattern` nehmen eine Datei nach ihrem Inhalt aus (etwa einen archivierten Stub). Eine unlesbare Datei bleibt Kandidatin; die Nullmengen-Regel gilt nach dem Abzug. Ohne die Schlüssel byte-identisch; kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[7](#7-festlegungen-der-harness-werkzeuge): [`SPEC-093`](#7-festlegungen-der-harness-werkzeuge) nennt, was der Wächter durchlässt; [`SPEC-094`](#7-festlegungen-der-harness-werkzeuge) — der Nachweis entsteht auch unter `make -i` nicht, und der Stop-Hook blockt, wenn er den Zustand nicht lesen kann (Hash, Nachweis, `git status`); [`SPEC-095`](#7-festlegungen-der-harness-werkzeuge) — der ausgelöste Lauf prüft nur die Slices direkt unter `done/`; [`SPEC-096`](#7-festlegungen-der-harness-werkzeuge) — ein leeres `PROBE_FORMS` heißt Default |
 | 2026-10-08 | §[7](#7-festlegungen-der-harness-werkzeuge) um die lokalen Wächter, Hooks und Prüfer erweitert: [`SPEC-093`](#7-festlegungen-der-harness-werkzeuge) Tool-Call-Wächter, [`SPEC-094`](#7-festlegungen-der-harness-werkzeuge) Handoff-Gate aus `make gates` und Stop-Hook, [`SPEC-095`](#7-festlegungen-der-harness-werkzeuge) git-Hooks, [`SPEC-096`](#7-festlegungen-der-harness-werkzeuge) `make blackbox-probe`. Am Code nachgelesen: der Gate-Nachweis entstand unter `make -k` trotz rotem Glied, und der Closure-Übergangs-Wächter erkannte keinen Slice unter einem Unterverzeichnis von `done/` — beide folgen jetzt der Festlegung |
