@@ -1,6 +1,6 @@
 # ADR-0107: Die mitgelieferten Dokumente liegen in einem Paket im Modul-Root
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-09
 
@@ -96,3 +96,4 @@ sichert `go:embed` selbst.
 | Datum | Ereignis |
 |---|---|
 | 2026-10-09 | Proposed (Review R1 zu slice-266: das Root-Paket lag außerhalb von Layout und Schichten) |
+| 2026-10-09 | Proposed → Accepted (nach Review R1–R2 und Verifikation; beide Tests im Klon gebrochen) |

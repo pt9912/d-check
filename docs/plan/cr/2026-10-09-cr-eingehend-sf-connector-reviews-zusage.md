@@ -6,7 +6,8 @@
 **Berührt:** [`DC-FA-RVW-001`](../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)
 (Modul `reviews`)
 **Stand:** **angenommen** — Punkte 1 bis 3 umgesetzt (slice-265, kommt mit
-v0.85.0), Punkt 4 geplant (slice-266). Entscheidung je Punkt unten.
+v0.85.0), Punkt 4 umgesetzt (slice-266, kommt mit dem nächsten Release).
+Entscheidung je Punkt unten.
 
 **Ablage-Hinweis.** Ein **eingehender** CR ist die dritte Klasse neben
 [`MR-035`](../../../harness/conventions.md#mr-035) (ausgehend) und
@@ -130,8 +131,11 @@ Die Entscheidung je Punkt folgt mit der Umsetzung.
    anderen ist, wird auch von dessen Report gedeckt.
 3. **Leerlauf nicht grün — umgesetzt.** `reviews.require-promises: true`
    meldet Kandidaten ohne eine einzige Zusage.
-4. **Handbuch im Image — geplant** (slice-266); die Form entscheidet der
-   Slice.
+4. **Handbuch im Image — umgesetzt** (slice-266): `d-check --manual <begriff>`
+   gibt die Abschnitte von Handbuch und Spezifikation aus, deren Überschrift den
+   Begriff nennt — ohne Netz, aus dem Werkzeug selbst; die Erkennungsregel von
+   `reviews` liefert `--manual` mit der Kennung von
+   [`DC-FA-RVW-001`](../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in).
 
 **Für die Abnahme in sf-connector:** `match: name` und `require-promises: true`
 setzen; `promise-pattern` ist für die Vorlagen-Zeile nicht nötig. Sind

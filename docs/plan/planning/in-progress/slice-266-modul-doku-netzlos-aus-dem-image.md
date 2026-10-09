@@ -52,14 +52,14 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] Die Doku der Module ist aus dem Image ohne Netz lesbar; die Form ist im
+- [x] Die Doku der Module ist aus dem Image ohne Netz lesbar; die Form ist im
       Lastenheft zugesagt und durch einen Test gehalten.
-- [ ] Ein Sensor oder Test hält die mitgelieferte Doku gegen ihre Quelle, damit
+- [x] Ein Sensor oder Test hält die mitgelieferte Doku gegen ihre Quelle, damit
       sie nicht driftet; `make gates` grün.
-- [ ] Folge-ADR zu [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md) für das Paket im Modul-Root, bis zur Closure
+- [x] Folge-ADR zu [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md) für das Paket im Modul-Root, bis zur Closure
       `Proposed`; `.a-check.yml` gibt ihm eine Schicht.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft; der CR
       trägt seine Entscheidung zu Punkt 4.
 
@@ -91,19 +91,50 @@ hinaus.
 ## 6. Risiken und offene Punkte
 
 - **Zweite Beschreibung** — eine eigene Modul-Doku im Binary driftete gegen
-  Spezifikation und Handbuch. — **Ausgang:** *(offen)*
+  Spezifikation und Handbuch. — **Ausgang:** entfallen — die Dokumente sind
+  eingebettet, nicht nachgeschrieben; die Ausgabe ist die Quelle (Verifikation:
+  Abschnitte byte-gleich).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** `d-check --manual <begriff>` gibt die Abschnitte
+  von Benutzerhandbuch und Spezifikation aus, deren Überschrift den Begriff
+  nennt — ohne Netz und ohne Mount, aus dem Binary selbst. Die Dokumente sind
+  per `go:embed` eingebettet; eine zweite Beschreibung gibt es nicht. Die
+  Abschnitts-Suche nutzt die Überschriften-Lexik von `structure`. Die
+  Verifikation maß im Image byte-gleiche Abschnitte und alle Lastenheft-Fälle;
+  Phase 5 des Image-Tests wird gegen v0.85.0 aus dem richtigen Grund rot.
+- **Was ging anders als geplant:** `go:embed` erreicht nur Dateien unter dem
+  eigenen Verzeichnis — das Paket musste in den Modul-Root, außerhalb des
+  Layouts von [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md). R1 fand
+  es ungeprüft; daraus wurden eine Schicht in `.a-check.yml` und
+  [ADR-0107](../../adr/0107-mitgelieferte-dokumente-im-modul-root.md), als
+  Plan-Änderung vor dem Code. Die Gegenprobe zeigte, dass a-check den
+  Importpfad des Modul-Roots nicht auflöst; die Kante und den Inhalt des
+  Pakets halten jetzt zwei Tests. Ein abgebrochenes `git add` ließ eine
+  Commit-Botschaft stehen: `d04d5c8a` trägt die Löschung von
+  `manual_test.go` unter der Botschaft der Plan-Änderung (gepusht, im
+  Folge-Commit benannt) — Schritt 21 war nicht ausgeführt.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
+  `BEO-ALL/path-scoped-commit-carries-staged-rest` ist als Schritt 21 im
+  Workflow-Skelett verkörpert und trat erneut auf — die Regel stand, sie wurde
+  in einer `&&`-Kette übergangen.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-266.md` in
+  [`BEO-ALL/path-scoped-commit-carries-staged-rest`](../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/state.md);
+  neu
+  [`BEO-ALL/a-check-sieht-modul-root-import-nicht`](../observations/BEO-ALL/a-check-sieht-modul-root-import-nicht/state.md)
+  (1×).
+- **Folge-Slices:** keiner. Produkt-Verhalten — geht mit dem nächsten Release
+  hinaus; Handbuch und README nennen `--manual` in der Release-Prep. Der CR von
+  `sf-connector` trägt die Entscheidung zu Punkt 4.
+- **Risiken aus §6:** entfallen (siehe §6). Trigger-Audit: kein Carveout, kein
+  bootstrap-aware Gate; [ADR-0107](../../adr/0107-mitgelieferte-dokumente-im-modul-root.md)
+  neu und `Accepted`, ihre Trigger nicht eingetreten; keine Hard Rule mit
+  eingetretenem Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
+  Folge-Slices — keiner genannt; (c) Register — die zwei zitierten
+  Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

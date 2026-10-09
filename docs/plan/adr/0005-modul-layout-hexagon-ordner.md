@@ -87,3 +87,4 @@ Verstoß bricht den Build. Bindung:
 |---|---|
 | 2026-06-10 | Proposed → Accepted (slice-003) |
 | 2026-07-03 | Fitness-Function-Mechanik teil-superseded durch [ADR-0029](0029-arch-check-via-a-check.md) (slice-058): `tools/arch-check.sh`/Dockerfile-Stage → digest-gepinntes a-check-Image (`a-check.mk` + `.a-check.yml`); die Import-Regeln R1–R5 dieser ADR bleiben unverändert die Policy |
+| 2026-10-09 | Layout um einen Ort **erweitert** durch [ADR-0107](0107-mitgelieferte-dokumente-im-modul-root.md): ein Paket im Modul-Root trägt die mitgelieferten Dokumente (`go:embed` erreicht nur Dateien unter dem eigenen Verzeichnis). Die Regeln dieser ADR bleiben. Kein Supersede. |
