@@ -70,6 +70,23 @@ func CheckReviews(fsys driven.Filesystem, cfg model.ReviewsConfig) []model.Findi
 			out = append(out, *finding)
 		}
 	}
+	lage := reviewLage{candidates: len(candidates), badDirs: len(badDirs), skipped: skipped,
+		promises: promises, listOK: listErr == nil}
+	if lf := reviewLeerlauf(cfg, lage); lf != nil {
+		out = append(out, *lf)
+	}
+	return out
+}
+
+// reviewLage fasst zusammen, worueber der Leerlauf-Befund entscheidet.
+type reviewLage struct {
+	candidates, badDirs, skipped, promises int
+	listOK                                 bool
+}
+
+// reviewLeerlauf liefert den Leerlauf-Befund auf reviews.done-dir (nil ⇒
+// keiner).
+func reviewLeerlauf(cfg model.ReviewsConfig, l reviewLage) *model.Finding {
 	// FAIL-CLOSED: leere Kandidatenmenge, oder unlesbares reviews-dir OHNE dass
 	// eine einzige Review-Zusage vorliegt, saehen sonst identisch aus wie
 	// "alles gedeckt". Ein unlesbares reviews-dir MIT vorhandenen Zusagen
@@ -81,24 +98,27 @@ func CheckReviews(fsys driven.Filesystem, cfg model.ReviewsConfig) []model.Findi
 	// er ein Befund, weil die Pruefung sonst ueber nichts gruen meldet. Neben
 	// einem unlesbaren Unterverzeichnis entfaellt der Leerlauf-Befund: die
 	// Menge ist dann nicht leer, sondern unvollstaendig, und das ist gemeldet.
-	// Leert erst skip-pattern die Menge, ist das der Ruhezustand eines Repos,
-	// dessen Slices alle archiviert sind, und kein Befund; require-promises
-	// zaehlt ohnehin nur die uebrig gelassenen Kandidaten.
+	// Leert erst skip-pattern die Menge und erklaert skip-allows-empty das zum
+	// Ruhezustand eines Repos, dessen Slices alle archiviert sind, ist das kein
+	// Befund; require-promises zaehlt ohnehin nur die uebrig gelassenen
+	// Kandidaten.
 	switch {
-	case len(badDirs) > 0:
-	case len(candidates) == 0 && skipped > 0 && listErr == nil:
-	case len(candidates) == 0 || (listErr != nil && promises == 0):
-		out = append(out, model.Finding{File: cfg.DoneDir, Line: 1, Rule: "reviews", Target: cfg.DoneDir,
+	case l.badDirs > 0:
+		return nil
+	case l.candidates == 0 && l.skipped > 0 && cfg.SkipAllowsEmpty && l.listOK:
+		return nil
+	case l.candidates == 0 || (!l.listOK && l.promises == 0):
+		return &model.Finding{File: cfg.DoneDir, Line: 1, Rule: "reviews", Target: cfg.DoneDir,
 			Reason: ReasonReviewMissing,
 			Message: fmt.Sprintf("leere Pruefmenge: %d Kandidat(en), %d Review-Zusage(n), reviews-dir lesbar: %v — fail-closed",
-				len(candidates), promises, listErr == nil)})
-	case cfg.RequirePromises && promises == 0:
-		out = append(out, model.Finding{File: cfg.DoneDir, Line: 1, Rule: "reviews", Target: cfg.DoneDir,
+				l.candidates, l.promises, l.listOK)}
+	case cfg.RequirePromises && l.promises == 0:
+		return &model.Finding{File: cfg.DoneDir, Line: 1, Rule: "reviews", Target: cfg.DoneDir,
 			Reason: ReasonReviewMissing,
 			Message: fmt.Sprintf("keine Review-Zusage unter %d Kandidat(en) — require-promises: das Muster %q trifft keinen DoD-Punkt",
-				len(candidates), cfg.EffectivePromisePattern())})
+				l.candidates, cfg.EffectivePromisePattern())}
 	}
-	return out
+	return nil
 }
 
 // reviewFinding prueft einen Kandidaten: traegt er eine Zusage, und deckt ein

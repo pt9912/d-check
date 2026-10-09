@@ -34,10 +34,10 @@ func TestStructureSkipPattern_NimmtStubAus(t *testing.T) {
 	}
 }
 
-// Ist die Menge leer, ohne dass skip-pattern etwas ausgenommen hat, gilt die
-// Nullmengen-Härte — die Meldung nennt die Ausnahme.
+// Nimmt skip-pattern alle Dateien, gilt die Nullmengen-Härte — die Meldung
+// nennt die Ausnahme.
 func TestStructureSkipPattern_LeereMengeFailClosed(t *testing.T) {
-	files := map[string]string{"done/wellenlos/README.md": "# done\n"}
+	files := map[string]string{"done/wellenlos/slice-001-a.md": "# slice-001\n\n" + stubMarker}
 	r := skipRule()
 	r.SkipPattern = stubPattern
 	f := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r})

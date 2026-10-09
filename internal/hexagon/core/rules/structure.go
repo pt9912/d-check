@@ -70,10 +70,11 @@ func checkStructureRule(fsys driven.Filesystem, r model.StructureRule, all []str
 		cands = append(cands, f)
 	}
 	// Nullmengen-Härte: eine Regel zu setzen IST die Behauptung, dass sie Dateien
-	// trifft — auch dann, wenn erst exempt-paths die Menge geleert hat. Leert
-	// erst skip-pattern sie, ist das der Ruhezustand eines Repos, dessen
-	// Dokumente alle archiviert sind — kein Befund (DC-FA-STRUCT-001).
-	if len(cands) == 0 && skipped > 0 {
+	// trifft — auch dann, wenn erst exempt-paths oder skip-pattern die Menge
+	// geleert hat. Erklaert skip-allows-empty die Leere nach skip-pattern zum
+	// Ruhezustand eines Repos, dessen Dokumente alle archiviert sind, ist das
+	// kein Befund (DC-FA-STRUCT-001).
+	if len(cands) == 0 && skipped > 0 && r.SkipAllowsEmpty {
 		return nil
 	}
 	if len(cands) == 0 {

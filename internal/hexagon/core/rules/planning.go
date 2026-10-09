@@ -105,9 +105,10 @@ func CheckPlanningClosure(fsys driven.Filesystem, cfg model.PlanningConfig) []mo
 	}
 	found := len(names)
 	names = closureSkip(fsys, dir, names, cfg.Closure.SkipPattern)
-	// Leert erst skip-pattern die Menge, ist das der Ruhezustand eines Repos,
-	// dessen Slices alle archiviert sind — kein Befund (DC-FA-PLAN-001).
-	if len(names) == 0 && found > 0 {
+	// Leert erst skip-pattern die Menge und erklaert skip-allows-empty das zum
+	// Ruhezustand eines Repos, dessen Slices alle archiviert sind, ist das kein
+	// Befund (DC-FA-PLAN-001).
+	if len(names) == 0 && found > 0 && cfg.Closure.SkipAllowsEmpty {
 		return nil
 	}
 	// C2 fail-closed, zweite Hälfte: `closure.dir` ist der Aktivierungs-Schalter —

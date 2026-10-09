@@ -71,8 +71,9 @@ erfüllt", nicht „die Notizen sind gut". Die semantische Schicht ist der Skill
    zitiert, fällt ebenso still heraus; ein Symlink auf ein Unterverzeichnis
    wird nicht verfolgt
    ([`DC-FA-PLAN-001`](../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)).
-   Sind **alle** Slices Stubs, meldet der Lauf nichts — der Ruhezustand eines
-   archivierenden Repos; trifft das Muster auch Volltexte, wird er damit still.
+   Sind **alle** Slices Stubs, meldet der Lauf die leere Menge: Das Profil
+   setzt `skip-allows-empty` nicht, ein `done/` ohne Volltext wäre hier ein
+   Fehler, kein Ruhezustand.
    Die Wellen-Ergebnisnotizen prüft `structure` nur direkt in `done/`, wo sie
    liegen.
 

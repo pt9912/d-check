@@ -222,6 +222,7 @@ type rawClosure struct {
 	Placeholder    bool     `yaml:"placeholder"`
 	Recursive      bool     `yaml:"recursive"`
 	SkipPattern    string   `yaml:"skip-pattern"`
+	SkipAllowsEmpty bool    `yaml:"skip-allows-empty"`
 }
 
 // rawStructure ist eine Regel des Moduls structure (DC-FA-STRUCT-001).
@@ -252,6 +253,9 @@ type rawStructure struct {
 	// SkipPattern nimmt Dateien nach ihrem Inhalt aus; leer ist die Abwesenheit,
 	// wie bei jedem RE2-Schluessel dieses Moduls.
 	SkipPattern string `yaml:"skip-pattern"`
+	// SkipAllowsEmpty erklaert die Menge, die erst skip-pattern leert, zum
+	// Ruhezustand (kein Befund); ohne skip-pattern eine halbe Aktivierung.
+	SkipAllowsEmpty bool `yaml:"skip-allows-empty"`
 
 	// Die beiden Teilmengen-Schluessel: sie VERKLEINERN die geprueften Mengen
 	// und tragen keinen eigenen Grund-Code. Kein Zeiger -- wie bei jedem
@@ -415,6 +419,9 @@ func structureUeberschriftFehler(r rawStructure) string {
 	if r.ExemptExpectCount != nil && *r.ExemptExpectCount < 0 {
 		return fmt.Sprintf("exempt-expect-count %d muss >= 0 sein", *r.ExemptExpectCount)
 	}
+	if r.SkipAllowsEmpty && r.SkipPattern == "" {
+		return "skip-allows-empty ist ohne skip-pattern wirkungslos (halbe Aktivierung)"
+	}
 	if msg := structureMarkenFehler(r); msg != "" {
 		return msg
 	}
@@ -547,6 +554,7 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 		Hint:        derefString(r.Hint),
 		ExemptPaths: r.ExemptPaths,
 		SkipPattern: r.SkipPattern,
+		SkipAllowsEmpty: r.SkipAllowsEmpty,
 
 		TasksIgnorePattern:   r.TasksIgnorePattern,
 		ExemptSectionPattern: r.ExemptSectionPattern,
@@ -1619,16 +1627,14 @@ func applyClosure(c *rawClosure) (model.ClosureConfig, error) {
 				"%s: planning.closure.boilerplate enthält einen leeren Eintrag (träfe jeden Text)", FileName)
 		}
 	}
-	if c.SkipPattern != "" {
-		if _, err := regexp.Compile(c.SkipPattern); err != nil {
-			return model.ClosureConfig{}, fmt.Errorf(
-				"%s: planning.closure.skip-pattern %q ist kein gültiges Regex: %v", FileName, c.SkipPattern, err)
-		}
+	if err := skipFehler("planning.closure", c.SkipPattern, c.SkipAllowsEmpty); err != nil {
+		return model.ClosureConfig{}, err
 	}
 	return model.ClosureConfig{
 		Dir: c.Dir, Glob: glob, HeadingPattern: c.HeadingPattern,
 		MinSentences: minSentences, Boilerplate: c.Boilerplate,
 		Placeholder: c.Placeholder, Recursive: c.Recursive, SkipPattern: c.SkipPattern,
+		SkipAllowsEmpty: c.SkipAllowsEmpty,
 	}, nil
 }
 
@@ -2449,6 +2455,7 @@ type rawReviews struct {
 	RequirePromises bool    `yaml:"require-promises"`
 	Recursive       bool    `yaml:"recursive"`
 	SkipPattern     string  `yaml:"skip-pattern"`
+	SkipAllowsEmpty bool    `yaml:"skip-allows-empty"`
 }
 
 // applyReviews validiert den reviews-Block am Config-Rand: ein aktiviertes
@@ -2485,16 +2492,13 @@ func applyReviews(r *rawReviews) (model.ReviewsConfig, error) {
 	default:
 		return model.ReviewsConfig{}, fmt.Errorf("%s: reviews.match %q muss id oder name sein", FileName, r.Match)
 	}
-	if r.SkipPattern != "" {
-		if _, err := regexp.Compile(r.SkipPattern); err != nil {
-			return model.ReviewsConfig{}, fmt.Errorf(
-				"%s: reviews.skip-pattern %q ist kein gültiges Regex: %v", FileName, r.SkipPattern, err)
-		}
+	if err := skipFehler("reviews", r.SkipPattern, r.SkipAllowsEmpty); err != nil {
+		return model.ReviewsConfig{}, err
 	}
 	return model.ReviewsConfig{
 		DoneDir: r.DoneDir, ReviewsDir: r.ReviewsDir, ExemptPaths: r.ExemptPaths,
 		PromisePattern: promise, Match: r.Match, RequirePromises: r.RequirePromises,
-		Recursive: r.Recursive, SkipPattern: r.SkipPattern,
+		Recursive: r.Recursive, SkipPattern: r.SkipPattern, SkipAllowsEmpty: r.SkipAllowsEmpty,
 	}, nil
 }
 
@@ -2634,4 +2638,19 @@ func applyMentions(r *rawMentions) (model.MentionsConfig, error) {
 		return model.MentionsConfig{}, fmt.Errorf("%s: mentions.match %q ist unbekannt (erlaubt: %s, %s)", FileName, r.Match, model.MentionsMatchPath, model.MentionsMatchBasename)
 	}
 	return model.MentionsConfig{Artifacts: r.Artifacts, Documents: r.Documents, Match: strings.TrimSpace(r.Match)}, nil
+}
+
+// skipFehler prueft skip-pattern und skip-allows-empty eines Blocks: ein nicht
+// kompilierendes Muster und der Schluessel ohne Muster (halbe Aktivierung)
+// brechen ab, die Meldung nennt den Schluessel mit seinem Block.
+func skipFehler(block, pattern string, allowsEmpty bool) error {
+	if pattern != "" {
+		if _, err := regexp.Compile(pattern); err != nil {
+			return fmt.Errorf("%s: %s.skip-pattern %q ist kein gültiges Regex: %v", FileName, block, pattern, err)
+		}
+	}
+	if allowsEmpty && pattern == "" {
+		return fmt.Errorf("%s: %s.skip-allows-empty ist ohne skip-pattern wirkungslos (halbe Aktivierung)", FileName, block)
+	}
+	return nil
 }

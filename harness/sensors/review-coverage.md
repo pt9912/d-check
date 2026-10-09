@@ -30,9 +30,9 @@ Default.
    Slices.
 3. **Fail-closed bei leerer Kandidatenmenge oder unlesbarem `reviews-dir`**,
    **nicht** bei null gefundenen Zusagen unter vorhandenen Kandidaten — ein
-   junger Bestand ohne jede Zusage ist legitim. **Ausgenommen ist die Menge,
-   die erst `skip-pattern` leert** (alle Slices archiviert): sie meldet nichts —
-   trifft das Muster auch Volltexte, wird der Lauf damit still.
+   junger Bestand ohne jede Zusage ist legitim. Auch eine Menge, die erst
+   `skip-pattern` leert, bleibt ein Befund: Dieses Repo setzt
+   `reviews.skip-allows-empty` nicht, sein `done/` trägt Volltexte.
 4. **Geprüft ist die Existenz eines Reports, nicht sein Inhalt** — die
    Kategorisierung eines Findings bleibt inferential.
 5. **Der Abgleich vergleicht die **erste** Kennung im Dateinamen, und nur

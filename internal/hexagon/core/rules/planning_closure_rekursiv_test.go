@@ -130,18 +130,18 @@ func TestClosureSkipPattern_NimmtStubAus(t *testing.T) {
 	}
 }
 
-// Ist die Menge leer, ohne dass skip-pattern etwas ausgenommen hat, gilt die
-// Nullmengen-Regel — die Meldung nennt die Ausnahme.
+// Nimmt skip-pattern alle Kandidaten, gilt die Nullmengen-Regel — die Meldung
+// nennt die Ausnahme.
 func TestClosureSkipPattern_LeereMengeFailClosed(t *testing.T) {
 	files := map[string]string{
-		closureDir + "/README.md": "# done\n",
+		closureDir + "/slice-001-a.md": "# slice-001\n\n" + stubMarker,
 	}
 	cfg := closureCfg()
 	cfg.Closure.SkipPattern = stubPattern
 	f := CheckPlanningClosure(coretest.NewMemFS(files), cfg)
 	if len(f) != 1 || f[0].File != closureDir || f[0].Reason != model.ReasonClosureNoteMissing ||
 		!strings.Contains(f[0].Message, "skip-pattern") {
-		t.Fatalf("keine passende Datei ⇒ closure-note-missing auf dem Verzeichnis mit Nennung der Ausnahme, got %+v", f)
+		t.Fatalf("alles ausgenommen ⇒ closure-note-missing auf dem Verzeichnis mit Nennung der Ausnahme, got %+v", f)
 	}
 }
 

@@ -158,7 +158,8 @@ modules: [links, anchors]
 #   #   boilerplate: []                 # Floskeln, case-insensitiv an WORTGRENZEN; Default LEER (keine Sprach-Annahme)
 #   #   placeholder: false              # unausgefuellte Vorlagen-Platzhalter (<feld>); Default AUS, ignoriert Inline-Code
 #   #   recursive: false                # auch die Unterverzeichnisse von dir lesen (Filter bleibt der Basisname); unlesbar ⇒ fail-closed
-#   #   skip-pattern: '(?m)^> \*\*ARCHIVIERT'  # RE2 gegen den rohen INHALT: Treffer ist kein Kandidat (z. B. archivierter Stub); leert es die Menge, ist das kein Befund (alles archiviert)
+#   #   skip-pattern: '(?m)^> \*\*ARCHIVIERT'  # RE2 gegen den rohen INHALT: Treffer ist kein Kandidat (z. B. archivierter Stub); leert es die Menge, gilt die Nullmengen-Regel
+#   #   skip-allows-empty: true  # erklaert die Menge, die erst skip-pattern leert, zum Ruhezustand (alles archiviert): kein Befund; nur mit skip-pattern
 #   # waves:                            # dritte Fähigkeit: Wellen-Register gegen die Wellen-Dateien (opt-in im opt-in)
 #   #   dir: docs/plan/planning         # Aktivierungs-Schalter; leer ⇒ inert (kein Wellendokument wird geöffnet)
 #   #   done-dir: docs/plan/planning/done  # Ruheort der Ergebnisnotizen (Default: <dir>/done)
@@ -221,6 +222,7 @@ modules: [links, anchors]
 #     #                                           # modul-eigene Meldung. Leer oder mit Tab/Umbruch ⇒ Exit 2
 #     # exempt-paths: []                            # Globs; Treffer werden von DIESER Regel nicht geprüft
 #     # skip-pattern: '(?m)^> \*\*ARCHIVIERT'      # RE2 gegen den rohen INHALT: Treffer ist fuer DIESE Regel keine Kandidatin
+#     # skip-allows-empty: true                   # erklaert die von skip-pattern geleerte Menge zum Ruhezustand: kein Befund; nur mit skip-pattern
 #     # exempt-section-pattern: '^## 9\. Alt'       # Abschnitte, deren ROHE Ueberschriften-Zeile (samt #-Folge, wie bei
 #     #                                             # section-pattern) dieses RE2 trifft, prueft DIESE Regel nicht.
 #     #                                             # Laeuft VOR sections: one; leert es die Menge ⇒ section-missing
@@ -261,6 +263,7 @@ modules: [links, anchors]
 #   # require-promises: true          # Kandidaten ohne eine einzige Zusage ⇒ review-missing statt grün
 #   # recursive: true                 # auch die Unterverzeichnisse von done-dir (SKIP_DIRS ausgenommen)
 #   # skip-pattern: '(?m)^> \*\*ARCHIVIERT'   # RE2 gegen den rohen INHALT: Treffer ist kein Kandidat (Stub)
+#   # skip-allows-empty: true   # erklaert die von skip-pattern geleerte Menge zum Ruhezustand: kein Befund; nur mit skip-pattern
 # --- targets: Deklarations-Konsistenz Doku ↔ Build-Targets — hermetisch (kein git), opt-in ---
 #   (Aufruf über das make-Target gate-consistency bzw. --enable targets. NICHT in modules: oben.)
 # targets:

@@ -562,10 +562,14 @@ type StructureRule struct {
 	ExemptPaths []string
 	// SkipPattern nimmt ganze Dateien nach ihrem INHALT aus der Kandidatenmenge
 	// (RE2 gegen den rohen Datei-Text): eine Datei, auf die es passt, ist keine
-	// Kandidatin. Leer ist die Abwesenheit. Leert es die Menge, ist das kein
-	// Befund (Ruhezustand). Eine unlesbare Datei bleibt Kandidatin und meldet
+	// Kandidatin. Leer ist die Abwesenheit. Leert es die Menge, gilt die
+	// Nullmengen-Haerte, ausser SkipAllowsEmpty erklaert die Leere zum
+	// Ruhezustand. Eine unlesbare Datei bleibt Kandidatin und meldet
 	// sich fail-closed.
 	SkipPattern string
+	// SkipAllowsEmpty erklaert die Menge, die erst SkipPattern leert, zum
+	// Ruhezustand: kein Befund. Nur mit SkipPattern (Config-Rand, Exit 2).
+	SkipAllowsEmpty bool
 	// TasksIgnorePattern nimmt Task-Items aus der max-tasks-Zaehlung heraus.
 	// Es sieht den ITEM-TEXT hinter Listen-Marker und Checkbox, nicht die rohe
 	// Zeile: gegen die rohe Zeile bezeichnete `^` immer den Listen-Marker, und
@@ -793,9 +797,13 @@ type ClosureConfig struct {
 	Recursive bool
 	// SkipPattern nimmt einen Kandidaten nach seinem INHALT aus (RE2 gegen den
 	// rohen Datei-Text) -- etwa einen archivierten Stub. Leer ist die
-	// Abwesenheit. Leert es die Menge, ist das kein Befund (Ruhezustand); eine
+	// Abwesenheit. Leert es die Menge, gilt die Nullmengen-Regel, ausser
+	// SkipAllowsEmpty erklaert die Leere zum Ruhezustand; eine
 	// unlesbare Datei bleibt Kandidatin und meldet sich fail-closed.
 	SkipPattern string
+	// SkipAllowsEmpty erklaert die Menge, die erst SkipPattern leert, zum
+	// Ruhezustand: kein Befund. Nur mit SkipPattern (Config-Rand, Exit 2).
+	SkipAllowsEmpty bool
 }
 
 // EffectiveHeadingPattern liefert das RE2-Muster der Closure-Notiz-Überschrift
@@ -1139,6 +1147,9 @@ type ReviewsConfig struct {
 	// und eine unlesbare Datei faellt aus der Zusage-Erkennung.
 	Recursive   bool
 	SkipPattern string
+	// SkipAllowsEmpty erklaert die Menge, die erst SkipPattern leert, zum
+	// Ruhezustand: kein Befund. Nur mit SkipPattern (Config-Rand, Exit 2).
+	SkipAllowsEmpty bool
 }
 
 // MatchByName sagt, ob ein Report einen Slice ueber dessen Basisnamen deckt.

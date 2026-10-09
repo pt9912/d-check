@@ -1443,3 +1443,33 @@ func TestDecode_VCSIgnoreLinkTargets(t *testing.T) {
 		t.Fatalf("ohne den Schlüssel muss er aus sein: %+v, %v", cfg.VCS, err)
 	}
 }
+
+// skip-allows-empty reicht in allen drei Modulen in den Kern durch; ohne
+// skip-pattern ist es eine halbe Aktivierung und bricht mit dem Schlüssel in
+// der Meldung ab.
+func TestDecode_SkipAllowsEmpty(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte("planning:\n  closure:\n    dir: done\n" +
+		"    skip-pattern: '^> ARCHIVIERT'\n    skip-allows-empty: true\n" +
+		"structure:\n  - files: 'done/**/slice-*.md'\n    section: '## H'\n" +
+		"    skip-pattern: '^> ARCHIVIERT'\n    skip-allows-empty: true\n" +
+		"reviews:\n  done-dir: done\n  reviews-dir: rv\n" +
+		"  skip-pattern: '^> ARCHIVIERT'\n  skip-allows-empty: true\n"))
+	if err != nil {
+		t.Fatalf("gültige Config abgewiesen: %v", err)
+	}
+	if !cfg.Planning.Closure.SkipAllowsEmpty || !cfg.Structure[0].SkipAllowsEmpty || !cfg.Reviews.SkipAllowsEmpty {
+		t.Fatalf("skip-allows-empty nicht durchgereicht: %+v / %+v / %+v",
+			cfg.Planning.Closure, cfg.Structure[0], cfg.Reviews)
+	}
+	for want, bad := range map[string]string{
+		"planning.closure.skip-allows-empty": "planning:\n  closure:\n    dir: done\n    skip-allows-empty: true\n",
+		"skip-allows-empty ist ohne skip-pattern": "structure:\n  - files: 'a/*.md'\n    section: '## H'\n" +
+			"    skip-allows-empty: true\n",
+		"reviews.skip-allows-empty": "reviews:\n  done-dir: done\n  reviews-dir: rv\n  skip-allows-empty: true\n",
+	} {
+		_, err := configyaml.Decode([]byte(bad))
+		if err == nil || !strings.Contains(err.Error(), want) {
+			t.Errorf("halbe Aktivierung: Fehler mit %q erwartet, got %v", want, err)
+		}
+	}
+}
