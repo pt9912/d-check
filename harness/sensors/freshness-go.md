@@ -26,7 +26,7 @@ fest; diese Datei führt sie nicht ein zweites Mal.
 3. **Gemeldet wird, nicht gehoben** — die Hebung bleibt ein bewusster Akt, und
    bei einer Toolchain-Hebung zieht das `golangci`-Pendant mit.
 4. **`freshness-trivy` läuft nicht im Nachtlauf** — `upstream-drift.yml` führt
-   die anderen vier Achsen; der Scanner-Pin wird nur gemeldet, wer die Achse
+   die anderen vier Achsen; der Scanner-Pin wird nur gemeldet, wenn jemand die Achse
    selbst ruft.
 
 **Netzlos prüfbar** über `--compare <name> <gepinnt> <upstream>`; ohne diesen

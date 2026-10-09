@@ -12,7 +12,11 @@ für den Hook über stdin.
 **Vorlauf-Wächter:** dem Container-Lauf geht `history-range-guard` voraus
 (Host-bash, kein Docker) — eine angeforderte Range, die im Klon nicht
 auflösbar oder leer ist, bricht laut ab, bevor das Modul startet; stilles
-Grün über leerem Prüfbereich (shallow-Klon) kommt so nicht zustande.
+Grün über leerem Prüfbereich (shallow-Klon) kommt so nicht zustande. Er läuft
+auch im Modus des `commit-msg`-Hooks, der keine Historie liest: In einem Repo
+mit nur einem Commit oder einem Klon der Tiefe 1 bricht der Hook deshalb jeden
+Commit ab
+([`SPEC-102`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)).
 
 ## Grenze — was das Grün nicht abdeckt
 

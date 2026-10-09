@@ -1,13 +1,15 @@
 name: upstream-drift
 
-# Nachtlauf fuer die gepinnten Fremd-Bestaende. Gewacht wird JEDER Pin, den
-# dieses Repo auf einen Fremd-Bestand setzt: die vendorte Baseline, die zwei
-# Toolchain-Versionen, die fuenf Fremd-Image-Digests (drei Dockerfile-Stages,
-# semgrep, a-check) und die zwei Action-Pins.
+# Nachtlauf fuer die gepinnten Fremd-Bestaende: die vendorte Baseline, vier
+# Toolchain-Versionen (go, golangci, semgrep, a-check), fuenf
+# Fremd-Image-Digests (drei Dockerfile-Stages, semgrep, a-check) und die drei
+# Action-Pins (SPEC-098, SPEC-099, SPEC-100).
+# GRENZE: nicht gewacht werden der Scanner-Pin von image-scan (freshness-trivy,
+# trivy-digest) und die Builder-Images aus release.yml.
 #
 # ZWEI FRAGEN, NICHT EINE. Ein Tag-Pin und ein Digest-Pin altern verschieden:
 #   „gibt es einen neueren Tag"       — Versions-Achsen (baseline, go, golangci,
-#                                       semgrep, a-check, die zwei Actions)
+#                                       semgrep, a-check, die drei Actions)
 #   „traegt derselbe Tag einen        — Digest-Achsen (die drei Basis-Images,
 #    anderen Digest"                    semgrep, a-check)
 # Ein Bestand mit BEIDEN Pins braucht BEIDE Achsen: `freshness-go` meldet `ok`,
@@ -15,8 +17,9 @@ name: upstream-drift
 # hier eine Deckung behauptet, die sie nicht traegt.
 #
 # WARUM EIN EIGENER WORKFLOW UND NICHT EIN SCHRITT IN ci.yml: dieses Gate ist
-# das einzige, das das Netz braucht, und es ist bewusst FAIL-OPEN (Netz-,
-# Werkzeug- oder Manifest-Ausfall => SKIP je Teil). In ci.yml wuerde ein
+# das einzige, das das Netz braucht, und es ist bewusst FAIL-OPEN (Netz-
+# Ausfall, fehlendes unzip/sha256sum oder Manifest => SKIP je Teil; nur ein
+# fehlendes curl ist beim Baseline-Audit Exit 1). In ci.yml wuerde ein
 # Upstream-Ausfall die Integrations-CI rot faerben — und ein Waechter, den man
 # wegen Fremdstoerungen abschaltet, ist schlechter als gar keiner.
 #

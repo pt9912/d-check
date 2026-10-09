@@ -24,7 +24,9 @@ braucht `curl` und `unzip`,
 [`image-scan.sh`](../../tools/image-scan.sh) braucht **Docker mit Netz**
 (Trivy zieht seine Vuln-DB). **Alle vier** stehen bewusst außerhalb von
 `gates`; wer sie fährt, fährt sie mit dieser zusätzlichen Erwartung. **Die
-ersten drei sind fail-open, das vierte nicht** — ein gescheiterter CVE-Scan
+ersten drei sind fail-open, das vierte nicht** — mit einer Ausnahme: fehlt
+`curl`, endet `fetch-baseline-cache.sh --check-latest` mit Exit 1, nicht mit
+`SKIP` ([`SPEC-100`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)). Ein gescheiterter CVE-Scan
 meldet Exit 2 und ausdrücklich keinen grünen Befundstand
 ([ADR-0066](../../docs/plan/adr/0066-cve-scan-gegen-das-publizierte-image.md)).
 

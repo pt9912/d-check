@@ -32,7 +32,8 @@ Fix** — nur der macht rot.
    Exit 0. Der Plattform-Nachweis vergleicht deshalb die gemeldete
    Architektur; weicht sie ab, gilt der Scan als gescheitert (Exit 2), nicht
    als grün. Eine über `IMAGE_SCAN_PLATFORMS` genannte Plattform prüft das
-   Skript nicht gegen den Index — das fängt erst dieser Nachweis.
+   Skript nicht gegen den Index; ob Trivy dann scheitert oder auf eine andere
+   Variante ausweicht, ist nicht gemessen — beide Wege enden mit Exit 2.
 4. **Ohne vollständig lesbaren Index gibt es keinen Scan.** Ein Ref, dessen
    Plattformen sich nicht vollständig aus einem Multi-Plattform-Index lesen
    lassen — ein Einzel-Manifest bis `v0.83.0`, ein Index-Eintrag ohne

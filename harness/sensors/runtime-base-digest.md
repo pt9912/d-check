@@ -32,7 +32,7 @@ der Registries, nicht die Unmöglichkeit des Handbetriebs.
 4. **Fail-open** — jede Netz- oder Werkzeugstörung endet als `SKIP` mit Exit 0.
    Ein Sensor, der bei fremder Störung rot wird, wird abgeschaltet.
 5. **`trivy-digest` läuft nicht im Nachtlauf** — `upstream-drift.yml` führt die
-   anderen fünf Achsen; der Scanner-Digest wird nur gemeldet, wer die Achse
+   anderen fünf Achsen; der Scanner-Digest wird nur gemeldet, wenn jemand die Achse
    selbst ruft.
 
 Quelle, Digest-Form, Vergleich, fail-open und Exit legt
