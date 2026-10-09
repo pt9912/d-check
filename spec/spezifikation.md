@@ -2236,7 +2236,8 @@ liefert (und umgekehrt):
   Fähigkeit. **Exit 2** (Config-Fehler, vor dem Lauf) bei: `dir` absolut oder mit
   `..`-Segment; nicht kompilierendes `heading-pattern`; explizit gesetztes
   `min-sentences` < 1; leerer (oder nur aus Whitespace bestehender)
-  `boilerplate`-Eintrag; nicht kompilierendes `skip-pattern`. Ein **abwesendes** `min-sentences` ist kein Fehler,
+  `boilerplate`-Eintrag; nicht kompilierendes `skip-pattern`; `skip-allows-empty` ohne
+  `skip-pattern` (halbe Aktivierung). Ein **abwesendes** `min-sentences` ist kein Fehler,
   sondern der Default — die Unterscheidung „nicht gesetzt" vs. „auf 0 gesetzt"
   ist Teil der Zusage, sonst wäre die Null-Schwelle unerreichbar prüfbar.
 - **C2. Kandidaten.** Das Listing von `planning.closure.dir` wird nach Dateien
@@ -2397,7 +2398,8 @@ getroffenen Dateien.
    `files`/`exempt-paths`; weder `section` noch `section-pattern` gesetzt **oder**
    beide; `sections` weder `one` noch `each`; nicht kompilierendes
    `section-pattern`/`forbid-pattern`/`require-pattern`/`tasks-ignore-pattern`/`exempt-section-pattern`/`skip-pattern`;
-   ein `tasks-ignore-pattern` **ohne** `max-tasks` (halbe Aktivierung wie
+   ein `tasks-ignore-pattern` **ohne** `max-tasks` oder ein `skip-allows-empty`
+   **ohne** `skip-pattern` (halbe Aktivierung wie
    `table.order-column` ohne `table.order`); **explizit** gesetztes
    `min-sentences` < 1, `max-tasks` < 0 oder `max-lines` < 1; leerer Eintrag in `require-all`;
    **explizit leerer** `hint` oder einer aus lauter Whitespace; ein `hint` mit
@@ -3057,7 +3059,8 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    gesetzt ohne `reviews.reviews-dir`; ungültiges Glob in
    `reviews.exempt-paths`; **explizit** leeres oder nicht kompilierendes
    `reviews.promise-pattern`; `reviews.match` außerhalb `id`/`name`; nicht
-   kompilierendes `reviews.skip-pattern`. Die Meldung nennt den Schlüssel.
+   kompilierendes `reviews.skip-pattern`; `reviews.skip-allows-empty` ohne
+   `reviews.skip-pattern` (halbe Aktivierung). Die Meldung nennt den Schlüssel.
 2. **Kandidaten.** Alle Dateien in `reviews.done-dir` mit der Endung `.md` und
    dem Namens-Präfix `slice-`. Ohne `reviews.recursive` nur die
    **unmittelbaren** Einträge — ein archivierter Slice-Stub liegt eine Ebene

@@ -12,7 +12,8 @@
 der Nullmengen-Wächter der Closure-Prüfung, dessen Reichweite hier
 zurückgeschnitten wird); [ADR-0081](0081-reviews-modul.md) (Entscheidung 5,
 derselbe Wächter in `reviews`); [ADR-0078](0078-erklaerte-leermenge-mit-zahl.md)
-(das Muster: eine Leere, die ein generisches Muster erzeugt, wird deklariert);
+(das Muster: eine Leere, die ein generisches Muster erzeugt, wird deklariert —
+hier als Schalter, nicht als Zahl, siehe Verglichene Alternativen);
 `AGENTS.md` §3.6; slice-271 <!-- d-check:status-provenance -->.
 
 **Schärft:** [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
@@ -68,6 +69,7 @@ tun" ist eine davon (Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR
 |---|---|---|
 | Nichts tun | Der Wächter bleibt ungeteilt | Ein archivierendes Repo hat keine Konfiguration, die grün bleibt; es müsste die Module abwählen |
 | Still per Default | Keine neue Konfiguration nötig | Schaltet den Umzugs-Wächter ab — gemessen im Review; widerspricht ADR-0078 |
+| Eine Zahl wie in ADR-0078 (`skip-expect-count: <n>`) | Drift ist laut: übersprungen werden muss genau die erklärte Zahl, sonst Befund | Die Zahl der Stubs wächst mit jeder Archivierung; jede Closure müsste die Konfiguration nachziehen, und ein vergessener Nachzug machte das Gate rot, ohne dass etwas fehlt — der Befund des Kurses, nur verschoben |
 | Still nur mit `recursive` | Ein Umzug ins Unterverzeichnis bleibt sichtbar | `structure` kennt kein `recursive`; die Erlaubnis bleibt still statt erklärt |
 | **Gewählt:** Opt-in-Schlüssel neben `skip-pattern` | Der Default bleibt streng; wer archiviert, erklärt es an einer Stelle | Mit dem Schlüssel wird ein zu breites Muster oder ein Umzug still |
 
@@ -78,7 +80,8 @@ tun" ist eine davon (Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR
 - Ohne den Schlüssel ändert sich nichts; der Befundsatz ist byte-identisch.
 - **Grenze:** Mit dem Schlüssel wird der Lauf still, wenn das Muster auch
   Volltexte trifft oder die Volltexte außerhalb der Kandidatenmenge liegen.
-  Die Deklaration nimmt dieses Risiko bewusst in Kauf.
+  Die Deklaration nimmt dieses Risiko bewusst in Kauf. Der Schalter ist damit
+  **schwächer** als die Zahl aus ADR-0078: Er macht Drift nicht laut.
 
 ## Fitness Function (falls maschinell prüfbar)
 

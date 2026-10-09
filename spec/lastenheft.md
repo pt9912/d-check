@@ -2498,7 +2498,8 @@ liefe das Gate fortan leer und grün. Am **Config-Rand** (Exit 2): ein `dir`
 außerhalb der Repo-Wurzel (absolut oder mit `..`), ein nicht kompilierendes
 `heading-pattern`, ein **explizit** gesetztes `min-sentences` < 1, ein
 **explizit** gesetzter leerer oder ungültiger `closure.glob` und ein leerer
-`boilerplate`-Eintrag sowie ein nicht kompilierendes `skip-pattern`. `placeholder`
+`boilerplate`-Eintrag sowie ein nicht kompilierendes `skip-pattern` und ein
+`skip-allows-empty` ohne `skip-pattern` (halbe Aktivierung). `placeholder`
 und `recursive` kennen keinen ungültigen Wert — ein Bool ist
 gesetzt oder nicht. Ein explizit leerer Glob bricht ab, statt still auf den
 Default zurückzufallen: den Schlüssel zu setzen ist eine Aussage, und eine
@@ -3072,6 +3073,7 @@ ungültiges Glob in `files`/`exempt-paths`; weder `section` noch
 `section-pattern` **oder** beide; unbekannter `sections`-Wert; nicht
 kompilierendes `section-pattern`/`forbid-pattern`/`require-pattern`/`tasks-ignore-pattern`/`exempt-section-pattern`/`open-tasks-require-marker-section`/`skip-pattern`;
 ein `exempt-expect-count` **ohne** `exempt-section-pattern` oder mit einem Wert **< 0**;
+ein `skip-allows-empty` **ohne** `skip-pattern`;
 ein `tasks-ignore-pattern` **ohne** `max-tasks` (dieselbe halbe Aktivierung wie
 `table.order-column` ohne `table.order`); ein `open-tasks-require-marker`
 **ohne** `max-open-tasks`, oder ein `open-tasks-require-marker-section`
@@ -3109,7 +3111,7 @@ ein Ventil die Regel still ab.
 - **`sections: one` (Default):** Given eine Datei mit **zwei** passenden Abschnitten, when `d-check --enable structure` läuft, then `section-ambiguous` mit der Zeile des **zweiten**, Exit 1 — und **kein** Bedingungs-Befund für diese Datei.
 - **Negative (Abschnitt fehlt):** Given ein Dokument der Klasse **ohne** passende Überschrift, when `d-check --enable structure` läuft, then `section-missing` (`line` = 1), Exit 1.
 - **Boundary (Inhalts-Ausnahme):** Given eine Regel mit `skip-pattern`, das den Marker eines archivierten Stubs trifft, when `d-check --enable structure` läuft, then wird der Stub nicht geprüft und der Volltext daneben schon, und eine unlesbare Datei bleibt Kandidatin. Nimmt das Muster **alle** übrigen Dateien, gilt die Nullmengen-Regel (`section-missing` auf dem Glob) — es sei denn, `skip-allows-empty: true` der Regel erklärt diese Leere zum Ruhezustand eines archivierenden Repos; dann **kein** Befund. Ohne `skip-pattern` ist der Schlüssel ein Nutzungsfehler (Exit 2). **Ohne** den Schlüssel ist der Befundsatz byte-identisch.
-- **fail-closed (Inhalts-Ausnahme):** Given eine Regel mit nicht kompilierendem `skip-pattern`, when `d-check` startet, then Abbruch mit Exit-Code 2 und einer Meldung, die den Schlüssel nennt.
+- **fail-closed (Inhalts-Ausnahme):** Given eine Regel mit nicht kompilierendem `skip-pattern` — oder mit `skip-allows-empty: true` ohne `skip-pattern` (halbe Aktivierung) —, when `d-check` startet, then Abbruch mit Exit-Code 2 und einer Meldung, die den Schlüssel nennt.
 - **Negative (je Bedingung ein Code):** Given einen Abschnitt, der **zwei** Bedingungen zugleich verletzt, when `d-check --enable structure` läuft, then **zwei** Befunde mit **verschiedenen** Grund-Codes — die Deduplikation fasst sie nicht zusammen.
 - **Boundary (fence-treu):** Given einen Abschnitt, dessen Sätze, Task-Items oder Marken **ausschließlich** in einem Fenced-Code-Block stehen, when `d-check --enable structure` läuft, then zählen sie nicht — die Bedingung gilt als verletzt.
 - **Teilmenge (`tasks-ignore-pattern`):** Given einen Abschnitt mit sieben Task-Items, von denen vier dem Muster genügen, und `max-tasks: 3`, when `d-check --enable structure` läuft, then kein Befund; **ohne** den Schlüssel `section-oversized`, und die Meldung ist dann **byte-identisch** zu der vor dieser Fähigkeit. Ein fünfter, **nicht** getroffener Punkt ⇒ wieder `section-oversized`, dessen Meldung die Zahl der ignorierten nennt — auch wenn sie null ist.
