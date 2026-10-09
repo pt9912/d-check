@@ -101,6 +101,26 @@ beschreibt `record-gates` als letzten Prerequisite von `gates` — mit dem Fix
 aus der vorigen Plan-Änderung stimmt das nicht mehr, und ein akzeptierter
 Eintrag wird nicht umgeschrieben.)*
 
+| `.claude/hooks/stop-require-gates.sh`, `harness/sensors/verify-closure-notes.md`, `Makefile` (Hilfe-Zeile `blackbox-probe`) | update | R1-Befunde |
+
+*(Plan-Änderung nach R1, vor dem Code: Der erweiterte Übergangs-Wächter löst
+aus, aber `make verify-closure-notes` liest keine Unterverzeichnisse von
+`done/` (R1 F-1, gemessen). Das zu beheben braucht eine Produkt-Änderung und
+eine Stub-Unterscheidung — es übernimmt slice-263 (Auftraggeber-Entscheid
+2026-10-09). Hier werden die Aussagen ehrlich: Hook-Kommentar,
+[`SPEC-095`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge),
+`hooks.md` und `verify-closure-notes.md` sagen, dass der Lauf auslöst, aber
+nur `done/` selbst prüft. Dazu: die Erkennung liest die ganze Diff-Ausgabe,
+statt bei `grep -q` per SIGPIPE abzubrechen (F-2); `make -i gates` schreibt
+keinen Nachweis — Erkennung und Schreiben stehen in einer Rezeptzeile, weil
+`-i` auch deren Abbruch ignorierte (F-3, am Modell-Makefile gegen `-i`,
+`-ik`, `--ignore-errors`, `-j2 -i`, `-k`, `-s`, `-w` und eine Variable mit
+`i` gefahren); scheitert im Stop-Hook der Hash, blockt er mit Grund statt
+ohne Antwort zu enden (F-5); die Grenzen von
+[`SPEC-093`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+nennen die gemessenen Durchlass-Klassen (F-4, F-8); `PROBE_FORMS` leer heißt
+Default (F-6); Pointer- und Abschnitts-Korrekturen F-7, F-9, F-10, F-11.)*
+
 ## 4. Trigger
 
 **Start** (`next` → `in-progress`): slice-259 in `done/`; `in-progress/` leer.
