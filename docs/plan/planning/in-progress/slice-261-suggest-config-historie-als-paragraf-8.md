@@ -44,13 +44,13 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] `--suggest-config` schlägt `8. Historie` mit vor; Test, der ohne den
+- [x] `--suggest-config` schlägt `8. Historie` mit vor; Test, der ohne den
       Fix aus dem richtigen Grund rot ist; Beispiel in der Spezifikation §2
       nachgezogen.
-- [ ] Ohne die Option ist die Ausgabe unverändert (Black-Box-Probe gegen den
+- [x] Ohne die Option ist die Ausgabe unverändert (Black-Box-Probe gegen den
       Vorher-Stand); `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -80,15 +80,30 @@ nächsten Release hinaus.
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** `--suggest-config ai-harness` (und
+  `ai-harness-init`, das denselben `matrix`-Block erzeugt) schlägt für
+  `matrix.exclude-sections` jetzt auch `"8. Historie"` vor. Der Test dekodiert
+  den Vorschlag und prüft den Wert; ohne den Fix ist er aus dem richtigen
+  Grund rot. Die Black-Box-Probe gegen den Vorher-Stand ist byte-identisch
+  über 20 Vergleiche, und ein Image-Diff des Vorschlags zeigt nur die eine
+  Zeile.
+- **Was ging anders als geplant:** nichts am Gegenstand. Der Review fand, dass
+  der Kopf der Vorlage weiter einen alten Baseline-Stand nennt, während die
+  Vorschläge einem neueren folgen — älter als der Slice und außerhalb seiner
+  Abgrenzung.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
+- **Beobachtungs-Register (`../observations/`):** neu
+  [`BEO-ALL/suggest-vorlage-nennt-alten-baseline-stand`](../observations/BEO-ALL/suggest-vorlage-nennt-alten-baseline-stand/state.md)
+  (1×).
+- **Folge-Slices:** keiner. Produkt-Verhalten — geht mit dem nächsten Release
+  hinaus.
+- **Risiken aus §6:** keine notiert. Trigger-Audit: kein Carveout, kein
+  bootstrap-aware Gate, keine neue ADR; keine Hard Rule mit eingetretenem
+  Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
+  Folge-Slices — keiner genannt; (c) Register — die zitierte Beobachtung
+  existiert und trägt einen Beleg.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
