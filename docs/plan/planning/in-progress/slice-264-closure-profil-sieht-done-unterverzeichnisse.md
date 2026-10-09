@@ -66,6 +66,8 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `.d-check.closure.yml` | update | Rekursion, Globs, Stub-Ausnahme |
 | `done/wellenlos/slice-240` bis `slice-243` | update | Altverstöße |
 | `spec/spezifikation.md` ([`SPEC-095`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)), `harness/sensors/{hooks,verify-closure-notes}.md`, `.githooks/pre-commit` | update | Rücknahme der Grenz-Aussagen |
+| `.d-check.yml` (`reviews`), `harness/sensors/review-coverage.md` | update | **Plan-Änderung nach Review R1 F-1:** `make review-coverage` liest dieselbe Kandidatenmenge wie der Übergangs-Wächter — sonst antworten zwei Läufe verschieden auf dieselbe Frage; gemessen mit Rekursion: 0 Befunde |
+| `observations/BEO-ALL/` (neuer Eintrag) | create | **Plan-Änderung nach Review R1 F-2:** der offene Punkt aus slice-242 R2 bekommt den Ausgang *weiter offen* und braucht dafür einen Register-Eintrag |
 
 ## 4. Trigger
 
