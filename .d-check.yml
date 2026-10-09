@@ -848,13 +848,15 @@ file:
 # `--enable vcs` (NICHT in der modules-Liste oben, daher im Default-doc-check
 # inert/byte-identisch). Core in Parität zum abgelösten `adr-immutable-check.sh`
 # (nur Kopf-Status-Zeile gestrippt, Geschichte ausgenommen); löst dessen Mechanik
-# ab (ADR-0024, Teil-Supersede von ADR-0016).
+# ab (ADR-0024, Teil-Supersede von ADR-0016). Ein reiner Pfad-Nachzug -- nur
+# Link-Ziele geaendert -- ist keine Drift (ignore-link-targets, ADR-0103).
 vcs:
   paths: ["docs/plan/adr/[0-9]*.md"]
   immutable-when: '^\*\*Status:\*\* Accepted'
   exclude-sections: [Geschichte]
   status-line: '^\*\*Status:\*\*'
   head-allow: '^\*\*Status:\*\* (Accepted|Superseded by ADR-[0-9]{4})'
+  ignore-link-targets: true
 
 # Modul commits (DC-FA-COMMITS-001, slice-056): Traceability-Kennung in
 # Commit-Messages über eine Range — `make trace-check` aktiviert es mit

@@ -7,7 +7,9 @@ Via Modul `vcs` (Image, dogfood). Eine `Accepted`-ADR unter
 `core(BASE)` gegen `core(HEAD)` über die Commit-Range, mit reiner-Go-git im
 read-only `.git`.
 
-**Erlaubt bleiben zwei Dinge:** `## Geschichte`-Anhänge und der
+**Erlaubt bleiben drei Dinge:** `## Geschichte`-Anhänge, ein reiner
+Pfad-Nachzug — eine Änderung nur an Link-Zielen, `vcs.ignore-link-targets`
+([ADR-0103](../../docs/plan/adr/0103-adr-gate-laesst-pfad-nachzug-durch.md)) — und der
 `**Status:**`-Übergang — das Status-Feld ist ein Zustandsfeld wie jedes andere
 und ausdrücklich **nicht** Teil des Kern-Vergleichs
 ([`AGENTS.md`](../../AGENTS.md) §3.5, §3.7).
@@ -132,6 +134,12 @@ Grün über leerem Prüfbereich (shallow-Klon) kommt so nicht zustande.
    Abhängigkeit ist der Anlass, hier nachzumessen — **und zwar mit einem
    *partiellen* unsichtbaren Pack**, denn nur der deckte den stillen Pfad auf
    *(seit slice-218)*.
+4. **Ein Pfad-Nachzug wird nur an seiner Form erkannt.** Das Gate leert die
+   Link-Ziele vor dem Vergleich; ob das neue Ziel dieselbe Sache meint wie das
+   alte, sieht es nicht — ein Verweis auf ein anderes Dokument fiele genauso
+   durch. Ein Link-Ziel in Inline-Code oder einem Codeblock wird ebenso
+   geleert. Permanent, solange der Nachzug erlaubt ist
+   ([ADR-0103](../../docs/plan/adr/0103-adr-gate-laesst-pfad-nachzug-durch.md)).
 
 ## Bindung
 

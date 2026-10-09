@@ -197,7 +197,8 @@ der Sicht Modul-Pfade ausdrücklich. Geführt als
 Eine ADR mit Status `Accepted` wird nicht inhaltlich überschrieben.
 Korrekturen entstehen als neue ADR mit `Supersedes ADR-NNNN` (vierstellig).
 Maschinell erzwungen über `make adr-check` (`pre-commit`-Hook + PR-/Push-CI;
-erlaubt bleiben `## Geschichte`-Anhänge + der `**Status:**`-Übergang;
+erlaubt bleiben `## Geschichte`-Anhänge, der `**Status:**`-Übergang und ein
+reiner Pfad-Nachzug, der nur Link-Ziele ändert ([ADR-0103](docs/plan/adr/0103-adr-gate-laesst-pfad-nachzug-durch.md));
 [ADR-0016](docs/plan/adr/0016-adr-immutable-gate.md)).
 
 ### 3.6 Gates dürfen nicht ohne ADR gelockert werden
