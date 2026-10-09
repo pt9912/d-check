@@ -45,12 +45,12 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] Ein Move-Commit, den Git als Rename erkennt, mit den eingehenden
+- [x] Ein Move-Commit, den Git als Rename erkennt, mit den eingehenden
       Verweisen; danach der Commit für die eigenen Links — die Liste am Repo
       gezählt, das Kommando im Plan; `make doc-check`, `make adr-check` über
       die Range und `make gates` grün, auch in einem frischen Klon.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -77,6 +77,17 @@ Tombstone-Register ([ADR-0025](../../adr/0025-codepaths-ignore-refs.md)).
 Ohne Doku-Gate: `.github/dependabot.yml`, `release.yml` (zwei),
 `hub-description.yml`, `tools/image-test.sh`, der Kommentar zum
 Tombstone-Eintrag des ursprünglichen Pfads.
+
+Das Zählkommando, im Wegwerf-Klon des Stands vor dem Umzug (nachgetragen
+nach der Verifikation, V-1):
+
+```sh
+mkdir -p docs/maintainer
+git mv docs/user/maintainer/releasing.md docs/maintainer/releasing.md
+rmdir docs/user/maintainer
+docker run --rm --network none -v "$PWD":/repo:ro d-check:latest \
+  | awk -F'\t' 'NF>2 {split($1,a,":"); print a[1], $3}' | sort | uniq -c
+```
 
 *(Plan-Änderung vor dem nächsten Code-Commit, nach R1 MEDIUM-1: Mit dem
 Umzug verlässt `releasing.md` den Rang 6 der Source Precedence, den
@@ -107,19 +118,56 @@ wellenlos hier geprüft.
 
 - **Ein frischer Klon sieht das leere Verzeichnis nicht** — lokal bleibt es
   nach dem Umzug stehen, die CI kennt es nicht; eine Prüfung im lokalen
-  Arbeitsbaum allein verdeckt das. — **Ausgang:** *(offen)*
+  Arbeitsbaum allein verdeckt das. — **Ausgang:** *entfallen* — das Risiko
+  war echt (39 Befunde mit stehendem Verzeichnis, 40 ohne) und ist für diesen
+  Umzug abgefangen: das Verzeichnis ist entfernt, die Nennung steht im
+  Tombstone-Register, `doc-check` und der ADR-Check sind im frischen Klon
+  grün. Die Klasse steht im Register
+  ([`BEO-ALL/leeres-verzeichnis-lokal-verdeckt-ci-befund`](../observations/BEO-ALL/leeres-verzeichnis-lokal-verdeckt-ci-befund/state.md)).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Die Releasing-Doku liegt unter
+  docs/maintainer/releasing.md, wo der Auftraggeber sie haben wollte; Git
+  erkennt den Rename (100 %). Der Schnitt aus dem Register von slice-268 —
+  eingehende Verweise im Move-Commit, die bewegte Datei unverändert — stand
+  diesmal vor dem Code im Plan und lief im Hook beim ersten Anlauf grün. Der
+  zweite Pfad-Nachzug in [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md)
+  und [ADR-0067](../../adr/0067-dependabot-als-hebender-kanal.md) ging durch
+  `make adr-check`. Im frischen Klon gemessen: `doc-check` und der ADR-Check
+  über die Range grün.
+- **Was ging anders als geplant:** R1 fand, dass die Datei mit dem Umzug
+  den Rang 6 der Source Precedence verliert — `docs/user/` war dort
+  „Operations, Releasing". Die Plan-Änderung kam vor dem Code:
+  [`MR-077`](../../../../harness/conventions.md#mr-077) deklariert den neuen
+  Ort, beide Rangtabellen nennen ihn. Der Slice selbst existiert, weil
+  slice-268 ein falsch übermitteltes Ziel umgesetzt hatte; die Korrektur kam,
+  als dessen Closure lokal schon committet war, und lief vorwärts statt über
+  ein Verwerfen von Commits (Auftraggeber-Entscheid). Zwei eigene
+  Arbeitsfehler ohne Folge im Repo: ein `sed` mit leerer Zeilennummer schrieb
+  die Plan-Notiz hinter jede Zeile (wiederhergestellt vor dem Commit), und ein
+  `| tail` verschluckte den Exit eines roten `doc-check` — der
+  `pre-commit`-Hook lehnte ab. Das Zählkommando stand erst nach der
+  Verifikation im Plan (V-1).
+- **Steering-Loop-Eintrag:** keiner mit Schwelle.
+  `BEO-ALL/pipe-swallows-gate-exit-code` ist in welle-79 als Hook verkörpert,
+  und der Hook hat hier getragen.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-269.md` in
+  [`BEO-ALL/pipe-swallows-gate-exit-code`](../observations/BEO-ALL/pipe-swallows-gate-exit-code/state.md);
+  neu
+  [`BEO-ALL/leeres-verzeichnis-lokal-verdeckt-ci-befund`](../observations/BEO-ALL/leeres-verzeichnis-lokal-verdeckt-ci-befund/state.md)
+  (1×).
+- **Folge-Slices:** keiner. Release v0.85.0 mit slice-263, slice-265,
+  slice-267, slice-268 und diesem Slice; die Release-Notiz nennt
+  docs/maintainer/releasing.md als neuen Ort.
+- **Risiken aus §6:** eines entfallen (siehe §6). Trigger-Audit: kein
+  Carveout, kein bootstrap-aware Gate, keine ADR; [`MR-077`](../../../../harness/conventions.md#mr-077) neu, sein Trigger
+  nicht eingetreten; keine Hard Rule mit eingetretenem Trigger.
+  Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie
+  in §8 — `image-scan` rot bis zum nächsten Release.
+- **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
+  Folge-Slices — keiner genannt; (c) Register — die zwei zitierten
+  Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
