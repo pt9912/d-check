@@ -13,7 +13,7 @@ keine inhaltliche Überschreibung); Anlass: der Umzug von
 `docs/user/releasing.md` (slice-268) braucht ihn für zwei `Accepted`-ADRs;
 Auftraggeber-Entscheid 2026-10-09.
 
-**Berührte Spec-Stellen:** [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in),
+**Berührte Spec-Stellen:** [`DC-FA-VCS-001`](../../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in),
 `AGENTS.md` §3.5.
 
 **Verantwortlich:** pt9912.
@@ -83,10 +83,10 @@ Link-Ziel geleert wurde; ein Inhaltswort löst nicht als Datei auf, damit ist
 die Klasse strukturell geschlossen statt Form für Form. Die Rückführung aus
 §4 (Zeilen-Paarung) greift nicht: die Normierung braucht keine Paarung. Der
 Slice wächst damit über eine Review-Sitzung, ohne zurückgeführt zu werden
-([`MR-066`](../../../../harness/conventions.md#mr-066)): Grund — der
+([`MR-066`](../../../../../harness/conventions.md#mr-066)): Grund — der
 Gegenstand ist ein gelockertes Gate, ein halber Stand wäre schlechter als
 keiner; Ersatz-Form der Prüfung — jede Runde misst am gebauten Image beide
-Richtungen, Umgehung und unveränderten Bestand. [ADR-0103](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md) bekommt einen
+Richtungen, Umgehung und unveränderten Bestand. [ADR-0103](../../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md) bekommt einen
 Geschichte-Anhang; Entscheidung und Anlass bleiben.)*
 
 ## 4. Trigger
@@ -112,7 +112,7 @@ hinaus.
   sieht nur die Form. — **Ausgang:** *weiter offen* — nach der Normierung auf
   auflösende Ziele bleibt ein Nachzug auf eine gleichnamige andere Datei oder
   auf eine, die nur noch in BASE existiert;
-  [`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](../observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/state.md)
+  [`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](../../observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/state.md)
   (1×).
 
 ## 7. Closure-Notiz
@@ -123,7 +123,7 @@ hinaus.
   normiert; Inhaltstext löst nicht auf und bleibt Drift. Was ein Link ist,
   beantwortet die Erkennung des Moduls `links`, dazu Filter, die nur in
   Richtung Drift wirken. Am Bestand gemessen: der Umzug von
-  `docs/user/releasing.md` samt Nachzug in [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) und der von
+  `docs/user/releasing.md` samt Nachzug in [ADR-0014](../../../adr/0014-latest-tag-fuer-stabile-releases.md) und der von
   `harness/conventions.md` (46 Links in 21 ADRs) gehen durch, ein Nachzug auf
   ein anderes Dokument, auf ein fehlendes Ziel und eine Linktext-Änderung sind
   Drift, das Löschen einer verlinkten Datei ohne ADR-Änderung bleibt still.
@@ -143,7 +143,7 @@ hinaus.
   per Mutation bestätigt (V-2). Zwei Prozessfehler: eine gestagte
   ADR-Zeile reiste in den R2-Report-Commit mit, und die gepushte Zeile wurde
   ersetzt statt ergänzt (R3 M-2 bis M-4, append-only wiederhergestellt).
-  [ADR-0103](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md) war im Commit ihrer Entstehung `Accepted`; ihr Körper beschreibt
+  [ADR-0103](../../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md) war im Commit ihrer Entstehung `Accepted`; ihr Körper beschreibt
   die Leerung, vier Geschichte-Anhänge tragen die Differenz. Ein Ziel mit
   Query oder Prozent-Kodierung bleibt Drift und steht nur im Code-Kommentar
   (V-3).
@@ -158,32 +158,32 @@ hinaus.
   Botschaft halten (Auslöser `BEO-ALL/path-scoped-commit-carries-staged-rest`,
   slice-106, slice-108, slice-267, 3×), liegt in
   `.claude/commands/implement-slice.md`. Beide Ausgänge Auftraggeber-Entscheid.
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-267.md` in
-  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-267.md` in
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
   (4×, verkörpert, geschärft),
-  [`BEO-ALL/path-scoped-commit-carries-staged-rest`](../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/state.md)
+  [`BEO-ALL/path-scoped-commit-carries-staged-rest`](../../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/state.md)
   (3×, verkörpert),
-  [`BEO-ALL/fix-schliesst-pfad-nicht-klasse`](../observations/BEO-ALL/fix-schliesst-pfad-nicht-klasse/state.md)
+  [`BEO-ALL/fix-schliesst-pfad-nicht-klasse`](../../observations/BEO-ALL/fix-schliesst-pfad-nicht-klasse/state.md)
   (2×),
-  [`BEO-ALL/shared-lexicon-drifts-at-edges`](../observations/BEO-ALL/shared-lexicon-drifts-at-edges/state.md),
-  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md),
-  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+  [`BEO-ALL/shared-lexicon-drifts-at-edges`](../../observations/BEO-ALL/shared-lexicon-drifts-at-edges/state.md),
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md),
+  [`BEO-ALL/commit-message-overclaims-work`](../../observations/BEO-ALL/commit-message-overclaims-work/state.md)
   und
-  [`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md);
+  [`BEO-ALL/semantic-change-body-only-edges-stale`](../../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md);
   neu
-  [`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](../observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/state.md),
-  [`BEO-ALL/adr-accepted-bevor-der-mechanismus-steht`](../observations/BEO-ALL/adr-accepted-bevor-der-mechanismus-steht/state.md)
+  [`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](../../observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/state.md),
+  [`BEO-ALL/adr-accepted-bevor-der-mechanismus-steht`](../../observations/BEO-ALL/adr-accepted-bevor-der-mechanismus-steht/state.md)
   und
-  [`BEO-ALL/range-leerfall-mit-lokalem-branchnamen`](../observations/BEO-ALL/range-leerfall-mit-lokalem-branchnamen/state.md)
+  [`BEO-ALL/range-leerfall-mit-lokalem-branchnamen`](../../observations/BEO-ALL/range-leerfall-mit-lokalem-branchnamen/state.md)
   (je 1×; der letzte außerhalb des Gegenstands, ungeprüft).
 - **Folge-Slices:** slice-268 (Umzug von `releasing.md`) — `make adr-check`
-  lässt ihn jetzt durch; [ADR-0097](../../adr/0097-matrix-aussen-adaptionsblock-historie-status-ausnahmen.md) nennt den Pfad als Inline-Code, nicht als
+  lässt ihn jetzt durch; [ADR-0097](../../../adr/0097-matrix-aussen-adaptionsblock-historie-status-ausnahmen.md) nennt den Pfad als Inline-Code, nicht als
   Link, das gehört in seinen Plan. Release v0.85.0 mit slice-263, slice-265,
   diesem Slice und slice-268.
 - **Risiken aus §6:** eines weiter offen (Register, siehe §6). Trigger-Audit:
-  kein Carveout, kein bootstrap-aware Gate; [ADR-0103](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md) neu (Re-Evaluierungs-
+  kein Carveout, kein bootstrap-aware Gate; [ADR-0103](../../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md) neu (Re-Evaluierungs-
   Trigger nicht eingetreten); keine Hard Rule mit eingetretenem Trigger.
-  Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  Nachtlauf-Stand ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — `.claude/commands/implement-slice.md` trägt
   `seit slice-267` in den Schritten 19 und 21, `.harness/skills/reviewer.md`
   in Prüffrage 21; (b) Folge-Slices — slice-268 liegt in `open/`;
@@ -222,15 +222,15 @@ oder das Hinzufügen und Entfernen eines Links bleibt ein Befund.
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:** gelesen am 2026-10-09.
-[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
 (verkörpert als Schritt 19) — die Link-Erkennung ist ein Erkennungsmuster:
 Negativliste vor dem Code (Link im Inline-Code, im Codeblock, Bild,
-verschachtelte Klammern, Ziel mit Titel); [`BEO-ALL/module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/state.md)
+verschachtelte Klammern, Ziel mit Titel); [`BEO-ALL/module-promise-only-on-scan-axis`](../../observations/BEO-ALL/module-promise-only-on-scan-axis/state.md)
 — die Zusage gilt der Core-Bildung, also auch dem gestagten Lauf;
-[`BEO-ALL/review-fix-applied-only-at-cited-site`](../observations/BEO-ALL/review-fix-applied-only-at-cited-site/state.md)
+[`BEO-ALL/review-fix-applied-only-at-cited-site`](../../observations/BEO-ALL/review-fix-applied-only-at-cited-site/state.md)
 (verkörpert als Schritt 20).
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-09 aus dem jüngsten Lauf (`make nightly-state`) —
 `upstream-drift` grün (2026-10-09 07:17 UTC, nach den Pin-Hebungen),
 `image-scan` grün (2026-10-08 10:38 UTC).
