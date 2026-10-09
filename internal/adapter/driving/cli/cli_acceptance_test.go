@@ -13,6 +13,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 
@@ -1010,6 +1011,27 @@ func TestCLI006_AiHarness_Happy(t *testing.T) {
 	// read-only: das Werkzeug schreibt nichts (Aufrufer leitet um).
 	if _, err := os.Stat(filepath.Join(root, ".d-check.yml")); !os.IsNotExist(err) {
 		t.Fatalf(".d-check.yml wurde geschrieben — read-only verletzt (DC-QA-03)")
+	}
+}
+
+// DC-FA-CLI-006 ai-harness: die vorgeschlagene matrix.exclude-sections trifft
+// die Historie einer Spezifikation unter beiden Nummern — "7. Historie" und
+// "8. Historie", der Ort nach der Baseline-Vorlage.
+func TestCLI006_AiHarness_SchlaegtBeideHistorienVor(t *testing.T) {
+	root := t.TempDir()
+	harnessRepo(t, root)
+	code, stdout, stderr := run(t, "--suggest-config", "ai-harness", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	cfg, err := configyaml.Decode([]byte(stdout))
+	if err != nil {
+		t.Fatalf("Vorlage dekodiert nicht: %v", err)
+	}
+	for _, want := range []string{"7. Historie", "8. Historie"} {
+		if !slices.Contains(cfg.Matrix.ExcludeSections, want) {
+			t.Errorf("exclude-sections ohne %q: %v", want, cfg.Matrix.ExcludeSections)
+		}
 	}
 }
 

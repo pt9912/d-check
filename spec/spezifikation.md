@@ -240,7 +240,7 @@ matrix:
     - {from: spec-straten, to: slice, allow: false}
   status:
     forbidden: [superseded, deprecated]
-  exclude-sections: [Historie, "7. Historie", Geschichte]
+  exclude-sections: [Historie, "7. Historie", "8. Historie", Geschichte]
 planning:
   roadmap: docs/plan/planning/in-progress/roadmap.md
 codepaths:
@@ -3822,6 +3822,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-09 | §2, Beispiel des `--suggest-config ai-harness`-Vorschlags: `matrix.exclude-sections` nennt auch `"8. Historie"`, den Ort der Historie einer Spezifikation nach der Baseline-Vorlage |
 | 2026-10-09 | Nachzug nach Review an §[7](#7-festlegungen-der-harness-werkzeuge): [`SPEC-102`](#7-festlegungen-der-harness-werkzeuge) nennt, dass der `commit-msg`-Hook in einem Repo ohne oder mit einem Commit jeden Commit abbricht; [`SPEC-103`](#7-festlegungen-der-harness-werkzeuge), dass der Klon den Stand von `HEAD` trägt und die Image-Builds im Klon, schon bei den Commit-Versuchen, Netz brauchen können |
 | 2026-10-09 | §[7](#7-festlegungen-der-harness-werkzeuge) um die Werkzeuge erweitert, die gegen einen fremden Stand prüfen oder einen Lauf vorbereiten: [`SPEC-097`](#7-festlegungen-der-harness-werkzeuge) `image-scan`, [`SPEC-098`](#7-festlegungen-der-harness-werkzeuge) Versions-Achsen, [`SPEC-099`](#7-festlegungen-der-harness-werkzeuge) Digest-Achsen, [`SPEC-100`](#7-festlegungen-der-harness-werkzeuge) `baseline-freshness`, [`SPEC-101`](#7-festlegungen-der-harness-werkzeuge) `nightly-state`, [`SPEC-102`](#7-festlegungen-der-harness-werkzeuge) `history-range-guard`, [`SPEC-103`](#7-festlegungen-der-harness-werkzeuge) `selbstpruefung`. Am Code nachgelesen; wo Code und Sensor-Doku abwichen, beschreibt der Eintrag den Code |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-CLI-001.a`](spezifikation.md#dc-fa-cli-001a--ablauf-eines-prüflaufs): die Hilfe nennt nach den Handbuch-URLs den netzlosen Weg `--manual` |

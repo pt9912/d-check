@@ -89,6 +89,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-CLI-006`](../../spec/lastenheft.md) | `TestCLI006_AiHarness_Happy` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CLI-006`](../../spec/lastenheft.md) | `TestCLI006_AiHarness_KeinQuellenfehler` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CLI-006`](../../spec/lastenheft.md) | `TestCLI006_AiHarness_PlanningAktiv` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
+| [`DC-FA-CLI-006`](../../spec/lastenheft.md) | `TestCLI006_AiHarness_SchlaegtBeideHistorienVor` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CLI-006`](../../spec/lastenheft.md) | `TestCLI006_KeineKennungen` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CLI-006`](../../spec/lastenheft.md) | `TestCLI006_LeereQuellen` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CLI-006`](../../spec/lastenheft.md) | `TestCLI006_QuelleFehlt` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |

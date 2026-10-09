@@ -533,7 +533,7 @@ func renderHarnessMatrix(fsys driven.Filesystem, repoAware bool) string {
 		fmt.Fprintf(&b, "    %s- {from: %s, to: %s, allow: false}\n", pre, r[0], r[1])
 	}
 	b.WriteString("  status:\n    forbidden: [superseded, deprecated]\n")
-	b.WriteString("  exclude-sections: [Historie, \"7. Historie\", Geschichte]\n")
+	b.WriteString("  exclude-sections: [Historie, \"7. Historie\", \"8. Historie\", Geschichte]\n")
 	// exempt-paths ist repo-spezifisch (Grandfathering der vor Einführung
 	// Accepted-ADRs) — als Kommentar, der Adopter trägt die konkrete Liste ein.
 	b.WriteString("  # exempt-paths: [\"docs/plan/adr/0001-*.md\"]  # immutable Alt-ADRs grandfathern (DC-FA-MTX-003)\n")
