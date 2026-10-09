@@ -202,3 +202,8 @@ Eine Messung gegen den eigenen Bestand (2026-08-09) rahmt den Entwurf:
   getrennte Kandidaten-Filter. Das **Ergebnis** von Entscheidung 1 (kein zweites
   Modul) bleibt: es ruht auf der geteilten Lifecycle-Invariante, nicht auf der
   geteilten Config-Achse. Kein Supersede.
+- 2026-10-09: **Reichweite zurückgeschnitten** durch
+  [ADR-0106](0106-skip-allows-empty-erklaert-den-ruhezustand.md): mit
+  `planning.closure.skip-allows-empty: true` ist eine Menge, die erst
+  `skip-pattern` leert, kein Befund. Ohne den Schlüssel gilt Entscheidung 8
+  unverändert. Kein Supersede.

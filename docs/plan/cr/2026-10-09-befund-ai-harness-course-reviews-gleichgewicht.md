@@ -8,7 +8,8 @@
 **Berührt:** [`DC-FA-RVW-001`](../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in),
 [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
 [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
-**Stand:** **angenommen** — Punkt 1 geplant (slice-271), Punkt 2 geplant
+**Stand:** **angenommen** — Punkt 1 umgesetzt (slice-271, kommt mit dem nächsten
+Release), Punkt 2 geplant
 (slice-272), Punkt 3 in der nächsten Release-Prep. Entscheidung je Punkt unten.
 
 ---

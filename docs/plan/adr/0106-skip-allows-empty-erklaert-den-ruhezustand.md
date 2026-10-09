@@ -1,6 +1,6 @@
 # ADR-0106: Der Ruhezustand nach `skip-pattern` wird erklärt, nicht still angenommen
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-09
 
@@ -101,3 +101,4 @@ ab.
 | Datum | Ereignis |
 |---|---|
 | 2026-10-09 | Proposed (Review R1 zu slice-271: die stille Fassung lockerte den Wächter ohne ADR; Auftraggeber-Entscheid für den Opt-in-Schlüssel) |
+| 2026-10-09 | Proposed → Accepted (nach Review R1–R2 und Verifikation; die Fitness Function ist im Klon gebrochen, ohne Schlüssel byte-identisch zu v0.85.0) |

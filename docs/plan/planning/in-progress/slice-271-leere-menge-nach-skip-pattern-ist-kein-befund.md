@@ -56,17 +56,17 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] Lastenheft (Akzeptanzkriterien) und Spezifikation (Algorithmen,
+- [x] Lastenheft (Akzeptanzkriterien) und Spezifikation (Algorithmen,
       §2-Schema, Grund-Code-Zeilen) der drei Anforderungen sagen den
       Opt-in-Schlüssel zu; der Default bleibt fail-closed.
-- [ ] Die drei Module folgen ihr, die Konfiguration weist den Schlüssel ohne
+- [x] Die drei Module folgen ihr, die Konfiguration weist den Schlüssel ohne
       `skip-pattern` mit Exit 2 ab; je Modul Tests für „mit Schlüssel und nur
       übersprungen ⇒ still", „ohne Schlüssel ⇒ Befund" und „keine passende
       Datei ⇒ Befund"; die drei Fälle des Befunds als Tests; `make gates` grün.
-- [ ] Folge-ADR zu [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md) (Entscheidung 8) und [ADR-0081](../../adr/0081-reviews-modul.md) (Entscheidung 5),
+- [x] Folge-ADR zu [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md) (Entscheidung 8) und [ADR-0081](../../adr/0081-reviews-modul.md) (Entscheidung 5),
       bis zur Closure `Proposed`, dann `Accepted`; Index nachgezogen.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft; der
       Befund trägt seine Entscheidung zu Punkt 1.
 
@@ -99,19 +99,53 @@ hinaus.
 - **Mit dem Schlüssel wird das Gate still, wo es nicht soll** — trifft das
   Muster auch Volltexte, oder liegen die Volltexte nach einem Umzug außerhalb
   der Kandidatenmenge, sieht der Lauf nichts mehr und meldet es nicht. Ohne
-  den Schlüssel fängt die Leere-Regel beides weiter. — **Ausgang:** *(offen)*
+  den Schlüssel fängt die Leere-Regel beides weiter. — **Ausgang:** weiter
+  offen — als Grenze in [ADR-0106](../../adr/0106-skip-allows-empty-erklaert-den-ruhezustand.md) benannt; beobachtet in
+  [`BEO-ALL/skip-allows-empty-macht-umzug-still`](../observations/BEO-ALL/skip-allows-empty-macht-umzug-still/observation.md).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Der neue Schlüssel `skip-allows-empty` erklärt in
+  `planning.closure`, je `structure`-Regel und in `reviews` eine Menge, die
+  erst `skip-pattern` leert, zum Ruhezustand; ohne ihn ist der Befundsatz
+  byte-identisch zu v0.85.0 (Verifikation: sechs Bäume, stdout, stderr, Exit
+  und `--json` per `cmp`). Die Fälle des Befunds sind mit dem Schlüssel grün,
+  ohne ihn rot; der Schlüssel ohne `skip-pattern` ist Exit 2. Vier
+  Mutationen im Klon treffen je die Tests, deren Aussage sie brechen.
+- **Was ging anders als geplant:** Die erste Fassung machte die Leere per
+  Default still — der Auftrag „in allen drei Modulen kein Befund" las sich
+  wie eine Erlaubnis, eine Regel zu lockern, die zwei akzeptierte ADRs ohne
+  Ausnahme festlegen. Review R1 (HIGH) fand das und maß, dass der
+  Umzugs-Fall aus [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md)
+  abgeschaltet war; nach Auftraggeber-Entscheid wurde daraus der
+  Opt-in-Schlüssel mit [ADR-0106](../../adr/0106-skip-allows-empty-erklaert-den-ruhezustand.md),
+  als Plan-Änderung vor dem Code. R2 fand fünf Exit-2-Aufzählungen ohne den
+  neuen Fall und die Zahl-Form aus [ADR-0078](../../adr/0078-erklaerte-leermenge-mit-zahl.md)
+  als ungenannte Alternative; die Verifikation, dass Repos mit Wellen auch
+  `recursive` brauchen (Lastenheft 0.103.1). Drei Lint-Überschreitungen
+  (gocyclo, gocognit) lösten zwei Auslagerungen aus.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
+  `BEO-ALL/semantic-change-body-only-edges-stale` ist als
+  [`MR-025`](../../../../harness/conventions.md#mr-025) verkörpert und trat
+  erneut auf (Exit-2-Aufzählungen).
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-271.md` in
+  [`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md);
+  neu
+  [`BEO-ALL/adopter-fix-lockert-waechter-ohne-adr`](../observations/BEO-ALL/adopter-fix-lockert-waechter-ohne-adr/state.md)
+  (1×) und
+  [`BEO-ALL/skip-allows-empty-macht-umzug-still`](../observations/BEO-ALL/skip-allows-empty-macht-umzug-still/state.md)
+  (1×, das Risiko aus §6).
+- **Folge-Slices:** keiner. Produkt-Verhalten — geht mit dem nächsten Release
+  hinaus; die Release-Notiz nennt den Schlüssel und für Repos mit Wellen
+  `recursive: true`.
+- **Risiken aus §6:** weiter offen (siehe §6). Trigger-Audit: kein Carveout,
+  kein bootstrap-aware Gate; [ADR-0106](../../adr/0106-skip-allows-empty-erklaert-den-ruhezustand.md)
+  neu und `Accepted`, ihre Trigger nicht eingetreten; keine Hard Rule mit
+  eingetretenem Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
+  Folge-Slices — keiner genannt; (c) Register — die drei zitierten
+  Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
