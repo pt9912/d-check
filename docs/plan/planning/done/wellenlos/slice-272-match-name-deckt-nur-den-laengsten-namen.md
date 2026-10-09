@@ -7,10 +7,10 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
-**Bezug:** [Befund von `ai-harness-course`](../../cr/2026-10-09-befund-ai-harness-course-reviews-gleichgewicht.md),
+**Bezug:** [Befund von `ai-harness-course`](../../../cr/2026-10-09-befund-ai-harness-course-reviews-gleichgewicht.md),
 Punkt 2 (Auftraggeber-Entscheid: längster Name gewinnt).
 
-**Berührte Spec-Stellen:** [`DC-FA-RVW-001`](../../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)
+**Berührte Spec-Stellen:** [`DC-FA-RVW-001`](../../../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)
 samt `.a`-Algorithmus (Zuordnung unter `match: name`) und seiner Grenze zur
 Präfix-Deckung.
 
@@ -106,8 +106,8 @@ hinaus.
   Historie-Zeile der Spezifikation zum R2-Nachzug aus slice-271 mit — nicht
   im Plan, aber derselbe Abschnitt und ohne eigenen Gegenstand.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
-- **Beobachtungs-Register (`../observations/`):**
-  [`BEO-ALL/name-zuordnung-deckt-praefix-slices`](../observations/BEO-ALL/name-zuordnung-deckt-praefix-slices/state.md)
+- **Beobachtungs-Register (`../../observations/`):**
+  [`BEO-ALL/name-zuordnung-deckt-praefix-slices`](../../observations/BEO-ALL/name-zuordnung-deckt-praefix-slices/state.md)
   trägt den neuen Stand: die Präfix-Deckung ist behoben, die Restgrenze
   bleibt offen. Kein neuer Eintrag.
 - **Folge-Slices:** keiner. Produkt-Verhalten — geht mit dem nächsten Release
@@ -115,7 +115,7 @@ hinaus.
 - **Risiken aus §6:** entfallen (siehe §6). Trigger-Audit: kein Carveout,
   kein bootstrap-aware Gate, keine neue ADR; keine Hard Rule mit
   eingetretenem Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
   Folge-Slices — keiner genannt; (c) Register — die zitierte Beobachtung
   existiert und trägt einen Beleg.
@@ -136,8 +136,8 @@ eigene Konvention, kein eigener Modus, keine eigene Inventur-Linie.
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:** Eine berührt den Slice.
-[`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
-(verkörpert als [`MR-025`](../../../../harness/conventions.md#mr-025), zuletzt
+[`BEO-ALL/semantic-change-body-only-edges-stale`](../../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
+(verkörpert als [`MR-025`](../../../../../harness/conventions.md#mr-025), zuletzt
 in slice-264 und slice-271 wieder aufgetreten): Die Präfix-Grenze steht in
 Lastenheft, Spezifikation, Code-Kommentar, Befund-Datei und im
 sf-connector-CR — die Spiegel werden vor dem Editieren aufgelistet. Keine
@@ -148,7 +148,7 @@ Befunds (`slice-cache` und `slice-cache-warmup`, ein Report
 `2026-10-09-slice-cache-warmup.md`, `match: name`) 0 Befunde — `slice-cache`
 gilt als gedeckt.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 `upstream-drift` grün (2026-10-09T07:17Z). `image-scan` rot (2026-10-09T10:37Z)
 — der Lauf liegt vor dem Release v0.85.0, das die gemeldeten CVEs behebt;
 der Slice berührt das Image nicht.
