@@ -88,3 +88,4 @@ am Bestand.
 | Datum | Ereignis |
 |---|---|
 | 2026-10-09 | Proposed → Accepted (Auftraggeber-Entscheid zum Schnitt von slice-267) |
+| 2026-10-09 | Grenzen präzisiert in [`DC-FA-VCS-001.a`](../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4: geleert wird nur ein vollständiger Link; was die Erkennung nicht trifft, bleibt Drift; eine Zeile `[Wort]: wort.md` gilt als Referenz-Definition. Alternative nachgetragen: Verweis über eine Kennung statt einer Adresse oder ein Verfall-Vermerk (Baseline-Regelwerk `modul-04-adrs.md` §Nachzug ist keine Überschreibung) — trägt für künftige ADRs, nicht für den Bestand, dessen Verweise schon Adressen sind |
