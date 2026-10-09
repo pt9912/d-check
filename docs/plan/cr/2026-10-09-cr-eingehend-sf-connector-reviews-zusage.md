@@ -137,3 +137,11 @@ Die Entscheidung je Punkt folgt mit der Umsetzung.
 setzen; `promise-pattern` ist für die Vorlagen-Zeile nicht nötig. Sind
 abgeschlossene Slices auch unter Unterverzeichnissen von `done/`, dazu
 `recursive: true` und `skip-pattern: '(?m)^> \*\*ARCHIVIERT'`.
+
+**Nachtrag (2026-10-09, nach dem [Befund von `ai-harness-course`](2026-10-09-befund-ai-harness-course-reviews-gleichgewicht.md)):**
+Die **Grenze** zu Punkt 2 gilt nicht mehr: unter `match: name` deckt ein
+Report einen Slice nicht, wenn sein Name auch einen längeren Slice-Namen
+trägt, der den kürzeren enthält (slice-272). Für die Abnahme mit
+archivierten Stubs: `skip-pattern: '(?m)^> \*\*ARCHIVIERT\*\* — Volltext:'`
+und, wenn alle Slices archiviert sind, `skip-allows-empty: true` (slice-271).
+Beides kommt mit dem nächsten Release.

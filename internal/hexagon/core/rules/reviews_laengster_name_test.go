@@ -10,7 +10,8 @@ import (
 
 const rvZusage = "## 2. Definition of Done\n\n- [x] Review durchgeführt\n"
 
-// Der Fall des Befunds: zwei Slices, ein Report für den längeren.
+// Zwei Slices, ein Report für den längeren: der kürzere meldet, bis er einen
+// eigenen Report hat.
 func TestReviewsMatchName_LaengsterNameGewinnt(t *testing.T) {
 	cfg := rvCfg()
 	cfg.Match = "name"
@@ -45,8 +46,8 @@ func TestReviewsMatchName_StubDesLaengerenZaehlt(t *testing.T) {
 	}
 }
 
-// Gegenprobe: slice-cachex ist kein längerer Name im Sinn der Zuordnung — er
-// steht nicht vor einer Wortgrenze, sein Report deckt slice-cache ohnehin nicht.
+// Gegenprobe zur Wortgrenze: der Report zu slice-cachex deckt slice-cache
+// schon deshalb nicht, weil nach slice-cache ein Buchstabe folgt.
 func TestReviewsMatchName_KeinePraefixKollisionOhneGrenze(t *testing.T) {
 	cfg := rvCfg()
 	cfg.Match = "name"
@@ -57,5 +58,42 @@ func TestReviewsMatchName_KeinePraefixKollisionOhneGrenze(t *testing.T) {
 	}
 	if f := rvRunCfg(files, cfg); len(f) != 1 || f[0].File != rvDone+"/slice-cache.md" {
 		t.Fatalf("slice-cachex deckt slice-cache nicht, got %+v", f)
+	}
+}
+
+// Ein über exempt-paths ausgenommener längerer Slice zählt mit: sein Report
+// deckt den kürzeren nicht.
+func TestReviewsMatchName_ExemptDesLaengerenZaehlt(t *testing.T) {
+	cfg := rvCfg()
+	cfg.Match = "name"
+	cfg.ExemptPaths = []string{rvDone + "/slice-cache-warmup.md"}
+	files := map[string]string{
+		rvDone + "/slice-cache.md":                      rvZusage,
+		rvDone + "/slice-cache-warmup.md":               rvZusage,
+		"docs/reviews/2026-10-09-slice-cache-warmup.md": "# Review\n",
+	}
+	if f := rvRunCfg(files, cfg); len(f) != 1 || f[0].File != rvDone+"/slice-cache.md" {
+		t.Fatalf("der ausgenommene slice-cache-warmup zählt als längerer Name, got %+v", f)
+	}
+}
+
+// Ein Stub des längeren Namens unter einem Unterverzeichnis zählt mit
+// recursive mit; ohne recursive sieht der Lauf ihn nicht, und der Report
+// deckt den kürzeren weiter.
+func TestReviewsMatchName_StubImUnterverzeichnis(t *testing.T) {
+	cfg := rvCfg()
+	cfg.Match = "name"
+	cfg.SkipPattern = stubPattern
+	files := map[string]string{
+		rvDone + "/slice-cache.md":                      rvZusage,
+		rvDone + "/welle-1/slice-cache-warmup.md":       "# slice-cache-warmup\n\n" + stubMarker,
+		"docs/reviews/2026-10-09-slice-cache-warmup.md": "# Review\n",
+	}
+	if f := rvRunCfg(files, cfg); f != nil {
+		t.Fatalf("ohne recursive ist der Stub ungesehen, der Report deckt slice-cache, got %+v", f)
+	}
+	cfg.Recursive = true
+	if f := rvRunCfg(files, cfg); len(f) != 1 || f[0].File != rvDone+"/slice-cache.md" {
+		t.Fatalf("mit recursive zählt der Stub als längerer Name, got %+v", f)
 	}
 }
