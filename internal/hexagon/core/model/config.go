@@ -351,6 +351,10 @@ type VCSConfig struct {
 	ExcludeSections []string
 	StatusLine      *regexp.Regexp
 	HeadAllow       *regexp.Regexp
+	// IgnoreLinkTargets bringt beim Vergleich des Core jedes Link-Ziel auf eine
+	// leere Form: ein reiner Pfad-Nachzug ist keine Core-Drift, jede Aenderung
+	// am Linktext oder an der uebrigen Zeile bleibt eine.
+	IgnoreLinkTargets bool
 }
 
 // CommitsConfig sind die Parameter des Moduls commits (DC-FA-COMMITS-001):

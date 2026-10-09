@@ -160,6 +160,7 @@ type rawVCS struct {
 	ExcludeSections []string  `yaml:"exclude-sections"`
 	StatusLine      string    `yaml:"status-line"`
 	HeadAllow       string    `yaml:"head-allow"`
+	IgnoreLinkTargets bool    `yaml:"ignore-link-targets"`
 }
 
 // rawPlanning trägt die Parameter des Moduls planning (DC-FA-PLAN-001): roadmap
@@ -1372,7 +1373,7 @@ func applyVCS(r *raw, cfg *model.Config) error {
 	}
 	cfg.VCS = model.VCSConfig{
 		Paths: v.Paths, ImmutableWhen: when, ExcludeSections: v.ExcludeSections,
-		StatusLine: statusLine, HeadAllow: headAllow,
+		StatusLine: statusLine, HeadAllow: headAllow, IgnoreLinkTargets: v.IgnoreLinkTargets,
 	}
 	return nil
 }

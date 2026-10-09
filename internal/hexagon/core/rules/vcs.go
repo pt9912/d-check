@@ -123,8 +123,8 @@ func vcsModified(vcs driven.VCS, cfg model.VCSConfig, base, head, path string) (
 		line = 1
 	}
 	var findings []model.Finding
-	if vcsCore(baseContent, cfg.StatusLine, cfg.ExcludeSections) !=
-		vcsCore(headContent, cfg.StatusLine, cfg.ExcludeSections) {
+	if vcsCore(baseContent, cfg.StatusLine, cfg.ExcludeSections, cfg.IgnoreLinkTargets) !=
+		vcsCore(headContent, cfg.StatusLine, cfg.ExcludeSections, cfg.IgnoreLinkTargets) {
 		findings = append(findings, model.Finding{
 			File: path, Line: line, Rule: "vcs", Target: path,
 			Reason:  model.ReasonCoreDriftVCS,
@@ -163,7 +163,10 @@ func baseImmutable(content []byte, when *regexp.Regexp) bool {
 // exclude-sections-Abschnitte und ohne die Kopf-Status-Zeile, mit der
 // reflow-invarianten Whitespace-Normalisierung von immutable/pins
 // (DC-FA-VCS-001.a Schritt 4).
-func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string) string {
+//
+// Mit ignoreLinkTargets wird jedes Link-Ziel geleert, bevor verglichen wird
+// (DC-FA-VCS-001.a Schritt 4): ein reiner Pfad-Nachzug ergibt denselben Core.
+func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string, ignoreLinkTargets bool) string {
 	excluded := excludedRanges(content, excludeSections)
 	lines := splitLines(content)
 	strip := vcsHeadStatusLineNo(content, lines, statusLine)
@@ -173,10 +176,31 @@ func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string
 		if no == strip || inRanges(excluded, no) {
 			continue
 		}
+		if ignoreLinkTargets {
+			raw = blankLinkTargets(raw)
+		}
 		b.WriteString(raw)
 		b.WriteByte('\n')
 	}
 	return strings.TrimSpace(pinWhitespaceRE.ReplaceAllString(b.String(), " "))
+}
+
+// inlineLinkTargetRE trifft das Ziel eines Inline-Links oder Bilds bis zum
+// ersten Leerraum oder zur schliessenden Klammer; ein Titel dahinter bleibt
+// Teil des Core. refDefTargetRE trifft das Ziel einer Referenz-Definition.
+// GRENZE: zeilenweise und ohne Code-Kontext -- ein Link-Ziel in Inline-Code
+// oder einem Codeblock wird ebenso geleert; ein Ziel mit eigener Klammer
+// wird nur bis zu ihr geleert.
+var (
+	inlineLinkTargetRE = regexp.MustCompile(`\]\([^)\s]*`)
+	refDefTargetRE     = regexp.MustCompile(`^(\s{0,3}\[[^\]]+\]:)\s*\S+`)
+)
+
+// blankLinkTargets leert die Link-Ziele einer Zeile: `[t](ziel)` wird `[t]()`,
+// `[l]: ziel` wird `[l]:`.
+func blankLinkTargets(line string) string {
+	line = inlineLinkTargetRE.ReplaceAllString(line, "](")
+	return refDefTargetRE.ReplaceAllString(line, "$1")
 }
 
 // vcsHeadStatusLineNo liefert die 1-basierte Zeilennummer der **Kopf**-Status-

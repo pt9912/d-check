@@ -1430,3 +1430,16 @@ func TestDecode_ReviewsPromisePatternNullIstAbwesend(t *testing.T) {
 		}
 	}
 }
+
+// vcs.ignore-link-targets reicht in den Kern durch; abwesend bleibt es aus.
+func TestDecode_VCSIgnoreLinkTargets(t *testing.T) {
+	base := "vcs:\n  paths: ['docs/adr/*.md']\n  immutable-when: '^Accepted'\n"
+	cfg, err := configyaml.Decode([]byte(base + "  ignore-link-targets: true\n"))
+	if err != nil || !cfg.VCS.IgnoreLinkTargets {
+		t.Fatalf("ignore-link-targets nicht durchgereicht: %+v, %v", cfg.VCS, err)
+	}
+	cfg, err = configyaml.Decode([]byte(base))
+	if err != nil || cfg.VCS.IgnoreLinkTargets {
+		t.Fatalf("ohne den Schlüssel muss er aus sein: %+v, %v", cfg.VCS, err)
+	}
+}

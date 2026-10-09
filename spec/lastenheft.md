@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.101.3
+**Version:** 0.102.0
 
 **Status:** Draft
 
@@ -2161,6 +2161,15 @@ SHA-256 gehasht — dieselbe Normalisierung wie
 [`DC-FA-IMM-001`](#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in)
 / [`DC-FA-PIN-001`](#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in).
 
+**Pfad-Nachzug (opt-in).** Mit `vcs.ignore-link-targets` wird vor dem Vergleich
+jedes Link-Ziel geleert — das eines Inline-Links, eines Bilds und einer
+Referenz-Definition. Eine Änderung, die nur Ziele ändert, ist damit keine
+Drift: ein Referenz-/Pfad-Nachzug ist keine inhaltliche Überschreibung (die
+Baseline nimmt ihn von der Immutabilität einer angenommenen Entscheidung aus).
+Jede Änderung am Linktext, an der übrigen Zeile, am Titel eines Links oder an
+der Zahl der Links bleibt Drift. Das Werkzeug sieht nur die Form: ob das neue
+Ziel dieselbe Sache meint, bleibt ein Urteil.
+
 **Strikt opt-in, fail-closed, diagnose-only:** `vcs` ist nie Default-Modul (wie
 `external`); ohne aktives `vcs` ist der Befundsatz byte-identisch
 ([`DC-QA-02`](#dc-qa-02--determinismus)) und nichts wird gelesen, was über den
@@ -2179,6 +2188,7 @@ menschliche Entscheidung, kein eindeutig ableitbarer Fix; vgl.
 - **Boundary (Modul-aus / git-frei):** Given **kein** aktives `vcs`, when `d-check` ohne Range in einer netzlosen, read-only Umgebung läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)), es erfolgt kein git-Zugriff über den Scan hinaus und nichts wird geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 - **Negative:** Given `vcs` aktiv und eine Range, in der der Körper einer immutablen Datei **außerhalb** der ausgenommenen Abschnitte geändert (oder die Datei gelöscht/umbenannt) wird, when `d-check --enable vcs --range <base>..<head>` läuft, then ein Befund `core-drift-vcs` (Datei, Grund), Exit 1.
 - **fail-closed (git-Eingabe fehlt):** Given `vcs` aktiv, aber **kein** lesbares `.git` oder eine **fehlende/unauflösbare** Range (leere Basis, fehlender `..`-Separator), when `d-check --enable vcs` läuft, then **Exit 2** mit Hinweis auf stderr — kein stilles Grün (kein Exit 0) und kein Befund-Exit (kein Exit 1).
+- **Boundary (Pfad-Nachzug):** Given `vcs.ignore-link-targets: true` und eine Range, in der eine immutable Datei nur das Ziel eines Links ändert (Inline-Link, Bild, Referenz-Definition), when `d-check --enable vcs --range <base>..<head>` läuft, then kein `core-drift-vcs`; ändert dieselbe Range auch den Linktext oder die übrige Zeile, then `core-drift-vcs`. **Ohne** den Schlüssel meldet schon der reine Nachzug.
 
 **Grenze (benannt, nicht mechanisiert):** Die Abschnitts-Maske von
 `vcs.exclude-sections` wird auf **git-Blobs** gerechnet — auf einer Eingabe, die
@@ -4125,6 +4135,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.102.0 | 2026-10-09 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) erlaubt mit `vcs.ignore-link-targets` einen reinen Pfad-Nachzug: vor dem Vergleich des Core wird jedes Link-Ziel geleert, eine Änderung nur an Zielen ist keine Drift. Anlass: die Baseline nimmt den Referenz-/Pfad-Nachzug von der Immutabilität einer angenommenen Entscheidung aus, das Modul meldete ihn als Körper-Änderung. Opt-in, ohne den Schlüssel byte-identisch; neues Kriterium „Boundary (Pfad-Nachzug)" | — |
 | 0.101.3 | 2026-10-09 | Nachzug nach Review an [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): die Vorlagen-Form zählt hinter der Task-Box oder hinter `;` oder `,`, auch über einen Zeilenumbruch — nicht mehr an jedem Zeilenanfang; dort machte sie eine umbrochene Verneinung („… kein" / „Review durchgeführt") zur Zusage. „Negative (Default)" nennt die umbrochene Verneinung | — |
 | 0.101.2 | 2026-10-09 | Nachzug nach Review an [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): die Vorlagen-Form zählt am Anfang **jedes** Teils eines Punkts — hinter der Task-Box, hinter `;` oder `,` und am Anfang einer Folgezeile; nur hinter der Task-Box schloss sie eine im Bestand gelebte Zusage aus („`make gates` grün; Review durchgeführt, Report unter …"). Die Kriterien „Happy Path (Vorlagen-Form)" und „Negative (Default)" nennen beide Seiten | — |
 | 0.101.1 | 2026-10-09 | Nachzug nach Review an [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): die Vorlagen-Form „Review durchgeführt" zählt im Default nur dort, wo sie den Punkt direkt hinter der Task-Box eröffnet — an beliebiger Stelle traf sie „Adaptions-Review durchgeführt" und „kein Review durchgeführt"; das Kriterium „Negative (Default)" nennt diese Formen. Die Wortgrenze von `match: name` gilt für Buchstaben und Ziffern jeder Schrift. Berichtigt zu 0.100.0/0.101.0: ersetzt wurden die Kriterien „Happy Path (eigenes Muster)" (neu gefasst), „Negative (Muster)" (jetzt „Negative (Default)") und „Boundary (benannte Kennung)" (jetzt „Boundary (Slug-Kennung)"); „Happy Path (Vorlagen-Form)" kam hinzu | — |
