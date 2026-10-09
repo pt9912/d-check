@@ -7,7 +7,7 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
-**Bezug:** [`MR-074`](../../../../harness/conventions.md#mr-074) (Bewegung 2,
+**Bezug:** [`MR-074`](../../../../../harness/conventions.md#mr-074) (Bewegung 2,
 Rest); geteilt aus slice-260, dessen Abgrenzung neun Werkzeuge mit eigener
 Festlegung ergab.
 
@@ -52,7 +52,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 - [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
 - [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft;
-      [MR-074](../../../../harness/conventions.md#mr-074) Bewegung 2 mit dem
+      [MR-074](../../../../../harness/conventions.md#mr-074) Bewegung 2 mit dem
       Anteil dieses Slice vermerkt (eingelöst, sobald auch slice-260 schließt).
 
 ## 3. Plan (vor Code)
@@ -85,12 +85,12 @@ wellenlos hier geprüft.
 ## 7. Closure-Notiz
 
 - **Was hat funktioniert:** §7 der Spezifikation führt die Netz- und
-  Nachtlauf-Werkzeuge in sieben Einträgen ([`SPEC-097`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) bis [`SPEC-103`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)), am Code
+  Nachtlauf-Werkzeuge in sieben Einträgen ([`SPEC-097`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) bis [`SPEC-103`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)), am Code
   nachgelesen; die Verifikation fuhr je Eintrag mindestens eine Aussage
   ausführend nach und brach vier Stellen mit der passenden Meldung. Die
   Sensor-Dateien verlinken die Kennung und führen keine Exit-Tabelle mehr.
   Mit diesem Slice ist Bewegung 2 aus
-  [`MR-074`](../../../../harness/conventions.md#mr-074) eingelöst.
+  [`MR-074`](../../../../../harness/conventions.md#mr-074) eingelöst.
 - **Was ging anders als geplant:** Die Messung beim Beanspruchen fand
   Abweichungen zwischen Sensor-Doku und Code in allen sechs Dateien;
   R1 fand zwei weitere Spiegel außerhalb davon (Kopf von
@@ -105,17 +105,17 @@ wellenlos hier geprüft.
   `BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`
   (verkörpert als Schritt 17 im Workflow-Skelett) trat erneut auf — hier nicht
   bei einem Mechanismuswechsel, sondern im ruhenden Bestand.
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-262.md` in
-  [`BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/state.md);
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-262.md` in
+  [`BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/state.md);
   neu
-  [`BEO-HARN/commit-msg-hook-sperrt-junges-repo`](../observations/BEO-HARN/commit-msg-hook-sperrt-junges-repo/state.md)
+  [`BEO-HARN/commit-msg-hook-sperrt-junges-repo`](../../observations/BEO-HARN/commit-msg-hook-sperrt-junges-repo/state.md)
   (1×).
 - **Folge-Slices:** keiner geschnitten. Die Behebung der Hook-Sperre und der
   zwei Werkzeug-Texte ist ein Kandidat; das Register hält sie.
 - **Risiken aus §6:** keine notiert. Trigger-Audit: kein Carveout, kein
   bootstrap-aware Gate, keine neue ADR; keine Hard Rule mit eingetretenem
   Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
   Folge-Slices — keiner genannt; (c) Register — die zwei zitierten
   Beobachtungen existieren und tragen Belege.
@@ -137,7 +137,7 @@ Sub-Area ist nicht berührt.
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:** Eine berührt den Slice.
-[`BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/observation.md)
+[`BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/observation.md)
 (verkörpert als Schritt 17 im Workflow-Skelett): Die Sensor-Dateien
 beschreiben die Werkzeuge in eigener Prosa, und genau dort liegen die
 Abweichungen, die die Messung fand.
@@ -153,9 +153,9 @@ Abweichungen, die die Messung fand.
   Code unterscheidet nicht, er gibt einen festen Hinweis aus.
 - `history-range-guard` und `selbstpruefung` treffen eigene Festlegungen und
   bekommen einen §7-Eintrag; `baseline-probe` ist der Selbsttest der
-  Alias-Frage aus [`SPEC-092`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) und bekommt keinen.
+  Alias-Frage aus [`SPEC-092`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) und bekommt keinen.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 `upstream-drift` grün (2026-10-09T07:17Z). `image-scan` rot (2026-10-09T10:37Z)
 — der Lauf liegt vor dem Release v0.85.0, das die gemeldeten CVEs behebt.
 
