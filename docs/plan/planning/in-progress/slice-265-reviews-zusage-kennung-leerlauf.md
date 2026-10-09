@@ -10,8 +10,9 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 **Bezug:** eingehender CR von `sf-connector`
 ([`docs/plan/cr/2026-10-09-cr-eingehend-sf-connector-reviews-zusage.md`](../../cr/2026-10-09-cr-eingehend-sf-connector-reviews-zusage.md),
 Punkte 1 bis 3); Befund aus der Planung von slice-263 (`reviews.done-dir` liest
-keine Unterverzeichnisse); Auftraggeber-Entscheid 2026-10-09 (Default der
-Phrase bleibt, ein Release mit slice-263).
+keine Unterverzeichnisse); Auftraggeber-Entscheide 2026-10-09 (ein Release mit
+slice-263; der Default erkennt zusätzlich die Vorlagen-Form, ausgehender CR an
+den Kurs).
 
 **Berührte Spec-Stellen:** [`DC-FA-RVW-001`](../../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in),
 `spec/spezifikation.md` §2 (Schlüssel `reviews.*`) und die Grund-Code-Zeile von
@@ -91,8 +92,9 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `spec/lastenheft.md` (Anforderung des Moduls), `spec/spezifikation.md` | update | Anforderung und Verfeinerung |
 | CR-Datei | update | Entscheidung je Punkt |
 | ausgehender CR an den Kurs unter `docs/plan/cr/` | neu | Vorlage der `.d-check.yml` setzt `require-promises` |
-| `harness/sensors/review-coverage.md` | update | die Grenze des eigenen Gates gegen den gemessenen Stand: die Default-Phrase trifft keinen DoD-Punkt dieses Repos |
+| `harness/sensors/review-coverage.md` | update | Vertrag und Grenzen des eigenen Gates gegen den gemessenen Stand |
 | `Makefile` (Hilfe-Zeile `review-coverage`) | update | nennt die Erkennung |
+| `.d-check.yml` (Kommentar über dem `reviews`-Block) | update | nennt die Erkennung |
 
 *(Plan-Änderung vor dem Code-Commit: die Sensor-Datei des eigenen Gates kommt
 dazu — die Messung in diesem Slice zeigt, dass es heute keinen Slice prüft;
@@ -137,6 +139,13 @@ nicht nur ASCII (F-4); die Vorlage nennt `null` (F-5); Kommentare ohne
 Slice-Nummern als Beispiel (F-6); die Lastenheft-Historie bekommt eine
 berichtigende Zeile (F-7). Die Stellen im Plan, die „ohne die Schlüssel
 unverändert" sagten, sind nachgezogen (F-2).)*
+
+*(Plan-Änderung nach R3, vor dem Code: Der enge Default schloss eine Form aus,
+die im eigenen Bestand eine echte Zusage ist — „`make gates` grün; Review
+durchgeführt, Report unter …" (R3 F-1). Die Vorlagen-Form gilt deshalb hinter
+der Task-Box, hinter `;` oder `,` und am Anfang einer Folgezeile; Verneinung
+und Kompositum bleiben ausgeschlossen. Die `.d-check.yml` ist ein Spiegel
+(F-2, Zeile in §3); die beiden Plan-Stellen aus F-3 sind nachgezogen.)*
 
 ## 4. Trigger
 
@@ -189,8 +198,9 @@ Spezifikation — alle unter dem Default `*` (`ALL`); deklariert.
 Konfig-Modell, YAML-Adapter, Konfig-Vorlage, CLI-Abnahmetest, Lastenheft,
 Spezifikation, `harness/sensors/review-coverage.md`; README (beide Sprachen)
 und Benutzerhandbuch ziehen die Release-Prep nach (`AGENTS.md` §5 Regel 17).
-`.d-check.yml` und `verify-closure-notes.md` nennen das Modul, ohne seine
-Erkennung zu beschreiben — kein Spiegel.
+`verify-closure-notes.md` nennt das Modul, ohne seine
+Erkennung zu beschreiben — kein Spiegel. Der Kommentar über dem `reviews`-Block
+der `.d-check.yml` nennt die Erkennung — ein Spiegel (Nachtrag nach R3).
 
 **Entwurf vor dem Code** (die Liefer-Punkte aus §2 in Schlüssel übersetzt):
 `reviews.promise-pattern` (RE2 gegen den Text eines DoD-Punkts; abwesend ⇒ die
