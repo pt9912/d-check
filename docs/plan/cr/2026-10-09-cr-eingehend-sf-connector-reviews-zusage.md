@@ -5,8 +5,8 @@
 **Ziel-Dokument:** [`spec/lastenheft.md`](../../../spec/lastenheft.md)
 **Berührt:** [`DC-FA-RVW-001`](../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)
 (Modul `reviews`)
-**Stand:** **angenommen, in Planung** — Punkte 1 bis 3 trägt slice-265,
-Punkt 4 slice-266; beide in `open/`, ein gemeinsames Release mit slice-263.
+**Stand:** **angenommen** — Punkte 1 bis 3 umgesetzt (slice-265, kommt mit
+v0.85.0), Punkt 4 geplant (slice-266). Entscheidung je Punkt unten.
 
 **Ablage-Hinweis.** Ein **eingehender** CR ist die dritte Klasse neben
 [`MR-035`](../../../harness/conventions.md#mr-035) (ausgehend) und
@@ -108,3 +108,32 @@ sonst unverändert.
   hatte Fließtext-Treffer mitgezählt).
 
 Die Entscheidung je Punkt folgt mit der Umsetzung.
+
+---
+
+## Entscheidung je Punkt
+
+1. **Erkennung konfigurierbar — umgesetzt.** `reviews.promise-pattern` nimmt
+   ein RE2 gegen den Text eines DoD-Punkts, gelesen ab dem Bullet. Der Default
+   erkennt zusätzlich die Form der Baseline-Slice-Vorlage „Review
+   durchgeführt" am Anfang eines Punkt-Teils — hinter der Task-Box oder hinter
+   `;` oder `,`, auch über einen Zeilenumbruch; die Bestandszeile des CR ist
+   damit ohne Konfiguration eine Zusage. Das Wunsch-Muster aus dem CR greift
+   ebenfalls. `--print-config` beschreibt die Erkennung jetzt richtig.
+2. **Zuordnung Report → Slice — umgesetzt.** Für nummerierte Kennungen trug
+   sie schon (Datums-Präfix und Suffix). Für Slug-Kennungen `slice-<titel>`
+   ordnet `reviews.match: name` über den Basisnamen zu, gefolgt von einem
+   Zeichen, das weder Buchstabe noch Ziffer ist. Ohne `match: name` meldet ein
+   Slice mit Zusage, aus dessen Namen keine `slice-<NNN>`-Kennung zu lesen
+   ist, statt still zu fallen — mit Hinweis auf `match: name`. **Grenze:** ein
+   Basisname, der über Bindestrich, Unterstrich oder Punkt Präfix eines
+   anderen ist, wird auch von dessen Report gedeckt.
+3. **Leerlauf nicht grün — umgesetzt.** `reviews.require-promises: true`
+   meldet Kandidaten ohne eine einzige Zusage.
+4. **Handbuch im Image — geplant** (slice-266); die Form entscheidet der
+   Slice.
+
+**Für die Abnahme in sf-connector:** `match: name` und `require-promises: true`
+setzen; `promise-pattern` ist für die Vorlagen-Zeile nicht nötig. Sind
+abgeschlossene Slices auch unter Unterverzeichnissen von `done/`, dazu
+`recursive: true` und `skip-pattern: '(?m)^> \*\*ARCHIVIERT'`.

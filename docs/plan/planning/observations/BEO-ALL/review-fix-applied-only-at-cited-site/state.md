@@ -1,1 +1,1 @@
-**Stand:** offen — 2×.
+**Stand:** verkörpert — Schritt 20 im Workflow-Skelett `.claude/commands/implement-slice.md` (seit slice-265, permanent): vor einem Fix-Commit wird jeder Befund über seine Aussage gesucht, nicht über seine Fundstelle, und die Treffer stehen in der Plan-Notiz. Bleibt wach: ob ein Treffer dieselbe Aussage trägt, ist ein Urteil.

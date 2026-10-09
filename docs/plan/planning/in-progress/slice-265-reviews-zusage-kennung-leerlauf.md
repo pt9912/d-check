@@ -66,20 +66,20 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] Zusage- und Kennungs-Muster samt Leerlauf-Schalter: Lastenheft,
+- [x] Zusage- und Kennungs-Muster samt Leerlauf-Schalter: Lastenheft,
       Spezifikation, Konfig-Validierung (Exit 2), Tests, die ohne die
       Änderung aus dem richtigen Grund rot sind; eine nicht lesbare Kennung
       ist ein Befund statt eines stillen Übersprungs.
-- [ ] Abstieg und Inhalts-Ausnahme für `done-dir`, dieselbe Semantik wie
+- [x] Abstieg und Inhalts-Ausnahme für `done-dir`, dieselbe Semantik wie
       slice-263.
-- [ ] Ohne die neuen Schlüssel ist die Ausgabe unverändert bis auf die zwei
+- [x] Ohne die neuen Schlüssel ist die Ausgabe unverändert bis auf die zwei
       benannten Default-Änderungen, gemessen altes gegen neues Image mit
       eingeschaltetem `reviews`, und jede der beiden ist durch einen Test
       belegt; Vorlage von `--print-config` beschreibt die
       Erkennung richtig; die Abnahme-Fälle des CR (rot: Zusage ohne Report,
       grün: 0 Befunde) als Test; `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft; der CR
       trägt seine Entscheidung je Punkt.
 
@@ -175,19 +175,67 @@ slice-263 hinaus.
 
 - **Kennungs-Muster und Report-Zuordnung** — eine benannte Kennung
   `slice-<welle>-<titel>` kann Präfix einer anderen sein; die Zuordnung
-  Report → Slice muss eindeutig bleiben. — **Ausgang:** *(offen)*
+  Report → Slice muss eindeutig bleiben. — **Ausgang:** weiter offen — eingetreten im Review (R1 F-10) und für Buchstaben und Ziffern geschlossen; der Präfix über Bindestrich, Unterstrich oder Punkt bleibt als benannte Grenze in Lastenheft und Spezifikation und steht im Register als [`BEO-ALL/name-zuordnung-deckt-praefix-slices`](../observations/BEO-ALL/name-zuordnung-deckt-praefix-slices/state.md).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** `reviews` prüft jetzt einen Bestand, der der
+  Baseline-Vorlage folgt: der Default erkennt die Vorlagen-Form am Anfang
+  eines Punkt-Teils, `promise-pattern` jede eigene Form, `match: name`
+  Slug-Kennungen, `require-promises` den Leerlauf, `recursive` und
+  `skip-pattern` die Volltexte unter `done/wellenlos/`. Die CR-Abnahme steht
+  als ein Test; die Verifikation hat sie am Image gefahren (rot ohne Report,
+  grün mit) und zwölf Mutationen je aus dem richtigen Grund rot gesehen. Ohne
+  die Schlüssel ist die Ausgabe in 24 Vergleichen byte-identisch, bis auf die
+  zwei benannten Default-Änderungen. Das eigene Gate prüfte vorher keinen
+  Slice; mit dem Default prüft es 11, mit `recursive` 26 — alle gedeckt.
+- **Was ging anders als geplant:** Fünf Review-Runden. Der CR an den Kurs
+  zeigte, dass die Baseline-Vorlage selbst blind lief; der Default wurde
+  deshalb erweitert (Auftraggeber-Entscheid), und jede Runde fand danach eine
+  Grenze des Musters — zu breit (Kompositum, Verneinung), zu eng (eine gelebte
+  Zusage hinter `;`), wieder zu breit (umbrochene Verneinung). Die
+  Byte-Identität stand im Produkt-Commit mit einer Probe belegt, die `reviews`
+  nie einschaltet (R1 F-4); gemessen wurde sie erst danach. Bekannt und nicht
+  behoben: ein Punkt, in dem die Phrase „unabhängiger Review" über einen
+  Zeilenumbruch läuft, ist keine Zusage (R5 F-1; im Archiv vier, in den
+  Volltexten keiner).
+- **Steering-Loop-Eintrag:** Workflow-Skelett um zwei Schritte ergänzt, beide
+  liegen in `.claude/commands/implement-slice.md` (Schritte 19 und 20, je
+  `seit slice-265`): Negativliste und Bestand für jedes Erkennungsmuster
+  (Auslöser `BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet` —
+  slice-233, slice-249, slice-265, 3×) und Befunde über ihre Aussage suchen
+  statt über ihre Fundstelle (Auslöser
+  `BEO-ALL/review-fix-applied-only-at-cited-site` — slice-208, slice-263,
+  slice-265, 3×); beide Ausgänge Auftraggeber-Entscheid.
+  `BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen` trat zum
+  zweiten Mal nach seiner Verkörperung auf — die Prosa-Form ist ausgeschöpft,
+  ein Teil-Sensor ist benannt, die Entscheidung liegt beim Auftraggeber.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-265.md` in
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+  (3×, verkörpert),
+  [`BEO-ALL/review-fix-applied-only-at-cited-site`](../observations/BEO-ALL/review-fix-applied-only-at-cited-site/state.md)
+  (3×, verkörpert),
+  [`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`](../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md),
+  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+  und
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md);
+  neu
+  [`BEO-ALL/name-zuordnung-deckt-praefix-slices`](../observations/BEO-ALL/name-zuordnung-deckt-praefix-slices/state.md)
+  (1×).
+- **Folge-Slices:** slice-264 (Closure-Profil dieses Repos) setzt auch für
+  `reviews` `recursive` und `skip-pattern`; slice-266 (Modul-Doku im Image),
+  slice-267 (Pfad-Nachzug in `vcs`), slice-268 (Umzug von `releasing.md`).
+  Release v0.85.0 mit slice-263 und diesem Slice; die Release-Notiz nennt die
+  zwei Default-Änderungen und `match: name` für Slug-Kennungen.
+- **Risiken aus §6:** eines weiter offen (Register, siehe §6). Trigger-Audit:
+  kein Carveout, kein bootstrap-aware Gate, keine ADR, keine Hard Rule mit
+  eingetretenem Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8; die beiden
+  dort später gemeldeten Pins (Go, a-check) sind gehoben.
+- **Drei Paarungen:** (a) Anker — `.claude/commands/implement-slice.md` trägt
+  `seit slice-265` in den Schritten 19 und 20; (b) Folge-Slices — slice-264,
+  slice-266, slice-267 und slice-268 liegen in `open/`; (c) Register — die
+  sechs zitierten Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

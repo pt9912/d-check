@@ -1,1 +1,1 @@
-**Stand:** offen
+**Stand:** verkörpert — Schritt 19 im Workflow-Skelett `.claude/commands/implement-slice.md` (seit slice-265, permanent): wer ein Erkennungsmuster schreibt oder ändert, testet vor dem Code-Commit eine Negativliste und fährt das Muster über den eigenen Bestand. Bleibt wach: welcher Freitext einer Form ähnelt, ist ein Urteil.

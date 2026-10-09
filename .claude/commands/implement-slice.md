@@ -54,6 +54,17 @@ Follow this exact workflow:
     the number. A list read from another description is not counted. (seit
     slice-260; permanent — whether a list is complete is a judgement about
     the subject, no sensor can hold it)
+19. Whoever writes or changes a recognition pattern (a regex that decides what
+    counts as a finding, a promise, a candidate) lists and tests negative
+    cases before the code commit: negation, compound word, mid-sentence,
+    line break, code block, quote — and runs the pattern over the repo's own
+    corpus, the counting command in the plan. (seit slice-265; permanent —
+    which free text resembles a form is a judgement)
+20. Before a fix commit after a review, search each finding by its
+    statement, not by its cited location: grep the old term or claim over
+    code, docs and plan, and list the hits in the plan-change note. (seit
+    slice-265; permanent — whether a hit carries the same statement is a
+    judgement)
 
 Do not skip gates.
 Do not claim completion without command output.
