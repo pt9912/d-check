@@ -66,6 +66,13 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | Konfig-Modell, YAML-Adapter, `--print-config`-Vorlage | update | Schlüssel |
 | `spec/lastenheft.md`, `spec/spezifikation.md` | update | Anforderung und Verfeinerung |
 | `.d-check.yml`, `AGENTS.md` §3.5, `harness/README.md`, `harness/sensors/adr-check.md` | update | Nutzung in diesem Repo und die Beschreibung des ADR-Gates |
+| neue ADR (Index in `docs/plan/adr/README.md`) | neu | das ADR-Gate lockert eine Prüfregel (`AGENTS.md` §3.6) |
+
+*(Plan-Änderung vor dem Code-Commit: Dass `make adr-check` in diesem Repo
+einen Link-Ziel-Nachzug durchlässt, lockert eine Prüfregel — nach `AGENTS.md`
+§3.6 braucht das eine ADR, auch wenn die Baseline den Nachzug erlaubt. Sie
+trägt die Entscheidung, den Schlüssel für die ADRs dieses Repos einzuschalten,
+und ihre Grenze.)*
 
 ## 4. Trigger
 
