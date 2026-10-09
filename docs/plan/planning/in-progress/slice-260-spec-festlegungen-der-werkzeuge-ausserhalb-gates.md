@@ -121,6 +121,18 @@ ohne Antwort zu enden (F-5); die Grenzen von
 nennen die gemessenen Durchlass-Klassen (F-4, F-8); `PROBE_FORMS` leer heißt
 Default (F-6); Pointer- und Abschnitts-Korrekturen F-7, F-9, F-10, F-11.)*
 
+*(Plan-Änderung nach R2, vor dem Code: Die Verträge von
+`verify-closure-notes.md` und `hooks.md` versprechen die Prüfung weiter für
+ganz `done/`; sie werden auf die Slices direkt unter `done/` eingeschränkt, die
+Grenzen-Liste von `verify-closure-notes.md` nennt die Unterverzeichnisse
+(R2-F-1). Der Stop-Hook blockt auch, wenn `git status` scheitert — der
+Zustand ist dann so wenig gelesen wie bei einem gescheiterten Hash (R2-F-2,
+Entscheidung: nachziehen statt benennen, wie bei F-5). Die §8-Zeile der
+Spezifikation vom 2026-10-08 wird wiederhergestellt, der Nachzug steht in
+einer neuen Zeile (R2-F-3). slice-263 nennt in §3 die vier Aussagen, die er
+mit der Behebung zurücknimmt (R2-F-4). [`SPEC-093`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) fasst den Extraktor-Fall
+enger (R2-F-5).)*
+
 ## 4. Trigger
 
 **Start** (`next` → `in-progress`): slice-259 in `done/`; `in-progress/` leer.
