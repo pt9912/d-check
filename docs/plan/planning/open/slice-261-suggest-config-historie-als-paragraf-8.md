@@ -13,7 +13,7 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 **Berührte Spec-Stellen:** `spec/spezifikation.md` §2 (Beispiel der
 vorgeschlagenen `matrix`-Konfiguration).
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912
 
 **Autor:** pt9912. **Datum:** 2026-10-08.
 
@@ -97,16 +97,23 @@ nächsten Release hinaus.
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** eine berührte Sub-Area: das Produkt
-unter dem Default `*` (`ALL`); deklariert.
+**Vorgelagert — Sub-Area-Wahl prüfen:** Berührt ist die Vorschlags-Erzeugung
+des Produkts und ein Beispiel der Spezifikation — unter dem Default `*`
+(`ALL`); keine eigene Konvention, kein eigener Modus.
 
 <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
 > **Offene Beobachtungen sichten.** Das
 
-**Vorgelagert — offene Beobachtungen sichten:** beim Beanspruchen neu lesen.
+**Vorgelagert — offene Beobachtungen sichten:** Keine offene Beobachtung
+betrifft die Vorschläge von `--suggest-config`.
+
+**Messung beim Beanspruchen:** Der Vorschlag steht an genau einer Stelle im
+Code (die Erzeugung des `matrix`-Blocks) und einmal als Beispiel in §2 der
+Spezifikation; kein Test hält die Zeile heute.
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
-beim Beanspruchen aus dem jüngsten Lauf lesen.
+`upstream-drift` grün (2026-10-09T07:17Z). `image-scan` rot (2026-10-09T10:37Z)
+— der Lauf liegt vor dem Release v0.85.0, das die gemeldeten CVEs behebt.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
