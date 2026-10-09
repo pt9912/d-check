@@ -57,11 +57,16 @@ akzeptierten Entscheidung und braucht nach `AGENTS.md` §3.6 eine eigene.
 
 ## Verglichene Alternativen
 
-| Alternative | Warum nicht |
-|---|---|
-| Nicht rekursiv bleiben | Die Review-Zusage jedes wellenlosen Slice bleibt ungeprüft, obwohl der Übergang ihn erkennt |
-| Rekursion nur im Closure-Profil | `make review-coverage`, der Lauf zum Untersuchen eines roten Übergangs (ADR-0082), meldet dann grün, wo der Übergang rot ist — gemessen im Review dieser Entscheidung |
-| Die Volltexte archivieren | Ein Vorgang am Bestand, kein Teil der Prüfung; neue wellenlose Slices schließen trotzdem als Volltext |
+Regeln dieser Sektion: **mindestens drei Optionen mit Pro/Contra** — „nichts
+tun" ist eine davon (Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR
+(MADR)).
+
+| Option | Pro | Contra |
+|---|---|---|
+| Nichts tun: nicht rekursiv bleiben | Keine Änderung an einer akzeptierten Entscheidung; der Stub fällt ohne Muster heraus | Die Review-Zusage jedes wellenlosen Slice bleibt ungeprüft, obwohl der Übergang ihn erkennt |
+| Rekursion nur im Closure-Profil | Der Übergang prüft den Slice; das Hauptprofil bleibt unberührt | `make review-coverage`, der Lauf zum Untersuchen eines roten Übergangs ([ADR-0082](0082-uebergangswaechter-reviews-observations.md)), meldet dann grün, wo der Übergang rot ist — gemessen im Review dieser Entscheidung |
+| Die Volltexte archivieren | Die Lage-Regel stimmt wieder ohne neue Schlüssel | Ein Vorgang am Bestand, kein Teil der Prüfung; neue wellenlose Slices schließen trotzdem als Volltext |
+| **Gewählt:** Rekursion in beiden Profilen, Stub über den Marker | Beide Läufe prüfen dieselbe Kandidatenmenge, jeder Volltext zählt | Ein Volltext, der den Marker zitiert, fällt still heraus; das Muster hängt an der Form des Archiv-Werkzeugs |
 
 ## Konsequenzen
 
