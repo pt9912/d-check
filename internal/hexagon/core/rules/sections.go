@@ -113,3 +113,11 @@ func SectionHeadings(lines []string, headingNo, sectionLevel, level int) []Secti
 	}
 	return out
 }
+
+// HeadingText liefert den getrimmten Text einer ATX-Überschrift ohne die
+// führende #-Folge — dieselbe Erkennung, mit der FindSectionHeads sie findet;
+// ok ist false, wenn raw keine ATX-Überschrift ist.
+func HeadingText(raw string) (text string, ok bool) {
+	_, text, ok = parseATXHeading(raw)
+	return text, ok
+}

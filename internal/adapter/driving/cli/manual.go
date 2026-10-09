@@ -36,19 +36,9 @@ func runManual(term string, stdout, stderr io.Writer) int {
 	out, found := app.ManualSections(docs, term)
 	if !found {
 		fmt.Fprintf(stderr, "d-check: error: --manual: keine Überschrift nennt %q — der Titel eines Dokuments liefert es ganz: %q, %q\n",
-			strings.TrimSpace(term), titel(dcheck.Handbuch), titel(dcheck.Spezifikation))
+			strings.TrimSpace(term), app.ManualTitle(dcheck.Handbuch), app.ManualTitle(dcheck.Spezifikation))
 		return 2
 	}
 	fmt.Fprint(stdout, out)
 	return 0
-}
-
-// titel ist der Text der ersten Überschrift erster Ebene eines Dokuments.
-func titel(doc string) string {
-	for _, l := range strings.Split(doc, "\n") {
-		if strings.HasPrefix(l, "# ") {
-			return strings.TrimSpace(strings.TrimPrefix(l, "# "))
-		}
-	}
-	return ""
 }

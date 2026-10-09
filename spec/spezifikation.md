@@ -54,10 +54,11 @@ Synopsis `d-check [optionen] [pfad]`, eine Zeile zum Pfad-Argument
 (`--print-config`) und
 [`DC-FA-CLI-006`](lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)
 (`--suggest-config`) verweist — das Config-Format wird nicht dupliziert —,
-und zuletzt **beide URLs des Benutzerhandbuchs** auf dem Hauptzweig, ohne
+dann **beide URLs des Benutzerhandbuchs** auf dem Hauptzweig, ohne
 Versionsangabe: die gerenderte GitHub-Seite (`.../blob/main/...`), dann die
 rohe `raw.githubusercontent.com`-Form mit eigener Beschriftung für
-Werkzeuge/Agenten.
+Werkzeuge/Agenten, und danach den netzlosen Weg `d-check --manual <begriff>`
+([`DC-FA-CLI-013`](lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen)).
 Symlinks werden beim Scan weder verfolgt noch als Dateien gewertet — der
 Baum-Walk kennt nur Verzeichnisse und reguläre Dateien. Das gilt für **beide**
 Formen: ein Verzeichnis-Symlink wird nicht betreten, und eine nur über einen
@@ -3814,6 +3815,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-09 | Nachzug nach Review an §[`DC-FA-CLI-001.a`](spezifikation.md#dc-fa-cli-001a--ablauf-eines-prüflaufs): die Hilfe nennt nach den Handbuch-URLs den netzlosen Weg `--manual` |
 | 2026-10-09 | Neue Verfeinerung §[`DC-FA-CLI-013.a`](spezifikation.md#dc-fa-cli-013a--handbuch-und-spezifikation-ausgeben---manual): `--manual <begriff>` — Treffer in den Überschriften von Handbuch und Spezifikation, Abschnitt bis zur nächsten Überschrift gleicher oder höherer Ebene, Kopfzeile je Abschnitt, kein Treffer ⇒ Exit 2. Kein neuer Grund-Code |
 | 2026-10-09 | §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritt 4, die Grenze des Moduls und das §2-Schema: unter `reviews.match: name` deckt ein Report einen Slice nicht mehr, wenn sein Name auch einen längeren Slice-Basisnamen trägt, der den kürzeren enthält — gezählt über alle `slice-*.md` in `reviews.done-dir` vor den Abzügen. Kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C1, §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 1 und §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritt 1: `skip-allows-empty` ohne `skip-pattern` steht in den Exit-2-Aufzählungen |

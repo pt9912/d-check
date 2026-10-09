@@ -50,7 +50,20 @@ func ManualSections(docs []ManualDoc, term string) (out string, found bool) {
 }
 
 // manualHeadingText ist der Text einer ATX-Überschrift ohne die führende
-// #-Folge.
+// #-Folge, mit der Erkennung des Kerns.
 func manualHeadingText(raw string) string {
-	return strings.TrimSpace(strings.TrimLeft(strings.TrimSpace(raw), "#"))
+	text, _ := rules.HeadingText(raw)
+	return text
+}
+
+// ManualTitle ist der Text der ersten Überschrift erster Ebene außerhalb von
+// Fenced-Code — der Begriff, der das ganze Dokument liefert.
+func ManualTitle(content string) string {
+	lines := strings.Split(content, "\n")
+	for _, h := range rules.FindSectionHeads(lines, func(string) bool { return true }) {
+		if h.Level == 1 {
+			return manualHeadingText(lines[h.Line-1])
+		}
+	}
+	return ""
 }

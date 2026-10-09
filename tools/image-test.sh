@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# image-test.sh — DC-FA-DIST-001-Akzeptanzkriterien gegen das lokal
-# gebaute Runtime-Image (slice-010):
+# image-test.sh — Akzeptanzkriterien der Distribution (DC-FA-DIST-001) und
+# der Modi, die an ihrer Grenze gelten, gegen das lokal gebaute Runtime-Image:
 #
 #   (1) Happy:    Repo mit kaputtem Link → Befund-Ausgabe und
 #                 Exit-Code des Containers byte-identisch zur nativen
@@ -157,4 +157,4 @@ grep -q '^==> spec/spezifikation.md:' "$WORK/c.manual.out" \
   || fail "--manual: kein Abschnitt aus der Spezifikation"
 echo "image-test: (5) --manual — netzlos im Container, nativ == Container, Exit 0"
 
-echo "image-test: OK — DC-FA-DIST-001-Akzeptanzkriterien erfüllt"
+echo "image-test: OK — Akzeptanzkriterien erfüllt (DC-FA-DIST-001, DC-FA-CLI-007, DC-FA-CLI-008, DC-FA-CLI-013)"

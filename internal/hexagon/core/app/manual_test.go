@@ -43,3 +43,11 @@ func TestManualSections_KeinTreffer(t *testing.T) {
 		t.Fatalf("Fließtext ist kein Treffer, got %v %q", found, out)
 	}
 }
+
+// Der Titel ist die erste Überschrift erster Ebene außerhalb von Fenced-Code.
+func TestManualTitle_UeberspringtCodeBlock(t *testing.T) {
+	doc := "```\n# kein Titel\n```\n\n# Titel\n\n## Abschnitt\n"
+	if got := ManualTitle(doc); got != "Titel" {
+		t.Fatalf("got %q, want %q", got, "Titel")
+	}
+}

@@ -165,6 +165,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-VER-001`](../../spec/lastenheft.md) | `TestVersionsPatterns_MischformExit2` | [`internal/adapter/driving/cli/cli_versions_patterns_test.go`](../../internal/adapter/driving/cli/cli_versions_patterns_test.go) |
 | [`DC-FA-CLI-005`](../../spec/lastenheft.md), [`DC-FA-VER-001`](../../spec/lastenheft.md) | `TestVersionsPatterns_VorlagenBloeckeEinkommentierbar` | [`internal/adapter/driving/cli/cli_versions_patterns_test.go`](../../internal/adapter/driving/cli/cli_versions_patterns_test.go) |
 | [`DC-FA-VER-001`](../../spec/lastenheft.md) | `TestVersionsPatterns_ZweiReihen` | [`internal/adapter/driving/cli/cli_versions_patterns_test.go`](../../internal/adapter/driving/cli/cli_versions_patterns_test.go) |
+| [`DC-FA-CLI-013`](../../spec/lastenheft.md) | `TestManual_EingebetteteDokumenteGleichDerQuelle` | [`internal/adapter/driving/cli/manual_root_test.go`](../../internal/adapter/driving/cli/manual_root_test.go) |
 | [`DC-FA-COV-001`](../../spec/lastenheft.md) | `TestExpandRange` | [`internal/hexagon/core/app/trace_coverage_test.go`](../../internal/hexagon/core/app/trace_coverage_test.go) |
 | [`DC-FA-COV-001`](../../spec/lastenheft.md) | `TestExpandRangeCommaShortform` | [`internal/hexagon/core/app/trace_coverage_test.go`](../../internal/hexagon/core/app/trace_coverage_test.go) |
 | [`DC-FA-ID-001`](../../spec/lastenheft.md) | `TestExpandRangeLinkTransparent` | [`internal/hexagon/core/app/trace_coverage_test.go`](../../internal/hexagon/core/app/trace_coverage_test.go) |

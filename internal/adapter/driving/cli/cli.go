@@ -146,7 +146,8 @@ const (
 // writeUsage gibt die Hilfe aus (DC-FA-CLI-001.a): Kurzbeschreibung,
 // Synopsis mit dem Pfad-Argument, Flag-Liste, ein Konfigurations-Hinweis,
 // der auf --print-config/--suggest-config verweist (das Config-Format wird
-// dort gezeigt, nicht hier dupliziert), und die beiden Handbuch-Zeiger.
+// dort gezeigt, nicht hier dupliziert), die beiden Handbuch-Zeiger und den
+// netzlosen Weg über --manual.
 func writeUsage(flags *flag.FlagSet) {
 	out := flags.Output()
 	fmt.Fprintln(out, "d-check — prüft Markdown-Dokumentation auf kaputte Referenzen")
@@ -162,6 +163,7 @@ func writeUsage(flags *flag.FlagSet) {
 	fmt.Fprintln(out, "\nBenutzerhandbuch (aufgabenorientiert, deutsch):")
 	fmt.Fprintln(out, "  "+handbuchURL)
 	fmt.Fprintln(out, "  "+handbuchURLRaw+"  (roh, für Werkzeuge/Agenten)")
+	fmt.Fprintln(out, "  d-check --manual <begriff>  Abschnitte aus Handbuch und Spezifikation, ohne Netz aus dem Werkzeug")
 }
 
 // splitSources zerlegt den --suggest-config-Wert in einzelne Quellen
