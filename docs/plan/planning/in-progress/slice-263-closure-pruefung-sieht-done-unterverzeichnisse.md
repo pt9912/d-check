@@ -62,16 +62,16 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] `planning.closure.recursive` und `planning.closure.skip-pattern`:
+- [x] `planning.closure.recursive` und `planning.closure.skip-pattern`:
       Verfeinerung in der Spezifikation, Konfig-Validierung (Exit 2 bei nicht
       kompilierendem Muster), Tests, die ohne die Änderung aus dem richtigen
       Grund rot sind.
-- [ ] `structure[].skip-pattern`: dasselbe für das Modul `structure`.
-- [ ] Ohne die neuen Schlüssel ist die Ausgabe unverändert
+- [x] `structure[].skip-pattern`: dasselbe für das Modul `structure`.
+- [x] Ohne die neuen Schlüssel ist die Ausgabe unverändert
       (`make blackbox-probe REF=<Stand davor>`); `--print-config` und die
       übrigen Spiegel der Konfiguration nachgezogen; `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -132,22 +132,58 @@ hinaus.
 ## 6. Risiken und offene Punkte
 
 - **Ein Volltext, der den Marker zitiert** — in einem Codeblock oder Zitat —,
-  fällt mit `skip-pattern` still aus der Prüfung (R1 F-4). — **Ausgang:** *(offen)*
+  fällt mit `skip-pattern` still aus der Prüfung (R1 F-4). — **Ausgang:** entfallen — als Grenze in Spezifikation C2 und Schritt 2 benannt, samt der Weisung, das Muster eng auf die Form des Stubs zu fassen; ein benannter Ausfall ist eine Eigenschaft des Schlüssels, kein offenes Risiko.
 - **Ein Stub ohne Marker** — ein Stub, den ein älteres Werkzeug ohne
   `ARCHIVIERT` schrieb, würde als Volltext geprüft. Gemessen beim Schnitt:
-  alle 80 tragen ihn. — **Ausgang:** *(offen)*
+  alle 80 tragen ihn. — **Ausgang:** entfallen — alle 80 Stubs tragen den Marker, und das Archiv-Werkzeug schreibt ihn in jeden neuen Stub (`tools/archive-wave/stub.go`).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Drei opt-in-Schlüssel, ohne die der Befundsatz
+  byte-identisch bleibt (`make blackbox-probe`, dazu ein Vergleich mit dem
+  Closure-Profil in drei Formen): `planning.closure.recursive`,
+  `planning.closure.skip-pattern` und `structure[].skip-pattern`. Der Stub ist
+  an seinem Marker erkennbar, nicht an seinem Verzeichnis. Mit der Vorlage von
+  `--print-config` am Bestand gefahren: ohne das Muster 458 Befunde, alle auf
+  Stubs; mit ihm keiner, und ein verdünnter Volltext unter `done/wellenlos/`
+  meldet in beiden Modulen. Die Verifikation hat zehn Mutationen gefahren, jede
+  rot aus dem richtigen Grund.
+- **Was ging anders als geplant:** Der Slice wurde vor dem Beanspruchen
+  geteilt — Produkt hier, Konfiguration und Altverstöße in slice-264 —, weil
+  die Stub-Erkennung ein Kriterium im Produkt brauchte. R1 fand das Lastenheft
+  nicht nachgezogen: es beschrieb die Kandidatenmengen abschließend, die
+  Schlüssel standen nur in der Spezifikation; nachgezogen auf 0.99.0, nach R2
+  auf 0.99.1. Drei Review-Runden, weil jede die benannte Chronik-Stelle in den
+  Tests behob und die Nachbarstelle stehen ließ. **Korrektur einer
+  Commit-Botschaft (R1 F-6):** der Produkt-Commit behauptete, alle neuen Tests
+  würden ohne den Fix rot; die Unlesbar- und Meldungs-Tests und die erste
+  Hälfte des Verzeichnisnamen-Tests bleiben ohne Abstieg bzw. Abzug grün —
+  die beiden Unlesbar-Tests und der Test zum ungereinigten `dir` werden bei
+  ihren eigenen Mutationen rot (Verifikation M5, M6, M10).
+- **Steering-Loop-Eintrag:** keiner erreicht neu die Schwelle. Wieder
+  aufgetreten nach seiner Verkörperung:
+  `BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen` — der Schritt
+  im Workflow-Skelett stand, wirkte aber nicht vor dem Review; bei einem
+  weiteren Auftreten ist die Prosa-Form ausgeschöpft.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-263.md` in
+  [`BEO-ALL/review-fix-applied-only-at-cited-site`](../observations/BEO-ALL/review-fix-applied-only-at-cited-site/state.md)
+  (2×),
+  [`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`](../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md),
+  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+  und
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md).
+- **Folge-Slices:** slice-264 (Closure-Profil dieses Repos, vier Altverstöße,
+  Rücknahme der Grenz-Aussagen), slice-265 (`reviews` — trägt auch die beim
+  Beanspruchen gemessene Blindheit von `reviews.done-dir`), slice-266
+  (Modul-Doku im Image). Das Release dieses Slice geht mit slice-265 hinaus.
+- **Risiken aus §6:** beide entfallen (siehe §6). Trigger-Audit: kein
+  Carveout, kein bootstrap-aware Gate, keine ADR, keine Hard Rule mit
+  eingetretenem Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein neuer Steering-Loop-Eintrag, keiner zu
+  prüfen; (b) Folge-Slices — slice-264, slice-265 und slice-266 liegen in
+  `open/`; (c) Register — die vier zitierten Beobachtungen existieren und
+  tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

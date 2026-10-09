@@ -1,1 +1,1 @@
-**Stand:** offen — 1×, unterhalb der Schwelle.
+**Stand:** offen — 2×.
