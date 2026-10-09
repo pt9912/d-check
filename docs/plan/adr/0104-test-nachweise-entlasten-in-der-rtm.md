@@ -1,6 +1,6 @@
 # ADR-0104: Test-Nachweise entlasten eine Anforderung in der RTM
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-09
 
@@ -84,3 +84,4 @@ Ableitung; die Negativliste der Ableitung steht in
 | Datum | Ereignis |
 |---|---|
 | 2026-10-09 | Proposed (Auftraggeber-Entscheid zum Schnitt von slice-270) |
+| 2026-10-09 | Proposed → Accepted (nach Review R1–R3 und Verifikation; der Mechanismus steht) |
