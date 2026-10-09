@@ -50,10 +50,14 @@ func CheckVCS(vcs driven.VCS, cfg model.VCSConfig, base, head string) ([]model.F
 		paths = append(paths, p)
 	}
 	sort.Strings(paths) // DC-QA-02 Determinismus (Kandidaten kommen aus einer Menge)
+	var baseTree, headTree map[string]bool
+	if cfg.IgnoreLinkTargets {
+		baseTree, headTree = pathTree(baseAll), pathTree(headAll)
+	}
 	var findings []model.Finding
 	for _, p := range paths {
 		if headSet[p] {
-			f, err := vcsModified(vcs, cfg, base, head, p)
+			f, err := vcsModified(vcs, cfg, base, head, p, baseTree, headTree)
 			if err != nil {
 				return nil, err
 			}
@@ -103,7 +107,7 @@ func vcsDeleted(vcs driven.VCS, cfg model.VCSConfig, base, path string) ([]model
 // vcsModified vergleicht den Core einer modifizierten immutablen Datei und
 // prüft den Status-Übergang. BASE nicht immutabel (z. B. Proposed) ⇒ frei
 // (Grandfathering, DC-FA-VCS-001.a Schritt 3).
-func vcsModified(vcs driven.VCS, cfg model.VCSConfig, base, head, path string) ([]model.Finding, error) {
+func vcsModified(vcs driven.VCS, cfg model.VCSConfig, base, head, path string, baseTree, headTree map[string]bool) ([]model.Finding, error) {
 	baseContent, ok, err := vcs.FileAt(base, path)
 	if err != nil {
 		return nil, err
@@ -123,8 +127,8 @@ func vcsModified(vcs driven.VCS, cfg model.VCSConfig, base, head, path string) (
 		line = 1
 	}
 	var findings []model.Finding
-	if vcsCore(baseContent, cfg.StatusLine, cfg.ExcludeSections, cfg.IgnoreLinkTargets) !=
-		vcsCore(headContent, cfg.StatusLine, cfg.ExcludeSections, cfg.IgnoreLinkTargets) {
+	if vcsCore(baseContent, cfg.StatusLine, cfg.ExcludeSections, linkTargetResolver(path, baseTree)) !=
+		vcsCore(headContent, cfg.StatusLine, cfg.ExcludeSections, linkTargetResolver(path, headTree)) {
 		findings = append(findings, model.Finding{
 			File: path, Line: line, Rule: "vcs", Target: path,
 			Reason:  model.ReasonCoreDriftVCS,
@@ -164,16 +168,17 @@ func baseImmutable(content []byte, when *regexp.Regexp) bool {
 // reflow-invarianten Whitespace-Normalisierung von immutable/pins
 // (DC-FA-VCS-001.a Schritt 4).
 //
-// Mit ignoreLinkTargets wird vorher das Ziel jedes erkannten Links geleert
-// (DC-FA-VCS-001.a Schritt 4, blankedLinkTargetLines): ein reiner Pfad-Nachzug
-// ergibt denselben Core.
-func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string, ignoreLinkTargets bool) string {
+// Mit resolve (vcs.ignore-link-targets) wird vorher das Ziel jedes erkannten
+// Links, das im Stand der Datei auflöst, auf Dateiname und Anker normiert
+// (DC-FA-VCS-001.a Schritt 4, normalizedLinkTargetLines): ein reiner
+// Pfad-Nachzug ergibt denselben Core.
+func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string, resolve func(string) (string, bool)) string {
 	excluded := excludedRanges(content, excludeSections)
 	lines := splitLines(content)
 	strip := vcsHeadStatusLineNo(content, lines, statusLine)
-	var blanked map[int]string
-	if ignoreLinkTargets {
-		blanked = blankedLinkTargetLines(content)
+	var normalized map[int]string
+	if resolve != nil {
+		normalized = normalizedLinkTargetLines(content, resolve)
 	}
 	var b strings.Builder
 	for i, raw := range lines {
@@ -181,7 +186,7 @@ func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string
 		if no == strip || inRanges(excluded, no) {
 			continue
 		}
-		if repl, ok := blanked[no]; ok {
+		if repl, ok := normalized[no]; ok {
 			raw = repl
 		}
 		b.WriteString(raw)

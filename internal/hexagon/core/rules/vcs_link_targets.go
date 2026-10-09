@@ -1,23 +1,29 @@
 package rules
 
 import (
+	"path"
 	"regexp"
 	"sort"
 	"strings"
 )
 
-// blankedLinkTargetLines liefert je Zeile, in der ein Link-Ziel geleert wurde,
-// ihre Fassung ohne dieses Ziel (DC-FA-VCS-001.a Schritt 4). Was ein Link ist,
+// normalizedLinkTargetLines liefert je Zeile, in der ein Link-Ziel normiert
+// wurde, ihre Fassung mit normierten Zielen (DC-FA-VCS-001.a Schritt 4).
+// Normiert wird ein Ziel, das resolve im Stand der Datei auflöst: es wird durch
+// Dateiname und Anker ersetzt, sodass ein reiner Pfad-Nachzug denselben Text
+// ergibt; ein Ziel, das nicht auflöst, bleibt roh. Was ein Link ist,
 // beantwortet dieselbe Erkennung wie das Modul links: PreprocessMarkdown
 // (Fenced-Code entfällt, Code-Spans absatzweise positionserhaltend geleert),
 // ExtractLinkSpans und definitionRe. Filter engen das ein, jeder nur in
 // Richtung Drift: opaqueLines nimmt ganze Zeilen aus, linkTargetCuts einzelne
 // Links.
-// GRENZE: Ein Ziel auf der Folgezeile und eine Zeile mit CRLF-Ende werden
-// nicht geleert, ihr Nachzug bleibt Drift. Eine Absatz-Folgezeile in der Form
-// einer Referenz-Definition wird geleert, wie die links-Erkennung sie liest,
-// auch wo Markdown sie als Text rendert.
-func blankedLinkTargetLines(content []byte) map[int]string {
+// GRENZE: Ein Pfad-Nachzug eines auflösenden Ziels in Code, der hinter einer
+// Listenmarke beginnt (Fence, HTML-Block, eingerückter Code), wird normiert
+// und geht durch -- ein Inhaltswort dort nicht, es löst nicht auf. Fail-safe
+// bleibt Drift: ein Ziel auf der Folgezeile, ein Nachzug auf eine Datei mit
+// anderem Namen, eine Referenz-Definition auf einer Zeile mit CRLF-Ende, ein
+// Link, den ein zeilenlokal falsch gepaarter Code-Span verdeckt.
+func normalizedLinkTargetLines(content []byte, resolve func(string) (string, bool)) map[int]string {
 	raw := splitLines(content)
 	opaque := opaqueLines(raw)
 	out := make(map[int]string)
@@ -26,11 +32,77 @@ func blankedLinkTargetLines(content []byte) map[int]string {
 		if opaque[ln.No] || len(ln.Text) != len(r) {
 			continue
 		}
-		if cuts := linkTargetCuts(ln.Text, lineCodeSpans(r)); len(cuts) > 0 {
-			out[ln.No] = cutRanges(r, cuts)
+		var repls []targetRepl
+		for _, c := range linkTargetCuts(ln.Text, lineCodeSpans(r)) {
+			if norm, ok := resolve(r[c[0]:c[1]]); ok {
+				repls = append(repls, targetRepl{c[0], c[1], norm})
+			}
+		}
+		if len(repls) > 0 {
+			out[ln.No] = replaceRanges(r, repls)
 		}
 	}
 	return out
+}
+
+// linkTargetResolver liefert für die Datei file die Auflösung ihrer Link-Ziele
+// gegen tree (Pfade und ihre Verzeichnisse eines Stands, pathTree), nil ohne
+// tree. Ein relatives Ziel, das auf einen Eintrag von tree zeigt, wird zu
+// Dateiname und Anker; ein absolutes, ein externes (`://`), eines mit Query,
+// ein reiner Anker und eines außerhalb des Repos lösen nicht auf.
+func linkTargetResolver(file string, tree map[string]bool) func(string) (string, bool) {
+	if tree == nil {
+		return nil
+	}
+	return func(target string) (string, bool) {
+		t := strings.TrimSuffix(strings.TrimPrefix(target, "<"), ">")
+		anchor := ""
+		if i := strings.IndexByte(t, '#'); i >= 0 {
+			t, anchor = t[:i], t[i:]
+		}
+		if t == "" || strings.HasPrefix(t, "/") || strings.Contains(t, "://") || strings.Contains(t, "?") {
+			return "", false
+		}
+		p := path.Clean(path.Join(path.Dir(file), t))
+		if p == ".." || strings.HasPrefix(p, "../") || !tree[p] {
+			return "", false
+		}
+		return path.Base(p) + anchor, true
+	}
+}
+
+// pathTree liefert die Menge der Pfade und aller ihrer Verzeichnisse.
+func pathTree(paths []string) map[string]bool {
+	out := make(map[string]bool, len(paths))
+	for _, p := range paths {
+		for ; p != "." && p != "/" && !out[p]; p = path.Dir(p) {
+			out[p] = true
+		}
+	}
+	return out
+}
+
+// targetRepl ersetzt line[start:end] durch text.
+type targetRepl struct {
+	start, end int
+	text       string
+}
+
+// replaceRanges wendet die Ersetzungen an; überlappende werden übersprungen.
+func replaceRanges(line string, repls []targetRepl) string {
+	sort.Slice(repls, func(a, b int) bool { return repls[a].start < repls[b].start })
+	var b strings.Builder
+	last := 0
+	for _, r := range repls {
+		if r.start < last {
+			continue
+		}
+		b.WriteString(line[last:r.start])
+		b.WriteString(r.text)
+		last = r.end
+	}
+	b.WriteString(line[last:])
+	return b.String()
 }
 
 // listCodeRE trifft einen Listenpunkt, dessen Inhalt mit eingerücktem Code
@@ -84,7 +156,8 @@ func strictFenceLines(lines []string) map[int]bool {
 	return out
 }
 
-// lineCodeSpans liefert die Code-Spans, die vollständig in der Zeile liegen.
+// lineCodeSpans liefert die Code-Spans, die ein Scan der Zeile allein findet;
+// ein Span aus der Vorzeile kann die Paarung verschieben (fail-safe).
 func lineCodeSpans(line string) [][2]int {
 	var spans [][2]int
 	forEachInlineCodeSpan(line, func(start, end, _, _ int) {
@@ -99,17 +172,25 @@ var linkDestRE = regexp.MustCompile(`^[ \t]*(?:<[^<>\n]*>|[^\s<>]+)(?:[ \t]+(?:"
 
 // linkTargetCuts liefert die Byte-Bereiche der Link-Ziele einer vorverarbeiteten
 // Zeile: das Ziel-Token jedes Inline-Links und Bilds (ohne Titel) und das Ziel
-// einer Referenz-Definition. Kein Link ist ein Treffer mit escapter Klammer,
-// mit ungültigem Zielausdruck, dessen öffnende Klammer in einem
-// zeilenlokalen Code-Span der Rohzeile liegt (code), eine Fußnote (`[^…]:`)
-// und eine Referenz-Definition ohne pfadartiges Ziel.
+// einer Referenz-Definition; auf einer Definitionszeile zählt nur ihr Ziel,
+// nicht ein link-förmiger Titel. Kein Link ist ein Treffer mit escapter
+// Linktext-Klammer, mit ungültigem Zielausdruck, dessen öffnende Klammer in
+// einem zeilenlokalen Code-Span der Rohzeile liegt (code) oder dessen Linktext
+// einen Link enthält, und keiner ist eine Fußnote (`[^…]:`). Eine escapte
+// Zielklammer lässt das Ziel auf `\` enden; es löst nie auf und bleibt roh.
 func linkTargetCuts(text string, code [][2]int) [][2]int {
+	if m := definitionRe.FindStringSubmatchIndex(text); m != nil {
+		if strings.HasPrefix(text[m[2]:m[3]], "^") {
+			return nil
+		}
+		return [][2]int{{m[4], m[5]}}
+	}
 	var cuts [][2]int
 	for _, sp := range ExtractLinkSpans(text) {
-		if escapedAt(text, sp.TextStart-1) || escapedAt(text, sp.TextEnd) || escapedAt(text, sp.End-1) {
+		if escapedAt(text, sp.TextStart-1) || escapedAt(text, sp.TextEnd) {
 			continue
 		}
-		if overlapsAny(code, sp.Start, sp.Start+1) {
+		if overlapsAny(code, sp.Start, sp.Start+1) || containsLink(text[sp.TextStart:sp.TextEnd]) {
 			continue
 		}
 		if !linkDestRE.MatchString(text[sp.TextEnd+2 : sp.End-1]) {
@@ -119,13 +200,18 @@ func linkTargetCuts(text string, code [][2]int) [][2]int {
 			cuts = append(cuts, c)
 		}
 	}
-	if m := definitionRe.FindStringSubmatchIndex(text); m != nil {
-		label, target := text[m[2]:m[3]], text[m[4]:m[5]]
-		if !strings.HasPrefix(label, "^") && (strings.HasPrefix(target, "<") || strings.ContainsAny(target, "./#:")) {
-			cuts = append(cuts, [2]int{m[4], m[5]})
+	return cuts
+}
+
+// containsLink meldet, ob ein Linktext selbst einen Link enthält -- dann ist
+// der äußere Treffer nach CommonMark kein Link; ein Bild darin ist erlaubt.
+func containsLink(linkText string) bool {
+	for _, sp := range ExtractLinkSpans(linkText) {
+		if !sp.IsImage {
+			return true
 		}
 	}
-	return cuts
+	return false
 }
 
 // overlapsAny meldet, ob [start,end) einen der halboffenen Bereiche berührt.
@@ -160,22 +246,6 @@ func targetToken(text string, from, to int) ([2]int, bool) {
 		j++
 	}
 	return [2]int{i, j}, true
-}
-
-// cutRanges entfernt die Bereiche aus line; überlappende werden übersprungen.
-func cutRanges(line string, cuts [][2]int) string {
-	sort.Slice(cuts, func(a, b int) bool { return cuts[a][0] < cuts[b][0] })
-	var b strings.Builder
-	last := 0
-	for _, c := range cuts {
-		if c[0] < last {
-			continue
-		}
-		b.WriteString(line[last:c[0]])
-		last = c[1]
-	}
-	b.WriteString(line[last:])
-	return b.String()
 }
 
 // escapedAt meldet, ob vor s[i] eine ungerade Zahl Backslashes steht.
