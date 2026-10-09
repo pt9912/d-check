@@ -36,7 +36,7 @@ der Lauf die Unterverzeichnisse nicht prüft, sind zurückgenommen.
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Die Produkt-Schlüssel** — slice-263.
-- **Die Archivierung der 23 Volltexte unter `done/wellenlos/`** — ein eigener
+- **Die Archivierung der 24 Volltexte unter `done/wellenlos/`** — ein eigener
   Vorgang am Bestand, kein Teil der Prüfung.
 
 Was hier steht, ist die Grenze, an der ein wachsender Slice sich messen lässt:
@@ -68,6 +68,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `spec/spezifikation.md` ([`SPEC-095`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)), `harness/sensors/{hooks,verify-closure-notes}.md`, `.githooks/pre-commit` | update | Rücknahme der Grenz-Aussagen |
 | `.d-check.yml` (`reviews`), `harness/sensors/review-coverage.md` | update | **Plan-Änderung nach Review R1 F-1:** `make review-coverage` liest dieselbe Kandidatenmenge wie der Übergangs-Wächter — sonst antworten zwei Läufe verschieden auf dieselbe Frage; gemessen mit Rekursion: 0 Befunde |
 | `observations/BEO-ALL/` (neuer Eintrag) | create | **Plan-Änderung nach Review R1 F-2:** der offene Punkt aus slice-242 R2 bekommt den Ausgang *weiter offen* und braucht dafür einen Register-Eintrag |
+| `docs/plan/adr/0105-…` (neu), [ADR-0081](../../adr/0081-reviews-modul.md) `## Geschichte`, ADR-Index | create/update | **Plan-Änderung nach Review R2 F-9:** die Rekursion in beiden Profilen widerspricht [ADR-0081](../../adr/0081-reviews-modul.md) Entscheidung 4 — Folge-ADR nach `AGENTS.md` §3.6, `Proposed` bis zur Closure |
 
 ## 4. Trigger
 
@@ -132,7 +133,7 @@ Stub-Ausnahme `(?m)^> \*\*ARCHIVIERT` in einer Wegwerf-Kopie des Profils
 meldet der Lauf über 974 Dateien genau **vier** Befunde — den Risiko-Ausgang
 `*(offen)*` in §6 von slice-240 bis slice-243. Die `planning`-Hälfte meldet
 nichts, die `reviews`-Hälfte ebenfalls nichts. Unter `done/wellenlos/` liegen
-23 Volltexte; die Wellen-Verzeichnisse tragen nur Stubs.
+24 Volltexte (gezählt gegen die volle Marker-Form); die Wellen-Verzeichnisse tragen nur Stubs.
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
 `upstream-drift` grün (2026-10-09T07:17Z). `image-scan` rot (2026-10-09T10:37Z)
