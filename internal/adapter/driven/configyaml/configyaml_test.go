@@ -1375,3 +1375,17 @@ func TestDecode_ClosureRecursiveUndSkip(t *testing.T) {
 		t.Fatalf("ohne die Schlüssel müssen die Felder leer bleiben: %+v, %v", leer.Planning.Closure, err)
 	}
 }
+
+// Ein nicht kompilierendes skip-pattern bricht ab, und die Meldung nennt den
+// Schlüssel — in beiden Modulen.
+func TestDecode_SkipPatternMeldungNenntSchluessel(t *testing.T) {
+	for want, bad := range map[string]string{
+		"planning.closure.skip-pattern": "planning:\n  closure:\n    dir: done\n    skip-pattern: '^(['\n",
+		"skip-pattern":                  "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    skip-pattern: '^(['\n",
+	} {
+		_, err := configyaml.Decode([]byte(bad))
+		if err == nil || !strings.Contains(err.Error(), want) {
+			t.Errorf("ungültiges Muster: Fehler mit %q erwartet, got %v", want, err)
+		}
+	}
+}
