@@ -133,6 +133,15 @@ einer neuen Zeile (R2-F-3). slice-263 nennt in §3 die vier Aussagen, die er
 mit der Behebung zurücknimmt (R2-F-4). [`SPEC-093`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) fasst den Extraktor-Fall
 enger (R2-F-5).)*
 
+*(Plan-Änderung nach der Verifikation, vor dem Code:
+[`MR-076`](../../../../harness/conventions.md#mr-076) nimmt die Härtung des
+Stop-Hooks auf — Geltungsbereich und Adaption —, sonst stünde sie ohne
+Eintrag (V-1). Die Durchlass-Klasse „Flag hinter einem Präfix" kommt in
+Grenze 1 von `guard-probe.md` und in den GRENZE-Kommentar des Wächters (V-2).
+[`SPEC-094`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+nennt die absichtliche Umgehung `MAKEFLAGS=` (V-3). [`MR-074`](../../../../harness/conventions.md#mr-074) und slice-262
+nennen die drei Werkzeuge, die noch keinem Slice zugeordnet sind (V-5).)*
+
 ## 4. Trigger
 
 **Start** (`next` → `in-progress`): slice-259 in `done/`; `in-progress/` leer.
