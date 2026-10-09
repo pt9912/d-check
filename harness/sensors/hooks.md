@@ -10,10 +10,9 @@ jeden Commit, [`make verify-closure-notes`](verify-closure-notes.md) an jeden
 Übergang eines Slice nach `done/`. Welcher Hook welche Prüfung ruft und
 welcher Diff den Übergang erkennt, legt
 [`SPEC-095`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
-fest — für einen Slice direkt unter `done/` hängen die Vorbedingungen damit am
-**Übergang** selbst, nicht nur an
-einer gelegentlichen `fullbuild`-Prüfung; für die Unterverzeichnisse gilt das
-nicht (Grenze 4).
+fest — für jeden Slice, der im Volltext nach `done/` oder in eines seiner
+Unterverzeichnisse schließt, hängen die Vorbedingungen damit am **Übergang**
+selbst, nicht nur an einer gelegentlichen `fullbuild`-Prüfung.
 
 ## Grenze — was das Grün nicht abdeckt
 
@@ -31,10 +30,9 @@ nicht (Grenze 4).
 3. **Die CI blockiert einen Merge nur mit Branch Protection** — ein
    Pflicht-Status-Check auf dem Default-Branch liegt **außerhalb** des Repos
    und ist aus dem Klon nicht auditierbar. Ohne sie ist die CI *advisory*.
-4. **Der Übergang löst `verify-closure-notes` aus, aber der Lauf prüft nur
-   `done/` selbst.** Ein Slice, der nach `done/wellenlos/` oder unter ein
-   Wellen-Verzeichnis wandert, wird erkannt und nicht geprüft; ein grüner
-   Commit sagt über seine Closure-Notiz nichts.
+4. **Ein archivierter Stub löst den Lauf aus, wird aber nicht geprüft** — er
+   trägt keine Closure-Notiz mehr; geprüft wird der Volltext, solange er im
+   Baum liegt ([`verify-closure-notes`](verify-closure-notes.md), Grenze 8).
 
 ## Bindung
 

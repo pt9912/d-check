@@ -2,8 +2,9 @@
 
 ## Vertrag
 
-Kein Slice liegt **direkt** in `done/`, dessen Closure-Notiz fehlt, zu dünn ist, aus einer
-deklarierten Floskel besteht oder einen unausgefüllten Vorlagen-Platzhalter
+Kein Slice liegt im Volltext in `done/` oder einem seiner Unterverzeichnisse
+(`wellenlos/`, die Wellen-Verzeichnisse), dessen Closure-Notiz fehlt, zu dünn
+ist, aus einer deklarierten Floskel besteht oder einen unausgefüllten Vorlagen-Platzhalter
 trägt; keiner trägt einen offenen DoD-Haken; kein notiertes Risiko steht ohne
 einen der drei Kanon-Ausgänge da; keine zitierte Beobachtung ist unregistriert;
 keine Review-Zusage steht ohne Report.
@@ -64,11 +65,14 @@ erfüllt", nicht „die Notizen sind gut". Die semantische Schicht ist der Skill
    Platzhalter-Regel deckt **vier Formen** (die zwei repo-eigenen und die
    zwei der Kanon-Vorlage); die generische Winkelklammer-Form fängt daneben
    `closure-note-placeholder`, aber **nur im Closure-Abschnitt**.
-8. **Die Unterverzeichnisse von `done/` liest der Lauf nicht** —
-   `done/wellenlos/` und die Wellen-Verzeichnisse. Ein Slice, der dorthin
-   schließt, wird weder von `planning` noch von `structure` gesehen; die
-   Zusage oben gilt nur für die Slices direkt in `done/`. `ls
-   docs/plan/planning/done/*/slice-*.md` zeigt, was außerhalb liegt.
+8. **Ein archivierter Stub ist kein Kandidat** — er fällt über seinen Marker
+   `> **ARCHIVIERT**` am Zeilenanfang heraus, in `done/` wie in seinen
+   Unterverzeichnissen. Ein Volltext, der diesen Marker am Zeilenanfang
+   zitiert, fällt ebenso still heraus; ein Symlink auf ein Unterverzeichnis
+   wird nicht verfolgt
+   ([`DC-FA-PLAN-001`](../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)).
+   Die Wellen-Ergebnisnotizen prüft `structure` nur direkt in `done/`, wo sie
+   liegen.
 
 **Von diesen Grenzen gelten dem DoD-Haken-Wächter die Fence-Hälften, nicht die
 Inline-Code-Hälften:** er liest die **rohen** Zeilen, also verschluckt die
@@ -118,9 +122,6 @@ aus, sobald ein Rename/Add eines `slice-*.md` irgendwo unter
 `docs/plan/planning/done/` gestagt ist, und dieselbe Bindung läuft in der
 PR-/Push-CI über die Commit-Range
 ([`SPEC-095`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)).
-**Der Lauf selbst liest nur `done/`, nicht seine Unterverzeichnisse:** ein
-Slice, der nach `done/wellenlos/` oder unter ein Wellen-Verzeichnis wandert,
-löst ihn aus, wird aber nicht geprüft.
 
 [ADR-0048](../../docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md) ·
 [ADR-0059](../../docs/plan/adr/0059-closure-waechter-weicht-structure-regel.md) ·

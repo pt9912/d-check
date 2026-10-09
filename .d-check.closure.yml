@@ -48,6 +48,13 @@ planning:
     # Der Ruheort der abgeschlossenen Slices. Nur hier wird Slice-INHALT
     # gelesen; in-progress-Slices tragen noch keine Closure-Pflicht.
     dir: docs/plan/planning/done
+    # Auch die Unterverzeichnisse: `done/wellenlos/` und die Wellen-
+    # Verzeichnisse. Ein archivierter Stub traegt keine Closure-Notiz mehr und
+    # faellt ueber seinen Marker aus der Kandidatenmenge.
+    # GRENZE: ein Volltext, der den Marker am Zeilenanfang zitiert, faellt
+    # ebenso still heraus (DC-FA-PLAN-001).
+    recursive: true
+    skip-pattern: '(?m)^> \*\*ARCHIVIERT'
     # `closure.glob` bleibt UNGESETZT — die Fähigkeit erbt `slice-glob` und
     # prüft nur `slice-*.md`. Das war eine Entscheidung gegen den ersten
     # Anlauf: dort stand hier `glob: "*.md"` samt `heading-pattern` auf
@@ -112,18 +119,25 @@ planning:
 #   ADR: Re-Evaluierungs-Trigger       20   noch nicht — Sanierung waere ein
 #   ADR: Verglichene Alternativen      14   eigener Slice, keine Nebenwirkung
 #   Wellen-Results: Steering-Loop       7   dieses hier
+#
+# Die Slice-Regeln greifen mit `**/` auch in die Unterverzeichnisse von
+# `done/` und nehmen archivierte Stubs ueber ihren Marker aus — dieselbe
+# Kandidatenmenge wie `planning.closure` oben. Die Bestands-Ausnahmen tragen
+# dasselbe `**/`, sonst griffe eine Ausnahme nur am alten Ort.
 structure:
   # Jeder abgeschlossene Slice traegt eine nicht-leere Closure-Notiz. Das
   # DOPPELT die Aussage des planning-Gates bewusst nicht: dort geht es um
   # Substanz (Satzzahl, Floskel, Platzhalter), hier nur um die Existenz des
   # Abschnitts ueber denselben geteilten Mechanismus — der Preset-Beleg im
   # eigenen Lauf.
-  - files: "docs/plan/planning/done/slice-*.md"
+  - files: "docs/plan/planning/done/**/slice-*.md"
+    skip-pattern: '(?m)^> \*\*ARCHIVIERT'
     section-pattern: '^#{2,3} .*Closure-Notiz'
     non-empty: true
 
   # Jeder abgeschlossene Slice traegt eine Definition of Done.
-  - files: "docs/plan/planning/done/slice-*.md"
+  - files: "docs/plan/planning/done/**/slice-*.md"
+    skip-pattern: '(?m)^> \*\*ARCHIVIERT'
     section-pattern: '^## [0-9]+\. Definition of Done'
     non-empty: true
 
@@ -148,7 +162,8 @@ structure:
   # Grenze, benannt: die Alternation ist eine LISTE. Aendert die Vorlage ihre
   # Platzhalter-Form, schweigt die Regel; sie gehoert beim naechsten
   # Vorlagen-Bump mitgeprueft.
-  - files: "docs/plan/planning/done/slice-*.md"
+  - files: "docs/plan/planning/done/**/slice-*.md"
+    skip-pattern: '(?m)^> \*\*ARCHIVIERT'
     section-pattern: '^# '
     sections: each
     forbid-pattern: '\(bei Closure\)|wird mit dem Closure-Body gefüllt|<…>|<eingetreten:'
@@ -178,10 +193,11 @@ structure:
   # Nummern erzeugt haette. Gemessen am Bestand: ohne Ausnahme 122 Befunde
   # (107 `section-missing`, weil die aelteren Slices ihr §5 unter anderem Titel
   # fuehren, plus 15 Freitext-Ausgaenge), mit ihr null.
-  - files: "docs/plan/planning/done/slice-*.md"
+  - files: "docs/plan/planning/done/**/slice-*.md"
+    skip-pattern: '(?m)^> \*\*ARCHIVIERT'
     exempt-paths:
-      - "docs/plan/planning/done/slice-0??-*"
-      - "docs/plan/planning/done/slice-1[0-3]?-*"
+      - "docs/plan/planning/done/**/slice-0??-*"
+      - "docs/plan/planning/done/**/slice-1[0-3]?-*"
     # ZWEI FORMEN, EIN MUSTER (slice-208): Die Baseline v6.9.0 fuehrt den
     # Abschnitt als `## 6. Risiken und offene Punkte`, der eingefrorene
     # Bestand als `## 5. Abnahme-Punkte / Risiken`. Beide werden gehalten --
@@ -235,11 +251,12 @@ structure:
   # 2026-09-17), eine fehlende meldet section-open-tasks-marker-missing
   # statt der Einzelbefunde. slice-221 war der Anlassfall und ist seither
   # ueber diese Kopplung gedeckt, kein namentlicher exempt-paths-Eintrag mehr.
-  - files: "docs/plan/planning/done/slice-*.md"
+  - files: "docs/plan/planning/done/**/slice-*.md"
+    skip-pattern: '(?m)^> \*\*ARCHIVIERT'
     exempt-paths:
-      - "docs/plan/planning/done/slice-0??-*"
-      - "docs/plan/planning/done/slice-1[0-6]?-*"
-      - "docs/plan/planning/done/slice-170-*"
+      - "docs/plan/planning/done/**/slice-0??-*"
+      - "docs/plan/planning/done/**/slice-1[0-6]?-*"
+      - "docs/plan/planning/done/**/slice-170-*"
     section-pattern: '^#{2,3} [0-9]+\. Definition of Done'
     sections: each
     max-open-tasks: 0
@@ -260,6 +277,12 @@ structure:
 # erweitert, muss sie auch hier nachgezogen werden (benannte Grenze,
 # ADR-0082 Konsequenzen). Die fuenf Eintraege sind mit slice-200 entfernt --
 # siehe die Begruendung im Hauptprofil (.d-check.yml).
+#
+# Abweichend vom Hauptprofil liest dieser Block auch die Unterverzeichnisse von
+# `done/` und nimmt die Stubs aus — der Uebergangs-Waechter prueft dieselbe
+# Kandidatenmenge wie `planning.closure` oben.
 reviews:
   done-dir: docs/plan/planning/done
   reviews-dir: docs/reviews
+  recursive: true
+  skip-pattern: '(?m)^> \*\*ARCHIVIERT'

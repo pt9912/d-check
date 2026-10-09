@@ -90,10 +90,12 @@ wellenlos hier geprüft).
 ## 6. Risiken und offene Punkte
 
 - Die Ergänzung lockert versehentlich das Senkungs-Verbot — DoD 2
-  (Gegenprobe `git diff`) deckt. — **Ausgang:** *(offen)*
+  (Gegenprobe `git diff`) deckt. — **Ausgang:** entfallen — Gegenprobe bestanden, byte-identisch (§7).
 - „unabhängig lauffähig" ist ein Urteil, kein Muster — die Grenze wird im
   Vollzug am eigenen Bestand belegt (welche Targets der Klasse schon
-  angehören). — **Ausgang:** *(offen)*
+  angehören). — **Ausgang:** entfallen — getragen als benannte Grenze: `AGENTS.md` §3.6 führt die Regel als Akt, den kein Gate prüft (Auflösungs-Trigger permanent); das Urteil fällt je Aufnahme.
+
+*Die Ausgänge sind mit slice-264 aus §7 nachgetragen.*
 
 ## 7. Closure-Notiz
 

@@ -97,10 +97,12 @@ wellenlos hier geprüft).
 - Vorzeitige Mechanisierung gegen die vierte-Mal-Schwelle — der Baseline-
   Wortlaut verlangt den Sensor erst bei ausgeschöpfter Prosa; eine
   Zwangs-Begründung „warum keiner möglich ist" ist **nicht** gefordert,
-  solange die Prosa trägt. — **Ausgang:** *(offen)*
+  solange die Prosa trägt. — **Ausgang:** entfallen — abgewehrt, der Prosa-Verbleib spricht gegen die Schwelle (§7).
 - Die Bewertung verwechselt Zustands-Prüfung (mechanisch) mit
   Urteils-Bedeutung (nicht mechanisch) — DoD 1 verlangt je Zeile den
-  Gegenstand, nicht die Behauptung. — **Ausgang:** *(offen)*
+  Gegenstand, nicht die Behauptung. — **Ausgang:** entfallen — je Zeile getrennt belegt (§7).
+
+*Die Ausgänge sind mit slice-264 aus §7 nachgetragen.*
 
 ## 7. Closure-Notiz
 

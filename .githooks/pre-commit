@@ -23,8 +23,8 @@
 # verify-closure-notes aus (SPEC-095). KOPPLUNG: dieselbe Erkennung steht in
 # .github/workflows/ci.yml. grep liest die ganze Liste: mit -q braeche es
 # beim ersten Treffer ab, und unter pipefail liesse das SIGPIPE des awk
-# den Treffer verschwinden. GRENZE: der ausgeloeste Lauf prueft nur die
-# Slices direkt unter done/, nicht die in seinen Unterverzeichnissen.
+# den Treffer verschwinden. Ein archivierter Stub loest den Lauf aus, der
+# Lauf nimmt ihn ueber seinen Marker aus (.d-check.closure.yml).
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 make adr-check STAGED=1

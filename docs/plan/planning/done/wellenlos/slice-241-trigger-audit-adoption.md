@@ -94,12 +94,14 @@ wellenlos hier geprüft).
 
 - Eine Doppel-Dokumentation (README **und** Skill) beschreiben denselben
   Schritt verschieden — eine Quelle gewinnt, die andere bleibt Zeiger. —
-  **Ausgang:** *(offen)*
+  **Ausgang:** entfallen — vermieden, das README gewinnt (§7).
 - Der Audit bleibt Prosa ohne Vollzugs-Beleg — DoD 2 deckt die erste
-  Ausführung ab. — **Ausgang:** *(offen)*
+  Ausführung ab. — **Ausgang:** entfallen — DoD 2 belegt die erste Ausführung (§7).
 - Die Vier-Klassen-Terminologie (bootstrap-aware Gate) passt nicht 1:1 auf
   d-checks Gate-Landschaft (kein Stufen-Gate) — die Übertragung wird im
-  Vollzug je Klasse belegt oder als n.a. begründet. — **Ausgang:** *(offen)*
+  Vollzug je Klasse belegt oder als n.a. begründet. — **Ausgang:** entfallen — als nicht anwendbar begründet, siehe den Audit-Vollzug in §7.
+
+*Die Ausgänge sind mit slice-264 aus §7 nachgetragen.*
 
 ## 7. Closure-Notiz
 
