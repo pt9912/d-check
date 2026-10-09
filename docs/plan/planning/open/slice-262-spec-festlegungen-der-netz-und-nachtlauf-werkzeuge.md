@@ -13,7 +13,7 @@ Festlegung ergab.
 
 **Berührte Spec-Stellen:** `spec/spezifikation.md` §7.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912
 
 **Autor:** pt9912. **Datum:** 2026-10-08.
 
@@ -60,7 +60,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | `spec/spezifikation.md` | update | §7-Einträge |
-| `harness/sensors/*.md` der betroffenen Werkzeuge | update | Verweis auf die Kennung |
+| `harness/sensors/*.md` der betroffenen Werkzeuge | update | Verweis auf die Kennung; die gemessenen Abweichungen zur Wirklichkeit des Codes nachziehen |
 
 ## 4. Trigger
 
@@ -100,17 +100,36 @@ wellenlos hier geprüft.
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** die Spezifikation und die
-Harness-Doku unter dem Default `*` (`ALL`); `tools/harness/` (`HARN`), soweit
-die Achsen dort liegen — beim Beanspruchen neu prüfen.
+**Vorgelagert — Sub-Area-Wahl prüfen:** Die Spezifikation und die
+Harness-Doku unter dem Default `*` (`ALL`). Die Skripte der Achsen liegen unter
+`tools/harness/` (`HARN`), werden hier aber nur gelesen, nicht geändert — die
+Sub-Area ist nicht berührt.
 
 <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
 > **Offene Beobachtungen sichten.** Das
 
-**Vorgelagert — offene Beobachtungen sichten:** beim Beanspruchen neu lesen.
+**Vorgelagert — offene Beobachtungen sichten:** Eine berührt den Slice.
+[`BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/observation.md)
+(verkörpert als Schritt 17 im Workflow-Skelett): Die Sensor-Dateien
+beschreiben die Werkzeuge in eigener Prosa, und genau dort liegen die
+Abweichungen, die die Messung fand.
+
+**Messung beim Beanspruchen** (am Code, nicht an der Doku):
+- `harness/sensors/freshness-go.md` nennt „vier Versions-Achsen“, im Code sind
+  es fünf (mit Trivy); `runtime-base-digest.md` nennt „fünf Achsen“, es sind
+  sechs. `freshness-trivy` und `trivy-digest` stehen nicht im Nachtlauf
+  `upstream-drift.yml`, obwohl der Gate-Index „Nachtlauf“ sagt.
+- `baseline-freshness.md` sagt „Werkzeug-Ausfall → SKIP“; ein fehlendes `curl`
+  endet mit Exit 1.
+- `nightly-state.md` sagt, eine planmäßige Meldung werde anders behandelt; der
+  Code unterscheidet nicht, er gibt einen festen Hinweis aus.
+- `history-range-guard` und `selbstpruefung` treffen eigene Festlegungen und
+  bekommen einen §7-Eintrag; `baseline-probe` ist der Selbsttest der
+  Alias-Frage aus [`SPEC-092`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) und bekommt keinen.
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
-beim Beanspruchen aus dem jüngsten Lauf lesen.
+`upstream-drift` grün (2026-10-09T07:17Z). `image-scan` rot (2026-10-09T10:37Z)
+— der Lauf liegt vor dem Release v0.85.0, das die gemeldeten CVEs behebt.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
