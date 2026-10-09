@@ -8,13 +8,13 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst.
 
 **Bezug:** eingehender CR von `sf-connector`
-([`docs/plan/cr/2026-10-09-cr-eingehend-sf-connector-reviews-zusage.md`](../../cr/2026-10-09-cr-eingehend-sf-connector-reviews-zusage.md),
+([`docs/plan/cr/2026-10-09-cr-eingehend-sf-connector-reviews-zusage.md`](../../../cr/2026-10-09-cr-eingehend-sf-connector-reviews-zusage.md),
 Punkte 1 bis 3); Befund aus der Planung von slice-263 (`reviews.done-dir` liest
 keine Unterverzeichnisse); Auftraggeber-Entscheide 2026-10-09 (ein Release mit
 slice-263; der Default erkennt zusätzlich die Vorlagen-Form, ausgehender CR an
 den Kurs).
 
-**Berührte Spec-Stellen:** [`DC-FA-RVW-001`](../../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in),
+**Berührte Spec-Stellen:** [`DC-FA-RVW-001`](../../../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in),
 `spec/spezifikation.md` §2 (Schlüssel `reviews.*`) und die Grund-Code-Zeile von
 `review-missing`.
 
@@ -123,7 +123,7 @@ Slice-Plans formuliert den DoD-Punkt „Review durchgeführt, Report unter
 grün über einer leeren Menge. Der Default erkennt deshalb **zusätzlich** die
 Vorlagen-Form „Review durchgeführt"; das ändert den Befundsatz dort, wo heute
 nichts geprüft wird, und steht als Default-Änderung im Lastenheft. Dazu ein
-**ausgehender CR** an den Kurs (`docs/plan/cr/`, [`MR-035`](../../../../harness/conventions.md#mr-035)): die
+**ausgehender CR** an den Kurs (`docs/plan/cr/`, [`MR-035`](../../../../../harness/conventions.md#mr-035)): die
 `.d-check.yml`-Vorlage setzt `require-promises`, sobald v0.85.0 released ist,
 damit ein künftiges Auseinanderlaufen von Vorlage und Default laut wird. Die
 Abgrenzung „Der Default der Phrase bleibt" in §1 entfällt damit.)*
@@ -175,7 +175,7 @@ slice-263 hinaus.
 
 - **Kennungs-Muster und Report-Zuordnung** — eine benannte Kennung
   `slice-<welle>-<titel>` kann Präfix einer anderen sein; die Zuordnung
-  Report → Slice muss eindeutig bleiben. — **Ausgang:** weiter offen — eingetreten im Review (R1 F-10) und für Buchstaben und Ziffern geschlossen; der Präfix über Bindestrich, Unterstrich oder Punkt bleibt als benannte Grenze in Lastenheft und Spezifikation und steht im Register als [`BEO-ALL/name-zuordnung-deckt-praefix-slices`](../observations/BEO-ALL/name-zuordnung-deckt-praefix-slices/state.md).
+  Report → Slice muss eindeutig bleiben. — **Ausgang:** weiter offen — eingetreten im Review (R1 F-10) und für Buchstaben und Ziffern geschlossen; der Präfix über Bindestrich, Unterstrich oder Punkt bleibt als benannte Grenze in Lastenheft und Spezifikation und steht im Register als [`BEO-ALL/name-zuordnung-deckt-praefix-slices`](../../observations/BEO-ALL/name-zuordnung-deckt-praefix-slices/state.md).
 
 ## 7. Closure-Notiz
 
@@ -210,17 +210,17 @@ slice-263 hinaus.
   `BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen` trat zum
   zweiten Mal nach seiner Verkörperung auf — die Prosa-Form ist ausgeschöpft,
   ein Teil-Sensor ist benannt, die Entscheidung liegt beim Auftraggeber.
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-265.md` in
-  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-265.md` in
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
   (3×, verkörpert),
-  [`BEO-ALL/review-fix-applied-only-at-cited-site`](../observations/BEO-ALL/review-fix-applied-only-at-cited-site/state.md)
+  [`BEO-ALL/review-fix-applied-only-at-cited-site`](../../observations/BEO-ALL/review-fix-applied-only-at-cited-site/state.md)
   (3×, verkörpert),
-  [`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`](../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md),
-  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/state.md)
+  [`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`](../../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md),
+  [`BEO-ALL/commit-message-overclaims-work`](../../observations/BEO-ALL/commit-message-overclaims-work/state.md)
   und
-  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md);
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md);
   neu
-  [`BEO-ALL/name-zuordnung-deckt-praefix-slices`](../observations/BEO-ALL/name-zuordnung-deckt-praefix-slices/state.md)
+  [`BEO-ALL/name-zuordnung-deckt-praefix-slices`](../../observations/BEO-ALL/name-zuordnung-deckt-praefix-slices/state.md)
   (1×).
 - **Folge-Slices:** slice-264 (Closure-Profil dieses Repos) setzt auch für
   `reviews` `recursive` und `skip-pattern`; slice-266 (Modul-Doku im Image),
@@ -230,7 +230,7 @@ slice-263 hinaus.
 - **Risiken aus §6:** eines weiter offen (Register, siehe §6). Trigger-Audit:
   kein Carveout, kein bootstrap-aware Gate, keine ADR, keine Hard Rule mit
   eingetretenem Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8; die beiden
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8; die beiden
   dort später gemeldeten Pins (Go, a-check) sind gehoben.
 - **Drei Paarungen:** (a) Anker — `.claude/commands/implement-slice.md` trägt
   `seit slice-265` in den Schritten 19 und 20; (b) Folge-Slices — slice-264,
@@ -249,7 +249,7 @@ slice-263 hinaus.
 Spezifikation — alle unter dem Default `*` (`ALL`); deklariert.
 
 **Spiegel vor dem Editieren** (Schritt 17,
-[`MR-025`](../../../../harness/conventions.md#mr-025); gemessen mit
+[`MR-025`](../../../../../harness/conventions.md#mr-025); gemessen mit
 `grep -rln "reviews\.\(done-dir\|reviews-dir\)\|ReviewsConfig\|unabhängiger Review\|review-missing"`
 über Code und Doku, ohne eingefrorene Verzeichnisse): Kern-Regel und ihr Test,
 Konfig-Modell, YAML-Adapter, Konfig-Vorlage, CLI-Abnahmetest, Lastenheft,
@@ -278,17 +278,17 @@ R1, zweiter Teil.
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:** gelesen am 2026-10-09.
-[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
 (offen) — das Zusage-Muster wird gegen Negativfälle getestet, nicht nur gegen
-die Formen aus dem CR; [`BEO-ALL/review-fix-applied-only-at-cited-site`](../observations/BEO-ALL/review-fix-applied-only-at-cited-site/state.md)
+die Formen aus dem CR; [`BEO-ALL/review-fix-applied-only-at-cited-site`](../../observations/BEO-ALL/review-fix-applied-only-at-cited-site/state.md)
 (2×) — Review-Befunde werden über ihre Klasse gesucht, ein dritter Treffer
-wäre eine Lücke; [`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`](../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md)
+wäre eine Lücke; [`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`](../../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/state.md)
 — nach Verkörperung schon wieder aufgetreten; vor jedem Code-Commit greppt der
 Lauf die neuen Kommentare und Testtexte nach Chronik-Wörtern;
-[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
+[`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/state.md)
 — die Grenzen der neuen Schlüssel werden am Code gezählt.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 gelesen am 2026-10-09 aus dem jüngsten Lauf (`make nightly-state`) —
 `upstream-drift` grün (2026-10-08 11:37 UTC), `image-scan` grün
 (2026-10-08 10:38 UTC).
