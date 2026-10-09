@@ -16,7 +16,7 @@ Punkt 1 (Auftraggeber-Entscheid: alle drei Module).
 samt ihrer `.a`-Algorithmen und der Grund-Code-Zeilen `review-missing`,
 `closure-note-missing`, `section-missing`.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912
 
 **Autor:** pt9912. **Datum:** 2026-10-09.
 
@@ -105,16 +105,30 @@ hinaus.
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** Produkt unter dem Default `*`
-(`ALL`); beim Beanspruchen neu prüfen.
+**Vorgelagert — Sub-Area-Wahl prüfen:** Berührt sind drei Module der
+Kern-Regeln und die beiden Spec-Straten — alle unter dem Default `*` (`ALL`).
+Keines trägt eine eigene Konvention, einen eigenen Modus oder eine eigene
+Inventur-Linie; eine eigene Sub-Area erfüllt das Kriterium nicht.
 
 <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
 > **Offene Beobachtungen sichten.** Das
 
-**Vorgelagert — offene Beobachtungen sichten:** beim Beanspruchen neu lesen.
+**Vorgelagert — offene Beobachtungen sichten:** Eine berührt den Slice.
+[`BEO-ALL/stilles-gruen-ueber-leerer-range`](../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/observation.md)
+(1×) ist dieselbe Familie mit umgekehrtem Vorzeichen: Dort ist Grün über
+einer leeren Menge der Fehler, hier wird es für die durch `skip-pattern`
+geleerte Menge gewollt. Der Slice muss die beiden Fälle trennbar halten — das
+Risiko in §6. Keine Beobachtung erreicht mit diesem Slice 3×.
+
+**Messung beim Beanspruchen:** Mit `v0.85.0` nachgestellt sind alle drei Fälle
+des Befunds rot (`review-missing` zweimal als leere Menge, einmal als
+Kandidat ohne Zusage), auf demselben Baum `closure-note-missing` und
+`section-missing` (Befund-Datei §Einordnung).
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
-beim Beanspruchen aus dem jüngsten Lauf lesen.
+`upstream-drift` grün (2026-10-09T07:17Z). `image-scan` rot (2026-10-09T10:37Z)
+— der Lauf liegt vor dem Release v0.85.0, das die gemeldeten CVEs behebt;
+der Slice berührt das Image nicht.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
