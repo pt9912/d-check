@@ -47,19 +47,16 @@ func CheckReviews(fsys driven.Filesystem, cfg model.ReviewsConfig) []model.Findi
 	if strings.TrimSpace(cfg.DoneDir) == "" {
 		return nil // inert: keine Datei wird geoeffnet
 	}
-	// Das Muster ist am Config-Rand geprueft (Exit 2); der Rueckfall auf die
-	// Phrase ist nicht erreichbar, haelt aber den Lauf fail-closed statt leer.
-	promiseRE, err := regexp.Compile(cfg.EffectivePromisePattern())
-	if err != nil {
-		promiseRE = regexp.MustCompile(model.ReviewsConfig{}.EffectivePromisePattern())
-	}
-	candidates, badDir := reviewCandidates(fsys, cfg)
+	// Das Muster ist am Config-Rand geprueft (Exit 2), MustCompile trifft hier
+	// nur noch gueltige Muster.
+	promiseRE := regexp.MustCompile(cfg.EffectivePromisePattern())
+	candidates, badDirs := reviewCandidates(fsys, cfg)
 	reviewNames, listErr := fsys.List(cfg.ReviewsDir)
 	var out []model.Finding
-	if badDir != "" {
-		out = append(out, model.Finding{File: cfg.DoneDir, Line: 1, Rule: "reviews", Target: cfg.DoneDir,
+	for _, d := range badDirs {
+		out = append(out, model.Finding{File: cfg.DoneDir, Line: 1, Rule: "reviews", Target: d,
 			Reason:  ReasonReviewMissing,
-			Message: "Verzeichnis " + badDir + " unlesbar — fail-closed"})
+			Message: "Verzeichnis " + d + " unlesbar — fail-closed"})
 	}
 	promises := 0
 	for _, f := range candidates {
@@ -79,8 +76,11 @@ func CheckReviews(fsys driven.Filesystem, cfg model.ReviewsConfig) []model.Findi
 	// eine leere Namens-Liste nie treffen). Null Review-ZUSAGEN unter
 	// vorhandenen Kandidaten ist ohne require-promises ein legitimer Zustand
 	// (ein kleiner oder junger Bestand kann das sein); mit dem Schluessel ist
-	// er ein Befund, weil die Pruefung sonst ueber nichts gruen meldet.
+	// er ein Befund, weil die Pruefung sonst ueber nichts gruen meldet. Neben
+	// einem unlesbaren Unterverzeichnis entfaellt der Leerlauf-Befund: die
+	// Menge ist dann nicht leer, sondern unvollstaendig, und das ist gemeldet.
 	switch {
+	case len(badDirs) > 0:
 	case len(candidates) == 0 || (listErr != nil && promises == 0):
 		out = append(out, model.Finding{File: cfg.DoneDir, Line: 1, Rule: "reviews", Target: cfg.DoneDir,
 			Reason: ReasonReviewMissing,
@@ -144,14 +144,14 @@ func reviewFinding(
 // reviewPromise sucht das ERSTE DoD-Item, dessen TEXT das Zusage-Muster
 // traegt, und liefert die 1-basierte Zeilennummer seines Checkbox-Starts.
 //
-// Ein Item ist NICHT auf seine Checkbox-Zeile beschraenkt: der ueberwiegende
-// Bestand schreibt lange DoD-Punkte als Fließtext ueber mehrere Zeilen, und
-// die Zusage steht dabei haeufig auf einer FOLGEZEILE, nicht auf der
-// Checkbox-Zeile selbst (gemessen: mindestens sechs Faelle im Bestand, u. a.
-// slice-138). Eine Item-Grenze ist deshalb der Bereich von einer
-// Checkbox-Zeile bis ausschließlich der naechsten Checkbox-Zeile, einer
-// Leerzeile oder dem Dateiende -- dieselbe Grenze, an der ein loses
-// Markdown-Listenelement endet.
+// Ein Item ist NICHT auf seine Checkbox-Zeile beschraenkt: lange DoD-Punkte
+// laufen ueber mehrere Zeilen, und die Zusage kann auf einer FOLGEZEILE
+// stehen. Eine Item-Grenze ist deshalb der Bereich von einer Checkbox-Zeile
+// bis ausschließlich der naechsten Checkbox-Zeile, einer Leerzeile oder dem
+// Dateiende -- dieselbe Grenze, an der ein loses Markdown-Listenelement endet.
+// GRENZE: jeder Checkbox-Punkt der Datei zaehlt, nicht nur der im
+// DoD-Abschnitt, auch einer in einem Codeblock; das Muster sieht den Punkt ab
+// dem Bullet, ein ^ verankert also vor "- [ ]".
 func reviewPromise(content string, promiseRE *regexp.Regexp) (line int, ok bool) {
 	lines := strings.Split(content, "\n")
 	for i := 0; i < len(lines); i++ {
@@ -172,10 +172,11 @@ func reviewPromise(content string, promiseRE *regexp.Regexp) (line int, ok bool)
 // reviewCandidates liefert die Slice-Dateien in DoneDir -- mit recursive auch
 // in seinen Unterverzeichnissen (SKIP_DIRS ausgenommen, ein Symlink auf ein
 // Verzeichnis wird nicht verfolgt) --, stabil sortiert, abzueglich
-// exempt-paths und der Dateien, deren Inhalt skip-pattern trifft. badDir nennt
-// ein unlesbares UNTERverzeichnis; ein unlesbares DoneDir selbst ergibt eine
-// leere Menge und damit den Leerlauf-Befund.
-func reviewCandidates(fsys driven.Filesystem, cfg model.ReviewsConfig) (out []string, badDir string) {
+// exempt-paths und der Dateien, deren Inhalt skip-pattern trifft. badDirs
+// nennt die unlesbaren UNTERverzeichnisse, sortiert; die uebrigen Eintraege
+// werden trotzdem gelesen. Ein unlesbares DoneDir selbst ergibt eine leere
+// Menge und damit den Leerlauf-Befund.
+func reviewCandidates(fsys driven.Filesystem, cfg model.ReviewsConfig) (out, badDirs []string) {
 	w := reviewWalk{fsys: fsys, cfg: cfg}
 	if cfg.SkipPattern != "" {
 		w.skipRE = regexp.MustCompile(cfg.SkipPattern)
@@ -184,24 +185,21 @@ func reviewCandidates(fsys driven.Filesystem, cfg model.ReviewsConfig) (out []st
 		w.visit(cfg.DoneDir, entries)
 	}
 	sort.Strings(w.out)
-	return w.out, w.badDir
+	sort.Strings(w.badDirs)
+	return w.out, w.badDirs
 }
 
-// reviewWalk sammelt die Kandidaten; der erste unlesbare Unterordner beendet
-// den Abstieg und steht in badDir.
+// reviewWalk sammelt die Kandidaten und die unlesbaren Unterverzeichnisse.
 type reviewWalk struct {
-	fsys   driven.Filesystem
-	cfg    model.ReviewsConfig
-	skipRE *regexp.Regexp
-	out    []string
-	badDir string
+	fsys    driven.Filesystem
+	cfg     model.ReviewsConfig
+	skipRE  *regexp.Regexp
+	out     []string
+	badDirs []string
 }
 
 func (w *reviewWalk) visit(dir string, entries []driven.DirEntry) {
 	for _, e := range entries {
-		if w.badDir != "" {
-			return
-		}
 		rel := path.Join(dir, e.Name)
 		if e.Kind == driven.KindDir {
 			w.descend(rel, e.Name)
@@ -223,7 +221,7 @@ func (w *reviewWalk) descend(rel, name string) {
 	}
 	entries, err := w.fsys.List(rel)
 	if err != nil {
-		w.badDir = rel
+		w.badDirs = append(w.badDirs, rel)
 		return
 	}
 	w.visit(rel, entries)
@@ -256,14 +254,32 @@ func hasMatchingReview(reviewNames []driven.DirEntry, id string) bool {
 }
 
 // hasReviewContaining prueft, ob ein Report-Dateiname den Basisnamen des Slice
-// enthaelt (match: name) -- mit Datums-Praefix und beliebigem Suffix.
-// GRENZE: ein Basisname, der Praefix eines anderen ist (slice-a-foo und
-// slice-a-foo-bar), wird auch von dessen Report gedeckt.
+// enthaelt (match: name) -- mit Datums-Praefix und beliebigem Suffix. Nach dem
+// Basisnamen steht ein Zeichen, das weder Buchstabe noch Ziffer ist, oder das
+// Ende: slice-26 wird nicht vom Report zu slice-265-x gedeckt.
+// GRENZE: ein Basisname, der durch einen Bindestrich Praefix eines anderen
+// ist (slice-a-foo und slice-a-foo-bar), wird auch von dessen Report gedeckt.
 func hasReviewContaining(reviewNames []driven.DirEntry, key string) bool {
 	for _, e := range reviewNames {
-		if e.Kind == driven.KindFile && strings.Contains(e.Name, key) {
-			return true
+		if e.Kind != driven.KindFile {
+			continue
+		}
+		for rest := e.Name; ; {
+			i := strings.Index(rest, key)
+			if i < 0 {
+				break
+			}
+			after := rest[i+len(key):]
+			if after == "" || !isNameRune(after[0]) {
+				return true
+			}
+			rest = rest[i+1:]
 		}
 	}
 	return false
+}
+
+// isNameRune sagt, ob ein Byte einen Basisnamen fortsetzen wuerde.
+func isNameRune(b byte) bool {
+	return b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9'
 }

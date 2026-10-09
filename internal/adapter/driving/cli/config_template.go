@@ -250,12 +250,12 @@ modules: [links, anchors]
 #   # exempt-paths: ["docs/plan/planning/done/slice-000-*.md"]   # Globs; hebt den Leerlauf-Befund NICHT aus
 #   # Review-Zusage = ein DoD-Punkt (Checkbox-Zeile samt Folgezeilen bis zur nächsten Checkbox
 #   # oder Leerzeile; jede Bullet-Form, Haken-Zustand egal), dessen TEXT promise-pattern trifft.
-#   # Ohne promise-pattern gilt NUR die Phrase "unabhängiger Review" — nicht jede Zeile mit "Review".
+#   # Ohne promise-pattern gelten die Phrase "unabhängiger Review" und die Vorlagen-Form "Review durchgeführt".
 #   # Jede Zusage verlangt einen Report unter reviews-dir, der den Slice deckt ⇒ sonst review-missing.
 #   # Geprüft wird die Deckung, nicht die Qualität des Reports.
-#   # promise-pattern: 'Review durchgeführt'   # RE2 gegen den Punkt-Text; leer ⇒ Exit 2
-#   # match: id                       # id: slice-<NNN> im Report-Namen (Default) | name: der Basisname des
-#   #                                 # Slice ohne .md steckt im Report-Namen (für slice-<welle>-<titel>)
+#   # promise-pattern: 'Code-Review erledigt'   # RE2 gegen den Punkt-Text ab dem Bullet; leer ⇒ Exit 2
+#   # match: name                     # id: slice-<NNN> im Report-Namen (Default) | name: der Basisname des
+#   #                                 # Slice ohne .md steckt im Report-Namen — für Slug-Kennungen (slice-<titel>) nötig
 #   # require-promises: true          # Kandidaten ohne eine einzige Zusage ⇒ review-missing statt grün
 #   # recursive: true                 # auch die Unterverzeichnisse von done-dir (SKIP_DIRS ausgenommen)
 #   # skip-pattern: '(?m)^> \*\*ARCHIVIERT'   # RE2 gegen den rohen INHALT: Treffer ist kein Kandidat (Stub)

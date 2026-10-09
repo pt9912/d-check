@@ -2434,8 +2434,9 @@ func applyWorkflows(r *rawWorkflows) (model.WorkflowsConfig, error) {
 }
 
 // rawReviews trägt die Parameter des Moduls reviews (DC-FA-RVW-001):
-// done-dir (Aktivierungs-Schalter), reviews-dir und exempt-paths. **Kein**
-// scope — wie workflows benennt das Modul seine beiden Verzeichnisse selbst.
+// done-dir (Aktivierungs-Schalter), reviews-dir, exempt-paths, promise-pattern,
+// match, require-promises, recursive und skip-pattern. **Kein** scope — wie
+// workflows benennt das Modul seine Verzeichnisse selbst.
 type rawReviews struct {
 	DoneDir     string   `yaml:"done-dir"`
 	ReviewsDir  string   `yaml:"reviews-dir"`

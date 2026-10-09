@@ -15,17 +15,16 @@ Haken-Zustand egal — braucht mindestens einen Report unter
    aber jeder Volltext unter `done/wellenlos/` und den Wellen-Verzeichnissen.
    Das Modul kann beides (`reviews.recursive`, `reviews.skip-pattern`,
    [`DC-FA-RVW-001`](../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in));
-   die Konfiguration dieses Repos setzt es noch nicht.
-2. **Die DoD-Punkte dieses Repos tragen die Default-Phrase nicht — das Gate
-   prüft heute keinen Slice.** Gemessen am 2026-10-09: eine Probe-
-   Konfiguration mit `recursive`, der Stub-Ausnahme und einem `reviews-dir`
-   ohne Reports meldet mit der Default-Phrase **null** Befunde — die Phrase
-   steht in den Volltexten nur im Fließtext, nie in einem DoD-Punkt. Mit
-   `promise-pattern: "Review durchgeführt|[Uu]nabhängiger Review"` meldet sie
-   26 (11 unter `done/`, 15 unter `done/wellenlos/`), mit dem echten
-   `reviews-dir` null — alle 26 haben ihren Report. `require-promises` hätte
-   den Leerlauf gemeldet; die Konfiguration setzt die Schlüssel, sobald sie
-   released sind.
+   die Konfiguration dieses Repos setzt es noch nicht — die Volltexte unter
+   `done/wellenlos/` bleiben bis dahin ungeprüft.
+2. **Ob das Gate überhaupt Zusagen sieht, zeigt kein grüner Lauf.** Die
+   DoD-Punkte dieses Repos tragen die Form der Slice-Vorlage („Review
+   durchgeführt"), die der Default erkennt; ein Slice mit anderer Formulierung
+   fällt still heraus, solange `require-promises` nicht gesetzt ist. Zeigen
+   lässt es sich mit einer Probe-Konfiguration, deren `reviews-dir` auf ein
+   Verzeichnis ohne Reports zeigt: jede erkannte Zusage meldet dann
+   `review-missing`, und die Zahl der Befunde ist die Zahl der geprüften
+   Slices.
 3. **Fail-closed bei leerer Kandidatenmenge oder unlesbarem `reviews-dir`**,
    **nicht** bei null gefundenen Zusagen unter vorhandenen Kandidaten — ein
    junger Bestand ohne jede Zusage ist legitim.

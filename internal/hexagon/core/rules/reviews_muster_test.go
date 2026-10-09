@@ -9,50 +9,72 @@ import (
 )
 
 const (
-	rvDone    = "docs/plan/planning/done"
-	rvBestand = "## 2. Definition of Done\n\n" +
+	rvDone = "docs/plan/planning/done"
+	// rvVorlage ist der Review-Punkt der Baseline-Slice-Vorlage.
+	rvVorlage = "## 2. Definition of Done\n\n" +
 		"- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor\n" +
 		"      (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8\n"
-	rvMuster = `Review durchgeführt`
+	// rvEigen ist ein Review-Punkt, den nur ein eigenes Muster erkennt.
+	rvEigen  = "## 2. Definition of Done\n\n- [x] Code-Review erledigt, Report liegt vor\n"
+	rvMuster = `Code-Review erledigt`
 )
 
 func rvRunCfg(files map[string]string, cfg model.ReviewsConfig) []model.Finding {
 	return CheckReviews(coretest.NewMemFS(files), cfg)
 }
 
-// Die Abnahme des CR: die DoD-Zeile aus dem Bestand des Absenders ist mit dem
-// Default-Muster keine Zusage — mit promise-pattern ist sie eine, rot ohne
-// Report, grün mit dem Report samt Datums-Präfix und Suffix.
-func TestReviewsPromisePattern_AbnahmeDesCR(t *testing.T) {
+// Der Review-Punkt der Baseline-Vorlage ist mit dem Default eine Zusage: rot
+// ohne Report, grün mit einem Report samt Datums-Präfix und Suffix.
+func TestReviewsDefault_ErkenntVorlagenForm(t *testing.T) {
 	slice := rvDone + "/slice-039-abholzustand-und-lesepfad-publication.md"
-	files := map[string]string{slice: rvBestand}
-	if f := rvRunCfg(files, rvCfg()); f != nil {
-		t.Fatalf("Default-Muster: die Zeile ist keine Zusage, kein Befund erwartet, got %+v", f)
-	}
-	cfg := rvCfg()
-	cfg.PromisePattern = rvMuster
-	f := rvRunCfg(files, cfg)
+	files := map[string]string{slice: rvVorlage}
+	f := rvRunCfg(files, rvCfg())
 	if len(f) != 1 || f[0].File != slice || f[0].Reason != ReasonReviewMissing || f[0].Line != 3 {
 		t.Fatalf("rot: review-missing auf Zeile 3 von %s erwartet, got %+v", slice, f)
 	}
 	files["docs/reviews/2026-10-08-slice-039-abholzustand-und-lesepfad-publication-review.md"] = "# Review\n"
-	if f := rvRunCfg(files, cfg); f != nil {
+	if f := rvRunCfg(files, rvCfg()); f != nil {
 		t.Fatalf("grün: der Report deckt die Zusage, got %+v", f)
 	}
 }
 
-// Negativfälle des Musters: ein anderes Review-Wort im DoD-Punkt und dieselbe
-// Wortfolge in einem Absatz außerhalb eines DoD-Punkts sind keine Zusage.
-func TestReviewsPromisePattern_Negativfaelle(t *testing.T) {
+// Ein eigenes Muster erkennt eine Form, die der Default nicht kennt.
+func TestReviewsPromisePattern_EigeneForm(t *testing.T) {
+	slice := rvDone + "/slice-040-x.md"
+	files := map[string]string{slice: rvEigen}
+	if f := rvRunCfg(files, rvCfg()); f != nil {
+		t.Fatalf("Default: „Code-Review erledigt“ ist keine Zusage, got %+v", f)
+	}
 	cfg := rvCfg()
 	cfg.PromisePattern = rvMuster
+	f := rvRunCfg(files, cfg)
+	if len(f) != 1 || f[0].File != slice || f[0].Reason != ReasonReviewMissing {
+		t.Fatalf("eigenes Muster: review-missing auf %s erwartet, got %+v", slice, f)
+	}
+}
+
+// Negativfälle des Defaults: ein anderes Review-Wort im DoD-Punkt und
+// dieselbe Wortfolge außerhalb eines Checkbox-Punkts sind keine Zusage.
+func TestReviewsDefault_Negativfaelle(t *testing.T) {
 	files := map[string]string{
 		rvDone + "/slice-001-a.md": "## 2. Definition of Done\n\n- [x] Adaptions-Review notiert\n",
 		rvDone + "/slice-002-b.md": "## 7. Notiz\n\nDas Review durchgeführt zu haben, half.\n",
 		rvDone + "/slice-003-c.md": "## 2. Definition of Done\n\n- [ ] Review-Report liegt vor\n",
+		rvDone + "/slice-004-d.md": "## 7. Notiz\n\nEin unabhängiger Review fand drei Befunde.\n",
 	}
-	if f := rvRunCfg(files, cfg); f != nil {
-		t.Fatalf("keine der drei Dateien trägt eine Zusage nach dem Muster, got %+v", f)
+	if f := rvRunCfg(files, rvCfg()); f != nil {
+		t.Fatalf("keine der vier Dateien trägt eine Zusage, got %+v", f)
+	}
+}
+
+// Die benannte Grenze: jeder Checkbox-Punkt der Datei zählt, auch einer in
+// einem Codeblock.
+func TestReviewsDefault_CheckboxImCodeblockZaehlt(t *testing.T) {
+	slice := rvDone + "/slice-005-e.md"
+	files := map[string]string{slice: "## 3. Beispiel\n\n```\n- [ ] Review durchgeführt\n```\n"}
+	f := rvRunCfg(files, rvCfg())
+	if len(f) != 1 || f[0].File != slice || f[0].Line != 4 {
+		t.Fatalf("die benannte Grenze: der Punkt im Codeblock zählt, got %+v", f)
 	}
 }
 
@@ -81,24 +103,33 @@ func TestReviewsMatch_BenannteKennung(t *testing.T) {
 	}
 }
 
-// Die benannte Grenze von match: name: ein Basisname, der Präfix eines anderen
-// ist, wird auch von dessen Report gedeckt.
-func TestReviewsMatch_NamePraefixGrenze(t *testing.T) {
+// match: name verlangt nach dem Basisnamen ein Zeichen, das weder Buchstabe
+// noch Ziffer ist: slice-26 wird nicht vom Report zu slice-265-x gedeckt. Die
+// benannte Grenze: mit Bindestrich deckt der Report zu slice-a-foo-bar auch
+// slice-a-foo.
+func TestReviewsMatch_NameWortgrenze(t *testing.T) {
 	cfg := rvCfg()
 	cfg.Match = "name"
-	files := map[string]string{
+	ziffer := map[string]string{
+		rvDone + "/slice-26.md":                     "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
+		"docs/reviews/2026-10-09-slice-265-x-r1.md": "# Review\n",
+	}
+	if f := rvRunCfg(ziffer, cfg); len(f) != 1 || f[0].File != rvDone+"/slice-26.md" {
+		t.Fatalf("slice-26 darf nicht vom Report zu slice-265-x gedeckt sein, got %+v", f)
+	}
+	strich := map[string]string{
 		rvDone + "/slice-a-foo.md":                  "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
 		"docs/reviews/2026-10-09-slice-a-foo-bar.md": "# Review\n",
 	}
-	if f := rvRunCfg(files, cfg); f != nil {
-		t.Fatalf("die benannte Grenze: der Report von slice-a-foo-bar deckt slice-a-foo, got %+v", f)
+	if f := rvRunCfg(strich, cfg); f != nil {
+		t.Fatalf("die benannte Grenze: der Report zu slice-a-foo-bar deckt slice-a-foo, got %+v", f)
 	}
 }
 
 // require-promises: Kandidaten ohne eine einzige Zusage melden — ohne den
 // Schlüssel ist derselbe Bestand grün.
 func TestReviewsRequirePromises_LeerlaufRot(t *testing.T) {
-	files := map[string]string{rvDone + "/slice-039-x.md": rvBestand}
+	files := map[string]string{rvDone + "/slice-039-x.md": rvEigen}
 	if f := rvRunCfg(files, rvCfg()); f != nil {
 		t.Fatalf("ohne require-promises: grün über null Zusagen, got %+v", f)
 	}
@@ -117,7 +148,7 @@ func TestReviewsRecursiveUndSkipPattern(t *testing.T) {
 	files := map[string]string{
 		rvDone + "/slice-001-a.md": "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
 		"docs/reviews/2026-01-01-slice-001-a-review.md": "# Review\n",
-		full:                             "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
+		full: "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
 		rvDone + "/wellenlos/slice-083-y.md": "# slice-083\n\n" + stubMarker + "\n- [x] unabhängiger Review\n",
 	}
 	if f := rvRunCfg(files, rvCfg()); f != nil {
@@ -135,18 +166,52 @@ func TestReviewsRecursiveUndSkipPattern(t *testing.T) {
 	}
 }
 
-// Ein unlesbares Unterverzeichnis unter recursive ist kein stilles Grün.
-func TestReviewsRecursive_UnlesbaresUnterverzeichnis(t *testing.T) {
+// Unter recursive bleiben die immer übersprungenen Verzeichnisse unbetreten.
+func TestReviewsRecursive_SkipDirsBleibenUnbetreten(t *testing.T) {
 	files := map[string]string{
-		rvDone + "/slice-001-a.md":          "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
+		rvDone + "/slice-001-a.md": "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
 		"docs/reviews/2026-01-01-slice-001-a.md": "# Review\n",
-		rvDone + "/wellenlos/slice-240-x.md": "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
+		rvDone + "/node_modules/slice-002-b.md": "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
 	}
 	cfg := rvCfg()
 	cfg.Recursive = true
-	fsys := reviewsListErrFS{MemFS: coretest.NewMemFS(files), errDir: rvDone + "/wellenlos"}
+	if f := rvRunCfg(files, cfg); f != nil {
+		t.Fatalf("node_modules/ darf nicht betreten werden, got %+v", f)
+	}
+}
+
+// Ein unlesbares Unterverzeichnis meldet mit seinem Pfad; die übrigen
+// Einträge werden weiter gelesen, und der Leerlauf-Befund entfällt neben ihm.
+func TestReviewsRecursive_UnlesbaresUnterverzeichnis(t *testing.T) {
+	missing := rvDone + "/slice-900-z.md"
+	files := map[string]string{
+		rvDone + "/archiv/slice-100-q.md":  "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
+		missing:                            "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
+		rvDone + "/zz/slice-950-w.md":      "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
+		"docs/reviews/2026-01-01-slice-950-w.md": "# Review\n",
+	}
+	cfg := rvCfg()
+	cfg.Recursive = true
+	fsys := reviewsListErrFS{MemFS: coretest.NewMemFS(files), errDir: rvDone + "/archiv"}
 	f := CheckReviews(fsys, cfg)
-	if len(f) != 1 || !strings.Contains(f[0].Message, rvDone+"/wellenlos") {
-		t.Fatalf("unlesbares Unterverzeichnis ⇒ Befund mit seinem Pfad, got %+v", f)
+	if len(f) != 2 || !strings.Contains(f[0].Message, rvDone+"/archiv") || f[1].File != missing {
+		t.Fatalf("Befund auf dem Verzeichnis und auf %s, kein Leerlauf-Befund erwartet, got %+v", missing, f)
+	}
+}
+
+// Liegt der einzige Bestand im unlesbaren Unterverzeichnis, meldet nur das
+// Verzeichnis — kein zweiter, widersprüchlicher Leerlauf-Befund.
+func TestReviewsRecursive_UnlesbaresUnterverzeichnisOhneLeerlauf(t *testing.T) {
+	files := map[string]string{
+		rvDone + "/archiv/slice-100-q.md": "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
+		"docs/reviews/2026-01-01-x.md":    "# Review\n",
+	}
+	cfg := rvCfg()
+	cfg.Recursive = true
+	cfg.RequirePromises = true
+	fsys := reviewsListErrFS{MemFS: coretest.NewMemFS(files), errDir: rvDone + "/archiv"}
+	f := CheckReviews(fsys, cfg)
+	if len(f) != 1 || !strings.Contains(f[0].Message, rvDone+"/archiv") {
+		t.Fatalf("genau ein Befund auf dem unlesbaren Verzeichnis erwartet, got %+v", f)
 	}
 }

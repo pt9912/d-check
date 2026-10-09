@@ -1390,7 +1390,7 @@ func TestDecode_SkipPatternMeldungNenntSchluessel(t *testing.T) {
 	}
 }
 
-// Der Config-Rand der neuen reviews-Schlüssel: was der Kern nur schlucken
+// Der Config-Rand der reviews-Schlüssel: was der Kern nur schlucken
 // könnte, bricht ab, und die Meldung nennt den Schlüssel.
 func TestDecode_ReviewsMusterFehler(t *testing.T) {
 	base := "reviews:\n  done-dir: done\n  reviews-dir: rv\n"
@@ -1414,5 +1414,19 @@ func TestDecode_ReviewsMusterFehler(t *testing.T) {
 	if r.PromisePattern != "Review durchgeführt" || !r.MatchByName() || !r.RequirePromises || !r.Recursive ||
 		r.SkipPattern != "(?m)^> ARCHIVIERT" {
 		t.Fatalf("reviews-Schlüssel nicht durchgereicht: %+v", r)
+	}
+}
+
+// Ein promise-pattern ohne Wert (YAML-null) gilt als abwesend, wie closure.glob:
+// es gilt der Default, kein Abbruch.
+func TestDecode_ReviewsPromisePatternNullIstAbwesend(t *testing.T) {
+	for _, src := range []string{
+		"reviews:\n  done-dir: done\n  reviews-dir: rv\n  promise-pattern:\n",
+		"reviews:\n  done-dir: done\n  reviews-dir: rv\n  promise-pattern: ~\n",
+	} {
+		cfg, err := configyaml.Decode([]byte(src))
+		if err != nil || cfg.Reviews.PromisePattern != "" {
+			t.Fatalf("null muss abwesend sein: %+v, %v", cfg.Reviews, err)
+		}
 	}
 }

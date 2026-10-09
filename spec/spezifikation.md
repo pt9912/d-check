@@ -3015,7 +3015,8 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    Unterverzeichnisse (die `SKIP_DIRS` ausgenommen; ein Symlink auf ein
    Verzeichnis wird nicht verfolgt); ein **unlesbares** Unterverzeichnis ist
    ein Befund `review-missing` auf `reviews.done-dir` mit seinem Pfad in der
-   Meldung. Abgezogen werden `exempt-paths`, danach die Dateien, deren **roher
+   Meldung; die übrigen Einträge werden weiter gelesen. Abgezogen werden
+   `exempt-paths`, danach die Dateien, deren **roher
    Inhalt** `reviews.skip-pattern` trifft (eine unlesbare Datei bleibt
    Kandidatin). Stabil sortiert geprüft. **Null Kandidaten ⇒ Befund**
    `review-missing` mit `file` = `reviews.done-dir`, `line` = 1: eine leere
@@ -3029,8 +3030,11 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    Haken-Zustand zählt nicht —, und reicht bis ausschließlich zur nächsten
    solchen Zeile, zur nächsten Leerzeile oder zum Dateiende. Er ist eine
    **Zusage**, wenn sein Text auf `reviews.promise-pattern` passt (RE2); ohne
-   den Schlüssel gilt die Phrase **„unabhängiger Review"** (Groß-/Kleinschreibung
-   am ersten Buchstaben unerheblich). Der **erste** solche Punkt trägt den
+   den Schlüssel gelten die Phrase **„unabhängiger Review"** (Groß-/Kleinschreibung
+   am ersten Buchstaben unerheblich) und die Form der Slice-Vorlage **„Review
+   durchgeführt"**. Das Muster sieht den Punkt ab dem Bullet; jeder
+   Checkbox-Punkt der Datei zählt, auch einer außerhalb des DoD-Abschnitts oder
+   in einem Codeblock. Der **erste** solche Punkt trägt den
    Befund-Ort (seine Checkbox-Zeile); eine Datei ohne jeden solchen Punkt ist
    **kein** Kandidat mit Zusage und erzeugt für sich allein keinen Befund.
 4. **Deckung prüfen.** `reviews.reviews-dir` wird **unmittelbar** (nicht
@@ -3042,7 +3046,8 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    solche Kennung, ist die Zusage ungeprüft und deshalb ein Befund
    `review-missing`, dessen Meldung auf `match: name` verweist. Mit
    `reviews.match: name` deckt ein Eintrag, dessen Dateiname den Basisnamen
-   des Kandidaten ohne `.md` enthält. Sonst: Befund `review-missing`,
+   des Kandidaten ohne `.md` enthält und danach ein Zeichen trägt, das weder
+   Buchstabe noch Ziffer ist, oder endet. Sonst: Befund `review-missing`,
    `file` = die Kandidaten-Datei, `line` = die Zusage-Zeile,
    `target` = `reviews.reviews-dir`.
 5. **Nullmenge unter Kandidaten.** Anders als in Schritt 2 (keine
@@ -3054,7 +3059,9 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    `reviews.reviews-dir` **unlesbar** (Verzeichnis existiert nicht oder keine
    Leseberechtigung) löst ohne Zusagen denselben Leerlauf-Befund wie Schritt 2
    aus — eine unlesbare Ziel-Menge sähe sonst identisch aus wie „alles
-   gedeckt"; mit Zusagen meldet bereits jede Zusage selbst.
+   gedeckt"; mit Zusagen meldet bereits jede Zusage selbst. Neben einem
+   unlesbaren Unterverzeichnis (Schritt 2) entfallen beide Leerlauf-Befunde:
+   die Menge ist dann unvollständig, und das ist schon gemeldet.
 
 **Die Grenze dieses Moduls, ausgesprochen** (die Frage aus dem
 Agenten-Briefing §3.8): es **scannt** `reviews.done-dir` — mit `recursive`
@@ -3062,7 +3069,8 @@ samt Unterverzeichnissen — und die unmittelbaren Einträge von
 `reviews.reviews-dir`. Was das Modul **nicht** deckt: die **Qualität** eines
 Reports (Selbstauskunft, wie der DoD-Haken selbst); die zeitliche Reihenfolge
 von Review- und Closure-Commit. Unter `match: name` deckt ein Report auch
-einen Slice, dessen Basisname Präfix des eigenen ist (`slice-a-foo` durch den
+einen Slice, dessen Basisname über einen Bindestrich Präfix des eigenen ist
+(`slice-a-foo` durch den
 Report zu `slice-a-foo-bar`). `skip-pattern` sieht den ganzen rohen Text —
 eine Datei, die den Marker nur zitiert, fällt still aus. Eine unlesbare
 Kandidaten-Datei fällt still aus der Zusage-Erkennung.
@@ -3501,8 +3509,8 @@ Exit 2 ohne Prüfung
 | `reviews.done-dir` | string | leer (aus) | Verzeichnis der `done/`-Slice-Pläne — **Aktivierungs-Schalter** des Moduls; leer ⇒ inert (keine Datei geöffnet). Gelesen werden die Dateien **unmittelbar** darin (mit `reviews.recursive` auch in Unterverzeichnissen) mit Endung `.md` und Präfix `slice-`; null Kandidaten ⇒ Befund (fail-closed). Nur Weißraum ⇒ Exit 2 |
 | `reviews.reviews-dir` | string | leer | Verzeichnis der Review-Reports; **Pflicht**, sobald `done-dir` gesetzt ist (sonst Exit 2). Unmittelbar (nicht rekursiv) gelistet; unlesbar ⇒ derselbe fail-closed-Befund wie null Kandidaten |
 | `reviews.exempt-paths` | string[] | leer | Globs über Wurzel-relative Pfade; Treffer werden **nicht** geprüft. Ungültiges Glob ⇒ Exit 2. **Hebt den Leerlauf-Befund nicht aus:** bleiben nach Abzug null Kandidaten, ist das derselbe fail-closed-Befund |
-| `reviews.promise-pattern` | string | Phrase „unabhängiger Review" | RE2 gegen den Text eines DoD-Punkts (Checkbox-Zeile samt Folgezeilen); ein Treffer ist eine Review-Zusage. **Explizit** leer ⇒ Exit 2 (es träfe jeden Punkt); nicht kompilierend ⇒ Exit 2 |
-| `reviews.match` | string | `id` | Zuordnung Report → Slice: `id` über die `slice-<NNN>`-Kennung im Report-Namen (ein Slice mit Zusage ohne Kennung im Namen ⇒ `review-missing`), `name` über den Basisnamen des Slice ohne `.md` als Teil des Report-Namens. Anderer Wert ⇒ Exit 2 |
+| `reviews.promise-pattern` | string | Phrase „unabhängiger Review" oder Vorlagen-Form „Review durchgeführt" | RE2 gegen den Text eines DoD-Punkts (Checkbox-Zeile ab dem Bullet samt Folgezeilen); ein Treffer ist eine Review-Zusage. **Explizit** leer ⇒ Exit 2 (es träfe jeden Punkt); ohne Wert (YAML-`null`) ⇒ abwesend; nicht kompilierend ⇒ Exit 2 |
+| `reviews.match` | string | `id` | Zuordnung Report → Slice: `id` über die `slice-<NNN>`-Kennung im Report-Namen (ein Slice mit Zusage ohne Kennung im Namen ⇒ `review-missing`), `name` über den Basisnamen des Slice ohne `.md` als Teil des Report-Namens, gefolgt von einem Zeichen, das weder Buchstabe noch Ziffer ist, oder dem Namensende — nötig für Slug-Kennungen. Anderer Wert ⇒ Exit 2 |
 | `reviews.require-promises` | bool | `false` | Kandidaten ohne eine einzige Zusage ⇒ `review-missing` auf `reviews.done-dir`; aus ⇒ legitimer Zustand, kein Befund |
 | `reviews.recursive` | bool | `false` | liest auch die Unterverzeichnisse von `reviews.done-dir` (die `SKIP_DIRS` ausgenommen); ein unlesbares Unterverzeichnis ⇒ `review-missing` mit seinem Pfad |
 | `reviews.skip-pattern` | string | leer (aus) | RE2 gegen den **rohen Inhalt** eines Kandidaten; Treffer ist kein Kandidat (etwa ein archivierter Stub); eine unlesbare Datei bleibt Kandidatin. Nicht kompilierend ⇒ Exit 2 |
@@ -3643,7 +3651,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-087` | `section-lines-exceeded` | structure | der **bereinigte** Abschnittstext trägt mehr Zeilenumbrüche, als `max-lines` erlaubt (`line` = Überschriftszeile) — dieselbe Grundmenge wie `section-thin`: Fenced-Code ist bereits entfernt und zählt nicht mit. Eigener Code neben `section-oversized`/`section-tasks-open`, weil die Reparatur eine andere ist: kürzen, zerlegen oder auslagern statt Task-Items abzuarbeiten |
 | `SPEC-079` | `observation-unregistered` | planning | eine **zitierte** Beobachtungs-Kennung hat **keine** Zeile im Register — die maschinelle Hälfte der Register-Paarung. Nur diese Richtung: die Umkehrung („jede Zeile ist zitiert") ist ausgeschlossen, weil die meisten Zeilen unter der Schwelle stehen. **Gezählt werden Prosa und Linktext**, ein reines Inline-Code-Span nicht — das ist die Trennlinie zwischen Zitat und Beispiel, und sie ist zwingend, weil die verbreitete Zitier-Form die Kennung in Backticks führt |
 | `SPEC-080` | `uses-pin-tag-conflict` | workflows | derselbe SHA trägt innerhalb der Scan-Menge — dateiübergreifend gruppiert — mehr als einen distinkten Tag-Kommentar-Text; **eine** Meldung je beteiligter Zeile (`line` = ihre Zeile), mit den distinkten Werten in der Meldung. Ein identischer Kommentar über beliebig viele Zeilen ist Wiederholung, kein Befund; welcher Wert stimmt, ist Netz |
-| `SPEC-081` | `review-missing` | reviews | ein `done/`-Slice mit Review-Zusage (DoD-Punkt, dessen Text `reviews.promise-pattern` trifft — ohne den Schlüssel die Phrase „unabhängiger Review" —, jede Bullet-Form, Haken-Zustand egal) hat **keinen** deckenden Report unter `reviews.reviews-dir` (nach `reviews.match`), oder unter `match: id` trägt sein Dateiname keine `slice-<NNN>`-Kennung — **oder** die Prüfmenge ist leer bzw. nicht lesbar: kein Kandidat in `reviews.done-dir`, `reviews.reviews-dir` unlesbar, unter `recursive` ein Unterverzeichnis unlesbar, mit `require-promises` keine einzige Zusage (`file` = `reviews.done-dir`, `line` = 1). Geprüft wird die **Deckung**, nicht die Qualität des Reports |
+| `SPEC-081` | `review-missing` | reviews | ein `done/`-Slice mit Review-Zusage (DoD-Punkt, dessen Text `reviews.promise-pattern` trifft — ohne den Schlüssel die Phrase „unabhängiger Review" oder die Vorlagen-Form „Review durchgeführt" —, jede Bullet-Form, Haken-Zustand egal) hat **keinen** deckenden Report unter `reviews.reviews-dir` (nach `reviews.match`), oder unter `match: id` trägt sein Dateiname keine `slice-<NNN>`-Kennung — **oder** die Prüfmenge ist leer bzw. nicht lesbar: kein Kandidat in `reviews.done-dir`, `reviews.reviews-dir` unlesbar, unter `recursive` ein Unterverzeichnis unlesbar, mit `require-promises` keine einzige Zusage (`file` = `reviews.done-dir`, `line` = 1). Geprüft wird die **Deckung**, nicht die Qualität des Reports |
 | `SPEC-082` | `artifact-unmentioned` | mentions | ein Mitglied der Soll-Menge (`mentions.artifacts`) kommt in **keinem** Dokument der Ist-Menge (`mentions.documents`) vor. `file` = der Artefakt-Pfad, `line` = **1** (Vertrags-Platzhalter: das Artefakt wird nie geöffnet), `target` = die Ist-Globs. Die **leere** Soll- oder Ist-Menge ist kein Befund, sondern **Exit 2** |
 | `SPEC-084` | `file-no-match` | file | eine Regel trifft keine Datei (auch nach Abzug von `exempt-paths`) — oder der Dateibaum ist nicht lesbar (ein Befund je Regel, kein Sammel-Befund); `line` = 1, `target` = die Regel-Identität (`files`-Glob) |
 | `SPEC-085` | `file-lines-exceeded` | file | eine Datei hat mehr Zeilen, als `max-lines` erlaubt — roh gezählt wie `wc -l` plus eine unvollständige Schlusszeile, **nicht** der von `structure` bereinigte Text; `line` = 1 |
@@ -3698,6 +3706,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-09 | Nachzug nach Review an §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews), §2-Schema und [`SPEC-081`](#4-grund--und-fehler-codes): der Default erkennt zusätzlich die Vorlagen-Form „Review durchgeführt"; `match: name` verlangt nach dem Basisnamen ein Zeichen, das weder Buchstabe noch Ziffer ist; ein unlesbares Unterverzeichnis lässt die übrigen Einträge geprüft und ersetzt beide Leerlauf-Befunde; benannt, dass jeder Checkbox-Punkt der Datei zählt und das Muster ihn ab dem Bullet sieht; `promise-pattern` ohne Wert gilt als abwesend |
 | 2026-10-09 | §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritte 1–5, §2-Schema und Grund-Code-Zeile [`SPEC-081`](#4-grund--und-fehler-codes): `reviews.promise-pattern` erkennt die Zusage an einem eigenen Muster (ohne den Schlüssel die Phrase), `reviews.match: name` ordnet benannte Kennungen über den Basisnamen zu, `reviews.require-promises` macht Kandidaten ohne Zusage zum Befund, `reviews.recursive` und `reviews.skip-pattern` lesen Unterverzeichnisse und nehmen Stubs aus. Unter `match: id` meldet eine Zusage ohne lesbare Kennung, statt still auszufallen. Schritt 3 beschreibt den DoD-Punkt jetzt mit seinen Folgezeilen, wie der Code ihn liest; die Grenze nennt die Präfix-Deckung unter `match: name` und die still ausfallende unlesbare Datei |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2, §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 2 und der Grund-Code-Zeile [`SPEC-039`](#4-grund--und-fehler-codes): zwei Grenzen benannt — ein Symlink auf ein Unterverzeichnis wird nicht verfolgt, und ein Volltext, der den Stub-Marker zitiert, fällt mit `skip-pattern` still aus der Prüfung; die Nullmenge zählt über die **gesamte** Kandidatenmenge; die §2-Zeile `structure[].files` nennt beide Abzüge; die Meldung eines unlesbaren `closure.dir` bleibt ohne die Schlüssel byte-identisch |
 | 2026-10-09 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritte C1/C2 und §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritte 1/2 samt §2-Schema: `planning.closure.recursive` liest die Closure-Kandidaten auch aus Unterverzeichnissen, `planning.closure.skip-pattern` und `structure[].skip-pattern` nehmen eine Datei nach ihrem Inhalt aus (etwa einen archivierten Stub). Eine unlesbare Datei bleibt Kandidatin; die Nullmengen-Regel gilt nach dem Abzug. Ohne die Schlüssel byte-identisch; kein neuer Grund-Code |

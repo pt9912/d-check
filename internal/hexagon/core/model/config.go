@@ -1116,8 +1116,8 @@ type ReviewsConfig struct {
 	DoneDir     string
 	ReviewsDir  string
 	ExemptPaths []string
-	// PromisePattern erkennt eine Review-Zusage im Text eines DoD-Punkts (RE2).
-	// Leer ⇒ die Phrase „unabhängiger Review".
+	// PromisePattern erkennt eine Review-Zusage im Text eines DoD-Punkts (RE2),
+	// gelesen ab dem Bullet. Leer ⇒ der Default aus EffectivePromisePattern.
 	PromisePattern string
 	// Match waehlt die Zuordnung Report → Slice: "id" (leer ist dasselbe) ueber
 	// die slice-<NNN>-Kennung, "name" ueber den Basisnamen des Slice ohne .md,
@@ -1127,8 +1127,9 @@ type ReviewsConfig struct {
 	RequirePromises bool
 	// Recursive liest die Slice-Plaene auch aus den Unterverzeichnissen von
 	// DoneDir; SkipPattern nimmt eine Datei nach ihrem rohen Inhalt aus
-	// (etwa einen archivierten Stub). Dieselbe Semantik wie die
-	// Closure-Pruefung von planning.
+	// (etwa einen archivierten Stub). ABGRENZUNG zur Closure-Pruefung von
+	// planning: ein unlesbares Unterverzeichnis meldet hier je Verzeichnis,
+	// und eine unlesbare Datei faellt aus der Zusage-Erkennung.
 	Recursive   bool
 	SkipPattern string
 }
@@ -1136,10 +1137,15 @@ type ReviewsConfig struct {
 // MatchByName sagt, ob ein Report einen Slice ueber dessen Basisnamen deckt.
 func (c ReviewsConfig) MatchByName() bool { return c.Match == "name" }
 
-// EffectivePromisePattern liefert das Zusage-Muster; leer ⇒ die Phrase.
+// DefaultPromisePattern erkennt die Phrase „unabhängiger Review" und die
+// Form der Baseline-Slice-Vorlage „Review durchgeführt". Bloßes „Review"
+// waere zu breit: „Adaptions-Review" ist ein Konzept ohne eigenen Report.
+const DefaultPromisePattern = `[Uu]nabhängiger Review|Review durchgeführt`
+
+// EffectivePromisePattern liefert das Zusage-Muster; leer ⇒ der Default.
 func (c ReviewsConfig) EffectivePromisePattern() string {
 	if c.PromisePattern == "" {
-		return `[Uu]nabhängiger Review`
+		return DefaultPromisePattern
 	}
 	return c.PromisePattern
 }
