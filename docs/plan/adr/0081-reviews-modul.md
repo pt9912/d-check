@@ -1,6 +1,6 @@
 # ADR-0081: Review-Report-Deckung wird das Modul `reviews`
 
-**Status:** Accepted
+**Status:** Accepted (teil-superseded: ADR-0105)
 
 **Datum:** 2026-09-03
 

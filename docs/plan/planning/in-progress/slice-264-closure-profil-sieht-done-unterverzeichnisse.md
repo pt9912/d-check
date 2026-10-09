@@ -45,19 +45,21 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] `.d-check.closure.yml` trifft die Volltexte in den Unterverzeichnissen
+- [x] `.d-check.closure.yml` trifft die Volltexte in den Unterverzeichnissen
       und nimmt die Stubs an ihrem Inhalt aus; bewusst gebrochen: ein
       kaputter Volltext unter `done/wellenlos/` macht den Lauf rot, ein Stub
       nicht.
-- [ ] Die Altverstöße sind behoben; `make verify-closure-notes` und
+- [x] Die Altverstöße sind behoben; `make verify-closure-notes` und
       `make gates` grün.
-- [ ] Zurückgenommen: der Satz in [`SPEC-095`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge), Grenze 4 und Vertrag von
+- [x] Zurückgenommen: der Satz in [`SPEC-095`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge), Grenze 4 und Vertrag von
       `harness/sensors/hooks.md`, Vertrag „direkt", Grenze 8 und Bindung von
       `harness/sensors/verify-closure-notes.md`, der GRENZE-Kommentar in
       `.githooks/pre-commit`.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
+- [x] [ADR-0105](../../adr/0105-reviews-liest-done-unterverzeichnisse.md) `Accepted`, [ADR-0081](../../adr/0081-reviews-modul.md) als
+      teil-superseded markiert, Index nachgezogen (Verifikation V-2).
 
 ## 3. Plan (vor Code)
 
@@ -89,19 +91,56 @@ wellenlos hier geprüft.
 
 - **Weitere Altverstöße** — die Messung beim Schnitt galt nur dem Modul
   `structure`; die `planning`-Hälfte (Platzhalter, Floskeln, dünne Notiz) kann
-  weitere zeigen. — **Ausgang:** *(offen)*
+  weitere zeigen. — **Ausgang:** entfallen — die `planning`-Hälfte meldet über
+  die 24 Volltexte nichts, gemessen beim Beanspruchen (§8) und in der
+  Verifikation (M6).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** `make verify-closure-notes` prüft die Volltexte in
+  `done/wellenlos/` und den Wellen-Verzeichnissen und nimmt die 254 Stubs am
+  Marker `> **ARCHIVIERT** — Volltext:` aus. Gemessen vor dem Schnitt:
+  genau vier Altverstöße (Risiko-Ausgang `*(offen)*` in slice-240 bis
+  slice-243), keine in der `planning`-Hälfte. Die Verifikation brach jede
+  Hälfte im Klon: das alte Profil bleibt auf einem kaputten Volltext unter
+  `wellenlos/` grün, das neue wird rot — für `planning`, `structure` und
+  `reviews`; ein Stub mit Marker bleibt still.
+- **Was ging anders als geplant:** Der Slice wuchs zweimal nach Review, beide
+  Male als Plan-Änderung vor dem Code. R1 fand, dass `make review-coverage`
+  im Hauptprofil nicht rekursiv blieb und auf dieselbe Frage anders antwortete
+  als der Übergangs-Wächter; R2, dass die Rekursion der akzeptierten
+  [ADR-0081](../../adr/0081-reviews-modul.md) Entscheidung 4 widersprach —
+  daraus [ADR-0105](../../adr/0105-reviews-liest-done-unterverzeichnisse.md),
+  `Proposed` bis zu dieser Closure. Die nachgetragenen Ausgänge der vier
+  Altverstöße waren im ersten Anlauf aus dem Schweigen von §7 abgeleitet und
+  trugen bei eingetretenen Risiken das Wort *entfallen* (R1 F-2, F-3); jetzt
+  belegt jeder Ausgang seine Quelle, und der offene Punkt aus slice-242 steht
+  im Register. Meine Zählung der Volltexte verlor slice-263, weil dessen Text
+  das Marker-Wort im Fließtext trägt — gezählt wird gegen die volle
+  Marker-Form (24).
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle. Die Klasse
+  `BEO-ALL/semantic-change-body-only-edges-stale` ist als
+  [`MR-025`](../../../../harness/conventions.md#mr-025) verkörpert und trat
+  erneut auf: die Rekursion wurde im Closure-Profil gesetzt, ihre Ränder im
+  Hauptprofil, in der Sensor-Doku und in der ADR blieben stehen.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-264.md` in
+  [`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/state.md);
+  neu
+  [`BEO-ALL/aufnahme-kriterium-ohne-bestands-beleg`](../observations/BEO-ALL/aufnahme-kriterium-ohne-bestands-beleg/state.md)
+  (1×, Beleg slice-242) und
+  [`BEO-ALL/eingetreten-ohne-folge-kennung`](../observations/BEO-ALL/eingetreten-ohne-folge-kennung/state.md)
+  (1×, Verifikation V-1).
+- **Folge-Slices:** keiner. Produkt-Verhalten unverändert. Die Zeile im
+  Benutzerhandbuch, `reviews` lese nicht rekursiv, beschreibt den
+  Produkt-Default und wird in der nächsten Release-Prep präzisiert (R1 F-8).
+- **Risiken aus §6:** entfallen (siehe §6). Trigger-Audit: kein Carveout,
+  kein bootstrap-aware Gate; [ADR-0105](../../adr/0105-reviews-liest-done-unterverzeichnisse.md)
+  neu und `Accepted`, ihre Trigger nicht eingetreten; keine Hard Rule mit
+  eingetretenem Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
+  Folge-Slices — keiner genannt; (c) Register — die drei zitierten
+  Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

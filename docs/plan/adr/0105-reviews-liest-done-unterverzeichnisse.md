@@ -1,6 +1,6 @@
 # ADR-0105: Die Review-Deckung liest `done/` samt Unterverzeichnissen
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-09
 
@@ -96,3 +96,4 @@ mit dem Report schweigen beide.
 | Datum | Ereignis |
 |---|---|
 | 2026-10-09 | Proposed (Review R2 zu slice-264 fand den Widerspruch zu ADR-0081 Entscheidung 4) |
+| 2026-10-09 | Proposed → Accepted (nach Review R1–R3 und Verifikation; die Fitness Function ist im Klon gebrochen) |
