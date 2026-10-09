@@ -2440,6 +2440,13 @@ type rawReviews struct {
 	DoneDir     string   `yaml:"done-dir"`
 	ReviewsDir  string   `yaml:"reviews-dir"`
 	ExemptPaths []string `yaml:"exempt-paths"`
+	// Zeiger, weil ein EXPLIZIT leeres Muster jede Zeile traefe und damit
+	// eine andere Aussage ist als ein abwesendes (dann gilt die Phrase).
+	PromisePattern  *string `yaml:"promise-pattern"`
+	Match           string  `yaml:"match"`
+	RequirePromises bool    `yaml:"require-promises"`
+	Recursive       bool    `yaml:"recursive"`
+	SkipPattern     string  `yaml:"skip-pattern"`
 }
 
 // applyReviews validiert den reviews-Block am Config-Rand: ein aktiviertes
@@ -2459,7 +2466,34 @@ func applyReviews(r *rawReviews) (model.ReviewsConfig, error) {
 			return model.ReviewsConfig{}, fmt.Errorf("%s: reviews.exempt-paths %q ist kein gültiges Glob: %v", FileName, g, err)
 		}
 	}
-	return model.ReviewsConfig{DoneDir: r.DoneDir, ReviewsDir: r.ReviewsDir, ExemptPaths: r.ExemptPaths}, nil
+	promise := ""
+	if r.PromisePattern != nil {
+		if *r.PromisePattern == "" {
+			return model.ReviewsConfig{}, fmt.Errorf(
+				"%s: reviews.promise-pattern ist leer — es träfe jeden DoD-Punkt (weglassen ⇒ Phrase „unabhängiger Review“)", FileName)
+		}
+		if _, err := regexp.Compile(*r.PromisePattern); err != nil {
+			return model.ReviewsConfig{}, fmt.Errorf(
+				"%s: reviews.promise-pattern %q ist kein gültiges Regex: %v", FileName, *r.PromisePattern, err)
+		}
+		promise = *r.PromisePattern
+	}
+	switch r.Match {
+	case "", "id", "name":
+	default:
+		return model.ReviewsConfig{}, fmt.Errorf("%s: reviews.match %q muss id oder name sein", FileName, r.Match)
+	}
+	if r.SkipPattern != "" {
+		if _, err := regexp.Compile(r.SkipPattern); err != nil {
+			return model.ReviewsConfig{}, fmt.Errorf(
+				"%s: reviews.skip-pattern %q ist kein gültiges Regex: %v", FileName, r.SkipPattern, err)
+		}
+	}
+	return model.ReviewsConfig{
+		DoneDir: r.DoneDir, ReviewsDir: r.ReviewsDir, ExemptPaths: r.ExemptPaths,
+		PromisePattern: promise, Match: r.Match, RequirePromises: r.RequirePromises,
+		Recursive: r.Recursive, SkipPattern: r.SkipPattern,
+	}, nil
 }
 
 // rawFile ist eine Regel des Moduls file (DC-FA-FILE-001). MaxLines/

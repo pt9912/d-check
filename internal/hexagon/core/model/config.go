@@ -1116,6 +1116,32 @@ type ReviewsConfig struct {
 	DoneDir     string
 	ReviewsDir  string
 	ExemptPaths []string
+	// PromisePattern erkennt eine Review-Zusage im Text eines DoD-Punkts (RE2).
+	// Leer ⇒ die Phrase „unabhängiger Review".
+	PromisePattern string
+	// Match waehlt die Zuordnung Report → Slice: "id" (leer ist dasselbe) ueber
+	// die slice-<NNN>-Kennung, "name" ueber den Basisnamen des Slice ohne .md,
+	// der im Dateinamen des Reports enthalten ist.
+	Match string
+	// RequirePromises macht Kandidaten ohne eine einzige Zusage zum Befund.
+	RequirePromises bool
+	// Recursive liest die Slice-Plaene auch aus den Unterverzeichnissen von
+	// DoneDir; SkipPattern nimmt eine Datei nach ihrem rohen Inhalt aus
+	// (etwa einen archivierten Stub). Dieselbe Semantik wie die
+	// Closure-Pruefung von planning.
+	Recursive   bool
+	SkipPattern string
+}
+
+// MatchByName sagt, ob ein Report einen Slice ueber dessen Basisnamen deckt.
+func (c ReviewsConfig) MatchByName() bool { return c.Match == "name" }
+
+// EffectivePromisePattern liefert das Zusage-Muster; leer ⇒ die Phrase.
+func (c ReviewsConfig) EffectivePromisePattern() string {
+	if c.PromisePattern == "" {
+		return `[Uu]nabhängiger Review`
+	}
+	return c.PromisePattern
 }
 
 // MentionsConfig sind die Parameter des Moduls mentions (DC-FA-MENT-001):

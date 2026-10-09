@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.99.1
+**Version:** 0.100.0
 
 **Status:** Draft
 
@@ -3611,23 +3611,29 @@ liegt nicht vor", nicht „der Workflow läuft".
 ### DC-FA-RVW-001 — Review-Report-Deckung (Modul `reviews`, opt-in)
 
 **Beschreibung:** Bei explizit aktiviertem Modul `reviews` prüft d-check, ob
-jeder `done/`-Slice mit einer **Review-Zusage** — ein DoD-Haken, dessen Zeile
-die Phrase „unabhängiger Review" trägt, in jeder der drei CommonMark-Bullet-
-Formen (`-`/`*`/`+`), unabhängig vom Haken-Zustand — mindestens einen Report
-unter einem konfigurierten Verzeichnis hat, dessen Dateiname dieselbe
-`slice-<NNN>`-Kennung trägt (Substring-Match, 1:N zulässig, z. B.
-`-r1`/`-r2`-Suffixe).
+jeder `done/`-Slice mit einer **Review-Zusage** — ein DoD-Punkt, dessen Text
+auf `reviews.promise-pattern` passt (ohne den Schlüssel: die Phrase
+„unabhängiger Review"), in jeder der drei CommonMark-Bullet-Formen
+(`-`/`*`/`+`), unabhängig vom Haken-Zustand — mindestens einen Report unter
+einem konfigurierten Verzeichnis hat, der ihn **deckt**. Gedeckt ist er nach
+`reviews.match`: mit `id` (Default) durch einen Report, dessen Dateiname
+dieselbe `slice-<NNN>`-Kennung trägt; mit `name` durch einen Report, dessen
+Dateiname den Basisnamen des Slice ohne `.md` enthält — für Kennungen der Form
+`slice-<welle>-<titel>`. Beides als Teilstring, 1:N zulässig (Datums-Präfix,
+Suffixe wie `-r1`/`-r2`).
 
 | Bedingung | Grund-Code | Reparatur |
 |---|---|---|
 | jede Review-Zusage hat mindestens einen Report unter `reviews.reviews-dir` | `review-missing` | den Report ergänzen — oder, falls fälschlich zugesagt, den Haken korrigieren |
+| unter `match: id` trägt der Dateiname eines Slice mit Zusage eine `slice-<NNN>`-Kennung | `review-missing` | `match: name` setzen oder die Datei umbenennen |
 | die Kandidatenmenge ist nicht leer und `reviews.reviews-dir` lesbar | `review-missing` (fail-closed) | Konfiguration/Pfad korrigieren |
+| mit `reviews.require-promises` trägt mindestens ein Kandidat eine Zusage | `review-missing` (fail-closed) | `promise-pattern` an die DoD-Zeilen des Bestands anpassen |
 
-**Warum die engere Phrase.** Bloßes „Review" wäre zu breit — gemessen an
+**Warum die Phrase als Default.** Bloßes „Review" wäre zu breit — gemessen an
 einem realen Fall, dessen DoD-Zeile ein anderes, in der Slice-Datei selbst
-dokumentiertes Konzept („Adaptions-Review") ohne externen Report nennt. Die
-Phrase „unabhängiger Review" trägt exakt die Konvention, unter der ein
-externer Report tatsächlich entsteht.
+dokumentiertes Konzept („Adaptions-Review") ohne externen Report nennt. Ein
+Bestand mit eigener Formulierung setzt `promise-pattern`; ohne den Schlüssel
+ist der Befundsatz byte-identisch.
 
 **Warum ein Haken-Zustand nicht zählt.** Ein **geschlossener** Haken ist eine
 schwächere Zusage als ein Report: Er sagt „hier wurde etwas erledigt", nicht
@@ -3635,16 +3641,21 @@ schwächere Zusage als ein Report: Er sagt „hier wurde etwas erledigt", nicht
 geschlossenen Haken ohne Report nicht — genau der Fall, den dieses Modul
 zusätzlich zu einem reinen Struktur-Wächter deckt.
 
-**Warum kein rekursiver Scan.** Ein bereits archivierter Slice-Stub
-(`done/<welle-id>/…`) trägt keine DoD mehr und fällt damit natürlich aus der
-Kandidatenmenge — kein Sonderfall nötig. Die Scan-Menge ist bewusst auf die
-**unmittelbaren** Einträge beider konfigurierten Verzeichnisse beschränkt.
+**Unterverzeichnisse nur auf Wunsch.** Ohne `reviews.recursive` liest das
+Modul nur die **unmittelbaren** Einträge von `reviews.done-dir`; ein
+archivierter Slice-Stub unter `done/<welle-id>/…` fällt damit aus der
+Kandidatenmenge. Mit dem Schlüssel zählen auch die Slices in den
+Unterverzeichnissen; `reviews.skip-pattern` nimmt dann eine Datei nach ihrem
+Inhalt aus (etwa einen Stub an seinem Marker), eine unlesbare Datei bleibt
+Kandidatin. `reviews.reviews-dir` wird nie rekursiv gelesen.
 
 **Scan-Menge und die Grenze, die daraus folgt.** Das Modul liest Dateien
 unterhalb zweier **konfigurierter** Verzeichnisse (`reviews.done-dir`,
 `reviews.reviews-dir`) — beide sind Repo-Konvention, nicht verdrahtet.
 Geprüft wird die **Deckung** (ein Report existiert), nicht seine **Qualität**
-— dieselbe Grenze wie beim DoD-Haken selbst: eine Selbstauskunft.
+— dieselbe Grenze wie beim DoD-Haken selbst: eine Selbstauskunft. Unter
+`match: name` deckt ein Report auch einen Slice, dessen Basisname Präfix des
+eigenen ist (`slice-a-foo` durch den Report zu `slice-a-foo-bar`).
 
 **Hermetisch und netzlos:** nur der Filesystem-Port, **kein** git, **kein**
 Netz.
@@ -3652,31 +3663,39 @@ Netz.
 **Strikt opt-in, fail-closed:** `reviews` ist nie Default-Modul; ohne
 `reviews.done-dir` ist es **inert** (keine Datei wird geöffnet, der Befundsatz
 ist byte-identisch, [`DC-QA-02`](#dc-qa-02--determinismus)). Ist es aktiv und
-die Kandidatenmenge leer oder `reviews.reviews-dir` unlesbar, ist das ein
-**Befund**, kein stilles Grün. **Null gefundene Review-Zusagen unter
-vorhandenen Kandidaten** ist dagegen **kein** Fail-Closed-Auslöser — ein
-kleiner oder junger Bestand ohne jede Zusage ist ein legitimer Zustand.
+die Kandidatenmenge leer, `reviews.reviews-dir` unlesbar oder unter `recursive`
+ein Unterverzeichnis unlesbar, ist das ein **Befund**, kein stilles Grün.
+**Null gefundene Review-Zusagen unter vorhandenen Kandidaten** ist ohne
+`reviews.require-promises` **kein** Fail-Closed-Auslöser — ein kleiner oder
+junger Bestand ohne jede Zusage ist ein legitimer Zustand; mit dem Schlüssel
+ist es ein Befund, denn sonst prüfte das Modul über nichts.
 
 **Exit 2 vor dem Lauf** bei: leerem `reviews.done-dir` (nur Weißraum),
-gesetztem `reviews.done-dir` ohne `reviews.reviews-dir` und ungültigem Glob
-in `reviews.exempt-paths`.
+gesetztem `reviews.done-dir` ohne `reviews.reviews-dir`, ungültigem Glob in
+`reviews.exempt-paths`, **explizit** leerem oder nicht kompilierendem
+`reviews.promise-pattern`, `reviews.match` außerhalb `id`/`name` und nicht
+kompilierendem `reviews.skip-pattern`; die Meldung nennt den Schlüssel.
 
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given `reviews` aktiv, ein `done/`-Slice mit einer Review-Zusage-Zeile und ein Report unter `reviews.reviews-dir`, dessen Dateiname dieselbe `slice-<NNN>`-Kennung trägt, when `d-check --enable reviews` läuft, then kein Befund, Exit 0.
 - **Negative:** Given einen Slice mit Review-Zusage und **keinem** passenden Report, when der Lauf endet, then `review-missing` auf der Zusage-Zeile.
 - **Boundary (Bullet-Formen):** Given dieselbe Zusage einmal je Bullet-Form (`-`/`*`/`+`), when der Lauf endet, then in jedem Fall dieselbe Erkennung — unabhängig vom Haken-Zustand (`[ ]`/`[x]`/`[X]`).
-- **Boundary (kein Kandidat, keine Zusage):** Given einen `done/`-Slice **ohne** Review-Zusage-Zeile, when der Lauf endet, then kein Befund auf ihm — und für sich allein **kein** Fail-Closed, solange andere Kandidaten existieren.
+- **Boundary (kein Kandidat, keine Zusage):** Given einen `done/`-Slice **ohne** Review-Zusage-Zeile, when der Lauf endet, then kein Befund auf ihm — und für sich allein **kein** Fail-Closed, solange andere Kandidaten existieren und `require-promises` nicht gesetzt ist.
 - **fail-closed (leere Kandidatenmenge):** Given `reviews` aktiv und `reviews.done-dir` ohne eine einzige `slice-*.md`-Datei, when der Lauf endet, then ein Befund, nicht Exit 0.
 - **Boundary (exempt-paths):** Given einen Kandidaten, der über `reviews.exempt-paths` ausgenommen ist, when der Lauf endet, then kein Befund auf ihm — der Leerlauf-Befund bleibt bestehen, falls die Ausnahme die Kandidatenmenge auf null bringt.
-- **Boundary (archivierte Stubs):** Given einen archivierten Slice-Stub unterhalb eines Unterverzeichnisses von `reviews.done-dir` (`done/<welle-id>/…`), when der Lauf endet, then ist er **kein** Kandidat — der Scan ist nicht rekursiv.
+- **Boundary (archivierte Stubs):** Given einen archivierten Slice-Stub unterhalb eines Unterverzeichnisses von `reviews.done-dir` (`done/<welle-id>/…`) und **kein** `reviews.recursive`, when der Lauf endet, then ist er **kein** Kandidat.
 - **Boundary (Modul-aus):** Given **kein** aktives `reviews`, when `d-check` läuft, then ist der Befundsatz byte-identisch zum Lauf ohne den Konfigurations-Block ([`DC-QA-02`](#dc-qa-02--determinismus)), und keine Datei wird geöffnet.
+- **Happy Path (eigenes Muster):** Given `reviews.promise-pattern: 'Review durchgeführt'` und einen Slice, dessen DoD-Punkt „Review durchgeführt" trägt, when der Lauf endet, then `review-missing` ohne passenden Report und kein Befund mit dem Report `<datum>-slice-<NNN>-<titel>-review.md`; ohne den Schlüssel ist derselbe Punkt keine Zusage.
+- **Negative (Muster):** Given `promise-pattern: 'Review durchgeführt'`, when ein DoD-Punkt nur „Adaptions-Review" oder „Review-Report liegt vor" trägt oder die Wortfolge außerhalb eines DoD-Punkts steht, then keine Zusage.
+- **Boundary (benannte Kennung):** Given einen Slice `slice-<welle>-<titel>.md` mit Zusage, when `match` nicht gesetzt ist, then `review-missing` mit dem Hinweis auf `match: name` statt eines stillen Übersprungs; mit `match: name` deckt ihn ein Report, dessen Dateiname den Basisnamen enthält.
+- **fail-closed (keine Zusage):** Given `reviews.require-promises: true` und Kandidaten ohne eine einzige Zusage, when der Lauf endet, then ein Befund auf `reviews.done-dir`.
+- **Boundary (Unterverzeichnisse und Stubs):** Given `reviews.recursive: true` und `reviews.skip-pattern`, das den Stub-Marker trifft, when der Lauf endet, then wird der Volltext unter einem Unterverzeichnis geprüft, der Stub daneben nicht; ein unlesbares Unterverzeichnis ist ein Befund mit seinem Pfad.
 
 **Out-of-Scope:** die **Qualität** eines Reports (Selbstauskunft, wie der
-DoD-Haken selbst); jede Review-Zusage-Formulierung außer der einen
-konventionellen Phrase; ein rekursiver Scan; die zeitliche Reihenfolge von
-Review-Commit und Closure-Commit (das wäre eine Historien-Aussage und gehört
-zur `vcs`-Familie).
+DoD-Haken selbst); ein rekursives Lesen von `reviews.reviews-dir`; die
+zeitliche Reihenfolge von Review-Commit und Closure-Commit (das wäre eine
+Historien-Aussage und gehört zur `vcs`-Familie).
 
 ### DC-FA-MENT-001 — Erwähnungs-Deckung einer Artefakt-Menge (Modul `mentions`, opt-in)
 
@@ -4092,6 +4111,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.100.0 | 2026-10-09 | [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in) nimmt die Review-Zusage über `reviews.promise-pattern` (Default bleibt die Phrase „unabhängiger Review"), ordnet mit `reviews.match: name` benannte Kennungen über den Basisnamen zu, macht mit `reviews.require-promises` Kandidaten ohne Zusage zum Befund und liest mit `reviews.recursive`/`reviews.skip-pattern` die Unterverzeichnisse ohne Stubs. Eine Zusage, deren Kennung unter `match: id` nicht lesbar ist, wird gemeldet statt still übersprungen. Anlass: eingehender Change Request eines Adopters, dessen DoD-Zeilen und Kennungen anders lauten als die Konvention — das Modul lief dort grün über einer leeren Menge. Out-of-Scope nennt die Formulierung und den rekursiven Scan nicht mehr; fünf neue Kriterien | — |
 | 0.99.1 | 2026-10-09 | Nachzug nach Review an [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) und [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): die Nullmengen-Regel gilt der **gesamten** Kandidatenmenge, ein einzelnes Unterverzeichnis ohne Kandidaten ist kein Befund; `skip-pattern` steht in der Exit-2-Aufzählung von `structure`; zwei neue Kriterien „fail-closed (Unterverzeichnis und Muster)" und „fail-closed (Inhalts-Ausnahme)"; der Absatz zur Kandidatenmenge in kürzeren Sätzen | — |
 | 0.99.0 | 2026-10-09 | [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) liest die Closure-Kandidaten mit `planning.closure.recursive` auch aus den Unterverzeichnissen von `planning.closure.dir` und nimmt mit `planning.closure.skip-pattern` eine Datei nach ihrem Inhalt aus; [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) zieht mit `skip-pattern` dasselbe ab. Anlass: abgeschlossene Slices liegen in Unterverzeichnissen neben archivierten Stubs, und die Prüfung sah sie nicht. Beide Schlüssel opt-in, ohne sie byte-identisch; die Nullmengen-Regel gilt nach dem Abzug, eine unlesbare Datei bleibt Kandidatin. Neue Kriterien „Happy Path (Unterverzeichnisse)", „Boundary (Stub ausgenommen)", „Boundary (Inhalts-Ausnahme)" | — |
 | 0.98.0 | 2026-10-07 | [`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image) sagt einen **Multi-Plattform-Index** (`linux/amd64`, `linux/arm64`) zu; die Identität zur nativen Ausführung gilt je Plattform, neues Kriterium „Boundary (Plattform)", weitere Plattformen ausdrücklich Out-of-Scope. [`DC-FA-DIST-002`](#dc-fa-dist-002--docker-hub-spiegel) wechselt die Prüfgröße vom Config-Digest auf den **Index-Digest**: ein Index hat keinen einzelnen Config-Digest, und ein Spiegel, der den Index samt Blobs unverändert kopiert, erhält dessen Digest — die Zusage wird damit schärfer (ein Pin für beide Registries), der Out-of-Scope-Punkt „Gleichheit des Manifest-Digests" entfällt. Begründung in begleitender ADR | — |

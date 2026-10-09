@@ -1389,3 +1389,30 @@ func TestDecode_SkipPatternMeldungNenntSchluessel(t *testing.T) {
 		}
 	}
 }
+
+// Der Config-Rand der neuen reviews-Schlüssel: was der Kern nur schlucken
+// könnte, bricht ab, und die Meldung nennt den Schlüssel.
+func TestDecode_ReviewsMusterFehler(t *testing.T) {
+	base := "reviews:\n  done-dir: done\n  reviews-dir: rv\n"
+	for want, bad := range map[string]string{
+		"reviews.promise-pattern ist leer": base + "  promise-pattern: ''\n",
+		"reviews.promise-pattern \"^([\"":  base + "  promise-pattern: '^(['\n",
+		"reviews.match \"pfad\"":           base + "  match: pfad\n",
+		"reviews.skip-pattern \"^([\"":     base + "  skip-pattern: '^(['\n",
+	} {
+		_, err := configyaml.Decode([]byte(bad))
+		if err == nil || !strings.Contains(err.Error(), want) {
+			t.Errorf("Fehler mit %q erwartet, got %v", want, err)
+		}
+	}
+	cfg, err := configyaml.Decode([]byte(base + "  promise-pattern: 'Review durchgeführt'\n  match: name\n" +
+		"  require-promises: true\n  recursive: true\n  skip-pattern: '(?m)^> ARCHIVIERT'\n"))
+	if err != nil {
+		t.Fatalf("gültige Config abgewiesen: %v", err)
+	}
+	r := cfg.Reviews
+	if r.PromisePattern != "Review durchgeführt" || !r.MatchByName() || !r.RequirePromises || !r.Recursive ||
+		r.SkipPattern != "(?m)^> ARCHIVIERT" {
+		t.Fatalf("reviews-Schlüssel nicht durchgereicht: %+v", r)
+	}
+}

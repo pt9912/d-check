@@ -245,12 +245,20 @@ modules: [links, anchors]
 # --- reviews: Review-Report-Deckung — hermetisch, opt-in ---
 #   (--enable reviews. done-dir ist der AKTIVIERUNGS-SCHALTER; ohne ihn wird keine Datei geöffnet.)
 # reviews:
-#   done-dir: docs/plan/planning/done   # Slice-Pläne mit Review-Zusage (nicht rekursiv)
-#   reviews-dir: docs/reviews            # Reports; Dateiname trägt die slice-<NNN>-Kennung
+#   done-dir: docs/plan/planning/done   # Slice-Pläne mit Review-Zusage (nur mit recursive auch Unterverzeichnisse)
+#   reviews-dir: docs/reviews            # Reports (nicht rekursiv)
 #   # exempt-paths: ["docs/plan/planning/done/slice-000-*.md"]   # Globs; hebt den Leerlauf-Befund NICHT aus
-#   # Ein DoD-Haken, dessen Zeile "Review" nennt (jede Bullet-Form, Haken-Zustand egal),
-#   # verlangt mindestens einen Report unter reviews-dir mit derselben Kennung im Namen
-#   # ⇒ sonst review-missing. Geprüft wird die Deckung, nicht die Qualität des Reports.
+#   # Review-Zusage = ein DoD-Punkt (Checkbox-Zeile samt Folgezeilen bis zur nächsten Checkbox
+#   # oder Leerzeile; jede Bullet-Form, Haken-Zustand egal), dessen TEXT promise-pattern trifft.
+#   # Ohne promise-pattern gilt NUR die Phrase "unabhängiger Review" — nicht jede Zeile mit "Review".
+#   # Jede Zusage verlangt einen Report unter reviews-dir, der den Slice deckt ⇒ sonst review-missing.
+#   # Geprüft wird die Deckung, nicht die Qualität des Reports.
+#   # promise-pattern: 'Review durchgeführt'   # RE2 gegen den Punkt-Text; leer ⇒ Exit 2
+#   # match: id                       # id: slice-<NNN> im Report-Namen (Default) | name: der Basisname des
+#   #                                 # Slice ohne .md steckt im Report-Namen (für slice-<welle>-<titel>)
+#   # require-promises: true          # Kandidaten ohne eine einzige Zusage ⇒ review-missing statt grün
+#   # recursive: true                 # auch die Unterverzeichnisse von done-dir (SKIP_DIRS ausgenommen)
+#   # skip-pattern: '(?m)^> \*\*ARCHIVIERT'   # RE2 gegen den rohen INHALT: Treffer ist kein Kandidat (Stub)
 # --- targets: Deklarations-Konsistenz Doku ↔ Build-Targets — hermetisch (kein git), opt-in ---
 #   (Aufruf über das make-Target gate-consistency bzw. --enable targets. NICHT in modules: oben.)
 # targets:

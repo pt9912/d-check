@@ -101,8 +101,10 @@ sonst unverändert.
 - **Punkt 2 trägt für nummerierte Kennungen schon:** Ein Report gilt als
   vorhanden, wenn sein Dateiname dieselbe `slice-<NNN>`-Kennung enthält, mit
   beliebigem Präfix und Suffix.
-- **Dieselbe Blindheit hier:** Von 29 Volltext-Slices dieses Repos tragen 3 die
-  Phrase, 22 eine Review-Zeile ohne sie; `reviews.done-dir` liest zudem keine
-  Unterverzeichnisse.
+- **Dieselbe Blindheit hier:** Kein Volltext-Slice dieses Repos trägt die
+  Phrase in einem DoD-Punkt — sie steht nur im Fließtext —, und
+  `reviews.done-dir` liest keine Unterverzeichnisse; das eigene Gate prüft
+  damit keinen einzigen Slice (nachgemessen in slice-265; eine erste Zählung
+  hatte Fließtext-Treffer mitgezählt).
 
 Die Entscheidung je Punkt folgt mit der Umsetzung.
