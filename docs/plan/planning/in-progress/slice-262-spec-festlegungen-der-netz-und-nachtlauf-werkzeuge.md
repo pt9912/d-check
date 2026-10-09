@@ -61,6 +61,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 |---|---|---|
 | `spec/spezifikation.md` | update | §7-Einträge |
 | `harness/sensors/*.md` der betroffenen Werkzeuge | update | Verweis auf die Kennung; die gemessenen Abweichungen zur Wirklichkeit des Codes nachziehen |
+| `harness/README.md` (Gate-Index), Kopf-Kommentar von `.github/workflows/upstream-drift.yml`, `harness/rules/docker-make-only.md` | update | **Plan-Änderung nach Review R1 (F-2, F-3, F-7):** dieselben Aussagen stehen dort; nur Text, keine Änderung an Workflow-Schritten oder Werkzeugen |
 
 ## 4. Trigger
 
