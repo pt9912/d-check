@@ -323,7 +323,7 @@ moving tags. The task-oriented entry point — from the first check to every
 single module — is the [user handbook](docs/user/benutzerhandbuch.md) (German);
 the terse invocation reference with options and exit codes is
 [`docs/user/operations.md`](docs/user/operations.md), the release and
-digest-pin path [`docs/user/releasing.md`](docs/user/releasing.md).
+digest-pin path [`docs/user/maintainer/releasing.md`](docs/user/maintainer/releasing.md).
 
 ## Configuration (`.d-check.yml`)
 
@@ -355,7 +355,7 @@ silent defaults
 |---|---|
 | [`docs/user/benutzerhandbuch.md`](docs/user/benutzerhandbuch.md) | **User handbook** (German): task-oriented, every rule module with example configuration |
 | [`docs/user/operations.md`](docs/user/operations.md) | Invocation reference: options, exit codes, configuration |
-| [`docs/user/releasing.md`](docs/user/releasing.md) | Release process, digest-pin consumption |
+| [`docs/user/maintainer/releasing.md`](docs/user/maintainer/releasing.md) | Release process, digest-pin consumption |
 | [`spec/lastenheft.md`](spec/lastenheft.md) | Requirements (`DC-FA-*`, `DC-QA-*`), acceptance criteria |
 | [`harness/README.md`](harness/README.md) | Harness entry: source precedence, guides, sensors |
 | [`AGENTS.md`](AGENTS.md) | Briefing for AI coding agents, hard rules |

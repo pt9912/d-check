@@ -8,7 +8,7 @@ name: release
 # gebaut oder gepusht wird. `:latest` wird ausschließlich für stabile
 # Tags gesetzt — ADR-0014 ratifiziert das und löst ADR-0002 §4 insoweit
 # ab; Konsumenten werden auf Digest-Pins verwiesen
-# (docs/user/releasing.md).
+# (docs/user/maintainer/releasing.md).
 #
 # Docker-only-Pfad (AGENTS.md §3.1): `make ci` fährt die kompletten
 # Gates inkl. Image-Integrationstests gegen das lokale Runtime-Image
@@ -188,7 +188,7 @@ jobs:
         run: |
           set -euo pipefail
           fail() {
-            echo "::error::$1 BEREITS VEROEFFENTLICHT: ${GHCR_DIGEST} auf ghcr.io — das Release ist unvollstaendig, der GHCR-Stand aber gueltig. Vorbedingungen: docs/user/releasing.md."
+            echo "::error::$1 BEREITS VEROEFFENTLICHT: ${GHCR_DIGEST} auf ghcr.io — das Release ist unvollstaendig, der GHCR-Stand aber gueltig. Vorbedingungen: docs/user/maintainer/releasing.md."
             exit 1
           }
           if [[ -z "${DOCKERHUB_USERNAME}" || -z "${DOCKERHUB_TOKEN}" ]]; then

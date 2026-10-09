@@ -92,7 +92,7 @@ Aufruf-Beispielen; der Release-Build ersetzt ihn durch die Tag-Version, bevor er
 die Seite hochlädt. Die Datei im Repo bleibt damit versionsfrei und muss bei
 keinem Release angefasst werden — anders als die
 `ghcr`-Pins in README und Handbuch, die
-[`releasing.md`](../../docs/user/releasing.md) §Release-Prep aufzählt.
+[`releasing.md`](../../docs/user/maintainer/releasing.md) §Release-Prep aufzählt.
 
 ## Änderungen prüfen
 

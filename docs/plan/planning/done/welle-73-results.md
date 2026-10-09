@@ -78,7 +78,7 @@ zurückfließt.
 - **Ein Katalog-Test prüft Abdeckung, nicht Erreichbarkeit.** Ein Grund-Code
   kann vollständig deklariert, dokumentiert und tot sein.
 - **Das Datum kommt aus dem Kalender, nicht aus der Zeile darüber** — jetzt ein
-  eigener Punkt der [Release-Prep-Checkliste](../../../user/releasing.md#release-prep-vor-dem-tag).
+  eigener Punkt der [Release-Prep-Checkliste](../../../user/maintainer/releasing.md#release-prep-vor-dem-tag).
 - **Append-Logs sind gate-unsichtbar.** Weder ihre Vollständigkeit noch ihre
   Richtung prüft heute etwas; beides ist an einem Tag an drei Stellen
   aufgefallen.

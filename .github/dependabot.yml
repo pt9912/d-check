@@ -20,7 +20,7 @@
 # CVE ohne neues Upstream-Release keinen PR. Seit 2026-08-28 sind beide AN
 # (gemessen: automated-security-fixes {"enabled":true}, vulnerability-alerts
 # HTTP 204). Wer dieses Repo forkt, setzt sie erneut -- siehe
-# docs/user/releasing.md §Vorbedingungen.
+# docs/user/maintainer/releasing.md §Vorbedingungen.
 #
 # ABGRENZUNG: kein Automerge. Dependabot oeffnet PRs; geprueft wird mit
 # `make ci`, und der Merge bleibt ein Akt -- dieselbe Linie wie bei den

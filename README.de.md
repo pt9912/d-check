@@ -326,7 +326,7 @@ zu jedem einzelnen Modul — ist das
 [Benutzerhandbuch](docs/user/benutzerhandbuch.md); die knappe Aufruf-Referenz
 mit Optionen und Exit-Codes steht in
 [`docs/user/operations.md`](docs/user/operations.md), der Release- und
-Digest-Pin-Weg in [`docs/user/releasing.md`](docs/user/releasing.md).
+Digest-Pin-Weg in [`docs/user/maintainer/releasing.md`](docs/user/maintainer/releasing.md).
 
 ## Konfiguration (`.d-check.yml`)
 
@@ -358,7 +358,7 @@ stillschweigenden Defaults
 |---|---|
 | [`docs/user/benutzerhandbuch.md`](docs/user/benutzerhandbuch.md) | **Benutzerhandbuch**: aufgabenorientiert, jedes Regelmodul mit Beispiel-Konfiguration |
 | [`docs/user/operations.md`](docs/user/operations.md) | Aufruf-Referenz: Optionen, Exit-Codes, Konfiguration |
-| [`docs/user/releasing.md`](docs/user/releasing.md) | Release-Prozess, Digest-Pin-Konsum |
+| [`docs/user/maintainer/releasing.md`](docs/user/maintainer/releasing.md) | Release-Prozess, Digest-Pin-Konsum |
 | [`spec/lastenheft.md`](spec/lastenheft.md) | Anforderungen (`DC-FA-*`, `DC-QA-*`), Akzeptanzkriterien |
 | [`harness/README.md`](harness/README.md) | Harness-Einstieg: Source Precedence, Guides, Sensors |
 | [`AGENTS.md`](AGENTS.md) | Briefing für AI-Coding-Agenten, Hard Rules |

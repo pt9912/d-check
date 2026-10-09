@@ -103,7 +103,7 @@ jobs:
             echo "### Hub-Darstellung gesetzt (${VERSION})" >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          echo "::warning title=Hub-Beschreibung nicht gesetzt::Der PATCH an die Docker-Hub-API wurde abgelehnt. Ein etwaiges Image ist davon unberuehrt; nur Kurztext und Overview-Seite fehlen. Haeufigste Ursache: DOCKERHUB_TOKEN traegt Scope read/write statt read/write/delete (der Scope laesst sich am bestehenden Token aendern). Siehe docs/user/releasing.md §Vorbedingungen."
+          echo "::warning title=Hub-Beschreibung nicht gesetzt::Der PATCH an die Docker-Hub-API wurde abgelehnt. Ein etwaiges Image ist davon unberuehrt; nur Kurztext und Overview-Seite fehlen. Haeufigste Ursache: DOCKERHUB_TOKEN traegt Scope read/write statt read/write/delete (der Scope laesst sich am bestehenden Token aendern). Siehe docs/user/maintainer/releasing.md §Vorbedingungen."
           {
             echo "### Hub-Darstellung NICHT gesetzt"
             echo ""

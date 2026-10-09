@@ -629,7 +629,7 @@ matrix:
   # die seit ADR-0102 abgeloest ist, und als Accepted-ADR kann sie den Verweis
   # nicht umschreiben. Gemessener Preis: ausser den drei ADR-0065-Links traegt
   # ihr Koerper nur zwei Links auf AGENTS.md, die heute keinen Befund ergeben.
-  exempt-paths: ["docs/plan/adr/00[01][0-9]-*.md", "docs/plan/adr/002[01]-*.md", "docs/plan/adr/0047-*.md", "docs/plan/adr/0068-*.md", "docs/plan/adr/README.md", "CHANGELOG.md", "docs/user/releasing.md"]
+  exempt-paths: ["docs/plan/adr/00[01][0-9]-*.md", "docs/plan/adr/002[01]-*.md", "docs/plan/adr/0047-*.md", "docs/plan/adr/0068-*.md", "docs/plan/adr/README.md", "CHANGELOG.md", "docs/user/maintainer/releasing.md"]
 
 # Pfade in Inline-Code (DC-FA-CODE-001): ./ und ../ immer; dazu die
 # Wurzel-Präfixe der eigenen Verzeichniskonvention.
@@ -648,7 +648,8 @@ codepaths:
   # - arch-check.sh: abgelöst durch das Schwester-Tool a-check (ADR-0029, slice-058)
   # - gate-consistency.sh: Prüfung 3 (DC-QA-03-Modulliste) → Go-Test, Kern via Modul targets (ADR-0032, slice-064)
   # - harness/closure-outcomes.sh: abgelöst durch structure.forbid-pattern im Closure-Profil (ADR-0059)
-  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh", "tools/trace-check.sh", "tools/planning-consistency.sh", "tools/arch-check.sh", "tools/gate-consistency.sh", "tools/harness/closure-outcomes.sh"]
+  # - docs/user/releasing.md: umgezogen nach docs/user/maintainer/releasing.md; Accepted-ADRs und geschlossene Slices nennen den alten Pfad in Inline-Code
+  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh", "tools/trace-check.sh", "tools/planning-consistency.sh", "tools/arch-check.sh", "tools/gate-consistency.sh", "tools/harness/closure-outcomes.sh", "docs/user/releasing.md"]
 
 # Versions-Pin-Konsistenz (DC-FA-VER-001, slice-048): jeder ghcr-Image-Pin in
 # den Live-Docs muss die aktuelle Version aus version.md#aktuell tragen — sonst

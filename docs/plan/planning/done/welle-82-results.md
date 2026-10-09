@@ -105,7 +105,7 @@ Genau dort lagen beide MEDIUM des Release-Reviews.
   getroffen. Kein neuer Anker nötig — die Klasse dieser Welle ist als
   [`BEO-011`](../observations.md) registriert, nicht als Skill-Regel, weil sie
   ein Zähl-Auftrag ist und kein Lese-Anker.
-- **Release-Prozedur** ([`releasing.md`](../../../user/releasing.md)): die
+- **Release-Prozedur** ([`releasing.md`](../../../user/maintainer/releasing.md)): die
   Anti-Anlagerungs-Regel gilt jetzt der **Klasse** (jeder gegliederte
   Fließtext), nicht mehr zwei benannten Kapiteln.
 - **Nicht** mechanisiert: ein Wortlisten-Lint auf Exklusivitäts-Wörter wäre ein
