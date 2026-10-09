@@ -51,3 +51,11 @@ func TestManualTitle_UeberspringtCodeBlock(t *testing.T) {
 		t.Fatalf("got %q, want %q", got, "Titel")
 	}
 }
+
+// Verglichen wird der Überschriften-Text ohne die führende #-Folge: der
+// Begriff "#" trifft keine Überschrift.
+func TestManualSections_RauteIstKeinText(t *testing.T) {
+	if out, found := ManualSections(manualDocs(), "#"); found || out != "" {
+		t.Fatalf("die #-Folge gehört nicht zum Text, got %v %q", found, out)
+	}
+}

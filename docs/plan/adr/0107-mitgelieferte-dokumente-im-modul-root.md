@@ -81,7 +81,9 @@ tun" ist eine davon (Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR
 `TestManual_RootPaketNurAusDerCompositionRoot` wird rot, sobald ein Paket des
 Kerns oder ein getriebener Adapter das Root-Paket importiert (gegengeprüft
 mit einem Import in `app`). `TestManual_EingebetteteDokumenteGleichDerQuelle`
-hält die Einbettung gegen die Quelldateien.
+hält Pfad-Konstante und Einbettungs-Ziel zusammen, damit die Kopfzeile der
+Ausgabe die richtige Datei nennt; dass die Einbettung zum Build-Stand passt,
+sichert `go:embed` selbst.
 
 ## Re-Evaluierungs-Trigger
 

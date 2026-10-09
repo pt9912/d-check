@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.105.0
+**Version:** 0.105.1
 
 **Status:** Draft
 
@@ -642,7 +642,7 @@ Schlüssel es nimmt. Die Ausgabe ist deterministisch
 - **Negative (kein Treffer):** Given einen Begriff, den keine Überschrift nennt, when `d-check --manual <begriff>` läuft, then Exit-Code 2 und ein Hinweis auf stderr, der die Titel beider Dokumente nennt.
 - **Negative (leerer Begriff):** Given `--manual` mit leerem oder nur aus Weißraum bestehendem Begriff, when `d-check` startet, then Exit-Code 2.
 - **Negative (Kombination):** Given `--manual` zusammen mit einer anderen Modus-Option (`--json`, `--yaml`, `--doctor`, `--repair`, `--repair-broad`, `--trace`, `--require-complete`, `--print-config`, `--print-mk`, `--suggest-config`, `--commit-msg`, `--range`, `--staged`), when `d-check` startet, then Exit-Code 2.
-- **Drift:** Given einen Build, when die ausgegebenen Dokumente mit den Quelldateien desselben Stands verglichen werden, then sind sie byte-gleich.
+- **Drift:** Given einen Build, when ein ausgegebener Abschnitt ohne seine Kopfzeile mit derselben Zeilenspanne der Quelldatei desselben Stands verglichen wird, then sind beide byte-gleich, bis auf die Leerzeilen am Abschnittsende.
 
 **Out-of-Scope:** Eine eigene, gekürzte Modul-Hilfe neben den Dokumenten (sie
 wäre eine zweite Beschreibung); Volltextsuche im Abschnittstext; andere
@@ -4194,6 +4194,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.105.1 | 2026-10-09 | Nachzug nach Verifikation an [`DC-FA-CLI-013`](#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen): das Kriterium „Drift" vergleicht einen Abschnitt ohne Kopfzeile mit derselben Zeilenspanne der Quelle, bis auf die Leerzeilen am Ende — die Ausgabe trägt Kopfzeilen | — |
 | 0.105.0 | 2026-10-09 | Neue Anforderung [`DC-FA-CLI-013`](#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen): `--manual <begriff>` gibt die Abschnitte von Benutzerhandbuch und Spezifikation aus, deren Überschrift den Begriff nennt — netzlos, aus dem Werkzeug selbst, byte-gleich zu den Quelldateien des Build-Stands. Anlass: CR eines Adopters (Arbeit ohne Netz) | — |
 | 0.104.0 | 2026-10-09 | [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): unter `match: name` deckt ein Report einen Slice nicht mehr, wenn sein Name auch einen längeren Slice-Basisnamen trägt, der den kürzeren enthält — gezählt über alle Slice-Dateien in `reviews.done-dir`, auch die ausgenommenen; die Grenze zur Präfix-Deckung entfällt, Kriterium „Boundary (Slug-Kennung)" entsprechend. Anlass: Befund eines Adopters | — |
 | 0.103.1 | 2026-10-09 | Nachzug nach Verifikation an [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): das Kriterium „Boundary (alles archiviert)" nennt für Stubs unter Unterverzeichnissen `reviews.recursive: true` — ohne liest das Modul sie nicht, und die Menge bleibt leer, ohne dass `skip-pattern` etwas genommen hat | — |
