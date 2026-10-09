@@ -140,6 +140,7 @@ ob der Eintrag ihn betrifft.
 | [MR-075](conventions/MR-075-historie-ausnahme-folgt-der-umnummerierung.md) <a id="mr-075"></a> | Die Historie-Ausnahme folgt der Umnummerierung der Spezifikation (Nachtrag zu [MR-0098](#mr-0098)) | `matrix.exclude-sections`, `structure`-Regel der Spezifikations-Historie | keine — Nachtrag zu [MR-0098](#mr-0098), dessen Ausnahme an eine Überschrift gebunden ist |
 | [MR-076](conventions/MR-076-gate-nachweis-im-rezept.md) <a id="mr-076"></a> | Der Gate-Nachweis entsteht im Rezept von `gates`, und der Stop-Hook blockt, wo er den Zustand nicht liest (schärft [MR-004](#mr-004)) | `gates` im `Makefile`, `tools/harness/record-gates.sh`, `.claude/hooks/stop-require-gates.sh` | keine — Härtung am Handoff-Gate (Baseline-Regelwerk `modul-13-quality-gates.md` §Guard-Härtung) |
 | [MR-077](conventions/MR-077-releasing-doku-unter-docs-maintainer.md) <a id="mr-077"></a> | Die Releasing-Doku liegt unter `docs/maintainer/`; Rang 6 der Source Precedence umfasst `docs/user/` und `docs/maintainer/` | `docs/maintainer/`, Rang 6 in `AGENTS.md` §2 und `harness/README.md` | `grundlagen-source-precedence` §Source Precedence, Rang 6 (`docs/user/*.md`) |
+| [MR-078](conventions/MR-078-test-nachweise-entlasten.md) <a id="mr-078"></a> | Test-Nachweise entlasten eine Anforderung in der RTM, nicht nur der Slice | `trace.coverage`, `make trace`, `make completeness-check` | `grundlagen-traceability` §Die zweite Richtung (der Slice schließt eine Anforderung) |
 
 ### Aufgelöste Adaptionen
 

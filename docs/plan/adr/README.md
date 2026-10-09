@@ -111,6 +111,7 @@ Register (Baseline-Vorlage `templates/docs/plan/adr/README.template.md`).
 | [ADR-0101](0101-targets-authority-disjunkt.md) | `targets` prüft opt-in die Disjunktheit der Autoritäts-Dateien (`gate-declared-twice`) | Accepted | 2026-10-07 | [`DC-FA-TGT-001`](../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in), [ADR-0100](0100-targets-authority-liste.md) |
 | [ADR-0102](0102-multi-arch-index-und-spiegel-per-index-digest.md) | Das Image ist ein Multi-Arch-Index, und der Spiegel kopiert ihn samt Index-Digest | Accepted | 2026-10-07 | [`DC-FA-DIST-001`](../../../spec/lastenheft.md#dc-fa-dist-001--docker-image), [`DC-FA-DIST-002`](../../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel) |
 | [ADR-0103](0103-adr-gate-laesst-pfad-nachzug-durch.md) | Das ADR-Gate lässt einen reinen Pfad-Nachzug durch | Accepted | 2026-10-09 | [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) |
+| [ADR-0104](0104-test-nachweise-entlasten-in-der-rtm.md) | Test-Nachweise entlasten eine Anforderung in der RTM | Proposed | 2026-10-09 | [`DC-FA-COV-001`](../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in) |
 
 ## Konventionen
 
