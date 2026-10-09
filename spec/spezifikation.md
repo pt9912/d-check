@@ -3033,7 +3033,7 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    den Schlüssel gelten die Phrase **„unabhängiger Review"** (Groß-/Kleinschreibung
    am ersten Buchstaben unerheblich) und die Form der Slice-Vorlage **„Review
    durchgeführt"**, diese nur am Anfang eines Punkt-Teils — hinter der Task-Box,
-   hinter `;` oder `,` oder am Anfang einer Folgezeile —;
+   hinter `;` oder `,`, auch über einen Zeilenumbruch —;
    „Adaptions-Review durchgeführt" oder „kein Review durchgeführt" sind keine
    Zusage. Das Muster sieht den Punkt ab dem Bullet; jeder
    Checkbox-Punkt der Datei zählt, auch einer außerhalb des DoD-Abschnitts oder
@@ -3514,7 +3514,7 @@ Exit 2 ohne Prüfung
 | `reviews.done-dir` | string | leer (aus) | Verzeichnis der `done/`-Slice-Pläne — **Aktivierungs-Schalter** des Moduls; leer ⇒ inert (keine Datei geöffnet). Gelesen werden die Dateien **unmittelbar** darin (mit `reviews.recursive` auch in Unterverzeichnissen) mit Endung `.md` und Präfix `slice-`; null Kandidaten ⇒ Befund (fail-closed). Nur Weißraum ⇒ Exit 2 |
 | `reviews.reviews-dir` | string | leer | Verzeichnis der Review-Reports; **Pflicht**, sobald `done-dir` gesetzt ist (sonst Exit 2). Unmittelbar (nicht rekursiv) gelistet; unlesbar ⇒ derselbe fail-closed-Befund wie null Kandidaten |
 | `reviews.exempt-paths` | string[] | leer | Globs über Wurzel-relative Pfade; Treffer werden **nicht** geprüft. Ungültiges Glob ⇒ Exit 2. **Hebt den Leerlauf-Befund nicht aus:** bleiben nach Abzug null Kandidaten, ist das derselbe fail-closed-Befund |
-| `reviews.promise-pattern` | string | Phrase „unabhängiger Review" oder Vorlagen-Form „Review durchgeführt" am Anfang eines Punkt-Teils (hinter der Task-Box, `;`, `,` oder am Zeilenanfang) | RE2 gegen den Text eines DoD-Punkts (Checkbox-Zeile ab dem Bullet samt Folgezeilen); ein Treffer ist eine Review-Zusage. **Explizit** leer ⇒ Exit 2 (es träfe jeden Punkt); ohne Wert (YAML-`null`) ⇒ abwesend; nicht kompilierend ⇒ Exit 2 |
+| `reviews.promise-pattern` | string | Phrase „unabhängiger Review" oder Vorlagen-Form „Review durchgeführt" am Anfang eines Punkt-Teils (hinter der Task-Box, `;` oder `,`, auch über einen Zeilenumbruch) | RE2 gegen den Text eines DoD-Punkts (Checkbox-Zeile ab dem Bullet samt Folgezeilen); ein Treffer ist eine Review-Zusage. **Explizit** leer ⇒ Exit 2 (es träfe jeden Punkt); ohne Wert (YAML-`null`) ⇒ abwesend; nicht kompilierend ⇒ Exit 2 |
 | `reviews.match` | string | `id` | Zuordnung Report → Slice: `id` über die `slice-<NNN>`-Kennung im Report-Namen (ein Slice mit Zusage ohne Kennung im Namen ⇒ `review-missing`), `name` über den Basisnamen des Slice ohne `.md` als Teil des Report-Namens, gefolgt von einem Zeichen, das weder Buchstabe noch Ziffer ist (in jeder Schrift), oder dem Namensende — nötig für Slug-Kennungen. Anderer Wert ⇒ Exit 2 |
 | `reviews.require-promises` | bool | `false` | Kandidaten ohne eine einzige Zusage ⇒ `review-missing` auf `reviews.done-dir`; aus ⇒ legitimer Zustand, kein Befund |
 | `reviews.recursive` | bool | `false` | liest auch die Unterverzeichnisse von `reviews.done-dir` (die `SKIP_DIRS` ausgenommen); ein unlesbares Unterverzeichnis ⇒ `review-missing` mit seinem Pfad |
@@ -3711,6 +3711,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-09 | Nachzug nach Review an §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritt 3 und §2-Schema: die Vorlagen-Form zählt hinter der Task-Box oder hinter `;` oder `,`, auch über einen Zeilenumbruch, nicht an jedem Zeilenanfang |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritt 3, §2-Schema und [`SPEC-081`](#4-grund--und-fehler-codes): die Vorlagen-Form zählt am Anfang jedes Teils eines Punkts — hinter der Task-Box, hinter `;` oder `,`, am Anfang einer Folgezeile |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews) Schritte 3/4, §2-Schema und [`SPEC-081`](#4-grund--und-fehler-codes): die Vorlagen-Form zählt im Default nur direkt hinter der Task-Box; die Wortgrenze von `match: name` gilt für Buchstaben und Ziffern jeder Schrift, und die Grenze nennt Unterstrich und Punkt neben dem Bindestrich |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-RVW-001.a`](spezifikation.md#dc-fa-rvw-001a--review-report-deckung-reviews), §2-Schema und [`SPEC-081`](#4-grund--und-fehler-codes): der Default erkennt zusätzlich die Vorlagen-Form „Review durchgeführt"; `match: name` verlangt nach dem Basisnamen ein Zeichen, das weder Buchstabe noch Ziffer ist; ein unlesbares Unterverzeichnis lässt die übrigen Einträge geprüft und ersetzt beide Leerlauf-Befunde; benannt, dass jeder Checkbox-Punkt der Datei zählt und das Muster ihn ab dem Bullet sieht; `promise-pattern` ohne Wert gilt als abwesend |

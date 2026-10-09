@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.101.2
+**Version:** 0.101.3
 
 **Status:** Draft
 
@@ -3615,7 +3615,7 @@ jeder `done/`-Slice mit einer **Review-Zusage** — ein DoD-Punkt, dessen Text
 auf `reviews.promise-pattern` passt (ohne den Schlüssel: die Phrase
 „unabhängiger Review" oder die Form der Slice-Vorlage „Review durchgeführt",
 diese nur, wo sie einen Teil des Punkts eröffnet: hinter der Task-Box, hinter
-`;` oder `,` oder am Anfang einer Folgezeile),
+`;` oder `,`, auch über einen Zeilenumbruch),
 in jeder der drei CommonMark-Bullet-Formen (`-`/`*`/`+`), unabhängig vom
 Haken-Zustand — mindestens einen Report unter einem konfigurierten Verzeichnis
 hat, der ihn **deckt**. Gedeckt ist er nach `reviews.match`: mit `id`
@@ -3640,7 +3640,7 @@ Report nennt. Die Phrase „unabhängiger Review" und die Form der Slice-Vorlage
 „Review durchgeführt" tragen beide die Zusage, dass ein externer Report
 entsteht; ohne die zweite liefe ein Repo, das der Vorlage folgt, grün über
 einer leeren Menge. Die Vorlagen-Form zählt nur, wo sie einen Teil des Punkts
-eröffnet (hinter der Task-Box, hinter `;` oder `,`, am Zeilenanfang): „Adaptions-Review durchgeführt" oder „kein Review durchgeführt"
+eröffnet (hinter der Task-Box oder hinter `;` oder `,`, auch über einen Zeilenumbruch): „Adaptions-Review durchgeführt" oder „kein Review durchgeführt" — auch umbrochen —
 sagen keinen Report zu. Ein Bestand mit eigener Formulierung setzt
 `promise-pattern`.
 
@@ -3699,9 +3699,9 @@ kompilierendem `reviews.skip-pattern`; die Meldung nennt den Schlüssel. Ein
 - **Boundary (exempt-paths):** Given einen Kandidaten, der über `reviews.exempt-paths` ausgenommen ist, when der Lauf endet, then kein Befund auf ihm — der Leerlauf-Befund bleibt bestehen, falls die Ausnahme die Kandidatenmenge auf null bringt.
 - **Boundary (archivierte Stubs):** Given einen archivierten Slice-Stub unterhalb eines Unterverzeichnisses von `reviews.done-dir` (`done/<welle-id>/…`) und **kein** `reviews.recursive`, when der Lauf endet, then ist er **kein** Kandidat.
 - **Boundary (Modul-aus):** Given **kein** aktives `reviews`, when `d-check` läuft, then ist der Befundsatz byte-identisch zum Lauf ohne den Konfigurations-Block ([`DC-QA-02`](#dc-qa-02--determinismus)), und keine Datei wird geöffnet.
-- **Happy Path (Vorlagen-Form):** Given einen Slice, dessen DoD-Punkt „Review durchgeführt, Report unter `docs/reviews/` liegt vor" trägt, und **kein** `promise-pattern`, when der Lauf endet, then `review-missing` ohne passenden Report — ebenso für „`make gates` grün; Review durchgeführt" und dieselbe Form am Anfang einer Folgezeile — und kein Befund mit dem Report `<datum>-slice-<NNN>-<titel>-review.md`.
+- **Happy Path (Vorlagen-Form):** Given einen Slice, dessen DoD-Punkt „Review durchgeführt, Report unter `docs/reviews/` liegt vor" trägt, und **kein** `promise-pattern`, when der Lauf endet, then `review-missing` ohne passenden Report — ebenso für „`make gates` grün; Review durchgeführt", auch mit Zeilenumbruch nach dem `;` — und kein Befund mit dem Report `<datum>-slice-<NNN>-<titel>-review.md`.
 - **Happy Path (eigenes Muster):** Given `reviews.promise-pattern: 'Code-Review erledigt'` und einen Slice, dessen DoD-Punkt diese Wortfolge trägt, when der Lauf endet, then `review-missing` ohne passenden Report; ohne den Schlüssel ist derselbe Punkt keine Zusage.
-- **Negative (Default):** Given einen DoD-Punkt, der nur „Adaptions-Review" oder „Review-Report liegt vor" trägt, die Vorlagen-Form hinter einem Wort („Adaptions-Review durchgeführt", „kein Review durchgeführt", „das Review durchgeführt zu haben"), oder die Wortfolge „Review durchgeführt" bzw. „unabhängiger Review" außerhalb eines Checkbox-Punkts, when der Lauf endet, then keine Zusage.
+- **Negative (Default):** Given einen DoD-Punkt, der nur „Adaptions-Review" oder „Review-Report liegt vor" trägt, die Vorlagen-Form hinter einem Wort („Adaptions-Review durchgeführt", „kein Review durchgeführt" auch über einen Zeilenumbruch, „das Review durchgeführt zu haben"), oder die Wortfolge „Review durchgeführt" bzw. „unabhängiger Review" außerhalb eines Checkbox-Punkts, when der Lauf endet, then keine Zusage.
 - **Boundary (Slug-Kennung):** Given einen Slice `slice-<titel>.md` mit Zusage, when `match` nicht gesetzt ist, then `review-missing` mit dem Hinweis auf `match: name` statt eines stillen Übersprungs; mit `match: name` deckt ihn ein Report, dessen Dateiname den Basisnamen gefolgt von einem Zeichen enthält, das weder Buchstabe noch Ziffer ist — eine Kennung `slice-<N>` wird nicht vom Report zu `slice-<N>5-…` gedeckt.
 - **fail-closed (keine Zusage):** Given `reviews.require-promises: true` und Kandidaten ohne eine einzige Zusage, when der Lauf endet, then ein Befund auf `reviews.done-dir`.
 - **Boundary (Unterverzeichnisse und Stubs):** Given `reviews.recursive: true` und `reviews.skip-pattern`, das den Stub-Marker trifft, when der Lauf endet, then wird der Volltext unter einem Unterverzeichnis geprüft, der Stub daneben nicht; ein unlesbares Unterverzeichnis ist ein Befund mit seinem Pfad, die übrigen Einträge werden weiter geprüft, und ein Leerlauf-Befund entfällt neben ihm.
@@ -4125,6 +4125,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.101.3 | 2026-10-09 | Nachzug nach Review an [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): die Vorlagen-Form zählt hinter der Task-Box oder hinter `;` oder `,`, auch über einen Zeilenumbruch — nicht mehr an jedem Zeilenanfang; dort machte sie eine umbrochene Verneinung („… kein" / „Review durchgeführt") zur Zusage. „Negative (Default)" nennt die umbrochene Verneinung | — |
 | 0.101.2 | 2026-10-09 | Nachzug nach Review an [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): die Vorlagen-Form zählt am Anfang **jedes** Teils eines Punkts — hinter der Task-Box, hinter `;` oder `,` und am Anfang einer Folgezeile; nur hinter der Task-Box schloss sie eine im Bestand gelebte Zusage aus („`make gates` grün; Review durchgeführt, Report unter …"). Die Kriterien „Happy Path (Vorlagen-Form)" und „Negative (Default)" nennen beide Seiten | — |
 | 0.101.1 | 2026-10-09 | Nachzug nach Review an [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): die Vorlagen-Form „Review durchgeführt" zählt im Default nur dort, wo sie den Punkt direkt hinter der Task-Box eröffnet — an beliebiger Stelle traf sie „Adaptions-Review durchgeführt" und „kein Review durchgeführt"; das Kriterium „Negative (Default)" nennt diese Formen. Die Wortgrenze von `match: name` gilt für Buchstaben und Ziffern jeder Schrift. Berichtigt zu 0.100.0/0.101.0: ersetzt wurden die Kriterien „Happy Path (eigenes Muster)" (neu gefasst), „Negative (Muster)" (jetzt „Negative (Default)") und „Boundary (benannte Kennung)" (jetzt „Boundary (Slug-Kennung)"); „Happy Path (Vorlagen-Form)" kam hinzu | — |
 | 0.101.0 | 2026-10-09 | [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): der Default erkennt **zusätzlich** die Form der Slice-Vorlage „Review durchgeführt" — ohne sie liefe jedes Repo, das der Vorlage folgt, grün über einer leeren Menge; das ändert den Befundsatz dort, wo bisher nichts geprüft wurde. `match: name` verlangt nach dem Basisnamen ein Zeichen, das weder Buchstabe noch Ziffer ist; ein unlesbares Unterverzeichnis lässt die übrigen Einträge geprüft und ersetzt den Leerlauf-Befund; als DoD-Punkt zählt jeder Checkbox-Punkt der Datei; ein `promise-pattern` ohne Wert gilt als abwesend. Kriterien „Happy Path (Vorlagen-Form)", „Negative (Default)" und „Boundary (Slug-Kennung)" ersetzen die Vorgänger, die die alte Default-Annahme trugen | — |

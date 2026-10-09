@@ -231,8 +231,8 @@ func TestReviewsMatch_NameWortgrenzeUnicode(t *testing.T) {
 }
 
 // Die Vorlagen-Form zählt, wo sie einen Teil des Punkts eröffnet — hinter der
-// Task-Box, hinter ; oder , und am Anfang einer Folgezeile; zusammengesetzt,
-// verneint oder hinter einem Wort ist sie keine Zusage.
+// Task-Box oder hinter ; oder , (auch über einen Zeilenumbruch); zusammengesetzt,
+// verneint — auch umbrochen — oder hinter einem Wort ist sie keine Zusage.
 func TestReviewsDefault_VorlagenFormNurAmTeilanfang(t *testing.T) {
 	zusage := map[string]string{
 		rvDone + "/slice-001-a.md": "## 2. Definition of Done\n\n- [x] `make gates` grün; Review durchgeführt, Report liegt vor\n",
@@ -246,8 +246,9 @@ func TestReviewsDefault_VorlagenFormNurAmTeilanfang(t *testing.T) {
 		rvDone + "/slice-004-d.md": "## 2. Definition of Done\n\n- [x] Adaptions-Review durchgeführt\n",
 		rvDone + "/slice-005-e.md": "## 6. Risiken\n\n- [ ] kein Review durchgeführt (entfallen)\n",
 		rvDone + "/slice-006-f.md": "## 2. Definition of Done\n\n- [x] das Review durchgeführt zu haben, half\n",
+		rvDone + "/slice-007-g.md": "## 6. Risiken\n\n- [ ] Risiko: bei der Closure wird kein\n      Review durchgeführt\n",
 	}
 	if f := rvRunCfg(keine, rvCfg()); f != nil {
-		t.Fatalf("keine der drei Formen ist eine Zusage, got %+v", f)
+		t.Fatalf("keine der vier Formen ist eine Zusage, got %+v", f)
 	}
 }
