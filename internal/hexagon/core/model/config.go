@@ -1138,11 +1138,12 @@ type ReviewsConfig struct {
 func (c ReviewsConfig) MatchByName() bool { return c.Match == "name" }
 
 // DefaultPromisePattern erkennt die Phrase „unabhängiger Review" und die Form
-// der Baseline-Slice-Vorlage „Review durchgeführt", diese nur dort, wo sie den
-// Punkt direkt hinter der Task-Box eroeffnet. Bloßes „Review" oder die Form an
-// beliebiger Stelle waere zu breit: „Adaptions-Review durchgeführt" und „kein
-// Review durchgeführt" sind keine Zusage eines externen Reports.
-const DefaultPromisePattern = `[Uu]nabhängiger Review|\[[ xX]\][ \t]+Review durchgeführt`
+// der Baseline-Slice-Vorlage „Review durchgeführt", diese nur, wo sie einen
+// Teil des Punkts eroeffnet: direkt hinter der Task-Box, hinter ; oder , und am
+// Anfang einer Folgezeile. Bloßes „Review" oder die Form an beliebiger Stelle
+// waere zu breit: „Adaptions-Review durchgeführt" und „kein Review
+// durchgeführt" sind keine Zusage eines externen Reports.
+const DefaultPromisePattern = `[Uu]nabhängiger Review|(?:\[[ xX]\]|[;,]|(?m:^))[ \t]*Review durchgeführt`
 
 // EffectivePromisePattern liefert das Zusage-Muster; leer ⇒ der Default.
 func (c ReviewsConfig) EffectivePromisePattern() string {

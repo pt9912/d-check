@@ -2471,7 +2471,7 @@ func applyReviews(r *rawReviews) (model.ReviewsConfig, error) {
 	if r.PromisePattern != nil {
 		if *r.PromisePattern == "" {
 			return model.ReviewsConfig{}, fmt.Errorf(
-				"%s: reviews.promise-pattern ist leer — es träfe jeden DoD-Punkt (weglassen ⇒ Default: „unabhängiger Review“ oder „Review durchgeführt“ direkt hinter der Task-Box)", FileName)
+				"%s: reviews.promise-pattern ist leer — es träfe jeden DoD-Punkt (weglassen ⇒ Default: „unabhängiger Review“ oder „Review durchgeführt“ am Anfang eines Punkt-Teils)", FileName)
 		}
 		if _, err := regexp.Compile(*r.PromisePattern); err != nil {
 			return model.ReviewsConfig{}, fmt.Errorf(

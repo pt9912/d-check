@@ -251,7 +251,7 @@ modules: [links, anchors]
 #   # Review-Zusage = ein DoD-Punkt (Checkbox-Zeile samt Folgezeilen bis zur nächsten Checkbox
 #   # oder Leerzeile; jede Bullet-Form, Haken-Zustand egal), dessen TEXT promise-pattern trifft.
 #   # Ohne promise-pattern gelten die Phrase "unabhängiger Review" und die Vorlagen-Form "Review durchgeführt",
-#   # diese nur direkt hinter der Task-Box ("- [x] Review durchgeführt …", nicht "kein Review durchgeführt").
+#   # diese nur am Anfang eines Punkt-Teils (hinter der Task-Box, hinter ; oder , oder am Zeilenanfang) — nicht "kein Review durchgeführt".
 #   # Jede Zusage verlangt einen Report unter reviews-dir, der den Slice deckt ⇒ sonst review-missing.
 #   # Geprüft wird die Deckung, nicht die Qualität des Reports.
 #   # promise-pattern: 'Code-Review erledigt'   # RE2 gegen den Punkt-Text ab dem Bullet; explizit leer ⇒ Exit 2, ohne Wert ⇒ Default

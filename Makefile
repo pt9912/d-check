@@ -230,7 +230,7 @@ mention-coverage: build ## Erwähnungs-Deckung via Modul mentions (Image, dogfoo
 # NICHT in gates: eine neue Modul-Klasse startet als eigenstaendiger Fokus-Lauf
 # (dieselbe Vorsicht wie bei trace-check/commits), Aufnahme in gates ist eine
 # spaetere, eigene Entscheidung.
-review-coverage: build ## Review-Report-Deckung via Modul reviews (Image, dogfood): jede DoD-Zusage (Default: "unabhängiger Review" oder "Review durchgeführt" hinter der Task-Box) braucht einen passenden Report unter docs/reviews/ (netzlos, NICHT in gates). ADR-0081.
+review-coverage: build ## Review-Report-Deckung via Modul reviews (Image, dogfood): jede DoD-Zusage (Default: "unabhängiger Review" oder "Review durchgeführt" am Anfang eines Punkt-Teils) braucht einen passenden Report unter docs/reviews/ (netzlos, NICHT in gates). ADR-0081.
 	$(DCHECK_RUN) --enable reviews $(FOCUS_DISABLE)
 
 baseline-probe: ## Faehrt die Alias-Aufloesung von baseline-verify gegen ihre Proben (neun Faelle, netzlos, NICHT in gates). MR-055.
