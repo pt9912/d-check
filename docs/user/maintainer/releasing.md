@@ -1,24 +1,24 @@
 # Releasing — d-check
 
 Release-Prozess für `ghcr.io/pt9912/d-check`
-([`DC-FA-DIST-001`](../../spec/lastenheft.md#dc-fa-dist-001--docker-image),
-[ADR-0002](../plan/adr/0002-distribution-ghcr-image.md),
-[ADR-0014](../plan/adr/0014-latest-tag-fuer-stabile-releases.md)). Diese
+([`DC-FA-DIST-001`](../../../spec/lastenheft.md#dc-fa-dist-001--docker-image),
+[ADR-0002](../../plan/adr/0002-distribution-ghcr-image.md),
+[ADR-0014](../../plan/adr/0014-latest-tag-fuer-stabile-releases.md)). Diese
 Datei beschreibt den Prozess; die Pipeline selbst ist
-[`.github/workflows/release.yml`](../../.github/workflows/release.yml).
+[`.github/workflows/release.yml`](../../../.github/workflows/release.yml).
 
 ## Versionsquelle
 
 Versionen folgen SemVer; die menschlich kuratierte Begründung jedes
 Releases ist der zugehörige Abschnitt in
-[`CHANGELOG.md`](../../CHANGELOG.md). Die Datei führt **keinen**
+[`CHANGELOG.md`](../../../CHANGELOG.md). Die Datei führt **keinen**
 `[Unreleased]`-Abschnitt: der Eintrag für die neue Version entsteht direkt
 unter ihrer Versionsnummer, erst in der Release-Prep — nicht im
 Feature-Commit, wo die Nummer noch nicht feststeht.
 
 Die **aktuelle** Version führt zusätzlich das Release-Register
-[`version.md`](../../version.md#aktuell) (§Aktuell). Das opt-in Modul `versions`
-([`DC-FA-VER-001`](../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in))
+[`version.md`](../../../version.md#aktuell) (§Aktuell). Das opt-in Modul `versions`
+([`DC-FA-VER-001`](../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in))
 prüft im Dogfooding-Lauf, dass alle gepinnten `ghcr`-Image-Verweise genau diese
 Version tragen — der Bump beim Release ist daher nicht optional
 (siehe [Release-Prep](#release-prep-vor-dem-tag)).
@@ -48,15 +48,15 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
      `pt9912/d-check:vX.Y.Z` in §Docker-Image. Beide sind vom `versions`-Gate
      **nicht** erfasst und driften still. **Braucht das Feature
      eine §4-Aufgabe, schreibe eine eigene** — nach dem
-     [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md) §5
+     [Benutzerhandbuch-Standard](../benutzerhandbuch-standard.md) §5
      (Ausgangslage/Ziel/Vorgehen/Ergebnis) — und **hänge sie nicht an eine
      bestehende §4-Aufgabe an**. Kein Gate erzwingt Aufgabenorientierung; genau
      durch Anhängen wuchs §4.12 auf ~330 Zeilen / 8 Themen, bis es aufgetrennt
      werden musste.
      **Die Regel gilt der Klasse, nicht dem Kapitel:** *jeder* gegliederte
      Fließtext dieses Repos, den ein Release anfasst — Handbuch in **allen**
-     Kapiteln, [`operations.md`](operations.md), diese Datei und der
-     [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md). Der Prüfsatz
+     Kapiteln, [`operations.md`](../operations.md), diese Datei und der
+     [Benutzerhandbuch-Standard](../benutzerhandbuch-standard.md). Der Prüfsatz
      ist eine Frage an die Überschrift: *nennt sie alles, was unter ihr steht?*
      Nicht die Länge ist der Defekt, sondern die **Unauffindbarkeit** — ein
      Abschnitt darf lang sein, wenn seine Überschrift ehrlich ist.
@@ -71,7 +71,7 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
      nachübersetzen). Bei einem neuen Modul in **jeder** Fassung: (a) die
      **Dogfooding-Zeile** unter §Warum d-check — sie nennt eine **Zahl** („im
      Vollausbau (N Module inkl. …)") **und** eine Enumeration, und beide zählen
-     die Module der [`.d-check.yml`](../../.d-check.yml), nicht alle
+     die Module der [`.d-check.yml`](../../../.d-check.yml), nicht alle
      existierenden; und (b) die **Modul-Liste** unter §Was ist d-check
      ergänzen — bei einer neuen **Bedingung** des Moduls `structure` zusätzlich
      deren Anzahl („bis zu N Bedingungen") in derselben Aufzählung. Das
@@ -99,7 +99,7 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
      Handbuch dort, wo das Modul beschrieben ist, und in derselben Zeile beider
      READMEs. Genau diese Stellen liest ein Konsument, dessen bisher grüner Lauf
      nach dem Update rot wird.
-   - **Operations-Referenz** ([`operations.md`](operations.md)) — bei einem
+   - **Operations-Referenz** ([`operations.md`](../operations.md)) — bei einem
      neuen Modul die Modul-Enumeration der `--enable`/`--disable`-Zeile, bei
      einer neuen CLI-Option die Optionen-Tabelle ergänzen. Kein Gate prüft
      diese Enumerationen — die Modul-Liste blieb so von v0.25 bis v0.37 still
@@ -121,7 +121,7 @@ alles, was Anwendern eine Version **empfiehlt**, beim letzten stabilen Release:
 
 - **Bekommt die Vorabversion:** einen eigenen `CHANGELOG.md`-Abschnitt
   `## [X.Y.Z-<suffix>]` — die Release-Notes verlinken darauf — und eine Zeile im
-  §Verlauf von [`version.md`](../../version.md#verlauf), **ohne** `<a id>`-Anker.
+  §Verlauf von [`version.md`](../../../version.md#verlauf), **ohne** `<a id>`-Anker.
 - **Bleibt beim letzten stabilen Release:** §Aktuell samt Anker in
   `version.md`, alle `ghcr`-Pins und bare Tags in Handbuch und beiden READMEs,
   Handbuch-Kopf und §11, der Digest-Pin in Handbuch §2. Auch die Prosa über eine
@@ -149,7 +149,7 @@ nur diesen Abschnitt.
 Runtime-Image (`docker create` + `docker cp`, bewusst ohne den Container zu
 starten — das distroless-Basisimage hat weder Shell noch `tar`) und führt es
 **direkt auf dem Host** aus, um es byte-identisch mit dem Container-Lauf zu
-vergleichen ([`DC-QA-02`](../../spec/lastenheft.md#dc-qa-02--determinismus)).
+vergleichen ([`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus)).
 Dieses Binary ist ein **Linux-ELF** — der macOS-Kernel (Mach-O-Loader) kann
 es unter keinen Umständen ausführen, unabhängig von der CPU-Architektur
 (auch nicht mit Rosetta, das nur Mach-O übersetzt) und unabhängig davon, ob
@@ -194,8 +194,8 @@ zweites Gate.
 ## Vorbedingungen (einmalig, im Konto des Betreibers)
 
 Der Docker-Hub-Spiegel ist **fail-closed**
-([`DC-FA-DIST-002`](../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel),
-[ADR-0064](../plan/adr/0064-dockerhub-spiegel-fail-closed.md)) — fehlt eine
+([`DC-FA-DIST-002`](../../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel),
+[ADR-0064](../../plan/adr/0064-dockerhub-spiegel-fail-closed.md)) — fehlt eine
 dieser Vorbedingungen, **schlägt jedes Release fehl**, und zwar erst *nach* dem
 GHCR-Push. Der Abbruch nennt dann den bereits veröffentlichten GHCR-Digest.
 
@@ -213,7 +213,7 @@ GHCR-Push. Der Abbruch nennt dann den bereits veröffentlichten GHCR-Digest.
   der Docker-Hub-Oberfläche **ändern** — ein neues Token und ein Ersetzen des
   Secrets sind dafür **nicht** nötig; der Token-Wert bleibt derselbe.
 - **Zwei Repository-Einstellungen für den Dependabot-Kanal**
-  ([ADR-0067](../plan/adr/0067-dependabot-als-hebender-kanal.md)):
+  ([ADR-0067](../../plan/adr/0067-dependabot-als-hebender-kanal.md)):
   **Dependabot-Alerts** und **Dependabot-Security-Updates**. Sie stehen in
   keiner Datei — sie sind Schalter im Repository. **Seit 2026-08-28 beide an**
   (`automated-security-fixes` meldet `enabled:true`, `vulnerability-alerts`
@@ -226,10 +226,10 @@ GHCR-Push. Der Abbruch nennt dann den bereits veröffentlichten GHCR-Digest.
 
 **Die Hub-Beschreibungsseite wird aus dem Repo gesetzt** — Kurztext und
 Overview-Seite kommen aus
-[`packaging/dockerhub/`](../../packaging/dockerhub/README.md), die **Kategorie**
+[`packaging/dockerhub/`](../../../packaging/dockerhub/README.md), die **Kategorie**
 bleibt manuell im Web-UI und steht dort als Text. Beide Release-Schritte tragen
 `continue-on-error`: ihr Fehlschlag lässt das Release grün
-([ADR-0065](../plan/adr/0065-spiegel-gleichheit-ist-der-config-digest.md)
+([ADR-0065](../../plan/adr/0065-spiegel-gleichheit-ist-der-config-digest.md)
 Punkt 5).
 
 ## Release auslösen
@@ -257,16 +257,16 @@ Die Pipeline (`release.yml`) läuft bei jedem `v*`-Tag-Push:
    Plattform, und je Plattform ist das Binary sha256-gleich zu dem aus
    Schritt 2 bzw. 3 geprüften. Erst danach zeigen `v<version>` und — **nur**
    für stabile Releases (kein Prerelease-Suffix,
-   [ADR-0014](../plan/adr/0014-latest-tag-fuer-stabile-releases.md)) —
+   [ADR-0014](../../plan/adr/0014-latest-tag-fuer-stabile-releases.md)) —
    `:latest` auf diesen Digest
-   ([ADR-0102](../plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)).
+   ([ADR-0102](../../plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md)).
    Fällt die Gegenprobe, bleibt jeder Tag unberührt.
 6. **Docker-Hub-Spiegel** — der GHCR-Index wird samt Blobs nach
    `docker.io/pt9912/d-check` **kopiert** (`docker buildx imagetools create`),
    dieselbe Tag-Disziplin wie Schritt 5. Danach vergleicht der Schritt die
    **Index-Digests** beider Registries — aus den Registries gelesen, nicht aus
    dem lokalen Daemon — und bricht bei Ungleichheit ab
-   ([`DC-FA-DIST-002`](../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)).
+   ([`DC-FA-DIST-002`](../../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)).
    **Fail-closed:** jeder Fehlschlag hier macht das Release rot, obwohl
    GHCR bereits trägt — die Meldung nennt deshalb den veröffentlichten
    GHCR-Digest. Die Zugangsdaten werden **vor** dem Push geprüft, sonst
@@ -297,4 +297,4 @@ Routine-Pins: Digest austauschen, Begründung in den Commit-Body.
 
 ## Aufruf-Referenz
 
-Siehe [`operations.md`](operations.md).
+Siehe [`operations.md`](../operations.md).
