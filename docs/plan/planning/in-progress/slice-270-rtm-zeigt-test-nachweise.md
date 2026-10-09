@@ -28,7 +28,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 **Ziel:** Die RTM dieses Repos (`make trace`) zeigt je Anforderung, welche
 Tests sie belegen — in der Spalte `Coverage` mit zwei Labels: **Tests** (die Go-Suite von `make test`)
 und **E2E** (`make image-test` gegen das gebaute Image). Je Spalte eine
-Abdeckungs-Datei mit der Tabelle `Kennung → Test → Datei:Zeile`, eingebunden
+Abdeckungs-Datei mit der Tabelle `Kennung → Test → Datei` (ohne Zeilennummer, siehe §3), eingebunden
 über `trace.coverage` in der `.d-check.yml`. Die Tabelle wird aus den
 Testquellen **abgeleitet**: ein Test in `make test` erzeugt sie und vergleicht
 sie mit der committeten Datei; weicht sie ab, ist `make test` rot.
@@ -50,13 +50,13 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] Zwei Abdeckungs-Dateien (Tests, E2E), aus den Testquellen abgeleitet,
+- [x] Zwei Abdeckungs-Dateien (Tests, E2E), aus den Testquellen abgeleitet,
       über `trace.coverage` eingebunden; `make trace` zeigt beide Labels.
-- [ ] Ein Test in `make test` hält jede Datei gegen ihre Ableitung — eine
+- [x] Ein Test in `make test` hält jede Datei gegen ihre Ableitung — eine
       neue oder entfernte Deklaration ohne nachgezogene Datei ist rot
       (bewusstes Brechen belegt); `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -112,19 +112,59 @@ wellenlos hier geprüft.
 
 - **Die Spalte behauptet mehr, als der Test prüft** — eine Kennung im
   Kommentar ist eine Deklaration, kein Beleg; die RTM liest sich danach wie
-  ein Nachweis. — **Ausgang:** *(offen)*
+  ein Nachweis. — **Ausgang:** *weiter offen* — dreimal im eigenen Diff
+  eingetreten und korrigiert (zwei neue Selbsttests, ein bestehender); die
+  Verifikation belegte, dass eine einzige Kennung im Doc-Kommentar eine
+  Anforderung ohne Slice waisenfrei macht;
+  [`BEO-ALL/deklaration-entlastet-ohne-beleg`](../observations/BEO-ALL/deklaration-entlastet-ohne-beleg/state.md)
+  (1×).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** `make trace` zeigt die Spalte `Coverage` mit den
+  Labels `Tests` (Go-Suite) und `E2E` (`make image-test`): 43 Anforderungen
+  mit Tests, 5 mit Tests und E2E, 6 ohne, 0 Waisen. Die Abdeckungs-Dateien
+  sind abgeleitet — Kennung im Doc-Kommentar einer Testfunktion, Anker unter
+  jeder Phase von `tools/image-test.sh` —; `make abdeckung` schreibt sie über
+  eine Dockerfile-Stage, ein Test in `make test` hält sie gegen die
+  Testquellen. Was eine Testfunktion ist und welche Datei `go test` baut,
+  beantworten der Go-Parser und `go/build`. Die Verifikation fuhr fünf Brüche
+  am Wächter nach und belegte die Entlastung im Klon.
+- **Was ging anders als geplant:** Drei Review-Runden. R1 fand, dass die
+  neuen Selbsttests die Produkt-Anforderung [`DC-FA-COV-001`](../../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in) deklarierten — das
+  Risiko aus §6, im eigenen Diff; R2 einen bestehenden Selbsttest derselben
+  Art und eigene Build-Regeln, die Dateien zählten, die `go test` nicht baut;
+  R3 die Architektur-Kennzeichen der Toolchain. Die Entlastung durch
+  Test-Nachweise ist eine Lockerung, die beim Lesen der Spezifikation
+  auffiel, nicht beim Schnitt — Auftraggeber-Entscheid,
+  [ADR-0104](../../adr/0104-test-nachweise-entlasten-in-der-rtm.md) und
+  [`MR-078`](../../../../harness/conventions.md#mr-078). [ADR-0104](../../adr/0104-test-nachweise-entlasten-in-der-rtm.md) stand bis
+  zur Closure auf `Proposed`, nach der Lehre aus
+  `BEO-ALL/adr-accepted-bevor-der-mechanismus-steht`; ihr Körper beschreibt
+  den gelieferten Stand. Die Spalte zählt unter: Tests, die ihre Kennung nur
+  im Datei-Kommentar tragen, zählen nicht (Verifikation V-3, nicht gemessen).
+  Der Wächter wies zweimal eine Commit-Botschaft mit „go test" im Heredoc
+  ab; die Botschaften entstanden dann über das Write-Werkzeug.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
+  `BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet` trat erneut auf,
+  obwohl Schritt 19 seit slice-267 die Erkennung des Werkzeugs verlangt — die
+  Regel steht; sie wurde im ersten Fix nicht angewandt.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-270.md` in
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+  und
+  [`BEO-ALL/shared-lexicon-drifts-at-edges`](../observations/BEO-ALL/shared-lexicon-drifts-at-edges/state.md);
+  neu
+  [`BEO-ALL/deklaration-entlastet-ohne-beleg`](../observations/BEO-ALL/deklaration-entlastet-ohne-beleg/state.md)
+  (1×).
+- **Folge-Slices:** keiner. Produkt-Verhalten unverändert — kein Release
+  nötig.
+- **Risiken aus §6:** eines weiter offen (Register, siehe §6). Trigger-Audit:
+  kein Carveout, kein bootstrap-aware Gate; [ADR-0104](../../adr/0104-test-nachweise-entlasten-in-der-rtm.md) neu, ihre Trigger nicht
+  eingetreten; keine Hard Rule mit eingetretenem Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
+  Folge-Slices — keiner genannt; (c) Register — die drei zitierten
+  Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
