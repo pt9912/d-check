@@ -60,6 +60,8 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | docs/user/maintainer/releasing.md → docs/maintainer/releasing.md | move | Umzug |
 | alle Dateien mit Verweis auf die Datei | update | Pfad-Nachzug |
 | `.d-check.yml` | update | `matrix.exempt-paths`, Tombstone |
+| [`MR-077`](../../../../harness/conventions/MR-077-releasing-doku-unter-docs-maintainer.md), `harness/conventions.md` | neu, update | der neue Ort weicht vom Baseline-Rang 6 ab |
+| `AGENTS.md` §2, `harness/README.md` §Source precedence | update | Rang 6 nennt beide Verzeichnisse |
 
 Gemessen im Wegwerf-Klon mit dem reinen Umzug, dem gelöschten leeren
 Verzeichnis und `d-check` über den Klon (Befunde nach Grund und Datei
@@ -84,7 +86,8 @@ Releasing-Sicht unter `docs/user/*.md`; der neue Ort ist deshalb eine
 Abweichung und bekommt einen `MR`-Eintrag in `harness/conventions.md`; Rang 6
 nennt in beiden Tabellen beide Verzeichnisse. Gemessen: keine Scan-Menge der
 `.d-check.yml` hängt an `docs/user/` außer einer `structure`-Regel für das
-Benutzerhandbuch, und `make mention-coverage` deckt alle Artefakte.)*
+Benutzerhandbuch. (Berichtigt nach R2: `make mention-coverage` prüft nur die
+ADR-Dateien gegen ihren Index und sagt über `docs/user/` nichts.))*
 
 ## 4. Trigger
 
