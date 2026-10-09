@@ -86,6 +86,12 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | Konfig-Modell, YAML-Adapter, `--print-config`-Vorlage | update | Schlüssel und Beschreibung |
 | `spec/lastenheft.md` (Anforderung des Moduls), `spec/spezifikation.md` | update | Anforderung und Verfeinerung |
 | CR-Datei | update | Entscheidung je Punkt |
+| `harness/sensors/review-coverage.md` | update | die Grenze des eigenen Gates gegen den gemessenen Stand: die Default-Phrase trifft keinen DoD-Punkt dieses Repos |
+
+*(Plan-Änderung vor dem Code-Commit: die Sensor-Datei des eigenen Gates kommt
+dazu — die Messung in diesem Slice zeigt, dass es heute keinen Slice prüft;
+ihre Grenze sagte „Gewollt". Die Einordnung im CR wird mit derselben Messung
+berichtigt.)*
 
 ## 4. Trigger
 
