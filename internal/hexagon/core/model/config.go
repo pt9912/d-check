@@ -351,10 +351,11 @@ type VCSConfig struct {
 	ExcludeSections []string
 	StatusLine      *regexp.Regexp
 	HeadAllow       *regexp.Regexp
-	// IgnoreLinkTargets bringt beim Vergleich des Core das Ziel jedes erkannten
-	// Links auf eine leere Form: ein reiner Pfad-Nachzug ist keine Core-Drift,
-	// jede Aenderung am Linktext oder an der uebrigen Zeile bleibt eine. Was die
-	// Erkennung leert und wo sie endet, legt DC-FA-VCS-001.a Schritt 4 fest.
+	// IgnoreLinkTargets normiert beim Vergleich des Core das Ziel jedes erkannten
+	// Links, das auflöst, auf Dateiname und Anker: ein reiner Pfad-Nachzug ist
+	// keine Core-Drift, jede Aenderung am Linktext oder an der uebrigen Zeile
+	// bleibt eine. Was die Erkennung normiert und wo sie endet, legt
+	// DC-FA-VCS-001.a Schritt 4 fest.
 	IgnoreLinkTargets bool
 }
 

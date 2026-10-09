@@ -1967,12 +1967,14 @@ abdeckt:
    Dokument hinterlegter Hash). Normalisierung + SHA-256 wie
    [§DC-FA-PIN-001.a Schritt 3](#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins).
    Mit `vcs.ignore-link-targets` wird vorher das Ziel jedes Links **normiert**,
-   der im jeweiligen Stand auflöst: BASE gegen den Pfad-Baum von BASE, HEAD
-   gegen den von HEAD. Ein relatives Ziel, das auf eine Datei oder ein
-   Verzeichnis dieses Baums zeigt, wird durch Dateiname und Anker ersetzt
-   (`[R](../user/releasing.md#prep)` → `[R](releasing.md#prep)`); ein Ziel,
-   das nicht auflöst — Inhaltstext, ein fehlendes, absolutes oder externes
-   Ziel, ein reiner Anker —, bleibt roh. Ein **reiner Pfad-Nachzug** einer
+   der auflöst — gegen die Vereinigung der Pfad-Bäume von BASE und HEAD, auf
+   beiden Seiten gleich, sodass ein unveränderter Link auf eine gelöschte Datei
+   gleich bleibt. Ein relatives Ziel, das auf eine Datei oder ein Verzeichnis
+   dieses Baums zeigt, wird durch eine Marke, Dateiname und Anker ersetzt
+   (`[R](../user/releasing.md#prep)` → `[R](‹releasing.md#prep›)`; die Marke
+   trägt kein roher Text, ein Ziel, das nur so aussieht, gleicht ihr nie); ein
+   Ziel, das nicht auflöst — Inhaltstext, ein fehlendes, absolutes oder
+   externes Ziel, ein reiner Anker —, bleibt roh. Ein **reiner Pfad-Nachzug** einer
    umgezogenen Datei ergibt so denselben Core; ein Nachzug auf eine Datei mit
    anderem Namen, eine Anker-Änderung und jede Änderung am Linktext, an der
    übrigen Zeile, am Titel oder an der Zahl der Links bleiben Drift. Was ein
@@ -1993,15 +1995,17 @@ abdeckt:
    öffnende Klammer in einem Code-Span der Zeile liegt oder dessen Linktext
    einen Link enthält (ein Bild darf er enthalten); auf einer Definitionszeile
    zählt nur ihr Ziel, und eine Fußnote (`[^…]:`) ist keine. **Grenze:** Das
-   Werkzeug prüft, dass das neue Ziel existiert und denselben Namen trägt,
-   nicht, dass es dieselbe Datei ist. Ein Pfad-Nachzug eines auflösenden Ziels
-   in Code, der hinter einer Listenmarke beginnt (Fence, HTML-Block,
-   eingerückter Code), wird normiert. Fail-safe bleibt ein Nachzug Drift, wo
-   die Erkennung oder ein Filter den Link nicht durchlässt: Ziel auf der
-   Folgezeile, Umbenennung beim Umzug, Link in einem Zitat oder einem
-   eingerückten Listen-Folgeabsatz, eine Absatzzeile, die mit Inline-HTML
-   beginnt (sie gilt als HTML-Block), eine Referenz-Definition auf einer Zeile
-   mit CRLF-Ende.
+   Werkzeug prüft, dass das neue Ziel in BASE oder HEAD existiert und denselben
+   Namen trägt, nicht, dass es dieselbe Datei ist; ein Nachzug auf eine Datei,
+   die nur noch in BASE existiert, geht durch (den toten Link meldet das Modul
+   `links`). Ein Pfad-Nachzug eines auflösenden Ziels in Code, der hinter
+   einer Listenmarke beginnt (Fence, HTML-Block, eingerückter Code), wird
+   normiert. Fail-safe bleibt ein Nachzug Drift, wo die Erkennung oder ein
+   Filter den Link nicht durchlässt: Ziel auf der Folgezeile, Umbenennung beim
+   Umzug, Link in einem Zitat oder einem eingerückten Listen-Folgeabsatz, eine
+   Absatzzeile, die mit Inline-HTML beginnt (sie gilt als HTML-Block), ein
+   Link, den ein zeilenweise falsch gepaarter Code-Span verdeckt, eine
+   Referenz-Definition auf einer Zeile mit CRLF-Ende.
 5. **Vergleich.**
    - `core(BASE)` ≠ `core(HEAD)` ⇒ Grund-Code `core-drift-vcs` (Körper geändert).
    - HEAD-Status-Zeile (erstes Vorkommen) erfüllt `vcs.head-allow` **nicht** ⇒
@@ -3490,7 +3494,7 @@ Exit 2 ohne Prüfung
 | `vcs.exclude-sections` | string[] | leer | wie `immutable.exclude-sections` — Heading-Titel, deren Abschnitte nicht zum Core zählen (für ADRs `[Geschichte]`) |
 | `vcs.status-line` | string | leer | Zeilen-Regex der **Kopf**-Status-Zeile; ihr erstes Vorkommen **vor** der ersten `## `-H2 wird aus dem Core entfernt (eine gleichlautende Körper-Zeile bleibt); leer ⇒ keine Status-Zeile gestrippt |
 | `vcs.head-allow` | string | leer | Zeilen-Regex; die HEAD-Status-Zeile (erstes Vorkommen) muss matchen, sonst `core-drift-vcs` (unzulässiger Status-Übergang); leer ⇒ keine Status-Übergangs-Prüfung |
-| `vcs.ignore-link-targets` | bool | `false` | normiert beim Bilden des Core jedes Link-Ziel, das im jeweiligen Stand auflöst, auf Dateiname und Anker (Links nach der Erkennung des Moduls `links`): ein reiner Pfad-Nachzug einer umgezogenen Datei ist keine Drift, ein Nachzug auf eine andere Datei und jede Änderung am Linktext oder an der übrigen Zeile bleiben eine; Grenzen in [§`DC-FA-VCS-001.a`](#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4. Aus ⇒ byte-identisch |
+| `vcs.ignore-link-targets` | bool | `false` | normiert beim Bilden des Core jedes Link-Ziel, das in BASE oder HEAD auflöst, auf Dateiname und Anker (Links nach der Erkennung des Moduls `links`): ein reiner Pfad-Nachzug einer umgezogenen Datei ist keine Drift, ein Nachzug auf eine Datei mit anderem Namen und jede Änderung am Linktext oder an der übrigen Zeile bleiben eine; Grenzen in [§`DC-FA-VCS-001.a`](#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4. Aus ⇒ byte-identisch |
 | `commits.id-patterns` | string[] | leer | Regex-Liste der gültigen Traceability-Kennungen; eine bereinigte Message ohne Match auf **irgendein** Muster ⇒ `commit-untraceable`; jedes Muster muss kompilieren (sonst Exit 2); leer ⇒ Modul inert (Range-Modus) bzw. Exit 2 (Message-Modus, nichts zu prüfen) ([`DC-FA-COMMITS-001`](lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)) |
 | `commits.exempt-pattern` | string | leer | Zeilen-Regex gegen den **Betreff** (erste Zeile); Match ⇒ Message kennungs-frei erlaubt (Selbstkonfig `^(Merge \|Revert )`); muss kompilieren (sonst Exit 2); leer ⇒ keine Ausnahme |
 | `planning.roadmap` | string | leer | `datei` (Wurzel-relativ, innerhalb der Repo-Wurzel); die Roadmap-Datei mit dem Aktiv-Status-Abschnitt. Ihr Verzeichnis ist das Slice-Verzeichnis. Leer ⇒ Modul inert ([`DC-FA-PLAN-001`](lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |
@@ -3748,6 +3752,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-09 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4 und §2-Schema: aufgelöst wird gegen die Vereinigung der Pfad-Bäume von BASE und HEAD (ein unveränderter Link auf eine gelöschte Datei bleibt gleich), die normierte Form trägt eine Marke (ein Ziel aus bloßem Dateinamen gleicht ihr nicht); Grenzen nachgezogen. Kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4 und §2-Schema: ein Link-Ziel wird nicht mehr geleert, sondern auf Dateiname und Anker normiert, und nur, wenn es im jeweiligen Stand auflöst — Inhaltstext löst nicht auf und bleibt Drift, ebenso ein Nachzug auf eine Datei mit anderem Namen. Weitere Filter: Link im Linktext, Titel einer Referenz-Definition. Kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4: weitere Filter in Richtung Drift — Zitatzeilen, eingerückter Code hinter einer Listenmarke, ein strenger Fence-Automat neben dem der Vorverarbeitung, HTML-Blöcke bis zum Endmarker ihres Typs, gültiger Zielausdruck, öffnende Klammer in einem zeilenlokalen Code-Span; CRLF als Grenze benannt. Kein neuer Grund-Code |
 | 2026-10-09 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4: die Leerung liest Links mit der Link-Erkennung von §[`DC-FA-LINK-001.a`](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) statt mit eigenen Mustern — ein Link mit Code-Span im Linktext ist wieder ein Link; vier Filter in Richtung Drift (Einzug, HTML-Block, escapte Klammer, Fußnote und Referenz-Ziel ohne Pfadzeichen). Kein neuer Grund-Code |

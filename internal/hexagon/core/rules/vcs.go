@@ -50,14 +50,14 @@ func CheckVCS(vcs driven.VCS, cfg model.VCSConfig, base, head string) ([]model.F
 		paths = append(paths, p)
 	}
 	sort.Strings(paths) // DC-QA-02 Determinismus (Kandidaten kommen aus einer Menge)
-	var baseTree, headTree map[string]bool
+	var tree map[string]bool
 	if cfg.IgnoreLinkTargets {
-		baseTree, headTree = pathTree(baseAll), pathTree(headAll)
+		tree = pathTree(append(append([]string{}, baseAll...), headAll...))
 	}
 	var findings []model.Finding
 	for _, p := range paths {
 		if headSet[p] {
-			f, err := vcsModified(vcs, cfg, base, head, p, baseTree, headTree)
+			f, err := vcsModified(vcs, cfg, base, head, p, tree)
 			if err != nil {
 				return nil, err
 			}
@@ -107,7 +107,7 @@ func vcsDeleted(vcs driven.VCS, cfg model.VCSConfig, base, path string) ([]model
 // vcsModified vergleicht den Core einer modifizierten immutablen Datei und
 // prüft den Status-Übergang. BASE nicht immutabel (z. B. Proposed) ⇒ frei
 // (Grandfathering, DC-FA-VCS-001.a Schritt 3).
-func vcsModified(vcs driven.VCS, cfg model.VCSConfig, base, head, path string, baseTree, headTree map[string]bool) ([]model.Finding, error) {
+func vcsModified(vcs driven.VCS, cfg model.VCSConfig, base, head, path string, tree map[string]bool) ([]model.Finding, error) {
 	baseContent, ok, err := vcs.FileAt(base, path)
 	if err != nil {
 		return nil, err
@@ -127,8 +127,8 @@ func vcsModified(vcs driven.VCS, cfg model.VCSConfig, base, head, path string, b
 		line = 1
 	}
 	var findings []model.Finding
-	if vcsCore(baseContent, cfg.StatusLine, cfg.ExcludeSections, linkTargetResolver(path, baseTree)) !=
-		vcsCore(headContent, cfg.StatusLine, cfg.ExcludeSections, linkTargetResolver(path, headTree)) {
+	if vcsCore(baseContent, cfg.StatusLine, cfg.ExcludeSections, linkTargetResolver(path, tree)) !=
+		vcsCore(headContent, cfg.StatusLine, cfg.ExcludeSections, linkTargetResolver(path, tree)) {
 		findings = append(findings, model.Finding{
 			File: path, Line: line, Rule: "vcs", Target: path,
 			Reason:  model.ReasonCoreDriftVCS,

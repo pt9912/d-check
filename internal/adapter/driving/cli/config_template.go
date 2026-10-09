@@ -131,7 +131,7 @@ modules: [links, anchors]
 #   exclude-sections: [Geschichte]                     # nicht zum Core zählende Abschnitte
 #   status-line: '^\*\*Status:\*\*'                    # Kopf-Status-Zeile (aus dem Core gestrippt)
 #   head-allow: '^\*\*Status:\*\* (Accepted|Superseded by ADR-[0-9]{4})'  # erlaubter Status-Übergang
-#   # ignore-link-targets: true                       # reiner Pfad-Nachzug (nur Link-Ziele geändert) ist keine Drift
+#   # ignore-link-targets: true                       # Link-Ziel-Nachzug auf eine umgezogene Datei ist keine Drift
 
 # --- commits: Traceability-Kennung in Commit-Messages über eine Range — git, opt-in ---
 #   (braucht .git + eine Range bzw. --commit-msg; Aufruf über das make-Target

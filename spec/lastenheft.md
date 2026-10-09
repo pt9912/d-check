@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.102.5
+**Version:** 0.102.6
 
 **Status:** Draft
 
@@ -2162,7 +2162,7 @@ SHA-256 gehasht — dieselbe Normalisierung wie
 / [`DC-FA-PIN-001`](#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in).
 
 **Pfad-Nachzug (opt-in).** Mit `vcs.ignore-link-targets` wird vor dem Vergleich
-jedes Link-Ziel, das im jeweiligen Stand auf eine Datei oder ein Verzeichnis
+jedes Link-Ziel, das in BASE oder HEAD auf eine Datei oder ein Verzeichnis
 auflöst, auf Dateiname und Anker normiert — das eines Inline-Links, eines Bilds
 und einer Referenz-Definition. Zieht ein Verweis nur einer umgezogenen Datei
 nach, ist das damit keine Drift: ein Referenz-/Pfad-Nachzug ist keine
@@ -2176,8 +2176,8 @@ Modul `links`
 eine Fußnote, Code, eingerückte Zeilen, Zitate, HTML-Blöcke, Klammertext ohne
 gültiges Ziel und ein Link mit escapter Klammer bleiben unverändert Teil des
 Vergleichs, und trifft die Erkennung einen Link nicht, bleibt sein Nachzug
-Drift. Das Werkzeug prüft, dass das neue Ziel existiert und denselben Namen
-trägt; ob es dieselbe Datei ist, bleibt ein Urteil.
+Drift. Das Werkzeug prüft, dass das neue Ziel in BASE oder HEAD existiert und
+denselben Namen trägt; ob es dieselbe Datei ist, bleibt ein Urteil.
 
 **Strikt opt-in, fail-closed, diagnose-only:** `vcs` ist nie Default-Modul (wie
 `external`); ohne aktives `vcs` ist der Befundsatz byte-identisch
@@ -2197,7 +2197,7 @@ menschliche Entscheidung, kein eindeutig ableitbarer Fix; vgl.
 - **Boundary (Modul-aus / git-frei):** Given **kein** aktives `vcs`, when `d-check` ohne Range in einer netzlosen, read-only Umgebung läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)), es erfolgt kein git-Zugriff über den Scan hinaus und nichts wird geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 - **Negative:** Given `vcs` aktiv und eine Range, in der der Körper einer immutablen Datei **außerhalb** der ausgenommenen Abschnitte geändert (oder die Datei gelöscht/umbenannt) wird, when `d-check --enable vcs --range <base>..<head>` läuft, then ein Befund `core-drift-vcs` (Datei, Grund), Exit 1.
 - **fail-closed (git-Eingabe fehlt):** Given `vcs` aktiv, aber **kein** lesbares `.git` oder eine **fehlende/unauflösbare** Range (leere Basis, fehlender `..`-Separator), when `d-check --enable vcs` läuft, then **Exit 2** mit Hinweis auf stderr — kein stilles Grün (kein Exit 0) und kein Befund-Exit (kein Exit 1).
-- **Boundary (Pfad-Nachzug):** Given `vcs.ignore-link-targets: true` und eine Range, in der eine Datei umzieht und eine immutable Datei nur das Ziel eines Links (Inline-Link, Bild, Referenz-Definition) vom alten auf den neuen Pfad derselben Datei nachzieht, when `d-check --enable vcs --range <base>..<head>` läuft, then kein `core-drift-vcs`; zeigt das neue Ziel auf eine Datei mit anderem Namen oder auf keine existierende, oder ändert dieselbe Range auch den Linktext oder die übrige Zeile, then `core-drift-vcs`. **Ohne** den Schlüssel meldet schon der reine Nachzug.
+- **Boundary (Pfad-Nachzug):** Given `vcs.ignore-link-targets: true` und eine Range, in der eine Datei umzieht und eine immutable Datei nur das Ziel eines Links (Inline-Link, Bild, Referenz-Definition) vom alten auf den neuen Pfad derselben Datei nachzieht, when `d-check --enable vcs --range <base>..<head>` läuft, then kein `core-drift-vcs`; zeigt das neue Ziel auf eine Datei mit anderem Namen oder auf keine in BASE oder HEAD existierende, oder ändert dieselbe Range auch den Linktext oder die übrige Zeile, then `core-drift-vcs`. **Ohne** den Schlüssel meldet schon der reine Nachzug.
 
 **Grenze (benannt, nicht mechanisiert):** Die Abschnitts-Maske von
 `vcs.exclude-sections` wird auf **git-Blobs** gerechnet — auf einer Eingabe, die
@@ -4144,6 +4144,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.102.6 | 2026-10-09 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) Pfad-Nachzug: ein Ziel löst auf, wenn es in BASE oder HEAD existiert — ein unveränderter Link auf eine gelöschte Datei ist keine Drift; Kriterium „Boundary (Pfad-Nachzug)" entsprechend. Anlass: Review | — |
 | 0.102.5 | 2026-10-09 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) Pfad-Nachzug: ein Link-Ziel wird nur normiert, wenn es im jeweiligen Stand auflöst, und dann auf Dateiname und Anker — Inhaltstext löst nicht auf und bleibt Drift, ebenso ein Nachzug auf eine Datei mit anderem Namen; Kriterium „Boundary (Pfad-Nachzug)" entsprechend gefasst. Anlass: Review | — |
 | 0.102.4 | 2026-10-09 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) Pfad-Nachzug: auch Zitate und Klammertext ohne gültiges Ziel bleiben Teil des Vergleichs. Anlass: Review | — |
 | 0.102.3 | 2026-10-09 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) Pfad-Nachzug: was ein Link ist, beantwortet die Link-Erkennung des Moduls `links` statt eigener Muster — ein Link mit Code-Span im Linktext wird wieder geleert; eingerückte Zeilen, HTML-Blöcke und escapte Klammern bleiben Teil des Vergleichs. Anlass: Review | — |

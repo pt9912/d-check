@@ -136,17 +136,20 @@ Grün über leerem Prüfbereich (shallow-Klon) kommt so nicht zustande.
    *partiellen* unsichtbaren Pack**, denn nur der deckte den stillen Pfad auf
    *(seit slice-218)*.
 4. **Ein Pfad-Nachzug wird an Form und Auflösung erkannt.** Das Gate normiert
-   jedes Link-Ziel, das im jeweiligen Stand als Datei oder Verzeichnis
-   auflöst, auf Dateiname und Anker; ein Ziel, das nicht auflöst, bleibt roh.
-   Es prüft damit, dass das neue Ziel existiert und denselben Namen trägt —
-   nicht, dass es dieselbe Datei ist. Was ein Link ist, liest es mit derselben
-   Erkennung wie das Modul `links`; eingerückte Zeilen, Zitate, HTML-Blöcke,
-   Code, Klammertext ohne gültiges Ziel, ein Link im Linktext und Links mit
-   escapter Klammer bleiben unverändert. Ein Pfad-Nachzug in Code, der hinter
-   einer Listenmarke beginnt, wird normiert. Fail-safe bleibt Drift: Ziel auf
-   der Folgezeile, Umbenennung beim Umzug, Link im Zitat, eingerückter
-   Listen-Folgeabsatz, Absatzzeile, die mit Inline-HTML beginnt, eine
-   Referenz-Definition mit CRLF-Ende. Permanent, solange der Nachzug erlaubt ist
+   jedes Link-Ziel, das in BASE oder HEAD als Datei oder Verzeichnis auflöst,
+   auf Dateiname und Anker; ein Ziel, das nicht auflöst, bleibt roh. Es prüft
+   damit, dass das neue Ziel in einem der beiden Stände existiert und denselben
+   Namen trägt — nicht, dass es dieselbe Datei ist; ein Nachzug auf eine Datei,
+   die nur noch in BASE existiert, geht durch (den toten Link meldet `links`).
+   Was ein Link ist, liest es mit derselben Erkennung wie das Modul `links`;
+   eingerückte Zeilen, Zitate, HTML-Blöcke, Code, Klammertext ohne gültiges
+   Ziel, ein Link im Linktext und Links mit escapter Klammer bleiben
+   unverändert. Ein Pfad-Nachzug in Code, der hinter einer Listenmarke
+   beginnt, wird normiert. Fail-safe bleibt Drift: Ziel auf der Folgezeile,
+   Umbenennung beim Umzug, Link im Zitat, eingerückter Listen-Folgeabsatz,
+   Absatzzeile, die mit Inline-HTML beginnt, ein Link, den ein zeilenweise
+   falsch gepaarter Code-Span verdeckt, eine Referenz-Definition mit
+   CRLF-Ende. Permanent, solange der Nachzug erlaubt ist
    ([ADR-0103](../../docs/plan/adr/0103-adr-gate-laesst-pfad-nachzug-durch.md)).
 
 ## Bindung

@@ -45,11 +45,20 @@ func normalizedLinkTargetLines(content []byte, resolve func(string) (string, boo
 	return out
 }
 
+// normalizedTargetMark steht vor jedem normierten Ziel: roher Text trägt das
+// Zeichen nicht, ein Ziel, das nur wie eine normierte Form aussieht, gleicht
+// ihr deshalb nie.
+const normalizedTargetMark = "\x00"
+
 // linkTargetResolver liefert für die Datei file die Auflösung ihrer Link-Ziele
-// gegen tree (Pfade und ihre Verzeichnisse eines Stands, pathTree), nil ohne
-// tree. Ein relatives Ziel, das auf einen Eintrag von tree zeigt, wird zu
-// Dateiname und Anker; ein absolutes, ein externes (`://`), eines mit Query,
-// ein reiner Anker und eines außerhalb des Repos lösen nicht auf.
+// gegen tree, nil ohne tree. tree ist die Vereinigung der Pfad-Bäume von BASE
+// und HEAD (pathTree): beide Seiten lösen gleich auf, ein unveränderter Link
+// auf eine gelöschte Datei bleibt gleich. Ein relatives Ziel, das auf einen
+// Eintrag von tree zeigt, wird zu Marke, Dateiname und Anker; ein absolutes,
+// ein externes (`://`), eines mit Query, ein reiner Anker und eines außerhalb
+// des Repos lösen nicht auf.
+// GRENZE: Ein Nachzug auf eine Datei, die nur noch in BASE existiert, geht
+// durch -- den toten Link meldet das Modul links.
 func linkTargetResolver(file string, tree map[string]bool) func(string) (string, bool) {
 	if tree == nil {
 		return nil
@@ -67,7 +76,7 @@ func linkTargetResolver(file string, tree map[string]bool) func(string) (string,
 		if p == ".." || strings.HasPrefix(p, "../") || !tree[p] {
 			return "", false
 		}
-		return path.Base(p) + anchor, true
+		return normalizedTargetMark + path.Base(p) + anchor, true
 	}
 }
 
@@ -109,7 +118,7 @@ func replaceRanges(line string, repls []targetRepl) string {
 // beginnt: fünf Leerzeichen oder ein Tab hinter der Marke.
 var listCodeRE = regexp.MustCompile(`^ {0,3}(?:[-+*]|[0-9]{1,9}[.)])(?: {5}|[ ]*\t)`)
 
-// opaqueLines liefert die 1-basierten Zeilen, deren Links nicht geleert
+// opaqueLines liefert die 1-basierten Zeilen, deren Links nicht normiert
 // werden: eingerückter Code (mindestens vier Spalten, auch hinter einer
 // Listenmarke), jede Zitatzeile, Fenced-Code nach einem strengen Automaten
 // (zusätzlich zu dem der Vorverarbeitung, deren Fence-Erkennung jeden Einzug

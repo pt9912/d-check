@@ -142,3 +142,42 @@ func nachzugBaum() []string {
 		"docs/plan/planning/p.md", "docs/plan/neu/planning/p.md",
 	}
 }
+
+// Ein Umzug hat in BASE und HEAD verschiedene Bäume: der Nachzug geht durch,
+// ein unveränderter Link auf eine gelöschte Datei ist keine Drift, und ein
+// neues Ziel, das nur Dateiname und Anker eines aufgelösten alten trägt, ist
+// eine.
+func TestVCSIgnoreLinkTargetsUmzug(t *testing.T) {
+	baseTree := []string{"docs/user/releasing.md", "spec/s.md"}
+	headTree := []string{"docs/user/maintainer/releasing.md", "spec/s.md"}
+	cases := []struct {
+		name       string
+		base, head string
+		want       int
+	}{
+		{"nachzug nach umzug", "[R](../../user/releasing.md#prep)", "[R](../../user/maintainer/releasing.md#prep)", 0},
+		{"unveraenderter link auf geloeschte datei", "[R](../../user/releasing.md)", "[R](../../user/releasing.md)", 0},
+		{"neues ziel nur dateiname", "[S](../../../spec/s.md#a)", "[S](s.md#a)", 1},
+		{"neues ziel fehlt in beiden staenden", "[R](../../user/releasing.md)", "[R](../../user/weg/releasing.md)", 1},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			cfg := adrConfig()
+			cfg.IgnoreLinkTargets = true
+			files := refs(adr("Accepted", c.base), adr("Accepted", c.head))
+			for _, p := range baseTree {
+				files["BASE"][p] = nil
+			}
+			for _, p := range headTree {
+				files["HEAD"][p] = nil
+			}
+			got, err := CheckVCS(&fakeVCS{files: files}, cfg, "BASE", "HEAD")
+			if err != nil {
+				t.Fatalf("unerwarteter Fehler: %v", err)
+			}
+			if len(got) != c.want {
+				t.Fatalf("Befunde = %d, want %d (%v)", len(got), c.want, got)
+			}
+		})
+	}
+}
