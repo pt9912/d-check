@@ -104,18 +104,18 @@ func TestReviewsMatch_BenannteKennung(t *testing.T) {
 }
 
 // match: name verlangt nach dem Basisnamen ein Zeichen, das weder Buchstabe
-// noch Ziffer ist: slice-26 wird nicht vom Report zu slice-265-x gedeckt. Die
+// noch Ziffer ist: slice-x1 wird nicht vom Report zu slice-x12-y gedeckt. Die
 // benannte Grenze: mit Bindestrich deckt der Report zu slice-a-foo-bar auch
 // slice-a-foo.
 func TestReviewsMatch_NameWortgrenze(t *testing.T) {
 	cfg := rvCfg()
 	cfg.Match = "name"
 	ziffer := map[string]string{
-		rvDone + "/slice-26.md":                     "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
-		"docs/reviews/2026-10-09-slice-265-x-r1.md": "# Review\n",
+		rvDone + "/slice-x1.md":                     "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
+		"docs/reviews/2026-10-09-slice-x12-y-r1.md": "# Review\n",
 	}
-	if f := rvRunCfg(ziffer, cfg); len(f) != 1 || f[0].File != rvDone+"/slice-26.md" {
-		t.Fatalf("slice-26 darf nicht vom Report zu slice-265-x gedeckt sein, got %+v", f)
+	if f := rvRunCfg(ziffer, cfg); len(f) != 1 || f[0].File != rvDone+"/slice-x1.md" {
+		t.Fatalf("slice-x1 darf nicht vom Report zu slice-x12-y gedeckt sein, got %+v", f)
 	}
 	strich := map[string]string{
 		rvDone + "/slice-a-foo.md":                  "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
@@ -213,5 +213,33 @@ func TestReviewsRecursive_UnlesbaresUnterverzeichnisOhneLeerlauf(t *testing.T) {
 	f := CheckReviews(fsys, cfg)
 	if len(f) != 1 || !strings.Contains(f[0].Message, rvDone+"/archiv") {
 		t.Fatalf("genau ein Befund auf dem unlesbaren Verzeichnis erwartet, got %+v", f)
+	}
+}
+
+// Die Wortgrenze nach dem Basisnamen gilt für jeden Buchstaben, nicht nur
+// ASCII: slice-a-grö wird nicht vom Report zu slice-a-größe gedeckt.
+func TestReviewsMatch_NameWortgrenzeUnicode(t *testing.T) {
+	cfg := rvCfg()
+	cfg.Match = "name"
+	files := map[string]string{
+		rvDone + "/slice-a-grö.md":                    "## 2. Definition of Done\n\n- [x] unabhängiger Review\n",
+		"docs/reviews/2026-10-09-slice-a-größe-r1.md": "# Review\n",
+	}
+	if f := rvRunCfg(files, cfg); len(f) != 1 || f[0].File != rvDone+"/slice-a-grö.md" {
+		t.Fatalf("slice-a-grö darf nicht vom Report zu slice-a-größe gedeckt sein, got %+v", f)
+	}
+}
+
+// Die Vorlagen-Form zählt nur, wo sie den Punkt direkt hinter der Task-Box
+// eröffnet: zusammengesetzt, verneint oder mitten im Satz ist sie keine
+// Zusage.
+func TestReviewsDefault_VorlagenFormNurAmPunktanfang(t *testing.T) {
+	files := map[string]string{
+		rvDone + "/slice-001-a.md": "## 2. Definition of Done\n\n- [x] Adaptions-Review durchgeführt\n",
+		rvDone + "/slice-002-b.md": "## 6. Risiken\n\n- [ ] kein Review durchgeführt (entfallen)\n",
+		rvDone + "/slice-003-c.md": "## 2. Definition of Done\n\n- [x] `make gates` grün, Review durchgeführt\n",
+	}
+	if f := rvRunCfg(files, rvCfg()); f != nil {
+		t.Fatalf("keine der drei Formen ist eine Zusage, got %+v", f)
 	}
 }

@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.101.0
+**Version:** 0.101.1
 
 **Status:** Draft
 
@@ -3613,14 +3613,15 @@ liegt nicht vor", nicht „der Workflow läuft".
 **Beschreibung:** Bei explizit aktiviertem Modul `reviews` prüft d-check, ob
 jeder `done/`-Slice mit einer **Review-Zusage** — ein DoD-Punkt, dessen Text
 auf `reviews.promise-pattern` passt (ohne den Schlüssel: die Phrase
-„unabhängiger Review" oder die Form der Slice-Vorlage „Review durchgeführt"),
+„unabhängiger Review" oder die Form der Slice-Vorlage „Review durchgeführt",
+diese nur, wo sie den Punkt direkt hinter der Task-Box eröffnet),
 in jeder der drei CommonMark-Bullet-Formen (`-`/`*`/`+`), unabhängig vom
 Haken-Zustand — mindestens einen Report unter einem konfigurierten Verzeichnis
 hat, der ihn **deckt**. Gedeckt ist er nach `reviews.match`: mit `id`
 (Default) durch einen Report, dessen Dateiname dieselbe `slice-<NNN>`-Kennung
 trägt; mit `name` durch einen Report, dessen Dateiname den Basisnamen des
 Slice ohne `.md` enthält, gefolgt von einem Zeichen, das weder Buchstabe noch
-Ziffer ist, oder dem Namensende — nötig für Slug-Kennungen der Form
+Ziffer ist (in jeder Schrift), oder dem Namensende — nötig für Slug-Kennungen der Form
 `slice-<titel>`. Beides als Teilstring, 1:N zulässig (Datums-Präfix, Suffixe
 wie `-r1`/`-r2`).
 
@@ -3637,7 +3638,9 @@ Slice-Datei selbst dokumentiertes Konzept („Adaptions-Review") ohne externen
 Report nennt. Die Phrase „unabhängiger Review" und die Form der Slice-Vorlage
 „Review durchgeführt" tragen beide die Zusage, dass ein externer Report
 entsteht; ohne die zweite liefe ein Repo, das der Vorlage folgt, grün über
-einer leeren Menge. Ein Bestand mit eigener Formulierung setzt
+einer leeren Menge. Die Vorlagen-Form zählt nur am Punktanfang hinter der
+Task-Box: „Adaptions-Review durchgeführt" oder „kein Review durchgeführt"
+sagen keinen Report zu. Ein Bestand mit eigener Formulierung setzt
 `promise-pattern`.
 
 **Warum ein Haken-Zustand nicht zählt.** Ein **geschlossener** Haken ist eine
@@ -3660,7 +3663,7 @@ unterhalb zweier **konfigurierter** Verzeichnisse (`reviews.done-dir`,
 Geprüft wird die **Deckung** (ein Report existiert), nicht seine **Qualität**
 — dieselbe Grenze wie beim DoD-Haken selbst: eine Selbstauskunft. Unter
 `match: name` deckt ein Report auch einen Slice, dessen Basisname über einen
-Bindestrich Präfix des
+Bindestrich, Unterstrich oder Punkt Präfix des
 eigenen ist (`slice-a-foo` durch den Report zu `slice-a-foo-bar`). Als
 DoD-Punkt zählt jeder Checkbox-Punkt der Datei, auch einer außerhalb des
 DoD-Abschnitts oder in einem Codeblock.
@@ -3697,7 +3700,7 @@ kompilierendem `reviews.skip-pattern`; die Meldung nennt den Schlüssel. Ein
 - **Boundary (Modul-aus):** Given **kein** aktives `reviews`, when `d-check` läuft, then ist der Befundsatz byte-identisch zum Lauf ohne den Konfigurations-Block ([`DC-QA-02`](#dc-qa-02--determinismus)), und keine Datei wird geöffnet.
 - **Happy Path (Vorlagen-Form):** Given einen Slice, dessen DoD-Punkt „Review durchgeführt, Report unter `docs/reviews/` liegt vor" trägt, und **kein** `promise-pattern`, when der Lauf endet, then `review-missing` ohne passenden Report und kein Befund mit dem Report `<datum>-slice-<NNN>-<titel>-review.md`.
 - **Happy Path (eigenes Muster):** Given `reviews.promise-pattern: 'Code-Review erledigt'` und einen Slice, dessen DoD-Punkt diese Wortfolge trägt, when der Lauf endet, then `review-missing` ohne passenden Report; ohne den Schlüssel ist derselbe Punkt keine Zusage.
-- **Negative (Default):** Given einen DoD-Punkt, der nur „Adaptions-Review" oder „Review-Report liegt vor" trägt, oder die Wortfolge „Review durchgeführt" bzw. „unabhängiger Review" außerhalb eines Checkbox-Punkts, when der Lauf endet, then keine Zusage.
+- **Negative (Default):** Given einen DoD-Punkt, der nur „Adaptions-Review" oder „Review-Report liegt vor" trägt, die Vorlagen-Form nicht am Punktanfang („Adaptions-Review durchgeführt", „kein Review durchgeführt", „`make gates` grün, Review durchgeführt"), oder die Wortfolge „Review durchgeführt" bzw. „unabhängiger Review" außerhalb eines Checkbox-Punkts, when der Lauf endet, then keine Zusage.
 - **Boundary (Slug-Kennung):** Given einen Slice `slice-<titel>.md` mit Zusage, when `match` nicht gesetzt ist, then `review-missing` mit dem Hinweis auf `match: name` statt eines stillen Übersprungs; mit `match: name` deckt ihn ein Report, dessen Dateiname den Basisnamen gefolgt von einem Zeichen enthält, das weder Buchstabe noch Ziffer ist — eine Kennung `slice-<N>` wird nicht vom Report zu `slice-<N>5-…` gedeckt.
 - **fail-closed (keine Zusage):** Given `reviews.require-promises: true` und Kandidaten ohne eine einzige Zusage, when der Lauf endet, then ein Befund auf `reviews.done-dir`.
 - **Boundary (Unterverzeichnisse und Stubs):** Given `reviews.recursive: true` und `reviews.skip-pattern`, das den Stub-Marker trifft, when der Lauf endet, then wird der Volltext unter einem Unterverzeichnis geprüft, der Stub daneben nicht; ein unlesbares Unterverzeichnis ist ein Befund mit seinem Pfad, die übrigen Einträge werden weiter geprüft, und ein Leerlauf-Befund entfällt neben ihm.
@@ -4121,6 +4124,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.101.1 | 2026-10-09 | Nachzug nach Review an [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): die Vorlagen-Form „Review durchgeführt" zählt im Default nur dort, wo sie den Punkt direkt hinter der Task-Box eröffnet — an beliebiger Stelle traf sie „Adaptions-Review durchgeführt" und „kein Review durchgeführt"; das Kriterium „Negative (Default)" nennt diese Formen. Die Wortgrenze von `match: name` gilt für Buchstaben und Ziffern jeder Schrift. Berichtigt zu 0.100.0/0.101.0: ersetzt wurden die Kriterien „Happy Path (eigenes Muster)" (neu gefasst), „Negative (Muster)" (jetzt „Negative (Default)") und „Boundary (benannte Kennung)" (jetzt „Boundary (Slug-Kennung)"); „Happy Path (Vorlagen-Form)" kam hinzu | — |
 | 0.101.0 | 2026-10-09 | [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): der Default erkennt **zusätzlich** die Form der Slice-Vorlage „Review durchgeführt" — ohne sie liefe jedes Repo, das der Vorlage folgt, grün über einer leeren Menge; das ändert den Befundsatz dort, wo bisher nichts geprüft wurde. `match: name` verlangt nach dem Basisnamen ein Zeichen, das weder Buchstabe noch Ziffer ist; ein unlesbares Unterverzeichnis lässt die übrigen Einträge geprüft und ersetzt den Leerlauf-Befund; als DoD-Punkt zählt jeder Checkbox-Punkt der Datei; ein `promise-pattern` ohne Wert gilt als abwesend. Kriterien „Happy Path (Vorlagen-Form)", „Negative (Default)" und „Boundary (Slug-Kennung)" ersetzen die Vorgänger, die die alte Default-Annahme trugen | — |
 | 0.100.0 | 2026-10-09 | [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in) nimmt die Review-Zusage über `reviews.promise-pattern` (Default bleibt die Phrase „unabhängiger Review"), ordnet mit `reviews.match: name` benannte Kennungen über den Basisnamen zu, macht mit `reviews.require-promises` Kandidaten ohne Zusage zum Befund und liest mit `reviews.recursive`/`reviews.skip-pattern` die Unterverzeichnisse ohne Stubs. Eine Zusage, deren Kennung unter `match: id` nicht lesbar ist, wird gemeldet statt still übersprungen. Anlass: eingehender Change Request eines Adopters, dessen DoD-Zeilen und Kennungen anders lauten als die Konvention — das Modul lief dort grün über einer leeren Menge. Out-of-Scope nennt die Formulierung und den rekursiven Scan nicht mehr; fünf neue Kriterien | — |
 | 0.99.1 | 2026-10-09 | Nachzug nach Review an [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) und [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): die Nullmengen-Regel gilt der **gesamten** Kandidatenmenge, ein einzelnes Unterverzeichnis ohne Kandidaten ist kein Befund; `skip-pattern` steht in der Exit-2-Aufzählung von `structure`; zwei neue Kriterien „fail-closed (Unterverzeichnis und Muster)" und „fail-closed (Inhalts-Ausnahme)"; der Absatz zur Kandidatenmenge in kürzeren Sätzen | — |

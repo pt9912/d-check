@@ -2,11 +2,13 @@
 
 ## Vertrag
 
-Via Modul `reviews` (Image, dogfood). Ein `done/`-Slice mit **Review-Zusage** —
-ein DoD-Haken, dessen Zeile „unabhängiger Review" nennt, jede Bullet-Form,
-Haken-Zustand egal — braucht mindestens einen Report unter
-`reviews.reviews-dir` mit derselben `slice-<NNN>`-Kennung im Dateinamen
-(`review-missing`). Substring-Match, 1:N zulässig.
+Via Modul `reviews` (Image, dogfood). Ein `done/`-Slice mit **Review-Zusage**
+braucht mindestens einen Report unter `reviews.reviews-dir` mit derselben
+`slice-<NNN>`-Kennung im Dateinamen (`review-missing`), Substring-Match, 1:N
+zulässig. Was als Zusage gilt, legt
+[`DC-FA-RVW-001`](../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)
+fest; die Konfiguration dieses Repos setzt kein eigenes Muster und nutzt den
+Default.
 
 ## Grenze — was das Grün nicht abdeckt
 

@@ -3,7 +3,7 @@ package rules
 // Modul reviews (DC-FA-RVW-001): Review-Report-Deckung. Ein `done/`-Slice mit
 // Review-Zusage -- ein DoD-Item, dessen TEXT (Checkbox-Zeile plus lose
 // Folgezeilen bis zur naechsten Checkbox/Leerzeile/Dateiende) auf
-// reviews.promise-pattern passt (abwesend: die Phrase "unabhängiger Review"),
+// reviews.promise-pattern passt (abwesend: model.DefaultPromisePattern),
 // in JEDER der drei CommonMark-Bullet-Formen (`-`/`*`/`+`) und unabhaengig vom
 // Haken-Zustand -- braucht mindestens einen Report in reviews.reviews-dir, der
 // ihn deckt: ueber dieselbe slice-<NNN>-Kennung im Dateinamen (match: id) oder
@@ -23,6 +23,8 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
@@ -48,7 +50,7 @@ func CheckReviews(fsys driven.Filesystem, cfg model.ReviewsConfig) []model.Findi
 		return nil // inert: keine Datei wird geoeffnet
 	}
 	// Das Muster ist am Config-Rand geprueft (Exit 2), MustCompile trifft hier
-	// nur noch gueltige Muster.
+	// gueltige Muster.
 	promiseRE := regexp.MustCompile(cfg.EffectivePromisePattern())
 	candidates, badDirs := reviewCandidates(fsys, cfg)
 	reviewNames, listErr := fsys.List(cfg.ReviewsDir)
@@ -255,10 +257,12 @@ func hasMatchingReview(reviewNames []driven.DirEntry, id string) bool {
 
 // hasReviewContaining prueft, ob ein Report-Dateiname den Basisnamen des Slice
 // enthaelt (match: name) -- mit Datums-Praefix und beliebigem Suffix. Nach dem
-// Basisnamen steht ein Zeichen, das weder Buchstabe noch Ziffer ist, oder das
-// Ende: slice-26 wird nicht vom Report zu slice-265-x gedeckt.
-// GRENZE: ein Basisname, der durch einen Bindestrich Praefix eines anderen
-// ist (slice-a-foo und slice-a-foo-bar), wird auch von dessen Report gedeckt.
+// Basisnamen steht ein Zeichen, das weder Buchstabe noch Ziffer ist (Unicode),
+// oder das Ende: slice-x1 wird nicht vom Report zu slice-x12-y gedeckt.
+// GRENZE: ein Basisname, der durch ein anderes Zeichen -- Bindestrich,
+// Unterstrich, Punkt -- Praefix eines anderen ist (slice-a-foo und
+// slice-a-foo-bar), wird auch von dessen Report gedeckt; vor dem Basisnamen
+// gilt keine Grenze.
 func hasReviewContaining(reviewNames []driven.DirEntry, key string) bool {
 	for _, e := range reviewNames {
 		if e.Kind != driven.KindFile {
@@ -269,17 +273,12 @@ func hasReviewContaining(reviewNames []driven.DirEntry, key string) bool {
 			if i < 0 {
 				break
 			}
-			after := rest[i+len(key):]
-			if after == "" || !isNameRune(after[0]) {
+			if r, _ := utf8.DecodeRuneInString(rest[i+len(key):]); r == utf8.RuneError ||
+				!unicode.IsLetter(r) && !unicode.IsDigit(r) {
 				return true
 			}
 			rest = rest[i+1:]
 		}
 	}
 	return false
-}
-
-// isNameRune sagt, ob ein Byte einen Basisnamen fortsetzen wuerde.
-func isNameRune(b byte) bool {
-	return b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9'
 }
