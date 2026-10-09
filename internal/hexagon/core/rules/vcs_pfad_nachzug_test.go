@@ -67,6 +67,24 @@ func TestVCSIgnoreLinkTargets(t *testing.T) {
 		// fail-safe: was die Erkennung nicht als Link liest, bleibt Drift
 		{"escapte klammer im linktext nachgezogen", `[a\]b](a.md)`, `[a\]b](x/a.md)`, 1, 1},
 		{"ziel auf der folgezeile nachgezogen", "[R](\na.md)", "[R](\nx/a.md)", 1, 1},
+		// Klammertext ohne gültigen Zielausdruck ist kein Link
+		{"klammertext mit leerraum geaendert", "[B](nicht empfohlen)", "[B](stark empfohlen)", 1, 1},
+		{"offener titel geaendert", `[B](a.md "nicht)`, `[B](a.md "doch)`, 1, 1},
+		{"spitzklammer mit rest geaendert", "[B](<a.md> nicht)", "[B](<a.md> doch)", 1, 1},
+		{"tabellenzelle mit pipe geaendert", "| [a](b | nicht) |", "| [a](b | doch) |", 1, 1},
+		{"escapte zielklammer geaendert", `[B](Verboten\) gilt)`, `[B](Erlaubt\) gilt)`, 1, 1},
+		// Container und Code nach Markdown
+		{"code im zitat geaendert", ">     [a](Nicht)", ">     [a](Immer)", 1, 1},
+		{"code im listenpunkt geaendert", "-     [a](Nicht)", "-     [a](Immer)", 1, 1},
+		{"tilde-fence im zitat geaendert", "> ~~~\n> [a](Nicht)\n> ~~~", "> ~~~\n> [a](Immer)\n> ~~~", 1, 1},
+		{"eingerueckter fence verschiebt nichts",
+			"    ```\n\n```\n[a](Nicht)\n```", "    ```\n\n```\n[a](Immer)\n```", 1, 1},
+		{"backticks ueber listenzeilen geaendert", "- `a\n- `[b](Nicht)`", "- `a\n- `[b](Immer)`", 1, 1},
+		{"code-span bis in den linktext geaendert", "- `a\n- `[b`](Nicht)", "- `a\n- `[b`](Immer)", 1, 1},
+		{"html-kommentar mit leerzeile geaendert", "<!--\n\n[a](Nicht)\n-->", "<!--\n\n[a](Immer)\n-->", 1, 1},
+		{"link nach einzeiligem kommentar nachgezogen", "<!-- x -->\n\n[R](a.md)", "<!-- x -->\n\n[R](x/a.md)", 0, 1},
+		{"listenpunkt-link nachgezogen", "- [R](a.md)", "- [R](x/a.md)", 0, 1},
+		{"zitat-link nachgezogen (fail-safe)", "> [R](a.md)", "> [R](x/a.md)", 1, 1},
 		// die benannte Grenze: eine Absatz-Folgezeile in Referenz-Form wird geleert
 		{"absatz-folgezeile in referenz-form", "Text\n[Status]: Abgelehnt.", "Text\n[Status]: Angenommen.", 0, 1},
 	}

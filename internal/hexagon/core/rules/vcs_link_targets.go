@@ -10,38 +10,109 @@ import (
 // ihre Fassung ohne dieses Ziel (DC-FA-VCS-001.a Schritt 4). Was ein Link ist,
 // beantwortet dieselbe Erkennung wie das Modul links: PreprocessMarkdown
 // (Fenced-Code entfällt, Code-Spans absatzweise positionserhaltend geleert),
-// ExtractLinkSpans und definitionRe. Vier Filter engen das ein, jeder nur in
-// Richtung Drift: eine Zeile mit mindestens vier Spalten Einzug oder in einem
-// HTML-Block bleibt unverändert; ein Link mit escapter Klammer ist keiner; eine
-// Fußnote (`[^…]:`) und eine Referenz-Definition ohne pfadartiges Ziel bleiben
-// stehen.
-// GRENZE: Ein Ziel auf der Folgezeile wird nicht geleert, sein Nachzug bleibt
-// Drift. Eine Absatz-Folgezeile in der Form einer Referenz-Definition wird
-// geleert, wie die links-Erkennung sie liest, auch wo Markdown sie als Text
-// rendert.
+// ExtractLinkSpans und definitionRe. Filter engen das ein, jeder nur in
+// Richtung Drift: opaqueLines nimmt ganze Zeilen aus, linkTargetCuts einzelne
+// Links.
+// GRENZE: Ein Ziel auf der Folgezeile und eine Zeile mit CRLF-Ende werden
+// nicht geleert, ihr Nachzug bleibt Drift. Eine Absatz-Folgezeile in der Form
+// einer Referenz-Definition wird geleert, wie die links-Erkennung sie liest,
+// auch wo Markdown sie als Text rendert.
 func blankedLinkTargetLines(content []byte) map[int]string {
 	raw := splitLines(content)
-	html := htmlBlockLines(raw)
+	opaque := opaqueLines(raw)
 	out := make(map[int]string)
 	for _, ln := range PreprocessMarkdown(content) {
 		r := raw[ln.No-1]
-		if html[ln.No] || indentColumns(r) >= 4 || len(ln.Text) != len(r) {
+		if opaque[ln.No] || len(ln.Text) != len(r) {
 			continue
 		}
-		if cuts := linkTargetCuts(ln.Text); len(cuts) > 0 {
+		if cuts := linkTargetCuts(ln.Text, lineCodeSpans(r)); len(cuts) > 0 {
 			out[ln.No] = cutRanges(r, cuts)
 		}
 	}
 	return out
 }
 
+// listCodeRE trifft einen Listenpunkt, dessen Inhalt mit eingerücktem Code
+// beginnt: fünf Leerzeichen oder ein Tab hinter der Marke.
+var listCodeRE = regexp.MustCompile(`^ {0,3}(?:[-+*]|[0-9]{1,9}[.)])(?: {5}|[ ]*\t)`)
+
+// opaqueLines liefert die 1-basierten Zeilen, deren Links nicht geleert
+// werden: eingerückter Code (mindestens vier Spalten, auch hinter einer
+// Listenmarke), jede Zitatzeile, Fenced-Code nach einem strengen Automaten
+// (zusätzlich zu dem der Vorverarbeitung, deren Fence-Erkennung jeden Einzug
+// zulässt) und HTML-Blöcke.
+// GRENZE: Auch ein Link in einem Zitat oder in einem eingerückten
+// Listen-Folgeabsatz bleibt ungeleert, sein Nachzug bleibt Drift.
+func opaqueLines(lines []string) map[int]bool {
+	out := htmlBlockLines(lines)
+	for no := range strictFenceLines(lines) {
+		out[no] = true
+	}
+	for i, l := range lines {
+		if indentColumns(l) >= 4 || listCodeRE.MatchString(l) || strings.HasPrefix(strings.TrimLeft(l, " "), ">") {
+			out[i+1] = true
+		}
+	}
+	return out
+}
+
+// strictFenceLines liefert die Zeilen eines Fenced-Code-Blocks samt Öffner und
+// Schließer: Öffner mit höchstens drei Leerzeichen Einzug und mindestens drei
+// gleichen Zeichen, Schließer aus demselben Zeichen in mindestens derselben
+// Zahl; ohne Schließer reicht der Block bis zum Dateiende.
+func strictFenceLines(lines []string) map[int]bool {
+	out := make(map[int]bool)
+	var char byte
+	n := 0
+	for i, l := range lines {
+		lead := len(l) - len(strings.TrimLeft(l, " "))
+		trimmed := strings.TrimRight(l[lead:], " \t\r")
+		c, run := FenceRun(trimmed)
+		if n == 0 {
+			if lead <= 3 && run >= 3 && (c == '~' || strings.IndexByte(trimmed[run:], '`') == -1) {
+				char, n = c, run
+				out[i+1] = true
+			}
+			continue
+		}
+		out[i+1] = true
+		if lead <= 3 && c == char && run >= n && run == len(trimmed) {
+			n = 0
+		}
+	}
+	return out
+}
+
+// lineCodeSpans liefert die Code-Spans, die vollständig in der Zeile liegen.
+func lineCodeSpans(line string) [][2]int {
+	var spans [][2]int
+	forEachInlineCodeSpan(line, func(start, end, _, _ int) {
+		spans = append(spans, [2]int{start, end})
+	})
+	return spans
+}
+
+// linkDestRE trifft einen gültigen Zielausdruck: ein Ziel (`<…>` oder ohne
+// Leerraum) und ein optionaler Titel.
+var linkDestRE = regexp.MustCompile(`^[ \t]*(?:<[^<>\n]*>|[^\s<>]+)(?:[ \t]+(?:"[^"]*"|'[^']*'|\([^()]*\)))?[ \t]*$`)
+
 // linkTargetCuts liefert die Byte-Bereiche der Link-Ziele einer vorverarbeiteten
 // Zeile: das Ziel-Token jedes Inline-Links und Bilds (ohne Titel) und das Ziel
-// einer Referenz-Definition.
-func linkTargetCuts(text string) [][2]int {
+// einer Referenz-Definition. Kein Link ist ein Treffer mit escapter Klammer,
+// mit ungültigem Zielausdruck, dessen öffnende Klammer in einem
+// zeilenlokalen Code-Span der Rohzeile liegt (code), eine Fußnote (`[^…]:`)
+// und eine Referenz-Definition ohne pfadartiges Ziel.
+func linkTargetCuts(text string, code [][2]int) [][2]int {
 	var cuts [][2]int
 	for _, sp := range ExtractLinkSpans(text) {
 		if escapedAt(text, sp.TextStart-1) || escapedAt(text, sp.TextEnd) || escapedAt(text, sp.End-1) {
+			continue
+		}
+		if overlapsAny(code, sp.Start, sp.Start+1) {
+			continue
+		}
+		if !linkDestRE.MatchString(text[sp.TextEnd+2 : sp.End-1]) {
 			continue
 		}
 		if c, ok := targetToken(text, sp.TextEnd+2, sp.End-1); ok {
@@ -55,6 +126,16 @@ func linkTargetCuts(text string) [][2]int {
 		}
 	}
 	return cuts
+}
+
+// overlapsAny meldet, ob [start,end) einen der halboffenen Bereiche berührt.
+func overlapsAny(spans [][2]int, start, end int) bool {
+	for _, sp := range spans {
+		if start < sp[1] && sp[0] < end {
+			return true
+		}
+	}
+	return false
 }
 
 // targetToken grenzt im Zielausdruck text[from:to] das Ziel ab, wie
@@ -129,29 +210,53 @@ var (
 	htmlRawEndRE     = regexp.MustCompile(`(?i)</(?:pre|script|style|textarea)>`)
 )
 
+// htmlBlockEnd liefert für die Startzeile eines HTML-Blocks die Bedingung, an
+// der er endet (CommonMark-Typen 1 bis 5), oder nil für einen Block, der an der
+// nächsten Leerzeile endet.
+func htmlBlockEnd(start string) func(string) bool {
+	t := strings.TrimLeft(start, " ")
+	contains := func(marker string) func(string) bool {
+		return func(l string) bool { return strings.Contains(l, marker) }
+	}
+	switch {
+	case htmlRawStartRE.MatchString(start):
+		return htmlRawEndRE.MatchString
+	case strings.HasPrefix(t, "<!--"):
+		return contains("-->")
+	case strings.HasPrefix(t, "<?"):
+		return contains("?>")
+	case strings.HasPrefix(t, "<![CDATA["):
+		return contains("]]>")
+	case strings.HasPrefix(t, "<!"):
+		return contains(">")
+	}
+	return nil
+}
+
 // htmlBlockLines liefert die 1-basierten Zeilen, die zu einem HTML-Block
 // gehören: ab einer Zeile, die mit `<` und einem Buchstaben, `/`, `!` oder `?`
-// beginnt, bis zur nächsten Leerzeile — bei `<pre>`, `<script>`, `<style>` und
-// `<textarea>` bis zur Zeile mit dem schließenden Tag.
+// beginnt, bis zum Endmarker ihres Typs (`</pre>` u. a., `-->`, `?>`, `]]>`,
+// `>`) oder sonst bis zur nächsten Leerzeile.
 // GRENZE: weiter als CommonMark, das nicht jedes Tag als Blockanfang liest --
 // eine Absatzzeile, die mit Inline-HTML beginnt, gilt ebenfalls als Block, ihr
 // Nachzug bleibt Drift.
 func htmlBlockLines(lines []string) map[int]bool {
 	out := make(map[int]bool)
-	inBlock, raw := false, false
+	inBlock := false
+	var end func(string) bool
 	for i, l := range lines {
 		if !inBlock && htmlBlockStartRE.MatchString(l) {
-			inBlock, raw = true, htmlRawStartRE.MatchString(l)
+			inBlock, end = true, htmlBlockEnd(l)
 		}
 		if !inBlock {
 			continue
 		}
-		if !raw && strings.TrimSpace(l) == "" {
+		if end == nil && strings.TrimSpace(l) == "" {
 			inBlock = false
 			continue
 		}
 		out[i+1] = true
-		if raw && htmlRawEndRE.MatchString(l) {
+		if end != nil && end(l) {
 			inBlock = false
 		}
 	}

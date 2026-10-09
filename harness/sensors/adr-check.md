@@ -138,13 +138,14 @@ Grün über leerem Prüfbereich (shallow-Klon) kommt so nicht zustande.
    Link-Ziele vor dem Vergleich; ob das neue Ziel dieselbe Sache meint wie das
    alte, sieht es nicht — ein Verweis auf ein anderes Dokument fiele genauso
    durch. Was ein Link ist, liest es mit derselben Erkennung wie das Modul
-   `links`; eingerückte Zeilen, HTML-Blöcke, Code und Links mit escapter
-   Klammer bleiben unverändert. Eine Zeile `[Label]: wort.` gilt schon mit
-   einem Pfadzeichen als Referenz-Definition — auch als Absatz-Folgezeile, die
-   Markdown als sichtbaren Text rendert. Trifft die Erkennung einen Link nicht
-   (Ziel auf der Folgezeile, escapte Klammer im Linktext, eingerückter
-   Listen-Folgeabsatz, Absatzzeile, die mit Inline-HTML beginnt), bleibt sein
-   Nachzug Drift. Permanent, solange der Nachzug erlaubt ist
+   `links`; eingerückte Zeilen, Zitate, HTML-Blöcke, Code, Klammertext ohne
+   gültiges Ziel und Links mit escapter Klammer bleiben unverändert. Eine
+   Zeile `[Label]: wort.` gilt schon mit einem Pfadzeichen als
+   Referenz-Definition — auch als Absatz-Folgezeile, die Markdown als
+   sichtbaren Text rendert. Trifft die Erkennung einen Link nicht (Ziel auf der
+   Folgezeile, escapte Klammer im Linktext, Link im Zitat, eingerückter
+   Listen-Folgeabsatz, Absatzzeile, die mit Inline-HTML beginnt, CRLF-Ende),
+   bleibt sein Nachzug Drift. Permanent, solange der Nachzug erlaubt ist
    ([ADR-0103](../../docs/plan/adr/0103-adr-gate-laesst-pfad-nachzug-durch.md)).
 
 ## Bindung
