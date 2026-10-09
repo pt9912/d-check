@@ -44,13 +44,13 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] Lastenheft und Spezifikation sagen die Zuordnung zu, die Grenze zur
+- [x] Lastenheft und Spezifikation sagen die Zuordnung zu, die Grenze zur
       Präfix-Deckung ist zurückgenommen.
-- [ ] Das Modul folgt ihr; Tests: der Fall des Befunds meldet `slice-cache`,
+- [x] Das Modul folgt ihr; Tests: der Fall des Befunds meldet `slice-cache`,
       ein archivierter längerer Stub deckt den kürzeren nicht, `slice-cachex`
       deckt `slice-cache` weiter nicht; `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft; der
       Befund trägt seine Entscheidung zu Punkt 2.
 
@@ -82,19 +82,43 @@ hinaus.
 
 - **Bestehende Repos werden rot** — ein Slice, den bisher nur der Report eines
   längeren Namens deckte, meldet jetzt `review-missing`. Gewollt, aber eine
-  Verhaltensänderung, die die Release-Notiz nennen muss. — **Ausgang:** *(offen)*
+  Verhaltensänderung, die die Release-Notiz nennen muss. — **Ausgang:**
+  entfallen — der Rot-Effekt ist der Zweck (Verifikation: zwei Bäume, die
+  unter v0.85.0 grün waren, melden jetzt); die Ankündigung trägt die
+  Release-Notiz.
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Unter `match: name` deckt ein Report einen Slice
+  nicht mehr, wenn sein Name auch einen längeren Slice-Basisnamen trägt, der
+  den kürzeren enthält; gezählt werden alle `slice-*.md`, die der Lauf in
+  `done-dir` sieht, vor `exempt-paths` und `skip-pattern`. Die Verifikation
+  maß gegen v0.85.0: der Fall des Befunds und ein archivierter längerer Stub
+  melden jetzt, mit eigenem Report sind sie grün; `match: id` ist
+  byte-identisch (drei Bäume, Text und `--json`). Vier Tests werden rot,
+  wenn der Fix zurückgenommen wird; die Gegenprobe zu `slice-cachex` ist ein
+  Regressionswächter der Wortgrenze, kein Rot-Beleg des Fix.
+- **Was ging anders als geplant:** Review R1 fand zwei ungetestete Teile des
+  Vertrags — die Zählung vor `exempt-paths` und den Stub unter einem
+  Unterverzeichnis —, die Verifikation zwei weitere (der kürzere Name in der
+  Mitte, ein Report mit beiden Namen); alle vier sind jetzt getestet und je
+  mit einer Mutation gegengeprüft. Der Feat-Commit nahm eine fehlende
+  Historie-Zeile der Spezifikation zum R2-Nachzug aus slice-271 mit — nicht
+  im Plan, aber derselbe Abschnitt und ohne eigenen Gegenstand.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
+- **Beobachtungs-Register (`../observations/`):**
+  [`BEO-ALL/name-zuordnung-deckt-praefix-slices`](../observations/BEO-ALL/name-zuordnung-deckt-praefix-slices/state.md)
+  trägt den neuen Stand: die Präfix-Deckung ist behoben, die Restgrenze
+  bleibt offen. Kein neuer Eintrag.
+- **Folge-Slices:** keiner. Produkt-Verhalten — geht mit dem nächsten Release
+  hinaus; die Release-Notiz nennt die Verhaltensänderung.
+- **Risiken aus §6:** entfallen (siehe §6). Trigger-Audit: kein Carveout,
+  kein bootstrap-aware Gate, keine neue ADR; keine Hard Rule mit
+  eingetretenem Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
+  Folge-Slices — keiner genannt; (c) Register — die zitierte Beobachtung
+  existiert und trägt einen Beleg.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

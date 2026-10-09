@@ -1,1 +1,1 @@
-**Stand:** offen — 1×.
+**Stand:** offen — 1×; die Präfix-Deckung unter `match: name` ist behoben ([`DC-FA-RVW-001`](../../../../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)), es bleibt die Restgrenze: ein längerer Slice außerhalb der Lese-Menge deckt den kürzeren weiter.
