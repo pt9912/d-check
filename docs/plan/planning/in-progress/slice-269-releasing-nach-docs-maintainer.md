@@ -65,7 +65,7 @@ Gemessen im Wegwerf-Klon mit dem reinen Umzug, dem gelöschten leeren
 Verzeichnis und `d-check` über den Klon (Befunde nach Grund und Datei
 gezählt): 40 Befunde. 23 eigene Links (12 `target-missing`, 11 `repo-escape`),
 16 eingehende `target-missing` in denselben Dateien wie bei slice-268
-(CHANGELOG, README und README.de je zwei, Benutzerhandbuch zwei,
+(CHANGELOG einer, README und README.de je zwei, Benutzerhandbuch zwei,
 Docker-Hub-Beschreibung,
 [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) vier,
 [ADR-0067](../../adr/0067-dependabot-als-hebender-kanal.md) einer, drei
@@ -75,6 +75,16 @@ Tombstone-Register ([ADR-0025](../../adr/0025-codepaths-ignore-refs.md)).
 Ohne Doku-Gate: `.github/dependabot.yml`, `release.yml` (zwei),
 `hub-description.yml`, `tools/image-test.sh`, der Kommentar zum
 Tombstone-Eintrag des ursprünglichen Pfads.
+
+*(Plan-Änderung vor dem nächsten Code-Commit, nach R1 MEDIUM-1: Mit dem
+Umzug verlässt `releasing.md` den Rang 6 der Source Precedence, den
+`AGENTS.md` §2 und `harness/README.md` §Source precedence `docs/user/`
+zuordnen — „Operations, Releasing". Der Baseline-Default legt die
+Releasing-Sicht unter `docs/user/*.md`; der neue Ort ist deshalb eine
+Abweichung und bekommt einen `MR`-Eintrag in `harness/conventions.md`; Rang 6
+nennt in beiden Tabellen beide Verzeichnisse. Gemessen: keine Scan-Menge der
+`.d-check.yml` hängt an `docs/user/` außer einer `structure`-Regel für das
+Benutzerhandbuch, und `make mention-coverage` deckt alle Artefakte.)*
 
 ## 4. Trigger
 
