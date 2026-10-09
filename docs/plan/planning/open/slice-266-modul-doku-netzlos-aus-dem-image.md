@@ -12,10 +12,11 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 Punkt 4): ein netzlos arbeitendes Repo kann die Erkennungsregel eines Moduls
 heute nur durch Probieren ermitteln.
 
-**Berührte Spec-Stellen:** CLI-Anforderungen im Lastenheft (Hilfe-Ausgabe) —
-welche, entscheidet der Schnitt beim Beanspruchen.
+**Berührte Spec-Stellen:** eine neue CLI-Anforderung im Lastenheft (Handbuch
+und Spezifikation aus dem Binary) samt Verfeinerung in der Spezifikation;
+die Kennung vergibt der Feat-Commit.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912
 
 **Autor:** pt9912. **Datum:** 2026-10-09.
 
@@ -31,6 +32,13 @@ Schlüssel es nimmt — über eine Ausgabe des Werkzeugs (etwa `--help <modul>`)
 oder eine mitgelieferte Datei. Beim Beanspruchen wird entschieden, welche Form
 und welche Quelle; die Quelle darf nicht zu einer zweiten Beschreibung neben
 Spezifikation und Handbuch werden, die driftet.
+
+**Entschieden beim Beanspruchen (Auftraggeber):** Handbuch und Spezifikation
+werden beim Build ins Binary eingebettet, byte-gleich zu ihren Quelldateien;
+`--manual <begriff>` gibt die Abschnitte beider Dokumente aus, deren
+Überschrift den Begriff nennt, samt Unterabschnitten. Eine zweite Beschreibung
+entsteht nicht — die Quelle **ist** die Datei. Der Titel eines Dokuments
+liefert es ganz.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
@@ -57,7 +65,8 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| CLI und Image | update | Ausgabe bzw. mitgelieferte Doku |
+| Paket im Modul-Root (Einbettung), CLI (`--manual`), Tests | create/update | Ausgabe aus den eingebetteten Dokumenten |
+| `tools/image-test.sh` | update | eine Phase: `--manual` netzlos im Container |
 | `spec/lastenheft.md`, `spec/spezifikation.md` | update | Zusage |
 
 ## 4. Trigger
@@ -99,16 +108,23 @@ hinaus.
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-**Vorgelagert — Sub-Area-Wahl prüfen:** Produkt unter dem Default `*`
-(`ALL`); beim Beanspruchen neu prüfen.
+**Vorgelagert — Sub-Area-Wahl prüfen:** Berührt sind die CLI, ein neues Paket
+für die Einbettung, das Image-Testskript und die beiden Spec-Straten — alle
+unter dem Default `*` (`ALL`); keine eigene Konvention, kein eigener Modus.
 
 <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-05-planning-harness.md:379-379 -->
 
 > **Offene Beobachtungen sichten.** Das
 
-**Vorgelagert — offene Beobachtungen sichten:** beim Beanspruchen neu lesen.
+**Vorgelagert — offene Beobachtungen sichten:** Keine offene Beobachtung
+betrifft die Erreichbarkeit der Doku. Mittelbar berührt ist
+[`BEO-ALL/semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md):
+eine neue Option hat Spiegel (Hilfe-Ausgabe, Lastenheft, Spezifikation,
+Handbuch in der Release-Prep), die vor dem Editieren aufgelistet werden.
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
-beim Beanspruchen aus dem jüngsten Lauf lesen.
+`upstream-drift` grün (2026-10-09T07:17Z). `image-scan` rot (2026-10-09T10:37Z)
+— der Lauf liegt vor dem Release v0.85.0, das die gemeldeten CVEs behebt.
+Der Slice ändert das Image (größeres Binary), nicht seine Basis.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
