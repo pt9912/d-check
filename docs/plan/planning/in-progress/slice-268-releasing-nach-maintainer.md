@@ -45,11 +45,11 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] Reiner Move-Commit (Git erkennt den Rename), danach ein Commit, der jeden
+- [x] Reiner Move-Commit (Git erkennt den Rename), danach ein Commit, der jeden
       Verweis nachzieht — die Liste am Repo gezählt, das Kommando im Plan;
       `make doc-check`, `make adr-check` über die Range und `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -93,19 +93,55 @@ wellenlos hier geprüft.
 ## 6. Risiken und offene Punkte
 
 - **Verweise außerhalb des Repos** — Links von außen (Docker-Hub-Beschreibung,
-  Adopter) zeigen auf den alten Pfad. — **Ausgang:** *(offen)*
+  Adopter) zeigen auf den alten Pfad. — **Ausgang:** *weiter offen* — die
+  Docker-Hub-Seite (`packaging/dockerhub/overview.md`) verlinkt die Datei
+  nicht; Links von Adoptern sind von hier aus nicht messbar, die Release-Notiz
+  nennt den Umzug;
+  [`BEO-ALL/externer-link-auf-umgezogene-datei`](../observations/BEO-ALL/externer-link-auf-umgezogene-datei/state.md)
+  (1×).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** `releasing.md` liegt unter
+  `docs/user/maintainer/`; Git erkennt den Rename (R100). Jeder Link folgt der
+  Datei — 23 eigene, 16 eingehende, in den `Accepted`-ADRs 0014 und 0067 nur
+  das Ziel, ohne Folge-ADR (Pfad-Nachzug nach
+  [ADR-0103](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md)); die
+  Verifikation löste alle 39 alten und neuen Ziele auf dieselbe Datei auf. Die
+  19 Inline-Code-Nennungen des alten Pfads bleiben als historischer Text im
+  Tombstone-Register von `codepaths`
+  ([ADR-0025](../../adr/0025-codepaths-ignore-refs.md)). Erster echter Lauf des
+  Pfad-Nachzugs aus slice-267, im Hook und in der CI grün.
+- **Was ging anders als geplant:** Die Zählung beim Schnitt las nur Links;
+  der Umzug im Wegwerf-Klon zeigte die 19 Inline-Code-Nennungen dazu — die
+  Plan-Änderung stand vor dem Code. Anders als in §1 und der DoD beschrieben
+  reisen die eingehenden Verweise im Move-Commit mit: getrennt gestagt, prüfte
+  der gestagte ADR-Check den Nachzug in [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) gegen einen BASE-Stand ohne den
+  alten Pfad und meldete Drift. Der Schnitt steht nur in der Commit-Botschaft,
+  nicht als Plan-Änderung, und `AGENTS.md` §3.3 erlaubt das Mitreisen dem
+  Wortlaut nach nur beim Übergang nach `done/` (R1 LOW-1, Verifikation V-1).
+  Der Tombstone-Eintrag wirkt repo-weit; seine Grenze steht jetzt im Kommentar
+  (R1 LOW-2).
+- **Steering-Loop-Eintrag:** keiner mit Schwelle. Die Lücke zwischen §3.3 und
+  dem ADR-Gate ist neu im Register — ändert sie §3.3, ist das eine Frage an
+  den Auftraggeber, nicht an diesen Slice.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-268.md` in
+  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/state.md);
+  neu
+  [`BEO-ALL/umzug-mit-adr-nachzug-braucht-mitreisende-verweise`](../observations/BEO-ALL/umzug-mit-adr-nachzug-braucht-mitreisende-verweise/state.md)
+  und
+  [`BEO-ALL/externer-link-auf-umgezogene-datei`](../observations/BEO-ALL/externer-link-auf-umgezogene-datei/state.md)
+  (je 1×).
+- **Folge-Slices:** keiner. Release v0.85.0 mit slice-263, slice-265,
+  slice-267 und diesem Slice; die Release-Notiz nennt den Umzug.
+- **Risiken aus §6:** eines weiter offen (Register, siehe §6). Trigger-Audit:
+  kein Carveout, kein bootstrap-aware Gate, keine ADR, keine Hard Rule mit
+  eingetretenem Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8 —
+  `image-scan` rot bis zum nächsten Release.
+- **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b) Folge-Slices
+  — keiner genannt; (c) Register — die drei zitierten Beobachtungen existieren
+  und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
