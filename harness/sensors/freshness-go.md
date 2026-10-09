@@ -29,8 +29,10 @@ fest; diese Datei führt sie nicht ein zweites Mal.
    die anderen vier Achsen; der Scanner-Pin wird nur gemeldet, wenn jemand die Achse
    selbst ruft.
 
-**Netzlos prüfbar** über `--compare <name> <gepinnt> <upstream>`; ohne diesen
-Einstieg wäre die Semantik nur mit Netz zu prüfen und damit gar nicht.
+**Netzlos prüfbar** ist der Vergleich über `--compare <name> <gepinnt>
+<upstream>` — die Präfix-Behandlung der Quell-Zweige nicht, sie gehört zu
+`--github`/`--godev`; ohne diesen
+Einstieg wäre der Vergleich nur mit Netz zu prüfen und damit gar nicht.
 
 ## Bindung
 

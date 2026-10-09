@@ -16,7 +16,8 @@ aus dem Index selbst, nicht aus einer Kopie der Release-Liste
 `IMAGE_SCAN_PLATFORMS` übersteuert sie für einen gezielten Lauf. Je Plattform
 drei Läufe: ein **Plattform-Nachweis**, der prüft, dass Trivy wirklich die
 verlangte Architektur gescannt hat; ein Vollbericht über alle Schweregrade, der
-nie fällt; und der Entscheidungslauf `CRITICAL`/`HIGH` **mit verfügbarem
+nicht wegen Befunden fällt, nur bei einem Trivy-Fehler; und der
+Entscheidungslauf `CRITICAL`/`HIGH` **mit verfügbarem
 Fix** — nur der macht rot.
 
 ## Grenze — was das Grün nicht abdeckt
