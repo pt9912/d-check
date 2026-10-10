@@ -175,6 +175,15 @@ keine aspirativen Texte. Aber ihre Kraft ist real begrenzt:
   ([ADR-0013](../docs/plan/adr/0013-pr-ci-und-traceability-gate.md),
   [ADR-0016](../docs/plan/adr/0016-adr-immutable-gate.md) benennen dieselbe
   Restlücke).
+- Ein **Repository-Ruleset** (`main-nur-admin`) erlaubt Updates, Löschen und
+  Force-Push auf `main` nur der Rolle Repository-Admin. Damit kann ein
+  Workflow mit `contents: write` nicht über den `GITHUB_TOKEN` auf `main`
+  schreiben; kein Workflow tut das heute, der einzige mit Schreibrecht legt
+  nur das GitHub-Release an. **Grenze:** Das Ruleset lebt nur in den
+  GitHub-Einstellungen, ist aus dem Klon nicht auditierbar und macht den
+  `ci`-Check **nicht** zur Pflicht. Ein persönliches Token des Eigentümers in
+  einem Secret umgeht es, und ob ein Bot-Push wirklich abgewiesen wird, ist
+  ohne echten Versuch nicht beobachtet.
 - Der `Stop`-Hook
   ([`stop-require-gates.sh`](../.claude/hooks/stop-require-gates.sh)) ist
   Claude-spezifisch und gibt frische, cleane Klone ohne lokalen Gate-State
