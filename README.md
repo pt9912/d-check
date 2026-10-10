@@ -321,7 +321,7 @@ works for both registries)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

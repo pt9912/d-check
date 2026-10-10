@@ -4,6 +4,15 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.86.1] — 2026-10-10
+
+### Security
+
+- slice-273 — `golang.org/x/net` v0.60.0: behebt vier HTTP/2-Befunde im
+  publizierten Image (CVE-2026-78663, CVE-2026-78659, CVE-2026-78660,
+  CVE-2026-78669; ein Fremd-Scanner stuft sie als CRITICAL bzw. HIGH ein) und
+  CVE-2026-97032 (MEDIUM). Keine Verhaltensänderung des Werkzeugs.
+
 ## [0.86.0] — 2026-10-09
 
 ### Added
