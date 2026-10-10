@@ -46,11 +46,11 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] `go.mod` führt `golang.org/x/net` v0.60.0, `go.sum` passt; `make gates`
+- [x] `go.mod` führt `golang.org/x/net` v0.60.0, `go.sum` passt; `make gates`
       grün; der Vollbericht von Trivy gegen das neu gebaute Image führt die vier
       CVEs nicht mehr.
-- [ ] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
-- [ ] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
+- [x] Review durchgeführt, Report unter `docs/reviews/`; Verifikation.
+- [x] Closure-Notiz mit Lerneintrag; Beobachtungs-Register fortgeschrieben;
       jedes Risiko aus §6 mit Ausgang; drei Paarungen hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -77,19 +77,35 @@ wellenlos hier geprüft. Geht mit dem Release v0.86.1 hinaus.
 
 - **Die Hebung zieht weitere Module nach** — `x/net` v0.60.0 kann neuere
   Fassungen von `x/sys`, `x/text` oder `x/crypto` verlangen. —
-  **Ausgang:** *(offen)*
+  **Ausgang:** entfallen — nur die `x/net`-Zeilen änderten sich, `make tidy`
+  lässt den Baum unverändert (Review, Verifikation).
 
 ## 7. Closure-Notiz
 
-*(gefüllt vor dem `git mv` nach `done/`)*
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** —
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** `golang.org/x/net` steht auf v0.60.0, gehoben über
+  `go.mod` und `make tidy` — `go.sum` ist ein Fixpunkt von `tidy`, kein
+  weiteres Modul zog nach. Trivy findet im neu gebauten Image keine der vier
+  CVEs mehr, dazu ist CVE-2026-97032 (MEDIUM) behoben; die Gegenprobe gegen
+  `v0.86.0` zeigt alle vier, der Scan sieht sie also. Ein verfälschter
+  `go.sum`-Hash lässt den Build mit `checksum mismatch` fallen.
+- **Was ging anders als geplant:** Plan und Commit-Botschaft sagen „drei davon
+  `UNKNOWN`“ — gemessen waren es mit der Datenbank vom 2026-10-09 vier, mit der
+  vom 2026-10-10 zwei; die zusammengefassten Zellen der Trivy-Tabelle waren
+  falsch gelesen (Verifikation L1). Die Commit-Botschaft ist eingefroren, das
+  Register trägt die richtigen Zahlen.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-273.md` in
+  [`BEO-ALL/scanner-vendor-severity-lag`](../observations/BEO-ALL/scanner-vendor-severity-lag/state.md)
+  (jetzt 2×): der eigene Scan blieb rund einen Tag hinter einem Fremd-Scanner
+  zurück.
+- **Folge-Slices:** keiner. Geht mit dem Release v0.86.1 hinaus.
+- **Risiken aus §6:** entfallen (siehe §6). Trigger-Audit: kein Carveout,
+  kein bootstrap-aware Gate, keine neue ADR; keine Hard Rule mit eingetretenem
+  Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
+  Folge-Slices — keiner genannt; (c) Register — die zitierte Beobachtung
+  existiert und trägt zwei Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
