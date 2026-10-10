@@ -11,8 +11,8 @@ selbst.
 **Bezug:** Fund eines Fremd-Scanners am publizierten Image `v0.86.0`:
 CVE-2026-78663 (9.1, CRITICAL), CVE-2026-78659, CVE-2026-78660,
 CVE-2026-78669 (je 7.5, HIGH), alle in `golang.org/x/net` v0.59.0, behoben in
-v0.60.0; [ADR-0066](../../adr/0066-cve-scan-gegen-das-publizierte-image.md)
-(der eigene Scan), [ADR-0067](../../adr/0067-dependabot-als-hebender-kanal.md)
+v0.60.0; [ADR-0066](../../../adr/0066-cve-scan-gegen-das-publizierte-image.md)
+(der eigene Scan), [ADR-0067](../../../adr/0067-dependabot-als-hebender-kanal.md)
 (der hebende Kanal).
 
 **Berührte Spec-Stellen:** —
@@ -94,15 +94,15 @@ wellenlos hier geprüft. Geht mit dem Release v0.86.1 hinaus.
   falsch gelesen (Verifikation L1). Die Commit-Botschaft ist eingefroren, das
   Register trägt die richtigen Zahlen.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-273.md` in
-  [`BEO-ALL/scanner-vendor-severity-lag`](../observations/BEO-ALL/scanner-vendor-severity-lag/state.md)
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-273.md` in
+  [`BEO-ALL/scanner-vendor-severity-lag`](../../observations/BEO-ALL/scanner-vendor-severity-lag/state.md)
   (jetzt 2×): der eigene Scan blieb rund einen Tag hinter einem Fremd-Scanner
   zurück.
 - **Folge-Slices:** keiner. Geht mit dem Release v0.86.1 hinaus.
 - **Risiken aus §6:** entfallen (siehe §6). Trigger-Audit: kein Carveout,
   kein bootstrap-aware Gate, keine neue ADR; keine Hard Rule mit eingetretenem
   Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
   Folge-Slices — keiner genannt; (c) Register — die zitierte Beobachtung
   existiert und trägt zwei Belege.
@@ -122,7 +122,7 @@ Abhängigkeits-Stand des Produkts, unter dem Default `*` (`ALL`).
 > **Offene Beobachtungen sichten.** Das
 
 **Vorgelagert — offene Beobachtungen sichten:**
-[`BEO-ALL/scanner-vendor-severity-lag`](../observations/BEO-ALL/scanner-vendor-severity-lag/observation.md)
+[`BEO-ALL/scanner-vendor-severity-lag`](../../observations/BEO-ALL/scanner-vendor-severity-lag/observation.md)
 (1×, Beleg slice-201) trifft genau diesen Fall: Trivy führt drei der vier CVEs
 als `UNKNOWN`, `make image-scan` meldete `v0.86.0` grün, ein anderer Scanner
 stuft sie als CRITICAL und HIGH ein. Mit diesem Slice 2×.
@@ -131,7 +131,7 @@ stuft sie als CRITICAL und HIGH ein. Mit diesem Slice 2×.
 Vollbericht führt CVE-2026-78659, -78660, -78663, -78669 unter
 `golang.org/x/net` v0.59.0, Fix 0.60.0, drei davon mit Schweregrad `UNKNOWN`.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 `image-scan` des Nachtlaufs vom 2026-10-09 lag vor dem Release `v0.86.0`; der
 Fund kam über einen Fremd-Scanner.
 
