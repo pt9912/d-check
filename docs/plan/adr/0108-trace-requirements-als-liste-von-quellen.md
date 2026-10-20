@@ -1,6 +1,6 @@
 # ADR-0108: `trace.requirements` ist ein Objekt oder eine Liste von Quellen
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-20
 
@@ -134,3 +134,4 @@ erkennen, was die Anforderungsseite nicht kennt.
 | Datum | Ereignis |
 |---|---|
 | 2026-10-20 | Entwurf nach eingehendem CR eines Adopters (eine Datei, zwei Anforderungsformen). Lastenheft 0.106.0 und Spezifikation tragen die Anforderung; Status Proposed, bis die Umsetzung steht. |
+| 2026-10-20 | **Accepted** — umgesetzt (Config-Adapter, Kern, Handbuch), zwei Review-Runden und Verifikation durchlaufen. Vor der Annahme berichtigt: die Konsequenz zu `--print-config` (die Generatoren bleiben bei der Objekt-Form). Die Referenzseite (Entscheidung 5) kam beim Umsetzen hinzu, nachdem Referenzscan, Range-Validierung und `cross-consistency` als Verbraucher eines einzigen Musters auffielen. |
