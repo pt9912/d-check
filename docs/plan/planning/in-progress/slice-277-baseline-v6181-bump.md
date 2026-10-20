@@ -119,7 +119,7 @@ Entfernen des alten Baums meldete `doc-check` ihn als toten Link; die Alternativ
 ein neuer `ignore-refs`-Eintrag ([`MR-069`](../../../../harness/conventions.md#mr-069)),
 eine deklarierte Gate-Senkung. Der Link ist auf `v6.18.1` retargetet, der Text des
 Slice unberührt; der MR-Eintrag führt es als einzige Ausnahme von der Frozen-Regel.
-Dazu die Link-Tiefen von `MR-074` nach dem Move (eigener Commit) und die
+Dazu die Link-Tiefen von [`MR-074`](../../../../harness/conventions.md#mr-074) nach dem Move (eigener Commit) und die
 Zitat-Spanne `modul-10` im Reviewer-Skill (87→99).
 
 **Spiegel-Messung** ([`MR-070`](../../../../harness/conventions.md#mr-070),
