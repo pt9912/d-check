@@ -356,7 +356,8 @@ Ableitung (deterministisch,
 Map-Iteration in der Ausgabe):
 
 1. **Anforderungen** aus `trace.requirements.source` (Default
-   `spec/lastenheft.md`) gemäß
+   `spec/lastenheft.md`; bei einer Liste von Einträgen aus der Vereinigung
+   aller) gemäß
    [§`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen):
    `trace.requirements.format` wählt Heading- oder Tabellenextraktion; beide
    liefern Kennung, Titel und Modalitäts-Eingabetext. Die Kennung muss als
@@ -464,11 +465,41 @@ Ablauf formatunabhängig.
    bestehende Matcher aus [§`DC-FA-MOD-001.a`](spezifikation.md#dc-fa-mod-001a--modalitäts-klassifikation-tracerequirementsmodality)
    `modalityText`; Keywords, Normalisierung, `unknown` und `require-levels`
    bleiben unverändert. Ohne aktive Modalität wird der Text nicht ausgewertet.
+8. **Liste von Quellen.** `trace.requirements` ist ein Objekt (bisherige Form)
+   **oder** eine Sequenz solcher Objekte; jede andere YAML-Form ist
+   config-zeitig Exit 2, ebenso eine leere Sequenz. Das Objekt verhält sich
+   wie eine Liste mit einem Eintrag, jedoch ohne Index in den Meldungen und
+   mit byte-identischer Ausgabe. Jeder Eintrag durchläuft die Schritte 1 bis 7
+   **für sich**: eigenes `source`, `id-pattern`, `format`, `table`,
+   `modality`; `strictSource` wird je Eintrag gebildet. Dieselbe `source` in
+   mehreren Einträgen wird je Eintrag neu gelesen. Die Meldungen der Schritte
+   1 bis 7 nennen in der Listen-Form zusätzlich den 0-basierten Index des
+   Eintrags. Die Einträge werden in Listenreihenfolge abgearbeitet;
+   `table.duplicate-ids` wirkt nur innerhalb eines Eintrags.
 
-**Fehlerpräzedenz:** striktes YAML/Format-/Block-Schema → Quelle lesen →
-Tabellenstruktur/Header → Duplicate-ID → Nullmenge → Referenz-/Coverage-
-Scans. Der erste Fehler beendet den Lauf vor dem Reporter; `--trace` und
-`--trace --require-complete` liefern Exit 2 und keine RTM.
+   **Vereinigung.** Nach dem Extrahieren **aller** Einträge wird geprüft, ob
+   eine Kennung in mehr als einem Eintrag vorkommt; das ist Exit 2 mit
+   Kennung und den Indizes beider Einträge (bei Überlappung der `id-pattern`
+   zusätzlich mit dem Hinweis darauf). Die Menge ist die Vereinigung; ihre
+   Reihenfolge ist die der Einträge, innerhalb eines Eintrags die
+   Kennungs-Sortierung (keine globale Neusortierung). `modality` wirkt je
+   Eintrag auf dessen Anforderungen; ein Eintrag ohne `modality` klassifiziert
+   nicht, und `require-levels` eines Eintrags gatet nur seine Anforderungen.
+   Hat **kein** Eintrag `modality`, gaten wie bisher alle Waisen.
+
+   **Muster der Referenzseite.** Der Referenzscan (Schritt 2 der RTM), die
+   Range-Validierung von `trace.coverage[].ranges` und `cross-consistency`
+   erkennen eine Kennung, wenn sie als **Ganz-Token** auf das `id-pattern`
+   **mindestens eines** Eintrags passt; ein Treffer zählt für die Kennung, nicht
+   für den Eintrag. Eine Kennung, die zu keinem Eintrag gehört, wird wie bisher
+   verworfen.
+
+**Fehlerpräzedenz:** striktes YAML/Format-/Block-Schema (bei einer Liste:
+alle Einträge in Listenreihenfolge) → je Eintrag Quelle lesen →
+Tabellenstruktur/Header → Duplicate-ID → Nullmenge → Duplikat über Einträge →
+Referenz-/Coverage-Scans. Der erste Fehler beendet den Lauf vor dem
+Reporter; `--trace` und `--trace --require-complete` liefern Exit 2 und
+keine RTM.
 
 ### DC-FA-XREF-001.a — Kreuzverweis-Konsistenz (`cross-consistency`)
 
@@ -3632,6 +3663,7 @@ Exit 2 ohne Prüfung
 | `targets.authority` | string \| string[] | leer | Wurzel-relative Doku-Datei oder Liste wörtlicher Doku-Dateien; **jede** nicht-exempte Makefile-Regel muss in **mindestens einer** als `make X`-Tabellenzeile stehen (Richtung 2 `gate-undocumented`); leer (String, Null oder Liste) ⇒ Richtung 2 entfällt; Einträge wörtlich, auch mit Glob-Zeichen; fehlende Datei oder leerer/Null-/Nicht-Pfad-Listeneintrag ⇒ Exit 2 |
 | `targets.authority-disjoint` | bool | `false` | `true` ⇒ ein Target, das in mehr als einer `targets.authority`-Datei von einer Tabellenzeile in der ersten Zelle geführt wird, meldet `gate-declared-twice` an jeder späteren führenden Zeile (Erwähnungen in anderen Zellen zählen nicht; läuft auch ohne `targets.makefiles`); ohne Wirkung bei weniger als zwei verschiedenen Dateien; kein Bool ⇒ Exit 2 |
 | `targets.exempt-targets` | string[] | leer | Regelnamen (**exakt**-Vergleich, **kein** Glob — anders als `tracked.exempt-targets`, das Pfad-Globs matcht), die von der Doku-Pflicht (Richtung 2) ausgenommen sind (Utility-Targets); ohne Eintrag prüft Richtung 2 jede Regel |
+| `trace.requirements` | map oder Liste von map | — | Objekt (die Schlüssel darunter) **oder** nichtleere Liste solcher Objekte; jeder Eintrag trägt dieselben Schlüssel mit derselben Bedeutung, Fail-closed-Meldungen nennen den Eintrags-Index. Doppelte Kennung über Einträge und leere Liste ⇒ Exit 2; Objekt-Form und fehlender Block byte-identisch ([`DC-FA-REQ-001`](lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)) |
 | `trace.requirements.source` | string | `spec/lastenheft.md` | Wurzel-relative Anforderungsdatei; muss innerhalb der Repo-Wurzel liegen; leer/abwesend ⇒ Default und aktiviert keinen Strict-Guard. Ein **nichtleerer expliziter** Wert aktiviert fail-closed bei fehlender Quelle/null erkannten Anforderungen ([`DC-FA-REQ-001`](lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)) |
 | `trace.requirements.id-pattern` | string | `[A-Z][A-Z0-9]*-(?:FA-[A-Z]+\|QA)-\d+[A-Za-z]?` | Regex; erkennt eine Anforderungs-Kennung als **Ganz-Token** im Heading bzw. **Ganzzelle** der ID-Spalte und als Vorkommen in ADR-/Slice-Dateien; muss kompilieren (sonst Exit 2); leer ⇒ Default |
 | `trace.requirements.format` | string | `headings` | `headings` oder `table`; leer ⇒ `headings`; anderer Wert ⇒ Exit 2. `table` aktiviert den Strict-Guard und verlangt `trace.requirements.table`; ohne `trace`-Block bleibt die RTM byte-identisch |
@@ -3822,6 +3854,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-20 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) um Schritt 8 ergänzt: `trace.requirements` als Liste von Quellen-Einträgen — je Eintrag die Schritte 1 bis 7, Vereinigung in Listenreihenfolge, doppelte Kennung über Einträge und leere Liste Exit 2, `modality` je Eintrag; Fehlerpräzedenz und Schlüsseltabelle nachgezogen, Schritt 1 der RTM benennt die Vereinigung |
 | 2026-10-09 | §2, Beispiel des `--suggest-config ai-harness`-Vorschlags: `matrix.exclude-sections` nennt auch `"8. Historie"`, den Ort der Historie einer Spezifikation nach der Baseline-Vorlage |
 | 2026-10-09 | Nachzug nach Review an §[7](#7-festlegungen-der-harness-werkzeuge): [`SPEC-102`](#7-festlegungen-der-harness-werkzeuge) nennt, dass der `commit-msg`-Hook in einem Repo ohne oder mit einem Commit jeden Commit abbricht; [`SPEC-103`](#7-festlegungen-der-harness-werkzeuge), dass der Klon den Stand von `HEAD` trägt und die Image-Builds im Klon, schon bei den Commit-Versuchen, Netz brauchen können |
 | 2026-10-09 | §[7](#7-festlegungen-der-harness-werkzeuge) um die Werkzeuge erweitert, die gegen einen fremden Stand prüfen oder einen Lauf vorbereiten: [`SPEC-097`](#7-festlegungen-der-harness-werkzeuge) `image-scan`, [`SPEC-098`](#7-festlegungen-der-harness-werkzeuge) Versions-Achsen, [`SPEC-099`](#7-festlegungen-der-harness-werkzeuge) Digest-Achsen, [`SPEC-100`](#7-festlegungen-der-harness-werkzeuge) `baseline-freshness`, [`SPEC-101`](#7-festlegungen-der-harness-werkzeuge) `nightly-state`, [`SPEC-102`](#7-festlegungen-der-harness-werkzeuge) `history-range-guard`, [`SPEC-103`](#7-festlegungen-der-harness-werkzeuge) `selbstpruefung`. Am Code nachgelesen; wo Code und Sensor-Doku abwichen, beschreibt der Eintrag den Code |
