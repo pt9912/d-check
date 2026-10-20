@@ -66,7 +66,7 @@ func TestDecode_RequirementsListErrors(t *testing.T) {
 		yaml string
 		want string
 	}{
-		{"leere liste (AK-7)", "trace:\n  requirements: []\n", "darf als Liste nicht leer sein"},
+		{"leere liste", "trace:\n  requirements: []\n", "darf als Liste nicht leer sein"},
 		{"null-eintrag", "trace:\n  requirements:\n    - source: a.md\n    -\n", "trace.requirements[1] ist leer"},
 		{"skalar statt objekt", "trace:\n  requirements: foo\n", "cannot unmarshal"},
 		{"skalar als eintrag", "trace:\n  requirements:\n    - foo\n", "cannot unmarshal"},
@@ -99,5 +99,69 @@ func TestDecode_RequirementsListErrorLine(t *testing.T) {
 	_, err = configyaml.Decode([]byte("trace:\n  requirements:\n    source: a.md\n    sorce: c.md\n"))
 	if err == nil || !strings.Contains(err.Error(), "line 4: field sorce not found") {
 		t.Fatalf("Objekt-Form: Decode-Fehler = %v, want line 4", err)
+	}
+}
+
+// Aliase und Merge-Keys bleiben in der Listen-Form wie in der Objekt-Form
+// auflösbar: zwei Einträge mit gleicher source teilen ihren Rahmen über einen
+// Anker.
+func TestDecode_RequirementsListAliasAndMerge(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(`trace:
+  requirements:
+    - &fa
+      source: spec/lastenheft.md
+      id-pattern: 'SFC-FA-\d{2}'
+    - <<: *fa
+      id-pattern: 'SFC-QA-\d{2}'
+      format: table
+      table:
+        id-column: ID
+        text-column: Anforderung
+    - *fa
+`))
+	if err != nil {
+		t.Fatalf("Anker und Merge-Key abgelehnt: %v", err)
+	}
+	s := cfg.Trace.Sources
+	if len(s) != 3 {
+		t.Fatalf("Sources = %d Einträge, want 3", len(s))
+	}
+	if s[1].Source != "spec/lastenheft.md" || !s[1].ReqPattern.MatchString("SFC-QA-01") || s[1].Format != model.TraceFormatTable {
+		t.Fatalf("Merge-Key nicht aufgelöst: %+v", s[1])
+	}
+	if s[2].Source != "spec/lastenheft.md" || !s[2].ReqPattern.MatchString("SFC-FA-01") {
+		t.Fatalf("Alias nicht aufgelöst: %+v", s[2])
+	}
+}
+
+// Ein unbekannter Schlüssel hinter einem Anker oder Merge-Key bleibt ein Fehler,
+// mit der Zeile seiner Definition.
+func TestDecode_RequirementsListUnknownKeyBehindAlias(t *testing.T) {
+	for name, doc := range map[string]string{
+		"alias":     "trace:\n  requirements:\n    - &a\n      sorce: x.md\n    - *a\n",
+		"merge-key": "trace:\n  requirements:\n    - &a\n      sorce: x.md\n    - <<: *a\n      source: y.md\n",
+	} {
+		t.Run(name, func(t *testing.T) {
+			_, err := configyaml.Decode([]byte(doc))
+			if err == nil || !strings.Contains(err.Error(), "line 4: field sorce not found") {
+				t.Fatalf("Decode-Fehler = %v, want line 4", err)
+			}
+		})
+	}
+}
+
+// Die Zeile bleibt die des Dokuments, auch mit Kommentaren und Leerzeilen im
+// Block — in der Objekt-Form wie in der Liste.
+func TestDecode_RequirementsErrorLineWithCommentsAndBlankLines(t *testing.T) {
+	for name, c := range map[string]struct{ doc, want string }{
+		"objekt": {"trace:\n  requirements:\n    # Kommentar\n\n    source: a.md\n    # noch einer\n    sorce: c.md\n", "line 7: field sorce not found"},
+		"liste":  {"trace:\n  requirements:\n    # Kommentar\n    - source: a.md\n\n    - source: b.md\n      # zwischen\n      sorce: c.md\n", "line 8: field sorce not found"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			_, err := configyaml.Decode([]byte(c.doc))
+			if err == nil || !strings.Contains(err.Error(), c.want) {
+				t.Fatalf("Decode-Fehler = %v, want enthält %q", err, c.want)
+			}
+		})
 	}
 }

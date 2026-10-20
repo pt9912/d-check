@@ -105,28 +105,40 @@ type loadedReqs struct {
 	tableTexts map[string]string
 }
 
+// loadTraceRequirements extrahiert **alle** Einträge, bevor es eine Kennung über
+// Einträge hinweg prüft: ein Fehler eines späteren Eintrags geht dem Duplikat
+// voraus (DC-FA-REQ-001.a, Fehlerpräzedenz).
 func loadTraceRequirements(fsys driven.Filesystem, entries []reqEntry) (loadedReqs, error) {
-	out := loadedReqs{
-		titles: map[string]string{}, owner: map[string]int{}, tableTexts: map[string]string{},
+	type extracted struct {
+		titles map[string]string
+		order  []string
+		texts  map[string]string
 	}
+	parts := make([]extracted, len(entries))
 	for i, e := range entries {
 		titles, order, texts, err := loadEntryRequirements(fsys, e)
 		if err != nil {
 			return loadedReqs{}, e.indexed(err)
 		}
-		for _, id := range order {
+		parts[i] = extracted{titles, order, texts}
+	}
+	out := loadedReqs{
+		titles: map[string]string{}, owner: map[string]int{}, tableTexts: map[string]string{},
+	}
+	for i, p := range parts {
+		for _, id := range p.order {
 			if prev, dup := out.owner[id]; dup {
 				return loadedReqs{}, fmt.Errorf(
 					"trace.requirements: Kennung %q kommt in Eintrag %d und in Eintrag %d vor (doppelt definiert oder überlappende id-pattern)",
 					id, prev, i)
 			}
 			out.owner[id] = i
-			out.titles[id] = titles[id]
-			if t, ok := texts[id]; ok {
+			out.titles[id] = p.titles[id]
+			if t, ok := p.texts[id]; ok {
 				out.tableTexts[id] = t
 			}
 		}
-		out.order = append(out.order, order...)
+		out.order = append(out.order, p.order...)
 	}
 	return out, nil
 }

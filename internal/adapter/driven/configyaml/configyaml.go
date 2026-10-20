@@ -15,7 +15,6 @@ import (
 	"path"
 	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
@@ -764,32 +763,6 @@ func (f *rawTraceRequirementsForm) UnmarshalYAML(n *yaml.Node) error {
 		f.entries = append(f.entries, e)
 	}
 	return nil
-}
-
-var yamlLineRef = regexp.MustCompile(`line (\d+)`)
-
-// decodeStrictNode dekodiert einen Teilbaum mit KnownFields; die Zeilennummern
-// des Fehlers beziehen sich danach auf das Dokument statt auf den Teilbaum.
-// Grenze: Kommentare und Leerzeilen im Teilbaum zählt die Neu-Serialisierung
-// nicht mit, die Zeile kann dort um diese Zeilen abweichen.
-func decodeStrictNode(n *yaml.Node, out any) error {
-	b, err := yaml.Marshal(n)
-	if err != nil {
-		return err
-	}
-	dec := yaml.NewDecoder(bytes.NewReader(b))
-	dec.KnownFields(true)
-	err = dec.Decode(out)
-	var te *yaml.TypeError
-	if errors.As(err, &te) {
-		for i, msg := range te.Errors {
-			te.Errors[i] = yamlLineRef.ReplaceAllStringFunc(msg, func(m string) string {
-				v, _ := strconv.Atoi(m[len("line "):])
-				return fmt.Sprintf("line %d", v+n.Line-1)
-			})
-		}
-	}
-	return err
 }
 
 // rawTraceTable bindet tabellarische Anforderungsquellen an exakte

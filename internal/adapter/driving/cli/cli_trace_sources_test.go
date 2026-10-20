@@ -38,7 +38,7 @@ func mixedLastenheft(extra string) string {
 	return b.String() + extra
 }
 
-// AK-1: 21 Überschriften-Zeilen, danach 6 Tabellen-Zeilen, Summenzeile über alle.
+// Vereinigung: 21 Überschriften-Zeilen, danach 6 Tabellen-Zeilen, Summenzeile über alle.
 func TestCLI_TraceListe_VereinigungInListenreihenfolge(t *testing.T) {
 	root := t.TempDir()
 	write(t, root, "spec/lastenheft.md", mixedLastenheft(""))
@@ -69,7 +69,7 @@ func TestCLI_TraceListe_VereinigungInListenreihenfolge(t *testing.T) {
 	}
 }
 
-// AK-2: dieselbe Kennung als Überschrift und als Tabellenzeile ⇒ Exit 2, die
+// Doppelte Kennung: dieselbe Kennung als Überschrift und als Tabellenzeile ⇒ Exit 2, die
 // Meldung nennt Kennung und beide Einträge.
 func TestCLI_TraceListe_DoppelteKennungExit2(t *testing.T) {
 	root := t.TempDir()
@@ -86,14 +86,14 @@ func TestCLI_TraceListe_DoppelteKennungExit2(t *testing.T) {
 	}
 }
 
-// AK-3 und AK-4: ein Fehler im zweiten Eintrag nennt dessen Index; ein Eintrag,
+// Fehler im Eintrag: ein Fehler im zweiten Eintrag nennt dessen Index; ein Eintrag,
 // der nichts findet, verschwindet nicht in der Vereinigung.
 func TestCLI_TraceListe_FehlerNenntDenEintrag(t *testing.T) {
 	root := t.TempDir()
 	write(t, root, "spec/lastenheft.md", mixedLastenheft(""))
 	for name, c := range map[string]struct{ old, new, want string }{
-		"header fehlt (AK-3)": {"id-column: ID", "id-column: Kennung", "trace.requirements[1]"},
-		"nullmenge (AK-4)": {`'SFC-QA-\d{2}'
+		"header fehlt": {"id-column: ID", "id-column: Kennung", "trace.requirements[1]"},
+		"nullmenge": {`'SFC-QA-\d{2}'
       format: table
       table:
         id-column: ID
@@ -110,7 +110,7 @@ func TestCLI_TraceListe_FehlerNenntDenEintrag(t *testing.T) {
 	}
 }
 
-// AK-6: --require-complete wertet die Vereinigung aus — Exit 1, solange eine der
+// Vollständigkeit: --require-complete wertet die Vereinigung aus — Exit 1, solange eine der
 // 27 weder Slice- noch Coverage-Referenz trägt, Exit 0, wenn keine.
 func TestCLI_TraceListe_RequireCompleteWertetVereinigungAus(t *testing.T) {
 	root := t.TempDir()
@@ -125,7 +125,7 @@ func TestCLI_TraceListe_RequireCompleteWertetVereinigungAus(t *testing.T) {
 	}
 	write(t, root, "docs/plan/planning/slice-001-x.md", "Liefert "+strings.Join(ids, " ")+".\n")
 	code, _, stderr := run(t, "--trace", "--require-complete", root)
-	if code != 1 || !strings.Contains(stderr, "1") {
+	if code != 1 || !strings.Contains(stderr, "1 Requirements-Waise(n)") {
 		t.Fatalf("Exit = %d, stderr = %q, want 1", code, stderr)
 	}
 	write(t, root, "docs/plan/planning/slice-002-y.md", "Liefert SFC-QA-06.\n")
@@ -135,7 +135,7 @@ func TestCLI_TraceListe_RequireCompleteWertetVereinigungAus(t *testing.T) {
 	}
 }
 
-// AK-7: eine leere Liste ist ein Konfigurationsfehler.
+// Leere Liste: eine leere Liste ist ein Konfigurationsfehler.
 func TestCLI_TraceListe_LeereListeExit2(t *testing.T) {
 	root := t.TempDir()
 	write(t, root, ".d-check.yml", "trace:\n  requirements: []\n")

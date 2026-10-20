@@ -54,7 +54,7 @@ func rowIDs(m TraceMatrix) []string {
 	return ids
 }
 
-// AK-1: die Vereinigung führt erst die Überschriften-, dann die Tabellen-
+// Vereinigung: die Vereinigung führt erst die Überschriften-, dann die Tabellen-
 // Anforderungen, in Listenreihenfolge; die Summe zählt über beide Einträge.
 func TestTraceSourcesUnionInListOrder(t *testing.T) {
 	fs := coretest.NewMemFS(map[string]string{"spec/lastenheft.md": sourcesLastenheft})
@@ -82,7 +82,7 @@ func TestTraceSourcesUnionInListOrder(t *testing.T) {
 	}
 }
 
-// AK-2: dieselbe Kennung als Überschrift und als Tabellenzeile ist Exit 2 mit
+// Doppelte Kennung: dieselbe Kennung als Überschrift und als Tabellenzeile ist Exit 2 mit
 // Kennung und beiden Einträgen — in beiden Reihenfolgen der Einträge, denn die
 // Prüfung hat zwei Seiten.
 func TestTraceSourcesDuplicateAcrossEntries(t *testing.T) {
@@ -111,7 +111,7 @@ func TestTraceSourcesDuplicateAcrossEntries(t *testing.T) {
 	}
 }
 
-// AK-3 und AK-4: ein Fehler im zweiten Eintrag nennt dessen Index — fehlender
+// Fehler im Eintrag: ein Fehler im zweiten Eintrag nennt dessen Index — fehlender
 // Header wie die Nullmenge.
 func TestTraceSourcesErrorsNameTheEntry(t *testing.T) {
 	fs := coretest.NewMemFS(map[string]string{"spec/lastenheft.md": sourcesLastenheft})
@@ -249,5 +249,77 @@ func TestTraceSourcesModalityPerEntry(t *testing.T) {
 	}
 	if m.ModalityActive || m.GatingOrphans != 4 {
 		t.Fatalf("ohne modality: active=%v gating=%d, want false/4", m.ModalityActive, m.GatingOrphans)
+	}
+}
+
+// Die Range-Validierung der Coverage prüft die expandierten Kennungen gegen die
+// Vereinigung der Muster: eine Range über die QA-Reihe zählt, obwohl das Muster
+// des ersten Eintrags sie nicht trifft.
+func TestTraceSourcesCoverageRangesUseAllPatterns(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		"spec/lastenheft.md":     sourcesLastenheft,
+		"docs/traceability.md": "Abdeckung: SFC-QA-01..02 und SFC-FA-01..02.\n",
+	})
+	m, err := BuildTraceMatrix(fs, model.TraceConfig{
+		Sources:  sfcSources(),
+		Coverage: []model.TraceCoverage{{Files: []string{"docs/traceability.md"}, Label: "Trace", Ranges: true}},
+	})
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	for _, r := range m.Requirements {
+		if r.Orphan {
+			t.Fatalf("%s bleibt Waise trotz Range in der Coverage-Quelle: %+v", r.ID, m.Requirements)
+		}
+	}
+}
+
+// cross-consistency liest das Muster der Vorwärts-Sicht aus der Vereinigung:
+// Kennungen beider Einträge stehen in beiden Sichten, die Differenz ist leer.
+// Mit dem Muster nur des ersten Eintrags fiele SFC-QA-01 vorwärts heraus und
+// erschiene rückwärts als Befund.
+func TestTraceSourcesCrossConsistencyUsesAllPatterns(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		"spec/lastenheft.md":   sourcesLastenheft,
+		"docs/traceability.md": fwdDoc("| SFC-FA-01 | GG-AR-A |\n| SFC-QA-01 | GG-AR-B |\n"),
+		"spec/architecture.md": bwdDoc("| GG-AR-A | SFC-FA-01 |\n| GG-AR-B | SFC-QA-01 |\n"),
+	})
+	cc := crossCfg()
+	cc.Backward.ReqPattern = sfcFAorQA
+	m, err := BuildTraceMatrix(fs, model.TraceConfig{Sources: sfcSources(), CrossConsistency: cc})
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	if len(m.CrossConsistency) != 0 {
+		t.Fatalf("Differenz trotz konsistenter Sichten: %+v", m.CrossConsistency)
+	}
+}
+
+// Ein Eintrag mit `format: headings` und ohne explizite source ist nicht strikt:
+// null Treffer ergeben dort keinen Fehler (ADR-0108, Grenze) — im Gegensatz zum
+// Eintrag mit expliziter source.
+func TestTraceSourcesHeadingsEntryWithoutSourceStaysLenient(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{"spec/lastenheft.md": "# Lastenheft\n\nKeine Anforderung.\n"})
+	m, err := BuildTraceMatrix(fs, model.TraceConfig{Sources: []model.TraceSource{{ReqPattern: sfcFA}}})
+	if err != nil || m.Total != 0 {
+		t.Fatalf("Default-Quelle ohne Treffer: Total=%d err=%v, want 0/nil", m.Total, err)
+	}
+	_, err = BuildTraceMatrix(fs, model.TraceConfig{Sources: []model.TraceSource{{Source: "spec/lastenheft.md", ReqPattern: sfcFA}}})
+	if err == nil || !strings.Contains(err.Error(), "trace.requirements[0]") {
+		t.Fatalf("explizite Quelle ohne Treffer: Fehler = %v, want Eintrag 0", err)
+	}
+}
+
+// Ein Fehler eines späteren Eintrags geht dem Duplikat über Einträge voraus: die
+// Duplikat-Prüfung beginnt erst, wenn alle Einträge extrahiert sind.
+func TestTraceSourcesLaterEntryErrorPrecedesDuplicate(t *testing.T) {
+	doc := sourcesLastenheft + "\n#### SFC-QA-01 — Auch als Überschrift\nText.\n"
+	fs := coretest.NewMemFS(map[string]string{"spec/lastenheft.md": doc})
+	src := sfcSources()
+	src[0].ReqPattern, src[1].ReqPattern = sfcFAorQA, sfcFAorQA
+	src = append(src, model.TraceSource{Source: "spec/fehlt.md", ReqPattern: sfcFA})
+	_, err := BuildTraceMatrix(fs, model.TraceConfig{Sources: src})
+	if err == nil || !strings.Contains(err.Error(), "trace.requirements[2]: Quelle") {
+		t.Fatalf("Fehler = %v, want der fehlenden Quelle von Eintrag 2", err)
 	}
 }
