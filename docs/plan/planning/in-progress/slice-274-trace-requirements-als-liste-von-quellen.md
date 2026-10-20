@@ -155,6 +155,30 @@ zu ändern — der Diff bleibt in den zwei Schichten Adapter und Kern.
   Herkunft eines Kennungs-Musters und beschreibt keinen Mechanismus, der sich
   ändert — Zufallstreffer, bleibt.
 
+**Plan-Änderung nach Review-Runde 1 (2026-10-20, Schritt 20):** Der Report
+`docs/reviews/2026-10-20-slice-274-trace-requirements-liste.md` meldet zwei
+MEDIUM und drei LOW; alle werden behoben, die Abgrenzung in §1 bleibt.
+
+- **F-1 und F-3 (gleiche Aussage: die Neu-Serialisierung des Teilbaums):**
+  `decodeStrictNode` serialisiert nicht mehr neu. Er dekodiert den Knoten mit
+  `Node.Decode` (löst Aliase und Merge-Keys auf) und prüft die Schlüssel
+  getrennt am Knotenbaum gegen die `yaml`-Tags des Zieltyps — Zeilen kommen
+  dann aus dem Dokument, nicht aus einer Kopie. Aussagen-Suche:
+  `grep -rn "Neu-Serialisierung\|decodeStrictNode\|yamlLineRef"` über
+  `internal/`, `docs/user/`, `spec/`, `harness/` — Treffer nur in
+  `configyaml.go`.
+- **F-2:** Tests für Range-Validierung und `cross-consistency` in Listen-Form.
+- **F-4:** Das Kreuz-Duplikat wird nach dem Extrahieren **aller** Einträge
+  geprüft (Spezifikation Schritt 8).
+- **F-5:** Die Test-Kommentare nennen Gegenstand statt `AK-<N>`
+  (`grep -rn "AK-[0-9]" internal/`: 11 Treffer in drei Testdateien, ein
+  Zufallstreffer `LH-AK-002` in `rules/markdown_test.go` bleibt).
+- **F-6:** Die Tests belegen den Fall in AK-6 über Exit-Code und Waisenzahl, pinnen die ADR-0108-Grenze
+  (Eintrag mit `format: headings` ohne `source`) und den Fehlerzweig der
+  Mustervereinigung.
+- **Zusätzlich:** Weil der Fix einen neuen Leseweg schreibt, läuft nach ihm eine
+  zweite `reviewer`-Runde über genau die Fix-Commits (Schritt 14).
+
 **Rot-Beleg** ([Modul 11 §Bewusstes Brechen](../../../../.harness/baseline/v6.17.0/regelwerk/modul-11-verification.md#bewusstes-brechen-für-dod-testbehauptungen-modul-11)):
 Die Kreuz-Duplikat-Prüfung und der Nullmengen-Guard je Eintrag werden
 testweise entfernt; die benannten Tests müssen mit der behaupteten Meldung
