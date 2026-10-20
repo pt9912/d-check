@@ -1,1 +1,1 @@
-**Stand:** offen — 1×.
+**Stand:** offen — 2×.

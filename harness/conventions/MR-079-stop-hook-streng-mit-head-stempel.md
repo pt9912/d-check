@@ -24,7 +24,9 @@
   die lockert, kann nur absichtlich entstehen. Darüber hinaus endet jeder
   unerwartete Fehler des Hooks mit Exit 2 (blockierend) statt mit einem anderen
   Code; die benannten Lagen aus [`MR-076`](../conventions.md#mr-076) (Hash, Nachweis,
-  `git status`) blocken weiter mit Grund. Die Selbstprüfung fährt im Wegwerf-Klon
+  `git status`) blocken weiter mit Grund. Ist `HEAD` nicht auflösbar und das Repo nicht
+  eng als commitlos erkannt, endet `record-gates` mit Exit 1 und schreibt keinen Stempel;
+  `make gates` wird dann im letzten Schritt rot. Die Selbstprüfung fährt im Wegwerf-Klon
   alle Zweige: streng ohne Schalter, locker mit der Datei, streng mit der Variable
   trotz der Datei, und der Commit ohne Nachweis blockt; liegt die Datei im Klon, bricht
   sie ab.
@@ -35,7 +37,9 @@
   Datei im Arbeitsbaum sieht sie nicht —, und vom Review der Änderung; die Datei ist aber ein
   sichtbarer Eintrag im Diff, kein stiller Verlust. Ein frischer Klon ohne Nachweis und
   mit sauberem Baum geht weiter frei (die CI ist dort das Netz). Der Modus bindet nur
-  Claude Code; wer die Hooks nicht lädt, umgeht beides.
+  Claude Code; wer die Hooks nicht lädt, umgeht beides. Das `trap` (Exit 2 statt eines
+  anderen Codes) misst keine Zeile der Selbstprüfung; belegt ist es durch eine Probe im
+  Wegwerf-Repo (kein Repository: Exit 2, ohne `trap` Exit 1).
 - **Begründung:** Gemessen im Wegwerf-Repo gegen den Stand vor der Übernahme, neun
   Lagen (frischer Klon, Änderung ohne Nachweis, passender Nachweis, Änderung nach dem
   Nachweis mit und ohne Commit, unlesbarer Nachweis, fehlendes Hash-Skript, kaputter
