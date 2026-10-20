@@ -1,7 +1,7 @@
 # Verifikation — slice-274: `trace.requirements` als Liste von Quellen
 
 - **Rolle:** Verifier (Modul 11) — DoD, Plan und Spec gegen den Stand, nicht der Diff gegen Plan/ADR
-- **Gegenstand:** `docs/plan/planning/in-progress/slice-274-trace-requirements-als-liste-von-quellen.md` §1, §2, §3 (samt Plan-Änderungsnotizen), §4, §6
+- **Gegenstand:** `docs/plan/planning/done/wellenlos/slice-274-trace-requirements-als-liste-von-quellen.md` §1, §2, §3 (samt Plan-Änderungsnotizen), §4, §6
 - **Range:** `68cae247..HEAD` (10 Commits, Spitze `17c7ce7c`)
 - **Eingang:**
   [`DC-FA-REQ-001`](../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)

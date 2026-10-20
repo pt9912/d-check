@@ -22,7 +22,7 @@
 ### F-1 — LOW — Plan-Notiz behauptet „kein Auslöser gefunden“, der Zweig ist erreichbar
 
 - **quelle:** `AGENTS.md` §5 Regel 13 / 15 (Grenze gegen den Gegenstand prüfen; Behauptung nicht größer als die Arbeit)
-- **pfad:** `docs/plan/planning/in-progress/slice-274-trace-requirements-als-liste-von-quellen.md` · „ein Auslöser wurde nicht gefunden“
+- **pfad:** `docs/plan/planning/done/wellenlos/slice-274-trace-requirements-als-liste-von-quellen.md` · „ein Auslöser wurde nicht gefunden“
 - **befund:** Ein einzelnes `id-pattern` mit 999 verschachtelten Gruppen kompiliert allein, die Vereinigung `(?:…)|(?:…)` in `referencePattern` scheitert mit „expression nests too deeply“ (gefahren: n=999 scheitert, n=998 nicht). Der Zweig ist damit mit einem Test pinnbar; zudem enthält die Meldung dann das gesamte Muster.
 - **verifizierbar:** ja — Wegwerf-Test in `app`.
 - **klasse:** unerreichbar-behauptet-erreichbar
