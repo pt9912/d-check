@@ -103,6 +103,36 @@ beim Anlegen: `harness/conventions.md`, `harness/README.md`, [`MR-004`](../../..
 `.claude/commands/close-welle.md`, `Makefile`, `spec/spezifikation.md`. Der Plan-Lauf
 liest jeden und listet, ob er den alten Mechanismus beschreibt.
 
+**Plan-Änderung nach Review-Runde 1 (2026-10-20, Schritt 20):** Der Report
+`docs/reviews/2026-10-20-slice-276-stop-hook-streng.md` meldet ein HIGH
+(`schalter-datei-ohne-halter`): der strenge Modus hing allein an der Datei
+`.harness/stop-gate-streng`, und ihre Entfernung (`rm`, `git stash`,
+Branch-Wechsel, toter Symlink) lockert das Gate ohne Signal — das Plan-Risiko
+„Datei als einziger Halter" ist eingetreten. Der Schnitt ändert sich, die
+Abgrenzung in §1 bleibt.
+
+- **Neu: Streng ist der Default, das Lockern der ausdrückliche Schalter.** Der Hook
+  ist streng, **solange** die Datei `.harness/stop-gate-locker` fehlt; nur sie
+  schaltet den lockeren Zweig frei, und `STOP_GATE_STRENG=1` hebt sie auf. Eine
+  gelöschte oder fehlende Datei kann damit nichts lockern; wer lockern will, muss
+  eine Datei anlegen, und das ist eine ADR-pflichtige Entscheidung (MR-079). Die
+  Datei `.harness/stop-gate-streng` entfällt.
+- **Betroffen:** `.claude/hooks/stop-require-gates.sh` (Modus-Bildung),
+  `tools/harness/selbstpruefung.sh` (Abschnitt 5 misst: streng ohne Datei, locker mit
+  `.harness/stop-gate-locker`, streng mit Variable trotz Datei, Commit ohne Nachweis),
+  `.harness/stop-gate-streng` (gelöscht), `MR-079`, `SPEC-094`, `SPEC-103`,
+  `harness/README.md`. Alles in §3 genannt, außer dass die Datei jetzt der
+  Lockerungs-Schalter ist.
+- **Aussagen-Suche:** `grep -rn "stop-gate-streng"` über `.claude/`, `tools/`,
+  `harness/`, `spec/`, `docs/plan/planning/in-progress/` und `.harness/`: Treffer in
+  Hook, `record-gates.sh`, `selbstpruefung.sh`, `MR-079`, `harness/README.md`,
+  `SPEC-094`, `SPEC-103` und diesem Plan — jeder wird nachgezogen.
+- **INFO 1 des Reports:** Die Selbstprüfung unterscheidet im Abschnitt „Commit ohne
+  Nachweis", über welchen Pfad der Hook blockt (streng: über den Hash; locker: neuer
+  `HEAD` plus abweichender Hash) und behauptet nicht beides für beide Zweige.
+- **Zusätzlich:** Der Fix schreibt einen neuen Modus-Weg; nach ihm läuft eine zweite
+  `reviewer`-Runde über genau die Fix-Commits (Schritt 14).
+
 **Rot-Beleg** (Modul 11 §Bewusstes Brechen): Der strenge Zweig und das `trap`
 werden testweise entfernt; `make selbstpruefung` bzw. ein Wegwerf-Repo-Lauf muss
 dann aus dem richtigen Grund rot werden (ein Turn-Ende mit ungedecktem Inhalt gibt
