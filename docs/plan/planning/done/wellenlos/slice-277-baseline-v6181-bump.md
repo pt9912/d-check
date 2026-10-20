@@ -8,14 +8,14 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 **Welle:** ohne Welle — reaktive Arbeit, die Closure-Bedingung ist die DoD
 selbst.
 
-**Bezug:** [`MR-074`](../../../../harness/conventions.md#mr-074) (die vorige
-Pin-Hebung und ihre Lehre), [`MR-011`](../../../../harness/conventions.md#mr-011)
-(die Pin-Kette), [`MR-021`](../../../../harness/conventions.md#mr-021)
-(pin-gebundene Verweise), [`MR-039`](../../../../harness/conventions.md#mr-039)
-(Zitat-Delta), [`MR-051`](../../../../harness/conventions.md#mr-051)
-(`d-check:cite`-Spannen), [`MR-055`](../../../../harness/conventions.md#mr-055)
-(Symlinks als Träger), [`MR-069`](../../../../harness/conventions.md#mr-069)
-(`ignore-refs`), [`MR-070`](../../../../harness/conventions.md#mr-070)
+**Bezug:** [`MR-074`](../../../../../harness/conventions.md#mr-074) (die vorige
+Pin-Hebung und ihre Lehre), [`MR-011`](../../../../../harness/conventions.md#mr-011)
+(die Pin-Kette), [`MR-021`](../../../../../harness/conventions.md#mr-021)
+(pin-gebundene Verweise), [`MR-039`](../../../../../harness/conventions.md#mr-039)
+(Zitat-Delta), [`MR-051`](../../../../../harness/conventions.md#mr-051)
+(`d-check:cite`-Spannen), [`MR-055`](../../../../../harness/conventions.md#mr-055)
+(Symlinks als Träger), [`MR-069`](../../../../../harness/conventions.md#mr-069)
+(`ignore-refs`), [`MR-070`](../../../../../harness/conventions.md#mr-070)
 (Frozen-Klassen vor mechanischer Ersetzung). Anlass: der Nachtlauf
 `upstream-drift` meldet den neuen Release `v6.18.1` (Pin `v6.17.0`).
 
@@ -79,11 +79,11 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 - [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8, kein
       Self-Review; Verifikation.
-- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
+- [x] Beobachtungs-Register (`../../observations/`) fortgeschrieben — oder
       „keine Beobachtung angefallen" in §7 notiert.
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind hier geprüft.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind hier geprüft.
 
 ## 3. Plan (vor Code)
 
@@ -92,7 +92,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `.harness/baseline/{v6.17.0 → v6.18.1}/` | neu + entfernen | Re-Vendor beider Bäume + `SHA256SUMS` über `tools/harness/fetch-baseline-cache.sh v6.18.1`; alter Baum weg |
 | `harness/conventions.md` | update | §Baseline-Pin, §Adoptierte Konventions-Quellen, MR-Index |
 | neue MR-Datei unter `harness/conventions/` | neu | Hebung-Eintrag (Delta nach Datei, Frozen-Liste, Zitat-Delta, Cite-Neu-Ankern) |
-| die Datei des Vorgänger-Eintrags (`…-baseline-v6170.md`, [`MR-074`](../../../../harness/conventions.md#mr-074)) | move | reiner `git mv` nach `conventions/done/`, dann Link-Tiefen |
+| die Datei des Vorgänger-Eintrags (`…-baseline-v6170.md`, [`MR-074`](../../../../../harness/conventions.md#mr-074)) | move | reiner `git mv` nach `conventions/done/`, dann Link-Tiefen |
 | lebende Dokumente, die `v6.17.0` nennen (`AGENTS.md`, `harness/README.md`, `harness/rules/*`, aktive `MR-*`, `.claude/agents/*`, `.claude/commands/*`, `.harness/skills/*`, `roadmap.md`, `planning/README.md`, `observations/README.md`, `spec/*`) | update | Tag-Swap je Datei, Mischfundstellen zeilenweise |
 | `.claude/rules/*.md` (Baseline-Symlinks) | update | Aliase auf `v6.18.1` |
 | `.d-check.yml` | update | nur, falls gemessen: nächste `ignore-refs`-Stufe |
@@ -116,14 +116,14 @@ Code-Commit stehen müssen):** Zusätzlich zur Tabelle trägt der Hauptcommit ei
 Datei aus dem Frozen-Bestand: `slice-274` (am selben Tag geschlossen) enthält einen
 Markdown-Link auf den `v6.17.0`-Baum (`modul-11` §Bewusstes Brechen). Nach dem
 Entfernen des alten Baums meldete `doc-check` ihn als toten Link; die Alternative wäre
-ein neuer `ignore-refs`-Eintrag ([`MR-069`](../../../../harness/conventions.md#mr-069)),
+ein neuer `ignore-refs`-Eintrag ([`MR-069`](../../../../../harness/conventions.md#mr-069)),
 eine deklarierte Gate-Senkung. Der Link ist auf `v6.18.1` retargetet, der Text des
 Slice unberührt; der MR-Eintrag führt es als einzige Ausnahme von der Frozen-Regel.
-Dazu die Link-Tiefen von [`MR-074`](../../../../harness/conventions.md#mr-074) nach dem Move (eigener Commit) und die
+Dazu die Link-Tiefen von [`MR-074`](../../../../../harness/conventions.md#mr-074) nach dem Move (eigener Commit) und die
 Zitat-Spanne `modul-10` im Reviewer-Skill (87→99).
 
-**Spiegel-Messung** ([`MR-070`](../../../../harness/conventions.md#mr-070),
-[`MR-074`](../../../../harness/conventions.md#mr-074) „für die nächste Hebung"):
+**Spiegel-Messung** ([`MR-070`](../../../../../harness/conventions.md#mr-070),
+[`MR-074`](../../../../../harness/conventions.md#mr-074) „für die nächste Hebung"):
 `git grep -l "v6\.17\.0"` über das **ganze** Repo, ausgenommen nur
 `.harness/baseline/` (nicht `.harness/` — dort liegen Skills), in Frozen- und
 lebende Klassen geteilt, **bevor** der erste Tag-Swap fällt; die Messung steht im
@@ -143,7 +143,7 @@ Priorisierung gesetzt.
 - `in-progress` → `next` (zu groß): Das Delta ändert die Struktur des Bundles
   (neue Bäume, entfallene Dateien, die verlinkt sind), sodass der Bump nicht mehr
   mechanisch ist. Wächst der Diff über eine Review-Sitzung, gilt die Form von
-  [`MR-066`](../../../../harness/conventions.md#mr-066).
+  [`MR-066`](../../../../../harness/conventions.md#mr-066).
 - `in-progress` → `open` (blockiert): Das Release-Bundle ist nicht ladbar oder
   sein `SHA256SUMS` stimmt nicht.
 
@@ -160,13 +160,13 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - **Ein lebender Verweis zeigt auf einen Anker oder eine Datei, die es im neuen
   Baum nicht mehr gibt.** — **Ausgang:** entfallen — 55 Dateien vorher wie nachher,
   keine neu, keine entfallen; nach dem Entfernen des alten Baums meldete `doc-check`
-  13 Befunde, alle erklärbar (Link-Tiefen von [MR-074](../../../../harness/conventions.md#mr-074), der Index-Pfad, eine Zitat-Spanne,
+  13 Befunde, alle erklärbar (Link-Tiefen von [MR-074](../../../../../harness/conventions.md#mr-074), der Index-Pfad, eine Zitat-Spanne,
   ein Link in slice-274) und behoben; der Baum ist byte-gleich zum Upstream-Asset
   (Verifikation).
 - **Eine Mischfundstelle wird pauschal ersetzt und fälscht eine
   Vergangenheits-Aussage.** — **Ausgang:** entfallen — jede geänderte Zeile ohne
   Pfad- oder URL-Form wurde einzeln gelesen (acht Zeilen, alles aktuelle Pin-Aussagen);
-  [MR-075](../../../../harness/conventions.md#mr-075), der Register-Beleg slice-261 und [MR-080](../../../../harness/conventions.md#mr-080) bleiben stehen; die Frozen-Klassen
+  [MR-075](../../../../../harness/conventions.md#mr-075), der Register-Beleg slice-261 und [MR-080](../../../../../harness/conventions.md#mr-080) bleiben stehen; die Frozen-Klassen
   sind byte-stabil bis auf die benannte Ausnahme (Reviewer und Verifier bestätigen).
 - **Eine Spiegel-Klasse bleibt ungemessen** (Skills, Symlinks, Kommentare in
   Konfigurationen). — **Ausgang:** entfallen — die Messung schloss nur
@@ -190,29 +190,29 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   (`--no-verify` dazu); eine Kette mit `| tail` verschluckte einen roten `doc-check`,
   der Commit ging gepusht auf `main` und wurde von der CI als `failure` gemeldet; die
   Plan-Notiz zur Frozen-Ausnahme slice-274 kam nach dem Code statt davor. Alle drei
-  sind lokal bzw. durch einen Folge-Commit behoben. (3) Drei Zahlen in [MR-080](../../../../harness/conventions.md#mr-080) waren
+  sind lokal bzw. durch einen Folge-Commit behoben. (3) Drei Zahlen in [MR-080](../../../../../harness/conventions.md#mr-080) waren
   falsch (Zählmethode), Reviewer und Verifier fanden sie. (4) **Der lokale Hook-Satz war
   in diesem Klon nie aktiv** (`core.hooksPath` leer): `pre-commit` (`doc-check`,
   `adr-check`) und `commit-msg` liefen die ganze Sitzung nicht; das Netz war die CI.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle; die drei Fehlerklassen sind
   bekannt und stehen im Register.
-- **Beobachtungs-Register (`../observations/`):**
+- **Beobachtungs-Register (`../../observations/`):**
   `evidence/slice-277.md` in
-  [`BEO-ALL/pipe-swallows-gate-exit-code`](../observations/BEO-ALL/pipe-swallows-gate-exit-code/state.md)
+  [`BEO-ALL/pipe-swallows-gate-exit-code`](../../observations/BEO-ALL/pipe-swallows-gate-exit-code/state.md)
   (jetzt 5×),
-  [`BEO-ALL/path-scoped-commit-carries-staged-rest`](../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/state.md)
+  [`BEO-ALL/path-scoped-commit-carries-staged-rest`](../../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/state.md)
   (jetzt 5×) und
-  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/state.md)
+  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/state.md)
   (jetzt 8×).
-- **Folge-Slices:** [`slice-278`](../open/slice-278-reviews-block-auf-vorlage-pruefen.md)
-  (der `reviews`-Block gegen die Vorlage von `v6.18.1`) — `open/`, Anlass: [MR-080](../../../../harness/conventions.md#mr-080)
+- **Folge-Slices:** [`slice-278`](../../open/slice-278-reviews-block-auf-vorlage-pruefen.md)
+  (der `reviews`-Block gegen die Vorlage von `v6.18.1`) — `open/`, Anlass: [MR-080](../../../../../harness/conventions.md#mr-080)
   Bewegung 1. Nicht als Slice, aber als offene Frage: ob `make hooks` in diesem Klon
   aktiviert wird (Entscheidung des Auftraggebers).
 - **Risiken aus §6:** alle drei entfallen (siehe §6). Trigger-Audit: der
-  Auflösungs-Trigger von [MR-074](../../../../harness/conventions.md#mr-074) („die nächste Pin-Hebung") ist eingetreten, der
+  Auflösungs-Trigger von [MR-074](../../../../../harness/conventions.md#mr-074) („die nächste Pin-Hebung") ist eingetreten, der
   Eintrag liegt in `conventions/done/`; kein Carveout, kein bootstrap-aware Gate, keine
   ADR, keine Hard Rule mit eingetretenem Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice —
   `slice-278` existiert in `open/`; (c) Register — alle zitierten Beobachtungen
   existieren und tragen Belege.
@@ -234,19 +234,19 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 **Vorgelagert — offene Beobachtungen sichten:** Register durchgegangen; Treffer:
 
-- [`pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+- [`pin-bump-mirrors-ungated`](../../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
   (8×) und
-  [`mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md)
+  [`mechanical-id-rewrite-misses-frozen-classes`](../../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md)
   (5×): genau diese Lage — die Spiegel-Messung schließt nur `.harness/baseline/`
   aus, die Frozen-Klassen werden vorher gelistet.
-- [`grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md)
+- [`grenzen-liste-wird-als-vollstaendig-gelesen`](../../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md)
   (18×): das Delta-Inventar im MR-Eintrag wird am echten Baum gezählt, nicht aus
   dem Probelauf übernommen.
-- [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+- [`citation-stretched-beyond-scope`](../../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
   (20×): neu geankerte `d-check:cite`-Spannen werden gegen den Wortlaut des neuen
   Baums gelesen, nicht nur verschoben.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 `image-scan` grün; `upstream-drift` rot, **planmäßig gelesen**: neuer
 Baseline-Release `v6.18.1` — das ist der Gegenstand dieses Slice — und veraltete
 Pins für Go, golangci-lint, semgrep und a-check (eigene Vorgänge, hier
