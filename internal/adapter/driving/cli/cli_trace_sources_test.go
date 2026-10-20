@@ -69,7 +69,7 @@ func TestCLI_TraceListe_VereinigungInListenreihenfolge(t *testing.T) {
 	}
 }
 
-// Doppelte Kennung: dieselbe Kennung als Überschrift und als Tabellenzeile ⇒ Exit 2, die
+// Dieselbe Kennung als Überschrift und als Tabellenzeile ⇒ Exit 2, die
 // Meldung nennt Kennung und beide Einträge.
 func TestCLI_TraceListe_DoppelteKennungExit2(t *testing.T) {
 	root := t.TempDir()
@@ -86,7 +86,7 @@ func TestCLI_TraceListe_DoppelteKennungExit2(t *testing.T) {
 	}
 }
 
-// Fehler im Eintrag: ein Fehler im zweiten Eintrag nennt dessen Index; ein Eintrag,
+// Ein Fehler im zweiten Eintrag nennt dessen Index; ein Eintrag,
 // der nichts findet, verschwindet nicht in der Vereinigung.
 func TestCLI_TraceListe_FehlerNenntDenEintrag(t *testing.T) {
 	root := t.TempDir()

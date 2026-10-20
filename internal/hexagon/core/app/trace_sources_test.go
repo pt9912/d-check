@@ -54,7 +54,7 @@ func rowIDs(m TraceMatrix) []string {
 	return ids
 }
 
-// Vereinigung: die Vereinigung führt erst die Überschriften-, dann die Tabellen-
+// Die Vereinigung führt erst die Überschriften-, dann die Tabellen-
 // Anforderungen, in Listenreihenfolge; die Summe zählt über beide Einträge.
 func TestTraceSourcesUnionInListOrder(t *testing.T) {
 	fs := coretest.NewMemFS(map[string]string{"spec/lastenheft.md": sourcesLastenheft})
@@ -82,7 +82,7 @@ func TestTraceSourcesUnionInListOrder(t *testing.T) {
 	}
 }
 
-// Doppelte Kennung: dieselbe Kennung als Überschrift und als Tabellenzeile ist Exit 2 mit
+// Dieselbe Kennung als Überschrift und als Tabellenzeile ist Exit 2 mit
 // Kennung und beiden Einträgen — in beiden Reihenfolgen der Einträge, denn die
 // Prüfung hat zwei Seiten.
 func TestTraceSourcesDuplicateAcrossEntries(t *testing.T) {
@@ -111,7 +111,7 @@ func TestTraceSourcesDuplicateAcrossEntries(t *testing.T) {
 	}
 }
 
-// Fehler im Eintrag: ein Fehler im zweiten Eintrag nennt dessen Index — fehlender
+// Ein Fehler im zweiten Eintrag nennt dessen Index — fehlender
 // Header wie die Nullmenge.
 func TestTraceSourcesErrorsNameTheEntry(t *testing.T) {
 	fs := coretest.NewMemFS(map[string]string{"spec/lastenheft.md": sourcesLastenheft})
@@ -276,7 +276,7 @@ func TestTraceSourcesCoverageRangesUseAllPatterns(t *testing.T) {
 
 // cross-consistency liest das Muster der Vorwärts-Sicht aus der Vereinigung:
 // Kennungen beider Einträge stehen in beiden Sichten, die Differenz ist leer.
-// Mit dem Muster nur des ersten Eintrags fiele SFC-QA-01 vorwärts heraus und
+// Mit dem Muster nur des ersten Eintrags fiele die QA-Kennung vorwärts heraus und
 // erschiene rückwärts als Befund.
 func TestTraceSourcesCrossConsistencyUsesAllPatterns(t *testing.T) {
 	fs := coretest.NewMemFS(map[string]string{
@@ -321,5 +321,16 @@ func TestTraceSourcesLaterEntryErrorPrecedesDuplicate(t *testing.T) {
 	_, err := BuildTraceMatrix(fs, model.TraceConfig{Sources: src})
 	if err == nil || !strings.Contains(err.Error(), "trace.requirements[2]: Quelle") {
 		t.Fatalf("Fehler = %v, want der fehlenden Quelle von Eintrag 2", err)
+	}
+}
+
+// Jedes Einzelmuster kompiliert, die Vereinigung scheitert aber an der
+// Schachtelungstiefe des Regex-Parsers: ein Fehler der Konfiguration, kein
+// stilles Weglassen.
+func TestReferencePatternUnionFailure(t *testing.T) {
+	deep := strings.Repeat("(", 999) + "X-1" + strings.Repeat(")", 999)
+	entries := []reqEntry{{reqPat: regexp.MustCompile(deep)}, {reqPat: sfcFA}}
+	if _, err := referencePattern(entries); err == nil || !strings.Contains(err.Error(), "vereinigen") {
+		t.Fatalf("erwartete Vereinigungs-Fehler, got %v", err)
 	}
 }

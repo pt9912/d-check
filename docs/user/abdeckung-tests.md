@@ -193,7 +193,6 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-XREF-001`](../../spec/lastenheft.md) | `TestCrossConsistencyVakuumRueckSichtLeerUnterSuperset` | [`internal/hexagon/core/app/trace_cross_test.go`](../../internal/hexagon/core/app/trace_cross_test.go) |
 | [`DC-FA-MOD-001`](../../spec/lastenheft.md) | `TestModalityClassify` | [`internal/hexagon/core/app/trace_modality_test.go`](../../internal/hexagon/core/app/trace_modality_test.go) |
 | [`DC-QA-02`](../../spec/lastenheft.md) | `TestTraceObjectFormErrorsCarryNoIndex` | [`internal/hexagon/core/app/trace_sources_test.go`](../../internal/hexagon/core/app/trace_sources_test.go) |
-| [`SFC-QA-01`](../../spec/lastenheft.md) | `TestTraceSourcesCrossConsistencyUsesAllPatterns` | [`internal/hexagon/core/app/trace_sources_test.go`](../../internal/hexagon/core/app/trace_sources_test.go) |
 | [`DC-FA-ANCH-001`](../../spec/lastenheft.md) | `TestAnchorsHTMLModul` | [`internal/hexagon/core/rules/anchors_test.go`](../../internal/hexagon/core/rules/anchors_test.go) |
 | [`DC-FA-ANCH-001`](../../spec/lastenheft.md) | `TestAnchorsHTMLSelbeDatei` | [`internal/hexagon/core/rules/anchors_test.go`](../../internal/hexagon/core/rules/anchors_test.go) |
 | [`DC-FA-ANCH-001`](../../spec/lastenheft.md) | `TestAnchorsModul` | [`internal/hexagon/core/rules/anchors_test.go`](../../internal/hexagon/core/rules/anchors_test.go) |

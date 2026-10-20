@@ -102,6 +102,10 @@ func resolveAlias(n *yaml.Node) *yaml.Node {
 	return n
 }
 
+// yamlFieldTypes liest die Schlüsselnamen aus den yaml-Tags. Grenze: Die Option
+// `,inline` und Zieltypen mit eigenem UnmarshalYAML kennt der Helfer nicht; ein
+// inline-Feld würde laut als unbekannter Schlüssel gemeldet, nicht still
+// übergangen — heutige Zieltypen brauchen beides nicht.
 func yamlFieldTypes(t reflect.Type) map[string]reflect.Type {
 	fields := map[string]reflect.Type{}
 	for i := 0; i < t.NumField(); i++ {
