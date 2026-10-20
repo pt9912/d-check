@@ -84,10 +84,11 @@
   `MR-074` nach `conventions/done/` (Link-Tiefen, eigener Commit) und der
   verrutschten Zitat-Spanne (unten) 0 Befunde.
 
-  **`d-check:cite`-Neu-Ankern** — gemessen **17** lebende Direktiven auf den
-  Baum (0 tag-only; die zwei Direktiven im Plan dieses Slice zählen nicht mit), **1**
-  davon neu geankert, reine Zeilenverschiebung bei wortgleichem Text:
-  Reviewer-Skill `modul-10-review-harness.md` 87→99. Die übrigen 16 zeigen auf
+  **`d-check:cite`-Neu-Ankern** — gemessen **15** lebende Direktiven auf den
+  Baum (0 tag-only; ohne `conventions/done/`, `done/`-Slices und Reviews, die der
+  `citations`-Scope ausnimmt, und ohne die zwei Direktiven im Plan dieses Slice),
+  **1** davon neu geankert, reine Zeilenverschiebung bei wortgleichem Text:
+  Reviewer-Skill `modul-10-review-harness.md` 87→99. Die übrigen 14 zeigen auf
   Dateien ohne inhaltliches Delta oder auf unverschobene Zeilen.
 
   **Zitat-Delta** ([`MR-039`](../conventions.md#mr-039)): wörtliche Zitate ohne

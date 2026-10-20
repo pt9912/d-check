@@ -67,22 +67,22 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] **Re-Vendor:** Der vendorte Baum steht auf `v6.18.1` (`SHA256SUMS`
+- [x] **Re-Vendor:** Der vendorte Baum steht auf `v6.18.1` (`SHA256SUMS`
       generiert und verifiziert), der `v6.17.0`-Baum ist entfernt; §Baseline-Pin
       nachgezogen; der Vorgänger-Eintrag nach `conventions/done/`, neuer
       MR-Eintrag im Index.
-- [ ] **Spiegel:** Alle lebenden pin-gebundenen Referenzen nennen `v6.18.1`
+- [x] **Spiegel:** Alle lebenden pin-gebundenen Referenzen nennen `v6.18.1`
       (Pfad-Verweise, Release-/Tree-URLs, bare Nennungen in lebenden Dokumenten,
       Symlinks unter `.claude/rules/`); `d-check:cite`-Spannen neu geankert;
       Zitat-Delta und Frozen-Liste im MR-Eintrag gemessen.
-- [ ] `make gates` grün; `make baseline-freshness` meldet den Pin aktuell.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün; `make baseline-freshness` meldet den Pin aktuell.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8, kein
       Self-Review; Verifikation.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
       „keine Beobachtung angefallen" in §7 notiert.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -158,25 +158,64 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Offene Risiken werden bei Closure aufgelöst.
 
 - **Ein lebender Verweis zeigt auf einen Anker oder eine Datei, die es im neuen
-  Baum nicht mehr gibt.** — **Ausgang:** offen bis Closure; Gegenprobe: 55 Dateien
-  vorher wie nachher, jeder lebende Anker löst gegen `v6.18.1` auf.
+  Baum nicht mehr gibt.** — **Ausgang:** entfallen — 55 Dateien vorher wie nachher,
+  keine neu, keine entfallen; nach dem Entfernen des alten Baums meldete `doc-check`
+  13 Befunde, alle erklärbar (Link-Tiefen von [MR-074](../../../../harness/conventions.md#mr-074), der Index-Pfad, eine Zitat-Spanne,
+  ein Link in slice-274) und behoben; der Baum ist byte-gleich zum Upstream-Asset
+  (Verifikation).
 - **Eine Mischfundstelle wird pauschal ersetzt und fälscht eine
-  Vergangenheits-Aussage.** — **Ausgang:** offen bis Closure; zeilenweise entschieden.
+  Vergangenheits-Aussage.** — **Ausgang:** entfallen — jede geänderte Zeile ohne
+  Pfad- oder URL-Form wurde einzeln gelesen (acht Zeilen, alles aktuelle Pin-Aussagen);
+  [MR-075](../../../../harness/conventions.md#mr-075), der Register-Beleg slice-261 und [MR-080](../../../../harness/conventions.md#mr-080) bleiben stehen; die Frozen-Klassen
+  sind byte-stabil bis auf die benannte Ausnahme (Reviewer und Verifier bestätigen).
 - **Eine Spiegel-Klasse bleibt ungemessen** (Skills, Symlinks, Kommentare in
-  Konfigurationen). — **Ausgang:** offen bis Closure; Messung über das ganze Repo
-  ohne `.harness/baseline/`.
+  Konfigurationen). — **Ausgang:** entfallen — die Messung schloss nur
+  `.harness/baseline/` aus: 104 Dateien, davon 2 Skills unter `.harness/skills/` und die
+  8 Symlinks unter `.claude/rules/`; das rote `doc-check` nach dem Entfernen fand nichts
+  Übersehenes.
 
 ## 7. Closure-Notiz
 
-<!-- Wird bei der Closure gefüllt, vor dem `git mv` nach `done/`. -->
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
-- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Was hat funktioniert:** Der mechanische Teil hielt bei jeder Gegenprobe: Re-Vendor
+  mit Integritätsprüfung (byte-gleich zum Upstream-Asset), Tag-Swap in 49 Dateien mit
+  zeilenweise gelesenen Mischfällen, 8 Symlinks, eine verschobene Zitat-Spanne bei
+  wortgleichem Text, `ignore-refs` ohne Zuwachs. Das Delta ist am Baum gezählt: 8 von
+  55 Dateien mit inhaltlichem Delta, und es ist größtenteils die Fassung der eigenen
+  CRs zum Modul `reviews`. Das rote `doc-check` nach dem Entfernen des alten Baums war
+  wieder der zuverlässigste Sensor.
+- **Was ging anders als geplant:** (1) Der Re-Vendor brach auf macOS an der
+  Under-Copy-Barriere ab (String-Vergleich der Dateizahl, BSD-`wc` füllt auf); behoben
+  im Werkzeug, eigene Plan-Änderung und eigener Commit. (2) **Drei eigene
+  Prozessfehler:** ein Commit nahm das gestagte Entfernen des alten Baums mit
+  (`--no-verify` dazu); eine Kette mit `| tail` verschluckte einen roten `doc-check`,
+  der Commit ging gepusht auf `main` und wurde von der CI als `failure` gemeldet; die
+  Plan-Notiz zur Frozen-Ausnahme slice-274 kam nach dem Code statt davor. Alle drei
+  sind lokal bzw. durch einen Folge-Commit behoben. (3) Drei Zahlen in [MR-080](../../../../harness/conventions.md#mr-080) waren
+  falsch (Zählmethode), Reviewer und Verifier fanden sie. (4) **Der lokale Hook-Satz war
+  in diesem Klon nie aktiv** (`core.hooksPath` leer): `pre-commit` (`doc-check`,
+  `adr-check`) und `commit-msg` liefen die ganze Sitzung nicht; das Netz war die CI.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle; die drei Fehlerklassen sind
+  bekannt und stehen im Register.
+- **Beobachtungs-Register (`../observations/`):**
+  `evidence/slice-277.md` in
+  [`BEO-ALL/pipe-swallows-gate-exit-code`](../observations/BEO-ALL/pipe-swallows-gate-exit-code/state.md)
+  (jetzt 5×),
+  [`BEO-ALL/path-scoped-commit-carries-staged-rest`](../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/state.md)
+  (jetzt 5×) und
+  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/state.md)
+  (jetzt 8×).
+- **Folge-Slices:** [`slice-278`](../open/slice-278-reviews-block-auf-vorlage-pruefen.md)
+  (der `reviews`-Block gegen die Vorlage von `v6.18.1`) — `open/`, Anlass: [MR-080](../../../../harness/conventions.md#mr-080)
+  Bewegung 1. Nicht als Slice, aber als offene Frage: ob `make hooks` in diesem Klon
+  aktiviert wird (Entscheidung des Auftraggebers).
+- **Risiken aus §6:** alle drei entfallen (siehe §6). Trigger-Audit: der
+  Auflösungs-Trigger von [MR-074](../../../../harness/conventions.md#mr-074) („die nächste Pin-Hebung") ist eingetreten, der
+  Eintrag liegt in `conventions/done/`; kein Carveout, kein bootstrap-aware Gate, keine
+  ADR, keine Hard Rule mit eingetretenem Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice —
+  `slice-278` existiert in `open/`; (c) Register — alle zitierten Beobachtungen
+  existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
