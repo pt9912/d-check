@@ -168,23 +168,28 @@ keine aspirativen Texte. Aber ihre Kraft ist real begrenzt:
 - Der **klon-unabhängige Boden** ist die PR-/Push-CI
   ([`ci.yml`](../.github/workflows/ci.yml)): sie fährt `make ci` **und** die
   Range-Gates (`trace-check`, `adr-check`) auf jede Integration.
-- Die CI **blockiert** einen Merge aber nur, wenn **Branch Protection**
-  (Pflicht-Status-Checks auf dem Default-Branch) gesetzt ist. Das liegt
-  **außerhalb des Repos** und ist aus dem Klon **nicht auditierbar** — ohne
-  sie ist die CI nur *advisory*. **Betriebsempfehlung:** den `ci`-Check als
-  *required status check* für den Default-Branch konfigurieren
+- Die CI **blockiert** einen Merge nur, wenn der Check auf dem Default-Branch
+  als **Pflicht** gesetzt ist. Das liegt **außerhalb des Repos** und ist aus dem
+  Klon **nicht auditierbar** — ohne es ist die CI nur *advisory*
   ([ADR-0013](../docs/plan/adr/0013-pr-ci-und-traceability-gate.md),
   [ADR-0016](../docs/plan/adr/0016-adr-immutable-gate.md) benennen dieselbe
-  Restlücke).
-- Ein **Repository-Ruleset** (`main-nur-admin`) erlaubt Updates, Löschen und
-  Force-Push auf `main` nur der Rolle Repository-Admin. Damit kann ein
-  Workflow mit `contents: write` nicht über den `GITHUB_TOKEN` auf `main`
-  schreiben; kein Workflow tut das heute, der einzige mit Schreibrecht legt
-  nur das GitHub-Release an. **Grenze:** Das Ruleset lebt nur in den
-  GitHub-Einstellungen, ist aus dem Klon nicht auditierbar und macht den
-  `ci`-Check **nicht** zur Pflicht. Ein persönliches Token des Eigentümers in
-  einem Secret umgeht es, und ob ein Bot-Push wirklich abgewiesen wird, ist
-  ohne echten Versuch nicht beobachtet.
+  Restlücke). Das Ruleset unten setzt ihn seit 2026-10-20.
+- Ein **Repository-Ruleset** (`main-nur-admin`) hält für `main`: Löschen und
+  Force-Push nur für die Rolle Repository-Admin, **Änderungen nur über einen
+  Pull-Request** (ohne Pflicht-Review) und den Check
+  `gates + image-test + traceability` als **Pflicht**. Die Rolle Repository-Admin
+  umgeht das Ruleset immer — ihre direkten Pushes unterliegen dem Check nicht.
+  Damit kann ein Workflow mit `contents: write` nicht über den `GITHUB_TOKEN`
+  auf `main` schreiben; kein Workflow tut das heute, der einzige mit
+  Schreibrecht legt nur das GitHub-Release an. Auto-Merge ist im Repo
+  eingeschaltet, ein Dependabot-PR geht damit nach grünem Check ohne
+  Admin-Recht durch (`gh pr merge <n> --auto --rebase`). **Grenze:** Das Ruleset
+  lebt nur in den GitHub-Einstellungen und ist aus dem Klon nicht auditierbar.
+  Ein persönliches Token des Eigentümers in einem Secret umgeht es. Beobachtet
+  ist, dass **vor** der Umstellung ein PR-Merge ohne Admin-Recht trotz grüner
+  Checks abgewiesen wurde (die Regel `update` sperrte jeden Merge); dass er
+  **seit** der Umstellung bei grünem Check durchgeht, ist am nächsten
+  Dependabot-PR zu beobachten, ebenso ob ein Bot-Push wirklich abgewiesen wird.
 - Der `Stop`-Hook
   ([`stop-require-gates.sh`](../.claude/hooks/stop-require-gates.sh)) ist
   Claude-spezifisch und gibt frische, cleane Klone ohne lokalen Gate-State
