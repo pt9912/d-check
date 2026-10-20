@@ -8,25 +8,25 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 **Welle:** ohne Welle — die Closure-Bedingung ist die DoD selbst; ein
 repo-weiter Beleg über die DoD hinaus (Wellen-Trigger) fehlt.
 
-**Bezug:** [`DC-FA-REQ-001`](../../../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)
+**Bezug:** [`DC-FA-REQ-001`](../../../../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)
 (die Liste der Quellen),
-[`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
+[`DC-FA-CLI-009`](../../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
 (die RTM, die ihre Vereinigung führt),
-[`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)
+[`DC-FA-CLI-011`](../../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)
 (`--require-complete` wertet die Vereinigung aus),
-[`DC-FA-MOD-001`](../../../../spec/lastenheft.md#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in)
+[`DC-FA-MOD-001`](../../../../../spec/lastenheft.md#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in)
 (`modality` je Eintrag),
-[ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md)
+[ADR-0108](../../../adr/0108-trace-requirements-als-liste-von-quellen.md)
 (die Entscheidung; Status `Proposed`, bis dieser Slice schließt),
-[ADR-0037](../../adr/0037-trace-tabellenquellen-nullmengen-guard.md) (der
+[ADR-0037](../../../adr/0037-trace-tabellenquellen-nullmengen-guard.md) (der
 Quellenvertrag, der je Eintrag gilt),
-[`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus),
-[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit).
+[`DC-QA-02`](../../../../../spec/lastenheft.md#dc-qa-02--determinismus),
+[`DC-QA-03`](../../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit).
 Anlass: eingehender CR eines Adopters, abgelegt unter `docs/plan/cr/` (kein
 Spec-Verweis, die Spec nennt ihn nur als „CR eines Adopters").
 
-**Berührte Spec-Stellen:** [`DC-FA-REQ-001`](../../../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)
-(Lastenheft 0.106.0); [§`DC-FA-REQ-001.a`](../../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
+**Berührte Spec-Stellen:** [`DC-FA-REQ-001`](../../../../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)
+(Lastenheft 0.106.0); [§`DC-FA-REQ-001.a`](../../../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
 Schritt 8 und die Schlüsseltabelle `trace.requirements`.
 
 **Verantwortlich:** pt9912
@@ -42,7 +42,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 **Ziel:** `trace.requirements` nimmt eine nichtleere Liste von Quellen an; die
 RTM führt ihre Vereinigung, und Lastenheft 0.106.0 samt
-[ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md) sind
+[ADR-0108](../../../adr/0108-trace-requirements-als-liste-von-quellen.md) sind
 umgesetzt — so dass eine Datei Anforderungen als Überschriften **und** als
 Tabellenzeilen führen kann, ohne umgeformt zu werden.
 
@@ -56,11 +56,11 @@ Tabellenzeilen führen kann, ohne umgeformt zu werden.
   in den Code-Commit.
 - **`CHANGELOG.md`, READMEs und Handbuch-Kopf.** Sie werden in der Release-Prep
   gepflegt, nicht im Feature-Commit
-  ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 17). Der **Inhalt** des Handbuchs
+  ([`AGENTS.md`](../../../../../AGENTS.md) §5 Regel 17). Der **Inhalt** des Handbuchs
   zur Listen-Form ist dagegen Teil der DoD, weil der CR ihn verlangt.
 - **Eine `first`/`last`-Politik über Einträge und die Vererbung von
   `modality`.** Das Lastenheft schließt beide aus (Out-of-Scope von
-  [`DC-FA-REQ-001`](../../../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)); kein Adopter braucht sie.
+  [`DC-FA-REQ-001`](../../../../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)); kein Adopter braucht sie.
 - **`--print-config`/`--suggest-config` erzeugen keine Listen-Form.** Bestand
   bleibt bewusst stehen: Die Generatoren liefern die Objekt-Form, die für einen
   einzelnen Quellentyp richtig ist; eine Liste ist Handarbeit für den
@@ -70,7 +70,7 @@ Tabellenzeilen führen kann, ohne umgeformt zu werden.
   Das ist ein anderer Vorgang in einem anderen Repo; erst das Release macht ihn
   möglich.
 - **Strikter Modus für Listen-Einträge ohne explizite `source`.** Parität mit
-  der Objekt-Form ([ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md), Grenze): ein Eintrag mit `format: headings` und
+  der Objekt-Form ([ADR-0108](../../../adr/0108-trace-requirements-als-liste-von-quellen.md), Grenze): ein Eintrag mit `format: headings` und
   ohne `source` bleibt bei null Treffern leer, statt Exit 2 zu liefern.
 
 Was hier steht, ist die Grenze, an der ein wachsender Slice sich messen lässt:
@@ -91,13 +91,13 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
       liefert byte-identische Ausgabe (AK-5).
 - [x] **Handbuch und ADR:** Das Benutzerhandbuch (§5 `trace`, Konfigurationsbeispiel
       zur `.d-check.yml`) beschreibt die Listen-Form, die doppelte Kennung und
-      den Nullmengen-Guard je Eintrag; [ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md)
+      den Nullmengen-Guard je Eintrag; [ADR-0108](../../../adr/0108-trace-requirements-als-liste-von-quellen.md)
       steht auf `Accepted`, Kopf **und** Index.
 - [x] `make gates` grün.
 - [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review; Verifikation.
-- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
+- [x] Beobachtungs-Register (`../../observations/`) fortgeschrieben — oder
       „keine Beobachtung angefallen" in §7 notiert.
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
@@ -118,7 +118,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `docs/plan/adr/0108-…md`, `docs/plan/adr/README.md` | update | `Accepted`, Geschichte-Zeile, Index-Status — erst, wenn der Mechanismus steht |
 
 **Spiegel vor dem Editieren auflisten**
-([`MR-025`](../../../../harness/conventions.md#mr-025), und Schritt 17 des
+([`MR-025`](../../../../../harness/conventions.md#mr-025), und Schritt 17 des
 Workflow-Skeletts): wer die Semantik von `trace.requirements` ändert, greppt
 vorher `trace.requirements`/`requirements.format`/`rawTraceRequirements` über
 `harness/`, `docs/user/` (auch `operations.md`), `.claude/`, die Skript-Kommentare
@@ -174,7 +174,7 @@ MEDIUM und drei LOW; alle werden behoben, die Abgrenzung in §1 bleibt.
   (`grep -rn "AK-[0-9]" internal/`: 11 Treffer in drei Testdateien, ein
   Zufallstreffer `LH-AK-002` in `rules/markdown_test.go` bleibt).
 - **F-6:** Die Tests belegen den Fall in AK-6 über Exit-Code und Waisenzahl und
-  pinnen die [ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md)-Grenze
+  pinnen die [ADR-0108](../../../adr/0108-trace-requirements-als-liste-von-quellen.md)-Grenze
   (Eintrag mit `format: headings` ohne `source`). Der Fehlerzweig der
   Mustervereinigung ist gepinnt (Runde 2, F-1): ein Einzelmuster mit 999
   verschachtelten Gruppen kompiliert allein, die Vereinigung scheitert an der
@@ -182,7 +182,7 @@ MEDIUM und drei LOW; alle werden behoben, die Abgrenzung in §1 bleibt.
 - **Zusätzlich:** Weil der Fix einen neuen Leseweg schreibt, läuft nach ihm eine
   zweite `reviewer`-Runde über genau die Fix-Commits (Schritt 14).
 
-**Rot-Beleg** ([Modul 11 §Bewusstes Brechen](../../../../.harness/baseline/v6.17.0/regelwerk/modul-11-verification.md#bewusstes-brechen-für-dod-testbehauptungen-modul-11)):
+**Rot-Beleg** ([Modul 11 §Bewusstes Brechen](../../../../../.harness/baseline/v6.17.0/regelwerk/modul-11-verification.md#bewusstes-brechen-für-dod-testbehauptungen-modul-11)):
 Die Kreuz-Duplikat-Prüfung und der Nullmengen-Guard je Eintrag werden
 testweise entfernt; die benannten Tests müssen mit der behaupteten Meldung
 rot laufen, nicht nur irgendwie.
@@ -193,7 +193,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
 **Start** (`next` → `in-progress`): `in-progress/` trägt keinen Slice.
-Lastenheft 0.106.0, Spezifikation und [ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md) liegen vor und sind auf dem
+Lastenheft 0.106.0, Spezifikation und [ADR-0108](../../../adr/0108-trace-requirements-als-liste-von-quellen.md) liegen vor und sind auf dem
 Hauptzweig (Vorgang davor).
 
 **Rückführungen — vorab benennen, nicht erst im Nachhinein begründen:**
@@ -203,7 +203,7 @@ Hauptzweig (Vorgang davor).
   mechanische Umstellung auf die Mustervereinigung — dann trennt sich diese
   Hälfte als eigener Slice ab. Wächst der Diff über das, was eine
   Review-Sitzung prüft, gilt die Form von
-  [`MR-066`](../../../../harness/conventions.md#mr-066): Grund **und** benannte
+  [`MR-066`](../../../../../harness/conventions.md#mr-066): Grund **und** benannte
   Ersatz-Form der Prüfung im Plan, vor dem Code.
 - `in-progress` → `open` (blockiert): Die Spezifikation erweist sich beim
   Umsetzen als widersprüchlich (etwa zwischen Schritt 8 und der bestehenden
@@ -213,7 +213,7 @@ Hauptzweig (Vorgang davor).
 ## 5. Closure-Trigger
 
 DoD vollständig (§2) + Closure-Notiz mit Lerneintrag; die drei Paarungen
-wellenlos hier geprüft; [ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md)
+wellenlos hier geprüft; [ADR-0108](../../../adr/0108-trace-requirements-als-liste-von-quellen.md)
 steht auf `Accepted`. Geht mit dem nächsten Release hinaus; die Release-Prep
 trägt `CHANGELOG.md` und den Handbuch-Kopf.
 
@@ -258,20 +258,20 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   serialisierte jeden Eintrag neu und zerbrach damit Aliase und Merge-Keys
   sowie die Zeilennummern der Objekt-Form (Review Runde 1, F-1, F-3); sie wurde
   durch eine Prüfung am Knotenbaum ersetzt, daraufhin lief Runde 2 über die
-  Fix-Commits. (3) Die Verifikation fand in [ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md) eine Konsequenz, die
+  Fix-Commits. (3) Die Verifikation fand in [ADR-0108](../../../adr/0108-trace-requirements-als-liste-von-quellen.md) eine Konsequenz, die
   `--print-config` eine Listen-Form zusprach (V-1); sie wurde vor `Accepted`
   berichtigt, solange die ADR editierbar war.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-274.md` in
-  [`BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft`](../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/state.md)
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-274.md` in
+  [`BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft`](../../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/state.md)
   (jetzt 5×): ein neuer Leseweg (Neu-Serialisierung) wurde nur gegen den Fall
   des CR gefahren; der fremde Leser über den Code-Commit fing ihn (Schritt 14).
 - **Folge-Slices:** keiner.
 - **Risiken aus §6:** alle drei entfallen (siehe §6). Trigger-Audit: kein
-  Carveout, kein bootstrap-aware Gate; [ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md) ist mit diesem Slice
+  Carveout, kein bootstrap-aware Gate; [ADR-0108](../../../adr/0108-trace-requirements-als-liste-von-quellen.md) ist mit diesem Slice
   `Accepted` und trägt ihren Re-Evaluierungs-Trigger; keine Hard Rule mit
   eingetretenem Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
   Folge-Slices — keiner genannt; (c) Register — die zitierte Beobachtung
   existiert und trägt fünf Belege.
@@ -295,26 +295,26 @@ Default `*` (`ALL`); keine eigene Sub-Area erfüllt das Inklusionskriterium
 **Vorgelagert — offene Beobachtungen sichten:** Register durchgegangen;
 Treffer unter `BEO-ALL`:
 
-- [`semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
-  (22×, verkörpert als [`MR-025`](../../../../harness/conventions.md#mr-025)): trifft diesen Slice unmittelbar — eine
+- [`semantic-change-body-only-edges-stale`](../../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
+  (22×, verkörpert als [`MR-025`](../../../../../harness/conventions.md#mr-025)): trifft diesen Slice unmittelbar — eine
   Semantik-Änderung an `trace.requirements` hat Spiegel (Handbuch, Tests,
   Kommentare); sie werden in §3 **vor** dem Editieren aufgelistet.
-- [`guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/observation.md)
+- [`guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/observation.md)
   (4×, verkörpert, Schritt 17 des Workflow-Skeletts): derselbe Grep über
   `harness/`, `docs/user/`, `.claude/` und Skript-Kommentare.
-- [`haertung-kippt-fehlerpolitik-ungeprueft`](../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/observation.md)
+- [`haertung-kippt-fehlerpolitik-ungeprueft`](../../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/observation.md)
   (4×, verkörpert, Prüffrage 19): die Weiche Objekt↔Liste ist ein neuer
   Leseweg und wird gegen ihre Fehlerformen gefahren, nicht nur gegen den Fall
   des CR.
-- [`negativtest-deckt-nur-eine-regelseite`](../observations/BEO-ALL/negativtest-deckt-nur-eine-regelseite/observation.md)
+- [`negativtest-deckt-nur-eine-regelseite`](../../observations/BEO-ALL/negativtest-deckt-nur-eine-regelseite/observation.md)
   (1×, offen): die Kreuz-Duplikat-Prüfung hat zwei symmetrische Seiten
   (Überschrift/Tabelle); der Test variiert beide Reihenfolgen. Ein zweites
   Auftreten würde den Zähler auf 2× heben.
-- [`adr-accepted-bevor-der-mechanismus-steht`](../observations/BEO-ALL/adr-accepted-bevor-der-mechanismus-steht/observation.md)
-  (1×, offen): [ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md) bleibt `Proposed`, bis die Umsetzung steht, und wird
+- [`adr-accepted-bevor-der-mechanismus-steht`](../../observations/BEO-ALL/adr-accepted-bevor-der-mechanismus-steht/observation.md)
+  (1×, offen): [ADR-0108](../../../adr/0108-trace-requirements-als-liste-von-quellen.md) bleibt `Proposed`, bis die Umsetzung steht, und wird
   erst im letzten Commit `Accepted`.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 `image-scan` grün (2026-10-20); `upstream-drift` rot — **planmäßig, gelesen**:
 neuer Release der Baseline (Pin `v6.17.0`) sowie veraltete Pins für Go
 (1.27.2 → 1.27.3), golangci-lint, semgrep und a-check. Fremd-Release und
