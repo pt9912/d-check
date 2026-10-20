@@ -61,26 +61,26 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] **Range auflösen:** Die Range-Auflösung des CI-Schritts liegt in einem
+- [x] **Range auflösen:** Die Range-Auflösung des CI-Schritts liegt in einem
       Skript unter `tools/harness/`, das ein Push-`before`, das nicht als Commit
       auflösbar ist, auf `origin/<default>..HEAD` zurückführt und nur dann; der
       Schritt in `ci.yml` ruft es.
-- [ ] **Beleg:** Eine Probe fährt das Skript gegen ein Wegwerf-Repo für die
+- [x] **Beleg:** Eine Probe fährt das Skript gegen ein Wegwerf-Repo für die
       Fälle neuer Branch, normaler Push, Force-Push (Basis fehlt) und Push auf
       den Default-Branch ohne auflösbare Basis; der letzte Fall endet laut, die
       anderen mit der erwarteten Range.
-- [ ] **Entscheidung:** Eine ADR hält fest, dass die CI-Range sich ändert, was
+- [x] **Entscheidung:** Eine ADR hält fest, dass die CI-Range sich ändert, was
       der Rückfall zusagt und was nicht (Force-Push auf einen Feature-Branch
       prüft alles, was der Branch gegenüber dem Default-Branch trägt; auf dem Default-Branch bleibt die
       Nicht-Auflösbarkeit ein Fehler). Kopf und Index stehen auf `Accepted`.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review; Verifikation.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
       „keine Beobachtung angefallen" in §7 notiert.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -148,28 +148,61 @@ färbt den Push-Lauf danach nicht mehr rot (am nächsten Rebase beobachtbar).
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Offene Risiken werden bei Closure aufgelöst.
 
-- **Der Rückfall macht aus „Basis fehlt" ein stilles Grün.** Auf dem
-  Default-Branch bliebe sonst eine leere Range laut nur, wenn der Wächter sie
-  sieht. — **Ausgang:** offen bis Closure; Probe „Push auf den Default-Branch
-  ohne auflösbare Basis" trägt es.
-- **Ein Rückfall prüft mehr Commits als der Push brachte.** Auf einem
-  Feature-Branch mit alter, schon geprüfter Historie meldet `trace-check` dann
-  Altlast. — **Ausgang:** offen bis Closure.
-- **Die Gate-Änderung ist eine Senkung.** `AGENTS.md` §3.6: die Entscheidung
-  gehört in eine ADR, kein PR-Kommentar. — **Ausgang:** offen bis Closure; die
-  ADR ist Teil der DoD.
+- **Der Rückfall macht aus „Basis fehlt" ein stilles Grün.** — **Ausgang:**
+  entfallen — auf dem Default-Branch endet der Fall mit Exit 2 (Probe
+  `force-push-default`), und eine leere Rückfall-Range fängt
+  `history-range-guard`, den `make trace-check` und `make adr-check` zuerst
+  rufen. Die Verifikation nahm die Ausnahme zurück und sah die Probe rot
+  (Exit 0 über leerer Range).
+- **Ein Rückfall prüft mehr Commits als der Push brachte.** — **Ausgang:**
+  entfallen — der Rückfall prüft, was der Branch gegenüber dem Default-Branch
+  trägt, in der Regel mehr, nach einem Rebase auch weniger als `before..head`
+  (die Verifikation maß die Range nach einem Rebase auf einen neueren
+  Default-Stand: nur die Branch-eigenen Commits). Altlast eines Feature-Branchs
+  meldet `trace-check` als Befund der Historie, nicht des Rückfalls.
+- **Die Gate-Änderung ist eine Senkung** (`AGENTS.md` §3.6). — **Ausgang:**
+  entfallen — die Entscheidung steht in
+  [ADR-0109](../../adr/0109-ci-push-range-faellt-bei-force-push-zurueck.md),
+  `Accepted`, mit Re-Evaluierungs-Trigger; sie lockert keine Schwelle, sondern
+  wählt die Range für einen sonst unauflösbaren Fall.
 
 ## 7. Closure-Notiz
 
-<!-- Wird bei der Closure gefüllt, vor dem `git mv` nach `done/`. -->
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
+- **Was hat funktioniert:** Die Range-Auflösung des CI-Schritts liegt in
+  `tools/harness/ci-range.sh`; ein Force-Push auf einen Feature-Branch fällt auf
+  `origin/<default>..HEAD` zurück, auf dem Default-Branch und ohne
+  `origin/<default>` endet er laut mit Exit 2. `make ci-range-probe` fährt sechs
+  Proben und wurde an allen drei Bruchstellen (Rückfall, Default-Ausnahme,
+  origin-Wächter) einzeln rot gesehen — vom Implementer und, unabhängig, vom
+  Verifier. Unter `set -euo pipefail` bricht `RANGE="$(…)"` bei Exit 2 des
+  Skripts den Schritt ab (im Wegwerf-Repo mit gelöschtem `before`-Commit
+  belegt).
+- **Was ging anders als geplant:** Der Plan nannte weder das `Makefile` (Target
+  samt `.PHONY` für `make gate-consistency`) noch den Durchreich-Wert
+  `REF_NAME` in `ci.yml`; beides stand in einer Plan-Änderung vor dem Code. Die
+  Zusage „mehr Commits, nie weniger" war in Skript, ADR und Plan zu weit
+  (Review INFO F-1) und wurde vor `Accepted` berichtigt; die ADR-Fitness
+  zählte erst „fünf Fälle und eine Lücke" (Verifikation LOW) und nennt jetzt
+  sechs Proben. **Nicht belegt:** `make trace-check`/`adr-check` mit der
+  Fallback-Range im Docker-Image und der Fetch-Pfad; der Fetch-Fehler wird
+  verschluckt und die Existenzprüfung der Ref ist kein Frische-Beleg (Review
+  F-2) — die Folge ist eine größere Range, kein stilles Grün.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Beobachtungs-Register (`../observations/`):** keine Beobachtung
+  angefallen. Der rote Push-Lauf ist ein weiterer Fall „Gate rot, ohne dass die
+  geprüfte Eigenschaft verletzt ist", gehört aber nicht unter
+  `BEO-ALL/gate-rot-aus-falschem-grund` (dort: eine Probe in einem
+  ausgenommenen Abschnitt) — ein Beleg dort wäre eine erzwungene Zuordnung.
+- **Folge-Slices:** keiner. Der Merge von PR #9 ist ein eigener Vorgang über
+  den hebenden Kanal.
+- **Risiken aus §6:** alle drei entfallen (siehe §6). Trigger-Audit: kein
+  Carveout, kein bootstrap-aware Gate; [ADR-0109](../../adr/0109-ci-push-range-faellt-bei-force-push-zurueck.md) ist mit diesem Slice `Accepted`
+  und trägt ihren Re-Evaluierungs-Trigger; keine Hard Rule mit eingetretenem
+  Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
+  Folge-Slices — keiner genannt; (c) Register — keine zitierte Beobachtung
+  außer den in §8 gesichteten, die existieren.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
