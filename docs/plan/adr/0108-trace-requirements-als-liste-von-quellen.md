@@ -115,8 +115,9 @@ erkennen, was die Anforderungsseite nicht kennt.
 - Der App-Kern führt den Extraktor je Eintrag aus und bildet danach die
   Vereinigung samt Kreuz-Duplikat-Prüfung; Referenzscan, Coverage und Reporter
   sehen weiter genau eine Menge.
-- `--print-config` und das Benutzerhandbuch zeigen die Listen-Form; das
-  Handbuch wird in der Release-Prep nachgezogen.
+- Das Benutzerhandbuch zeigt die Listen-Form; `--print-config` und
+  `--suggest-config` erzeugen weiter die Objekt-Form — eine Liste ist
+  Handarbeit für den gemischten Bestand.
 - **Grenze:** Ein Listen-Eintrag mit `format: headings` und ohne explizite
   `source` ist wie in der Objekt-Form nicht strikt; null Treffer ergeben dort
   keinen Fehler. Das ist Parität mit ADR-0037, kein Schutz — wer den Eintrag
