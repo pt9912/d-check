@@ -29,7 +29,7 @@ Spec-Verweis, die Spec nennt ihn nur als „CR eines Adopters").
 (Lastenheft 0.106.0); [§`DC-FA-REQ-001.a`](../../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
 Schritt 8 und die Schlüsseltabelle `trace.requirements`.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912
 
 **Autor:** pt9912. **Datum:** 2026-10-20.
 
