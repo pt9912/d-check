@@ -1,6 +1,6 @@
 # ADR-0109: Der Push-Lauf der CI fällt bei nicht auflösbarer Basis auf die Default-Branch-Range zurück
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-20
 
@@ -104,3 +104,4 @@ nur gegen eine echte CI-Ausführung prüfbar.
 | Datum | Ereignis |
 |---|---|
 | 2026-10-20 | Entwurf zu slice-275 nach dem Befund beim Merge des Dependabot-PR #9: der Rebase machte den Push-Lauf rot und sperrte den Merge. Status Proposed, bis die Umsetzung geprüft ist. |
+| 2026-10-20 | **Accepted** — umgesetzt (`ci-range.sh`, Probe, `ci.yml`), Review ohne Befund über INFO, Verifikation ohne DoD-Verletzung; die Probe wurde an allen drei Bruchstellen rot gesehen. Der Wortlaut der Range-Größe wurde vor der Annahme berichtigt: nach einem Rebase auf einen neueren Default-Stand fallen Commits heraus, die der Default-Branch schon trägt. |
