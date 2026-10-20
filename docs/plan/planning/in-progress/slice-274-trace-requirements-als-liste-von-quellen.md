@@ -128,6 +128,33 @@ fällt. Ausgangsliste der Treffer beim Anlegen: `docs/user/benutzerhandbuch.md`,
 `internal/adapter/driven/configyaml/abdeckung_test.go`,
 `tools/archive-wave/stub.go` (zu prüfen, ob Spiegel oder Zufall).
 
+**Plan-Änderung vor dem Code (2026-10-20, Schritt 15 des Workflow-Skeletts):**
+Beim Lesen des Codes weicht der Zuschnitt von der Tabelle ab, ohne den Umfang
+zu ändern — der Diff bleibt in den zwei Schichten Adapter und Kern.
+
+- **Neu:** `internal/hexagon/core/app/trace_sources.go` trägt die Einträge, die
+  Vereinigung, die Kreuz-Duplikat-Prüfung und die Modalität je Eintrag;
+  `trace.go` bleibt dadurch schlank (die Funktionen `loadTraceRequirements`,
+  `traceModalities`, `traceRequirements` wandern dorthin).
+- **Entfällt:** `trace_cross.go` und `trace_table.go` bleiben unverändert —
+  `cross-consistency` liest das Muster der Referenzseite über `rt.reqPat`
+  (jetzt die Vereinigung), und der Tabellen-Extraktor kennt keinen Eintrag.
+- **Neue Testdateien:** `internal/hexagon/core/app/trace_sources_test.go`,
+  `internal/adapter/driven/configyaml/trace_requirements_list_test.go`,
+  `internal/adapter/driving/cli/cli_trace_sources_test.go`.
+- **Generiert:** `docs/user/abdeckung-tests.md` (`make abdeckung`); `make test`
+  hält die Datei gegen ihre Ableitung, die neuen Tests ändern sie.
+- **Spiegel (Schritt 17, `grep` über `harness/`, `docs/user/`, `.claude/`,
+  `tools/`, `README.md` nach `trace.requirements`/`requirements.format`/
+  `requirements.id-pattern`/`requirements.source`):** `docs/user/benutzerhandbuch.md`
+  (§4.12 „Andere Repo-Konvention", §5 *Konfigurierbare RTM-Quellen* samt
+  Nullmengen-Absatz, §7 Fehlerbild „ergab 0 Anforderungen") und
+  `docs/user/operations.md` (Zeile `--trace`) beschreiben die Objekt-Form und
+  werden nachgezogen. Die Zeilen der Handbuch-Versionstabelle sind Release-Prep.
+  `tools/archive-wave/stub.go` nennt `trace.requirements.id-pattern` nur als
+  Herkunft eines Kennungs-Musters und beschreibt keinen Mechanismus, der sich
+  ändert — Zufallstreffer, bleibt.
+
 **Rot-Beleg** ([Modul 11 §Bewusstes Brechen](../../../../.harness/baseline/v6.17.0/regelwerk/modul-11-verification.md#bewusstes-brechen-für-dod-testbehauptungen-modul-11)):
 Die Kreuz-Duplikat-Prüfung und der Nullmengen-Guard je Eintrag werden
 testweise entfernt; die benannten Tests müssen mit der behaupteten Meldung
