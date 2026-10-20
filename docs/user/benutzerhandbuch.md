@@ -726,8 +726,9 @@ Ohne `--trace` ist `--require-complete` ein Nutzungsfehler (Exit 2).
 
 **Andere Repo-Konvention / tabellarisches Lastenheft.** Folgt Ihr Repo einer
 anderen Kennungs-/Dateikonvention oder pflegt es ein tabellarisches Lastenheft,
-passen Sie die Quell-Achsen (`trace.requirements`, `format: table`, `table.*`,
-je Referenzklasse `adrs`/`slices`) in `.d-check.yml` an. Alle Felder,
+passen Sie die Quell-Achsen (`trace.requirements` — auch als Liste mehrerer
+Quellen für ein Lastenheft mit Überschriften **und** Tabellen —, `format: table`,
+`table.*`, je Referenzklasse `adrs`/`slices`) in `.d-check.yml` an. Alle Felder,
 Migrationswege und Fehlerbilder stehen in §5.
 
 ### 4.13 Abdeckung aus einer kuratierten Matrix mitzählen (`trace.coverage`)
@@ -1556,6 +1557,7 @@ targets:                       # Deklarations-Konsistenz Doku ↔ Build-Targets 
   authority-disjoint: true     # opt-in: ein Target, das zwei authority-Dateien in der ersten Zelle führen ⇒ gate-declared-twice
   exempt-targets: []           # Regelnamen EXAKT (kein Glob, anders als tracked) — Utility ohne Doku-Pflicht
 trace:                         # konfigurierbare RTM-Quellen (KEIN Modul; steuert nur --trace)
+  # requirements: darf auch eine Liste von Quellen sein (Überschriften UND Tabelle in einer Datei, siehe „Konfigurierbare RTM-Quellen")
   requirements:
     source: spec/lastenheft.md              # nichtleer explizit: fehlend/0 Treffer => Exit 2
     id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'  # Anforderungs-Kennung (Default: <PREFIX>-FA-…/-QA-…)
@@ -2279,7 +2281,47 @@ von `table.text-column` oder `table.text-columns` und optional
 Pipe-Grammatik überführen Sie die Zeilen in Heading-plus-Body-Abschnitte (ID und
 Titel in der Überschrift, der normative Text samt Modalverb im Body) oder
 erzeugen daraus deterministisch ein separates Heading-Dokument, dessen Drift ein
-eigener Konsistenzsensor gegen die autoritative Tabelle absichert.
+eigener Konsistenzsensor gegen die autoritative Tabelle absichert. Mischt eine
+Datei dagegen Überschriften **und** Pipe-Tabellen, ist keine dieser Umformungen
+nötig: die Liste von Quellen unten bindet beide Formen in einem Lauf.
+
+**Mehrere Quellen: eine Datei, zwei Formen.** Führt ein Lastenheft seine
+Anforderungen teils als Überschriften, teils als Tabellenzeilen — etwa die
+funktionalen in Überschriften und die Qualitätsanforderungen in einer Tabelle —,
+braucht es keine Umformung: `trace.requirements` darf statt eines Objekts eine
+**nichtleere Liste** solcher Objekte sein. Jeder Eintrag trägt dieselben Felder
+(`source`, `id-pattern`, `format`, bei Tabellen `table.*`, `modality`) mit
+derselben Bedeutung und denselben Fehlerbildern; dieselbe `source` darf in
+mehreren Einträgen stehen:
+
+```yaml
+trace:
+  requirements:
+    - source: spec/lastenheft.md
+      id-pattern: 'SFC-FA-\d{2}'
+      format: headings
+    - source: spec/lastenheft.md
+      id-pattern: 'SFC-QA-\d{2}'
+      format: table
+      table:
+        id-column: ID
+        text-column: Anforderung
+        modality-column: Priorität
+```
+
+Die RTM führt die **Vereinigung** in der Reihenfolge der Liste (innerhalb eines
+Eintrags nach Kennung sortiert); die Summenzeile zählt über alle Einträge.
+Erkennen zwei Einträge **dieselbe Kennung**, ist das ein Konfigurationsfehler
+(Exit 2) — die Meldung nennt Kennung und beide Einträge und weist auf
+überlappende `id-pattern` hin. Eine `first`/`last`-Politik über Einträge gibt es
+nicht; `table.duplicate-ids` wirkt weiter nur innerhalb einer Tabelle. Eine leere
+Liste ist ein Konfigurationsfehler. `modality` gilt **je Eintrag** und wird nicht
+vererbt: ein Eintrag ohne `modality` klassifiziert nicht, und seine Waisen gatet
+`--require-complete` alle; `require-levels` eines Eintrags betrifft nur dessen
+Anforderungen. Die Referenzseite (ADR-/Slice-Scan, `trace.coverage`-Ranges,
+`trace.cross-consistency`) erkennt eine Kennung, wenn sie auf das `id-pattern`
+**mindestens eines** Eintrags passt. Die Objekt-Form und ein fehlender
+`trace`-Block bleiben gültig und liefern dieselbe Ausgabe wie zuvor.
 
 Zur Tabellen-Grammatik im Detail: die Trennzeile folgt GFM — **ein** Bindestrich
 je Zelle genügt (`| - |`, `| :-: |`), Doppelpunkte für die Ausrichtung bleiben
@@ -2295,7 +2337,10 @@ Eine **nichtleer explizite** `requirements.source` oder `format: table`
 aktiviert den Nullmengen-Guard: Fehlt die Quelldatei oder werden darin null
 Anforderungen erkannt, endet `--trace` mit Exit 2 vor jeder RTM-Ausgabe.
 `source: ""` gilt dagegen wie ein abwesendes Feld und hält den bisherigen
-Default-Fallback einschließlich leerer RTM/Exit 0 kompatibel. Für eine
+Default-Fallback einschließlich leerer RTM/Exit 0 kompatibel. In der Listen-Form
+gilt der Guard **je Eintrag** und die Meldung nennt dessen Index
+(`trace.requirements[1]: …`): ein Eintrag, der nichts findet, verschwindet nicht
+in der Vereinigung. Für eine
 zusätzliche Bestandsinvariante kann ein Konsument die erkannte Gesamtzahl gegen
 seine erwartete Zahl plausibilisieren.
 
@@ -2304,7 +2349,8 @@ dem jeweiligen `dir`. `file-pattern` wird gegen den **Basisdateinamen** und
 nicht gegen den vollständigen Pfad geprüft. Dateien ohne Match werden
 übersprungen; bei einem Match bildet Capture-Gruppe 1 zusammen mit
 `id-prefix` die Owner-Kennung. Danach wird der gesamte Dateiinhalt nach
-Treffern von `requirements.id-pattern` durchsucht. Owner je Requirement werden
+Treffern von `requirements.id-pattern` durchsucht (bei einer Liste: von
+Treffern des Musters mindestens eines Eintrags). Owner je Requirement werden
 dedupliziert und deterministisch sortiert.
 
 Zusätzlich liest der opt-in **`trace.coverage`**-Block (eine **Liste** benannter
@@ -2789,6 +2835,9 @@ d-check: error: trace.requirements: Quelle "spec/lastenheft.md" im Format headin
 
 Lösung: Quelldatei, `format` und `id-pattern` prüfen. `source: ""` gilt wie ein
 abwesendes Feld und fällt auf die Default-Quelle zurück (leere Matrix, Exit 0).
+Bei einer Liste von Quellen nennt die Meldung den Eintrag
+(`trace.requirements[1]: …`); eine Kennung, die zwei Einträge erkennen, endet
+mit Exit 2 und nennt beide Einträge.
 
 ## 8. FAQ
 
