@@ -43,7 +43,7 @@
      Vorlage nur `recursive` und `skip-pattern`; `require-promises`, `match` und
      `skip-allows-empty` fehlen. `make review-coverage` meldet 0 Befunde; **nicht
      gemessen** ist, ob der Lauf eine nichtleere Menge von Zusagen sieht (der
-     Leerlauf-Fall, den die Vorlage benennt). Kandidat für einen Folge-Slice.
+     Leerlauf-Fall, den die Vorlage benennt). Folge-Slice: [`slice-278`](../../docs/plan/planning/open/slice-278-reviews-block-auf-vorlage-pruefen.md).
   2. **Vorlagen-Pfade nennen die vendorte Baseline** — `templates/.harness/skills/
      reviewer.template.md`, `closure-note-reviewer.template.md`,
      `templates/harness/conventions.template.md` und
@@ -62,12 +62,12 @@
   -Wellen (24 / 68), die Review-Reports (25 / 85), der eingehende CR (1 / 1) und die
   CHANGELOG-Historie (1 / 2); `Accepted`-ADRs und `conventions/done/` nannten den Tag
   nicht. **Lebend retargetet (49 Dateien):** `AGENTS.md`, `harness/README.md`,
-  `harness/conventions.md`, die drei `harness/rules/`-Dateien, 38 aktive `MR-*`,
+  `harness/conventions.md`, die drei `harness/rules/`-Dateien, 35 aktive `MR-*`,
   `.claude/agents/reviewer.md`, die beiden Skills unter `.harness/skills/`,
   `roadmap.md`, `planning/README.md`, `observations/README.md`,
   `spec/architecture.md` und `spec/spezifikation.md` (Rolle-Zeile). **Zeilenweise
-  getrennt:** `observations/README.md` und `harness/conventions.md` (Zeilen mit
-  Pin-Aussage retargetet, Vergangenheitsaussagen nicht);
+  geprüft:** `observations/README.md` und `harness/conventions.md` — jede Nennung
+  dort war eine Pin-Aussage und ist retargetet, keine Vergangenheitszeile blieb;
   [`MR-075`](../conventions.md#mr-075) („Seit `v6.17.0` trägt die Spezifikation einen
   Abschnitt …") bleibt stehen — die Aussage ist eine Tatsache über die Fassung, in der
   die Umnummerierung kam, nicht ein Pin; ebenso der Beleg
@@ -84,10 +84,11 @@
   `MR-074` nach `conventions/done/` (Link-Tiefen, eigener Commit) und der
   verrutschten Zitat-Spanne (unten) 0 Befunde.
 
-  **`d-check:cite`-Neu-Ankern** — gemessen **19** lebende Direktiven auf den
-  Baum (0 tag-only), **1** davon neu geankert, reine Zeilenverschiebung bei
-  wortgleichem Text: Reviewer-Skill `modul-10-review-harness.md` 87→99. Die übrigen
-  18 zeigen auf Dateien ohne inhaltliches Delta oder auf unverschobene Zeilen.
+  **`d-check:cite`-Neu-Ankern** — gemessen **17** lebende Direktiven auf den
+  Baum (0 tag-only; die zwei Direktiven im Plan dieses Slice zählen nicht mit), **1**
+  davon neu geankert, reine Zeilenverschiebung bei wortgleichem Text:
+  Reviewer-Skill `modul-10-review-harness.md` 87→99. Die übrigen 16 zeigen auf
+  Dateien ohne inhaltliches Delta oder auf unverschobene Zeilen.
 
   **Zitat-Delta** ([`MR-039`](../conventions.md#mr-039)): wörtliche Zitate ohne
   Direktive in Markdown stammen aus `modul-13` (`AGENTS.md`, „Halluzinierte Gates
