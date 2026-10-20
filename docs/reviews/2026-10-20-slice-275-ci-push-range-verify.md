@@ -1,7 +1,7 @@
 # Verifikation — slice-275: Push-Range der CI bei Force-Push
 
 - **Rolle:** Verifier (Modul 11) — DoD, Plan und ADR gegen den Stand
-- **Gegenstand:** `docs/plan/planning/in-progress/slice-275-ci-push-range-bei-force-push.md` §1, §2, §3 (samt Plan-Änderung), §4, §6
+- **Gegenstand:** `docs/plan/planning/done/wellenlos/slice-275-ci-push-range-bei-force-push.md` §1, §2, §3 (samt Plan-Änderung), §4, §6
 - **Range:** `fbbbecae..HEAD` (Spitze `3329d6aa`)
 - **Eingang:** [ADR-0109](../plan/adr/0109-ci-push-range-faellt-bei-force-push-zurueck.md) (Proposed); Review-Report nur als Kontext
 - **Datum:** 2026-10-20
