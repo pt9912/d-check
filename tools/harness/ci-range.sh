@@ -4,7 +4,7 @@
 #
 # ZUSAGE. Ein Push-Lauf, dessen `before`-Commit der Klon nicht mehr kennt (Force-
 # Push, Rebase), prüft `origin/<default>..HEAD` statt an der unauflösbaren Basis
-# zu scheitern: mehr Commits, nie weniger. Ein neuer Branch, ein normaler Push und
+# zu scheitern: alles, was der Branch gegenüber dem Default-Branch trägt. Ein neuer Branch, ein normaler Push und
 # ein Pull-Request behalten ihre Range.
 #
 # GRENZE. Auf dem Default-Branch selbst bleibt eine nicht auflösbare Basis ein

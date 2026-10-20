@@ -41,8 +41,9 @@ Administrator-Rechten möglich, also durch Umgehung der Branch-Policy.
 
 Ist `github.event.before` kein auflösbarer Commit, prüft der Push-Lauf gegen den
 Default-Branch — wie er es schon bei einem neuen Branch tut. Die Range ist damit
-größer als die des Pushs, nie kleiner: sie umfasst alles, was der Branch gegenüber
-dem Default-Branch trägt. Die übrigen Fälle behalten ihre Range (Pull-Request:
+in der Regel größer als die des Pushs: sie umfasst alles, was der Branch gegenüber
+dem Default-Branch trägt — nach einem Rebase auf einen neueren Default-Stand fallen
+Commits heraus, die der Default-Branch schon enthält. Die übrigen Fälle behalten ihre Range (Pull-Request:
 `base..head`, neuer Branch: `origin/<default>..head`, normaler Push:
 `before..head`).
 
@@ -83,7 +84,7 @@ nur gegen eine echte CI-Ausführung prüfbar.
 
 - Ein Dependabot-Rebase färbt den Push-Lauf nicht mehr rot; der Merge geht ohne
   Umgehung der Branch-Policy.
-- Der Push-Lauf eines Force-Pushs prüft mehr Commits (alle seit dem
+- Der Push-Lauf eines Force-Pushs prüft in der Regel mehr Commits (alle seit dem
   Default-Branch). Meldet `trace-check` dabei Altlast, ist es kein Fehler des
   Rückfalls, sondern der Historie des Branchs.
 - **Grenze:** Geprüft wird die Auflösbarkeit des `before`-Commits, nicht seine

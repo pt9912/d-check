@@ -71,7 +71,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
       anderen mit der erwarteten Range.
 - [ ] **Entscheidung:** Eine ADR hält fest, dass die CI-Range sich ändert, was
       der Rückfall zusagt und was nicht (Force-Push auf einen Feature-Branch
-      prüft mehr Commits, nie weniger; auf dem Default-Branch bleibt die
+      prüft alles, was der Branch gegenüber dem Default-Branch trägt; auf dem Default-Branch bleibt die
       Nicht-Auflösbarkeit ein Fehler). Kopf und Index stehen auf `Accepted`.
 - [ ] `make gates` grün.
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
