@@ -4,6 +4,25 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.87.1] — 2026-10-20
+
+### Security
+
+- Abhängigkeiten gehoben ([ADR-0067](docs/plan/adr/0067-dependabot-als-hebender-kanal.md),
+  Dependabot-PR #9): `github.com/go-git/go-git/v5` v5.19.3,
+  `github.com/Microsoft/go-winio` v0.6.4, `golang.org/x/crypto` v0.58.0,
+  `golang.org/x/net` v0.61.0, `golang.org/x/sys` v0.49.0. Keine Änderung der
+  Konfiguration, der Grund-Codes oder der Ausgabe des Werkzeugs; `make ci` ist grün.
+
+### Changed
+
+- slice-275 — **CI: der Push-Lauf fällt bei nicht auflösbarer Basis auf die
+  Default-Branch-Range zurück**
+  ([ADR-0109](docs/plan/adr/0109-ci-push-range-faellt-bei-force-push-zurueck.md)).
+  Ein Force-Push (etwa ein Dependabot-Rebase) färbt den Push-Lauf nicht mehr
+  rot; auf dem Default-Branch bleibt die nicht auflösbare Basis ein Fehler.
+  Betrifft die Repo-CI, nicht das Image.
+
 ## [0.87.0] — 2026-10-20
 
 ### Added

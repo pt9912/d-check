@@ -324,7 +324,7 @@ zusätzlich nach Docker Hub gespiegelt als
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.1
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
