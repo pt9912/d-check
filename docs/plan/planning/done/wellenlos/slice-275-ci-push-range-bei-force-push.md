@@ -8,12 +8,12 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 **Welle:** ohne Welle — reaktive Arbeit, die Closure-Bedingung ist die DoD
 selbst.
 
-**Bezug:** [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md) (die
+**Bezug:** [ADR-0013](../../../adr/0013-pr-ci-und-traceability-gate.md) (die
 PR-/Push-CI und ihr Traceability-Gate),
-[ADR-0027](../../adr/0027-commits-traceability-modul.md) (`trace-check` über
+[ADR-0027](../../../adr/0027-commits-traceability-modul.md) (`trace-check` über
 eine Commit-Range),
-[`DC-FA-COMMITS-001`](../../../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in),
-[`SPEC-102`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`DC-FA-COMMITS-001`](../../../../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in),
+[`SPEC-102`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
 (`history-range-guard`: eine nicht auflösbare Range ist Exit 2).
 Anlass: Befund beim Merge des Dependabot-PR #9 — jeder Force-Push eines
 Branches (Dependabot `rebase`/`recreate`) macht den Push-Lauf rot, weil
@@ -44,14 +44,14 @@ keine auflösbare Basis hat.
 
 - **Der Merge von PR #9.** Er hängt an einer Policy-Umgehung oder an der
   Wirkung dieses Slice; er ist ein eigener Vorgang über den hebenden Kanal
-  ([ADR-0067](../../adr/0067-dependabot-als-hebender-kanal.md)).
+  ([ADR-0067](../../../adr/0067-dependabot-als-hebender-kanal.md)).
 - **Eine Lockerung von `history-range-guard`.** Der Wächter hält die
-  nicht auflösbare Range laut fest ([`SPEC-102`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)) und bleibt unverändert; der Slice
+  nicht auflösbare Range laut fest ([`SPEC-102`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)) und bleibt unverändert; der Slice
   ändert, **welche** Range die CI ihm gibt, nicht was er mit einer
   nicht auflösbaren tut.
 - **Die Pflicht-Check-Konfiguration auf GitHub** (Ruleset, Branch Protection).
   Sie liegt außerhalb des Repos und ist aus dem Klon nicht auditierbar
-  ([`harness/README.md`](../../../../harness/README.md) §Gate-Taxonomie).
+  ([`harness/README.md`](../../../../../harness/README.md) §Gate-Taxonomie).
 - **Weitere `ci.yml`-Schritte.** Nur der Range-Schritt; `make ci` und die
   Release-Pipeline bleiben stehen.
 
@@ -77,11 +77,11 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 - [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review; Verifikation.
-- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
+- [x] Beobachtungs-Register (`../../observations/`) fortgeschrieben — oder
       „keine Beobachtung angefallen" in §7 notiert.
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind hier geprüft.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind hier geprüft.
 
 ## 3. Plan (vor Code)
 
@@ -94,7 +94,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `docs/plan/adr/0109-…md`, `docs/plan/adr/README.md` | neu / update | die Entscheidung; Index-Eintrag |
 
 **Spiegel vor dem Editieren auflisten**
-([`MR-025`](../../../../harness/conventions.md#mr-025), Schritt 17): wer die
+([`MR-025`](../../../../../harness/conventions.md#mr-025), Schritt 17): wer die
 Range-Auflösung des CI-Schritts verschiebt, greppt vorher `PUSH_BEFORE`,
 `PR_BASE`, `origin/$DEFAULT_BRANCH` und „Commit-Range" über `.github/`,
 `harness/`, `docs/user/`, `docs/maintainer/`, `.githooks/` und die Skript-Kommentare
@@ -162,7 +162,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   meldet `trace-check` als Befund der Historie, nicht des Rückfalls.
 - **Die Gate-Änderung ist eine Senkung** (`AGENTS.md` §3.6). — **Ausgang:**
   entfallen — die Entscheidung steht in
-  [ADR-0109](../../adr/0109-ci-push-range-faellt-bei-force-push-zurueck.md),
+  [ADR-0109](../../../adr/0109-ci-push-range-faellt-bei-force-push-zurueck.md),
   `Accepted`, mit Re-Evaluierungs-Trigger; sie lockert keine Schwelle, sondern
   wählt die Range für einen sonst unauflösbaren Fall.
 
@@ -188,7 +188,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   verschluckt und die Existenzprüfung der Ref ist kein Frische-Beleg (Review
   F-2) — die Folge ist eine größere Range, kein stilles Grün.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
-- **Beobachtungs-Register (`../observations/`):** keine Beobachtung
+- **Beobachtungs-Register (`../../observations/`):** keine Beobachtung
   angefallen. Der rote Push-Lauf ist ein weiterer Fall „Gate rot, ohne dass die
   geprüfte Eigenschaft verletzt ist", gehört aber nicht unter
   `BEO-ALL/gate-rot-aus-falschem-grund` (dort: eine Probe in einem
@@ -196,10 +196,10 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - **Folge-Slices:** keiner. Der Merge von PR #9 ist ein eigener Vorgang über
   den hebenden Kanal.
 - **Risiken aus §6:** alle drei entfallen (siehe §6). Trigger-Audit: kein
-  Carveout, kein bootstrap-aware Gate; [ADR-0109](../../adr/0109-ci-push-range-faellt-bei-force-push-zurueck.md) ist mit diesem Slice `Accepted`
+  Carveout, kein bootstrap-aware Gate; [ADR-0109](../../../adr/0109-ci-push-range-faellt-bei-force-push-zurueck.md) ist mit diesem Slice `Accepted`
   und trägt ihren Re-Evaluierungs-Trigger; keine Hard Rule mit eingetretenem
   Trigger. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
   Folge-Slices — keiner genannt; (c) Register — keine zitierte Beobachtung
   außer den in §8 gesichteten, die existieren.
@@ -222,17 +222,17 @@ eine eigene Sub-Area (`HARN`, GF); die übrigen laufen unter dem Default `*`
 
 **Vorgelagert — offene Beobachtungen sichten:** Register durchgegangen; Treffer:
 
-- [`stilles-gruen-ueber-leerer-range`](../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/observation.md)
+- [`stilles-gruen-ueber-leerer-range`](../../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/observation.md)
   (1×): der Rückfall darf nie aus „Basis fehlt" ein Grün über leerem
   Prüfbereich machen — das ist das zentrale Risiko dieses Slice.
-- [`gate-rot-aus-falschem-grund`](../observations/BEO-ALL/gate-rot-aus-falschem-grund/observation.md)
+- [`gate-rot-aus-falschem-grund`](../../observations/BEO-ALL/gate-rot-aus-falschem-grund/observation.md)
   (3×): der rote Push-Lauf ist ein weiterer Fall — ein Gate wird rot, ohne
   dass die geprüfte Eigenschaft verletzt ist.
-- [`range-leerfall-mit-lokalem-branchnamen`](../observations/BEO-ALL/range-leerfall-mit-lokalem-branchnamen/observation.md)
+- [`range-leerfall-mit-lokalem-branchnamen`](../../observations/BEO-ALL/range-leerfall-mit-lokalem-branchnamen/observation.md)
   (1×): Range-Auflösung mit lokalen Namen; die Probe läuft gegen ein Wegwerf-Repo,
   nicht gegen den lokalen Klon.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 `image-scan` grün; `upstream-drift` rot, **planmäßig gelesen** (neuer
 Baseline-Release und veraltete Pins für Go, golangci-lint, semgrep und a-check) —
 kein Bezug zu diesem Slice, jeweils eigener Vorgang.
