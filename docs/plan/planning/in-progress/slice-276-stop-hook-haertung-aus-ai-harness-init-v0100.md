@@ -59,26 +59,26 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] **Hook und Nachweis:** `stop-require-gates.sh` und `record-gates.sh` tragen
+- [x] **Hook und Nachweis:** `stop-require-gates.sh` und `record-gates.sh` tragen
       HEAD-Stempel, `trap` auf Exit 2 und den lockeren Zweig, der nur mit
       `.harness/stop-gate-locker` greift; die Datei gibt es nicht. Das Verhalten ohne Variable
       ist das strenge: ein Turn-Ende mit ungedecktem Inhalt blockt, auch ohne
       neuen HEAD.
-- [ ] **Selbstprüfung:** `selbstpruefung.sh` trägt die Stop-Hook-Zweige und die
+- [x] **Selbstprüfung:** `selbstpruefung.sh` trägt die Stop-Hook-Zweige und die
       Marker der Fassung v0.10.0, belegt für d-check; `make selbstpruefung` läuft
       grün und beobachtet beide Ausgänge der Stop-Hook-Prüfung.
-- [ ] **Entscheidung und Spiegel:** Ein neuer `MR` hält fest, was übernommen ist
+- [x] **Entscheidung und Spiegel:** Ein neuer `MR` hält fest, was übernommen ist
       und was nicht (der lockere Default), und schärft
       [`MR-076`](../../../../harness/conventions.md#mr-076); [`SPEC-094`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) und die
       Sensor-Zeile in `harness/README.md` sind nachgezogen.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8, kein
       Self-Review; Verifikation.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
       „keine Beobachtung angefallen" in §7 notiert.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -168,31 +168,62 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Offene Risiken werden bei Closure aufgelöst.
 
 - **Der strenge Modus verhält sich nicht wie der heutige Hook.** Eine
-  Unterschiedlichkeit wäre eine stille Lockerung. — **Ausgang:** offen bis Closure;
-  Gegenprobe: dieselben Lagen (kein Nachweis mit Änderung, passender Nachweis,
-  abweichender Nachweis, kaputter Index) gegen alte und neue Fassung im
-  Wegwerf-Klon.
+  Unterschiedlichkeit wäre eine stille Lockerung. — **Ausgang:** entfallen — die
+  Verifikation fuhr 18 Lagen im Wegwerf-Repo (die neun geforderten und acht weitere,
+  darunter Stempel gleich `HEAD`, gelöschter Stempel, Nachweis als Verzeichnis oder
+  ohne Leserecht) gegen den Hook von `2032fe1d` im Default: deckungsgleich. Die
+  einzige Abweichung ist eine Verschärfung (außerhalb eines Repositorys Exit 2 statt
+  Exit 1, ohne `git` im `PATH` ein Block mit Grund statt Exit 127).
 - **Eine Datei `.harness/stop-gate-streng` ist das Einzige, was den Default
   hält.** Fehlt sie in einem frischen Klon oder wird sie gelöscht, gilt der lockere
   Default. — **Ausgang:** eingetreten und im Design behoben — der Review der ersten
   Fassung fand genau das (Datei weg ⇒ Hook locker); streng ist jetzt der Default ohne
   Schalter, nur eine angelegte `.harness/stop-gate-locker` lockert (Plan-Änderung
   oben, [`MR-079`](../../../../harness/conventions.md#mr-079)). Die Datei
-  `.harness/stop-gate-streng` entfällt.
+  `.harness/stop-gate-streng` entfällt; Löschung, Branch-Wechsel, `git stash` und
+  toter Symlink lockern nichts (Probe der Verifikation).
 - **Die neue `selbstpruefung.sh` setzt Annahmen (Netz, Docker-Builds im Klon),
-  die die alte nicht setzte.** — **Ausgang:** offen bis Closure.
+  die die alte nicht setzte.** — **Ausgang:** entfallen — der Abschnitt (5) braucht
+  nichts über `git`, `bash` und den Hook im Klon hinaus; der Lauf dauert gemessen
+  rund zwei Minuten wie vorher, getragen vom `make gates` im Klon.
 
 ## 7. Closure-Notiz
 
-<!-- Wird bei der Closure gefüllt, vor dem `git mv` nach `done/`. -->
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
+- **Was hat funktioniert:** Stop-Hook, `record-gates` und Selbstprüfung tragen die
+  Mechanik von `ai-harness-init` v0.10.0 — HEAD-Stempel, `trap` auf Exit 2, einen
+  lockeren Zweig, die Stop-Hook-Zweige in `make selbstpruefung` —, und der Hook ist
+  **ohne jeden Schalter streng**. Im Default entscheidet er in 18 Lagen wie der alte;
+  die Selbstprüfung beobachtet die vier Zweige (streng ohne Schalter, locker mit der
+  Datei, streng mit der Variable trotz der Datei, Commit ohne Nachweis). Rot-Belege:
+  ohne den Default-Zweig, ohne die Aufhebung durch die Variable und ohne `trap` wird je
+  die benannte Lage rot (Verifikation).
+- **Was ging anders als geplant:** (1) Meine Empfehlung, den HEAD-Stempel löse das
+  wiederholte „Run `make gates` again", war zu optimistisch: der Upstream-Default ist
+  eine Lockerung, der strenge Modus verhält sich wie unser Hook — der Nutzen ist
+  Härtung, keine Entlastung. Der Auftraggeber entschied: übernehmen, streng lassen.
+  (2) Die erste Fassung hielt den strengen Modus über die Datei
+  `.harness/stop-gate-streng`; der Review (HIGH) maß, dass ihre Entfernung das Gate
+  still lockert. Der Schnitt wurde umgekehrt — streng ohne Schalter, locker nur mit
+  `.harness/stop-gate-locker` —, daraufhin lief Runde 2 über die Fix-Commits.
+  (3) **Nicht belegt:** das `trap` misst keine Zeile der Selbstprüfung (nur die
+  Wegwerf-Probe der Verifikation), und die Selbstprüfung sieht eine unversionierte
+  Lockerungs-Datei im Arbeitsbaum nicht (sie prüft den Klon von `HEAD`); beides
+  steht in [`MR-079`](../../../../harness/conventions.md#mr-079).
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Beobachtungs-Register (`../observations/`):** neu
+  [`BEO-ALL/schalter-datei-ohne-halter`](../observations/BEO-ALL/schalter-datei-ohne-halter/state.md)
+  (Beleg `evidence/slice-276.md`, 1×); `evidence/slice-276.md` in
+  [`BEO-ALL/adopter-fix-lockert-waechter-ohne-adr`](../observations/BEO-ALL/adopter-fix-lockert-waechter-ohne-adr/state.md)
+  (jetzt 2×): die Upstream-Lockerung fiel diesmal vor dem Code auf.
+- **Folge-Slices:** keiner. Die Baseline-Hebung auf v6.18.1 und die Tool-Pins sind
+  eigene Vorgänge.
+- **Risiken aus §6:** alle drei aufgelöst (siehe §6). Trigger-Audit: kein
+  Carveout, kein bootstrap-aware Gate, keine ADR; keine Hard Rule mit eingetretenem
+  Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
+  Folge-Slices — keiner genannt; (c) Register — die zitierten Beobachtungen
+  existieren.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
