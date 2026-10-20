@@ -129,7 +129,7 @@ behaupten.
 | [`make archive-wave`](sensors/archive-wave.md) | bewegt geschlossene Zeitdokumente ins Archiv und ersetzt sie durch Stubs; ohne `APPLY=1` wird nichts geschrieben | kein Gate |
 | `make slice-mv` | Lifecycle-Wechsel eines Slice: reiner Move-Commit + Verweis-Reparatur (eingehend/ausgehend) als eigener Commit — automatisiert die §3.3-Zweikommits | kein Gate · adoptiert aus ai-harness-init |
 | `make history-range-guard` | Vorlauf-Wächter für history-lesende Targets: angeforderte Range auflösbar und nicht leer (stilles Grün über leerem Prüfbereich, shallow-Clone) | kein Gate · adoptiert aus ai-harness-init · [`SPEC-102`](../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) |
-| `make selbstpruefung` | Negativ-Selbsttest des commit-msg-Hooks im Wegwerf-Klon: ohne Kennung fällt der Commit, mit Kennung geht er durch, `make gates` läuft im Klon | kein Gate · adoptiert aus ai-harness-init · [`SPEC-103`](../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) |
+| `make selbstpruefung` | Negativ-Selbsttest des commit-msg-Hooks und des Stop-Hooks im Wegwerf-Klon: ohne Kennung fällt der Commit, mit Kennung geht er durch, `make gates` läuft im Klon, der Stop-Hook fährt seine Zweige | kein Gate · adoptiert aus ai-harness-init · [`SPEC-103`](../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) |
 | `make image-publish` | pusht den Index beider Plattformen ohne Tag, prüft ihn gegen die geprüften Bilder und taggt erst dann; **Netz**, Release-Pfad | kein Gate · [ADR-0102](../docs/plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md) |
 | `make abdeckung` | schreibt die Abdeckungs-Dateien der RTM aus den Testquellen (`docs/user/abdeckung-*.md`); `make test` hält sie gegen ihre Ableitung | kein Gate · [ADR-0104](../docs/plan/adr/0104-test-nachweise-entlasten-in-der-rtm.md) |
 | `make tidy` | pflegt `go.mod`/`go.sum` in Docker — bewusster Akt am Dependency-Stand | kein Gate |
@@ -190,7 +190,12 @@ keine aspirativen Texte. Aber ihre Kraft ist real begrenzt:
 - Der `Stop`-Hook
   ([`stop-require-gates.sh`](../.claude/hooks/stop-require-gates.sh)) ist
   Claude-spezifisch und gibt frische, cleane Klone ohne lokalen Gate-State
-  frei — dafür ist die CI das Netz.
+  frei — dafür ist die CI das Netz. Er ist **streng**, solange
+  `.harness/stop-gate-streng` im Repo liegt: jedes Turn-Ende mit ungedecktem
+  Inhalt blockt. Ohne die Datei wäre er **locker** und gäbe ein Turn-Ende ohne neuen
+  `HEAD` auch mit ungedeckter Änderung frei — eine Lockerung des Handoff-Gates,
+  die nur eine ADR trägt ([`MR-079`](conventions.md#mr-079)). Die Datei zu
+  löschen ist deshalb keine Aufräumarbeit; `make selbstpruefung` fährt beide Zweige.
 - Dasselbe gilt für das zweite Closure-Gate `verify-closure-notes`
   (Closure-Note-Struktur,
   [ADR-0048](../docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md)):
