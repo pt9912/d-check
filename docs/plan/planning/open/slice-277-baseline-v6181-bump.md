@@ -21,7 +21,7 @@ Pin-Hebung und ihre Lehre), [`MR-011`](../../../../harness/conventions.md#mr-011
 
 **Berührte Spec-Stellen:** —
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912
 
 **Autor:** pt9912. **Datum:** 2026-10-20.
 
