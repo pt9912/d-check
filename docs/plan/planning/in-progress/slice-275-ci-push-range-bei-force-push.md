@@ -107,6 +107,18 @@ in `history-range-guard.sh` einen Modus erhält. Gegen den Modus spricht, dass d
 Wächter bewusst nur prüft und nichts auflöst (siehe Abgrenzung); der Plan-Lauf
 legt es vor dem Code fest.
 
+**Plan-Änderung vor dem Code (2026-10-20, Schritt 15):** Die offene Frage ist
+entschieden — eigene Dateien: `tools/harness/ci-range.sh` (Auflösung) und
+`tools/harness/ci-range-probe.sh` (Probe); `history-range-guard.sh` bleibt
+unverändert. Dazu kommen zwei Dateien, die der Plan nicht nannte: das
+`Makefile` (Target `ci-range-probe` samt `.PHONY`, damit `make gate-consistency`
+die Zeile in `harness/README.md` mit einem Target deckt) und das Workflow
+`ci.yml` reicht `github.ref_name` als `REF_NAME` an das Skript durch, damit der
+Default-Branch erkennbar ist. Spiegel-Grep (`PUSH_BEFORE`, `PR_BASE`,
+`github.event.before`, „Pruefe Commit-Range") über `.github/`, `harness/`,
+`docs/user/`, `docs/maintainer/`, `.githooks/`, `tools/`, `Makefile` und die
+READMEs: Treffer nur in `ci.yml`.
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
