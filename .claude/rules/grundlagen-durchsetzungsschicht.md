@@ -1,1 +1,1 @@
-../../.harness/baseline/v6.17.0/regelwerk/grundlagen-durchsetzungsschicht.md
+../../.harness/baseline/v6.18.1/regelwerk/grundlagen-durchsetzungsschicht.md

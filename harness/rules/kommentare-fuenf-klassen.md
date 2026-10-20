@@ -35,7 +35,7 @@ Gemeldet wird von
 ihnen nur, was dem Verzeichnis **widerspricht**.
 
 Kanon:
-[Baseline §Was ein Kommentar trägt](../../.harness/baseline/v6.17.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte).
+[Baseline §Was ein Kommentar trägt](../../.harness/baseline/v6.18.1/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte).
 
 ## Durchsetzung
 

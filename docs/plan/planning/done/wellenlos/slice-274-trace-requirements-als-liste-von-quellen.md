@@ -182,7 +182,7 @@ MEDIUM und drei LOW; alle werden behoben, die Abgrenzung in §1 bleibt.
 - **Zusätzlich:** Weil der Fix einen neuen Leseweg schreibt, läuft nach ihm eine
   zweite `reviewer`-Runde über genau die Fix-Commits (Schritt 14).
 
-**Rot-Beleg** ([Modul 11 §Bewusstes Brechen](../../../../../.harness/baseline/v6.17.0/regelwerk/modul-11-verification.md#bewusstes-brechen-für-dod-testbehauptungen-modul-11)):
+**Rot-Beleg** ([Modul 11 §Bewusstes Brechen](../../../../../.harness/baseline/v6.18.1/regelwerk/modul-11-verification.md#bewusstes-brechen-für-dod-testbehauptungen-modul-11)):
 Die Kreuz-Duplikat-Prüfung und der Nullmengen-Guard je Eintrag werden
 testweise entfernt; die benannten Tests müssen mit der behaupteten Meldung
 rot laufen, nicht nur irgendwie.

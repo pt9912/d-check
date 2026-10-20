@@ -10,7 +10,7 @@ Dies ist die **semantische** Schicht über dem **strukturellen** Gate
 `make verify-closure-notes`
 ([`DC-FA-PLAN-001`](../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
 [ADR-0048](../../docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md)).
-Das Gate prüft **Struktur**, dieser Skill prüft **Inhalt vs. Floskel**. Der   <!-- d-check:cite .harness/baseline/v6.17.0/regelwerk/modul-11-verification.md:83-83 -->
+Das Gate prüft **Struktur**, dieser Skill prüft **Inhalt vs. Floskel**. Der   <!-- d-check:cite .harness/baseline/v6.18.1/regelwerk/modul-11-verification.md:83-83 -->
 Grund für die Zweiteilung ist konkret: „war ganz okay, läuft jetzt" ist
 syntaktisch ein vollständiger Satz und überlebt jede Zählung.
 
@@ -73,7 +73,7 @@ sondern ein Steering-Loop-Signal — siehe §Pflege.
 ## Output-Schema (pro Finding)
 
 `kategorie` (HIGH/MEDIUM/LOW/INFO) · `quelle` (`Closure-Inhalt (a)`, `(b)` oder
-`(c)` — welcher der drei Pflicht-Inhalte fehlt) · `pfad`   <!-- d-check:cite .harness/baseline/v6.17.0/templates/.harness/skills/closure-note-reviewer.template.md:77-78 -->
+`(c)` — welcher der drei Pflicht-Inhalte fehlt) · `pfad`   <!-- d-check:cite .harness/baseline/v6.18.1/templates/.harness/skills/closure-note-reviewer.template.md:77-78 -->
 (`docs/plan/planning/done/<slice>.md` · „wörtliches Kurzzitat der Stelle als
 Anker; die Zeile darf als Lesehilfe dazu, ist aber nicht der Anker") · `befund` (1–2 Sätze,
 beobachtbar, ohne Formulierungs-Vorschlag) · `verifizierbar` (**nein** —
@@ -83,7 +83,7 @@ wiederauffindbar).
 
 ## Negativbefunde (Pflicht)
 
-<!-- d-check:cite .harness/baseline/v6.17.0/templates/.harness/skills/closure-note-reviewer.template.md:84-84 -->
+<!-- d-check:cite .harness/baseline/v6.18.1/templates/.harness/skills/closure-note-reviewer.template.md:84-84 -->
 Eine Zeile „geprüft, ohne Befund: `done/<Charge>`" pro betrachteter
 Slice-Charge — sonst ist „keine Findings" nicht von „nicht geprüft"
 unterscheidbar.

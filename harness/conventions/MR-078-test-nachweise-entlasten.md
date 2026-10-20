@@ -4,7 +4,7 @@
 - **Geltungsbereich:** `trace.coverage` in der [`.d-check.yml`](../../.d-check.yml),
   `make trace` und `make completeness-check`
 - **Ersetzt-Baseline-Regel:** Baseline-Regelwerk
-  [`grundlagen-traceability.md` §Die zweite Richtung](../../.harness/baseline/v6.17.0/regelwerk/grundlagen-traceability.md#die-zweite-richtung-anforderung--beleg)
+  [`grundlagen-traceability.md` §Die zweite Richtung](../../.harness/baseline/v6.18.1/regelwerk/grundlagen-traceability.md#die-zweite-richtung-anforderung--beleg)
   — der Slice als die Zusage, die eine Anforderung schließt
 - **Adaption:** Neben dem Slice schließt ein Test-Nachweis eine Anforderung:
   ein Eintrag in `docs/user/abdeckung-tests.md` (Go-Suite) oder

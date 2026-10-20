@@ -5,7 +5,7 @@
   Rang 6 in [`AGENTS.md`](../../AGENTS.md) §2 und
   [`harness/README.md`](../README.md#source-precedence) §Source precedence
 - **Ersetzt-Baseline-Regel:** Baseline-Regelwerk
-  [`grundlagen-source-precedence.md` §Source Precedence](../../.harness/baseline/v6.17.0/regelwerk/grundlagen-source-precedence.md#source-precedence),
+  [`grundlagen-source-precedence.md` §Source Precedence](../../.harness/baseline/v6.18.1/regelwerk/grundlagen-source-precedence.md#source-precedence),
   Rang 6 — `docs/user/*.md` als Ort der Betriebs-, Quality-, Releasing- und
   Runbook-Sichten
 - **Adaption:** Die Releasing-Doku
