@@ -28,7 +28,7 @@
 ### 3 — LOW
 - **kategorie:** LOW
 - **quelle:** `AGENTS.md` §6 Schritt 4 (Plan-Änderung gehört in den Plan), §5 Regel 13
-- **pfad:** `docs/plan/planning/in-progress/slice-276-stop-hook-haertung-aus-ai-harness-init-v0100.md` · „(`.harness/stop-gate-streng`): das Verhalten des Hooks bleibt das heutige"
+- **pfad:** `docs/plan/planning/done/wellenlos/slice-276-stop-hook-haertung-aus-ai-harness-init-v0100.md` · „(`.harness/stop-gate-streng`): das Verhalten des Hooks bleibt das heutige"
 - **befund:** Die Plan-Änderung ist als Abschnitt angehängt; §1 Ziel, §2 DoD-Punkt 1 („`.harness/stop-gate-streng` ist versioniert"), die Abgrenzungs-Prosa („löscht `.harness/stop-gate-streng` per eigener ADR"), die §3-Tabellenzeile und das §6-Risiko nennen die Datei weiter als Halter des strengen Modus. Der Plan widerspricht damit dem gelieferten Stand; wer DoD oder Ziel isoliert liest, bekommt die entfallene Datei.
 - **verifizierbar:** ja — `grep -n "stop-gate-streng"` im Plan.
 - **klasse:** plan-anhang-statt-korrektur

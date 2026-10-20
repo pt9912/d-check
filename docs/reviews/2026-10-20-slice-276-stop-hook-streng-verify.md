@@ -1,7 +1,7 @@
 # Verifikation — slice-276: Stop-Hook streng, HEAD-Stempel, Selbstprüfung
 
 - **Rolle:** Verifier (Modul 11) — DoD, Plan und Spec gegen den Stand
-- **Gegenstand:** `docs/plan/planning/in-progress/slice-276-stop-hook-haertung-aus-ai-harness-init-v0100.md` §1, §2, §3 (samt der Plan-Änderung nach Runde 1), §4, §6; [MR-079](../../harness/conventions/MR-079-stop-hook-streng-mit-head-stempel.md); `SPEC-094`, `SPEC-103`
+- **Gegenstand:** `docs/plan/planning/done/wellenlos/slice-276-stop-hook-haertung-aus-ai-harness-init-v0100.md` §1, §2, §3 (samt der Plan-Änderung nach Runde 1), §4, §6; [MR-079](../../harness/conventions/MR-079-stop-hook-streng-mit-head-stempel.md); `SPEC-094`, `SPEC-103`
 - **Range:** `2032fe1d..HEAD` (Spitze `565d13d9`); Review-Reports nur als Kontext
 - **Datum:** 2026-10-20
 
