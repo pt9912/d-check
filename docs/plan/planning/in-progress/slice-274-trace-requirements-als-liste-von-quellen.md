@@ -176,9 +176,9 @@ MEDIUM und drei LOW; alle werden behoben, die Abgrenzung in §1 bleibt.
 - **F-6:** Die Tests belegen den Fall in AK-6 über Exit-Code und Waisenzahl und
   pinnen die [ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md)-Grenze
   (Eintrag mit `format: headings` ohne `source`). Der Fehlerzweig der
-  Mustervereinigung bleibt ungetestet: weder doppelte Gruppennamen noch 40
-  Muster `\pL{1000}` lassen die Vereinigung scheitern, ein Auslöser wurde nicht
-  gefunden — der Zweig bleibt als Absicherung stehen.
+  Mustervereinigung ist gepinnt (Runde 2, F-1): ein Einzelmuster mit 999
+  verschachtelten Gruppen kompiliert allein, die Vereinigung scheitert an der
+  Schachtelungstiefe.
 - **Zusätzlich:** Weil der Fix einen neuen Leseweg schreibt, läuft nach ihm eine
   zweite `reviewer`-Runde über genau die Fix-Commits (Schritt 14).
 
