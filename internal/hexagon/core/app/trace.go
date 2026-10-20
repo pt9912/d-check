@@ -81,11 +81,8 @@ const (
 // Konventions-Default). Der Nullwert einer model.TraceConfig ⇒ alle Defaults ⇒
 // byte-identisch (DC-QA-02).
 type resolvedTrace struct {
-	source      string
+	entries     []reqEntry
 	reqPat      *regexp.Regexp
-	format      string
-	table       *model.TraceTableConfig
-	strictReqs  bool
 	adrDir      string
 	adrFile     *regexp.Regexp
 	adrPrefix   string
@@ -99,28 +96,18 @@ type resolvedTrace struct {
 // gesetzten trace-Feld. Ein leerer ADR-Präfix bleibt bewusst Default `ADR-`
 // (nicht ausdrückbar, DC-FA-CLI-009 Out-of-Scope); der Slice-Präfix ist per
 // Default leer und wird direkt übernommen.
-func resolveTrace(tc model.TraceConfig) resolvedTrace {
+func resolveTrace(tc model.TraceConfig) (resolvedTrace, error) {
 	rt := resolvedTrace{
-		source: traceReqSource, reqPat: reqIDFull,
-		format: model.TraceFormatHeadings,
-		adrDir: traceADRDir, adrFile: adrFileShape, adrPrefix: "ADR-",
+		entries: resolveEntries(tc),
+		adrDir:  traceADRDir, adrFile: adrFileShape, adrPrefix: "ADR-",
 		sliceDir: traceSliceDir, sliceFile: sliceFileShape, slicePrefix: tc.SlicePrefix,
 		coverage: tc.Coverage,
 	}
-	if tc.Source != "" {
-		rt.source = tc.Source
-		rt.strictReqs = true
+	reqPat, err := referencePattern(rt.entries)
+	if err != nil {
+		return resolvedTrace{}, err
 	}
-	if tc.ReqPattern != nil {
-		rt.reqPat = tc.ReqPattern
-	}
-	if tc.Format != "" {
-		rt.format = tc.Format
-	}
-	rt.table = tc.Table
-	if rt.format == model.TraceFormatTable {
-		rt.strictReqs = true
-	}
+	rt.reqPat = reqPat
 	if tc.ADRDir != "" {
 		rt.adrDir = tc.ADRDir
 	}
@@ -136,7 +123,7 @@ func resolveTrace(tc model.TraceConfig) resolvedTrace {
 	if tc.SliceFile != nil {
 		rt.sliceFile = tc.SliceFile
 	}
-	return rt
+	return rt, nil
 }
 
 // BuildTraceMatrix leitet die RTM aus den (per trace-Block konfigurierbaren)
@@ -144,8 +131,11 @@ func resolveTrace(tc model.TraceConfig) resolvedTrace {
 // ihre Referenzen aus ADR- und Slice-Dateien (Doku-only). Der Nullwert von tc ⇒
 // Konventions-Default ⇒ byte-identisch (DC-QA-02). Reiner Lese-Pfad (DC-QA-03).
 func BuildTraceMatrix(fsys driven.Filesystem, tc model.TraceConfig) (TraceMatrix, error) {
-	rt := resolveTrace(tc)
-	titles, order, tableModality, err := loadTraceRequirements(fsys, rt)
+	rt, err := resolveTrace(tc)
+	if err != nil {
+		return TraceMatrix{}, err
+	}
+	reqs, err := loadTraceRequirements(fsys, rt.entries)
 	if err != nil {
 		return TraceMatrix{}, err
 	}
@@ -167,25 +157,28 @@ func BuildTraceMatrix(fsys driven.Filesystem, tc model.TraceConfig) (TraceMatrix
 	if err != nil {
 		return TraceMatrix{}, err
 	}
-	m := TraceMatrix{
-		Requirements:     make([]TraceRow, 0, len(order)),
-		CoverageActive:   len(rt.coverage) > 0,
-		ModalityActive:   tc.Modality != nil,
-		CrossConsistency: cross,
-		CrossActive:      tc.CrossConsistency != nil,
-	}
-	mm, modByID, err := traceModalities(fsys, tc.Modality, rt, tableModality)
+	mods, err := traceModalities(fsys, rt.entries, reqs)
 	if err != nil {
 		return TraceMatrix{}, err
 	}
-	for _, id := range order {
-		row := traceRow(id, titles, adrRefs, sliceRefs, covRefs, modByID, m.ModalityActive)
+	m := TraceMatrix{
+		Requirements:     make([]TraceRow, 0, len(reqs.order)),
+		CoverageActive:   len(rt.coverage) > 0,
+		CrossConsistency: cross,
+		CrossActive:      tc.CrossConsistency != nil,
+	}
+	for _, em := range mods {
+		m.ModalityActive = m.ModalityActive || em.active
+	}
+	for _, id := range reqs.order {
+		em := mods[reqs.owner[id]]
+		row := traceRow(id, reqs.titles, adrRefs, sliceRefs, covRefs, em.byID, em.active)
 		// Waise = weder Slice- noch Coverage-Referenz (DC-FA-CLI-011, slice-067);
-		// gatend nur, wenn ohne modality (alle) oder die Stufe in require-levels
-		// liegt (DC-FA-MOD-001, slice-068).
+		// gatend nur, wenn der Eintrag ohne modality ist (alle) oder die Stufe in
+		// seinen require-levels liegt (DC-FA-MOD-001, slice-068).
 		if row.Orphan {
 			m.Orphans++
-			if !m.ModalityActive || mm.requireLevels[row.Modality] {
+			if !em.active || em.mm.requireLevels[row.Modality] {
 				m.GatingOrphans++
 			}
 		}
@@ -193,38 +186,6 @@ func BuildTraceMatrix(fsys driven.Filesystem, tc model.TraceConfig) (TraceMatrix
 	}
 	m.Total = len(m.Requirements)
 	return m, nil
-}
-
-func loadTraceRequirements(fsys driven.Filesystem, rt resolvedTrace) (map[string]string, []string, map[string]string, error) {
-	if rt.format != model.TraceFormatHeadings && rt.format != model.TraceFormatTable {
-		return nil, nil, nil, fmt.Errorf("trace.requirements: unbekanntes Format %q", rt.format)
-	}
-	if rt.format == model.TraceFormatTable && rt.table == nil {
-		return nil, nil, nil, fmt.Errorf("trace.requirements: Format table braucht eine Tabellenkonfiguration")
-	}
-	if rt.strictReqs && !pathExists(fsys, rt.source) {
-		return nil, nil, nil, fmt.Errorf("trace.requirements: Quelle %q fehlt (Format %s)", rt.source, rt.format)
-	}
-	titles, order, tableModality, err := traceRequirements(fsys, rt)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	if rt.strictReqs && len(order) == 0 {
-		return nil, nil, nil, fmt.Errorf("trace.requirements: Quelle %q im Format %s ergab 0 Anforderungen", rt.source, rt.format)
-	}
-	return titles, order, tableModality, nil
-}
-
-func traceModalities(fsys driven.Filesystem, cfg *model.TraceModality, rt resolvedTrace, tableTexts map[string]string) (modalityMatcher, map[string]string, error) {
-	if cfg == nil {
-		return modalityMatcher{}, nil, nil
-	}
-	matcher := resolveModality(cfg)
-	if rt.format == model.TraceFormatTable {
-		return matcher, classifyRequirementTexts(tableTexts, matcher), nil
-	}
-	modalities, err := requirementModality(fsys, rt.source, rt.reqPat, matcher)
-	return matcher, modalities, err
 }
 
 // traceRow baut eine RTM-Zeile aus den Referenz-Maps und bestimmt die
@@ -245,16 +206,6 @@ func traceRow(id string, titles map[string]string, adrRefs, sliceRefs, covRefs m
 	}
 	row.Orphan = len(row.Slices) == 0 && len(row.Coverage) == 0
 	return row
-}
-
-// traceRequirements wählt den konfigurierten Extraktor und liefert Titel,
-// sortierte Kennungen und (nur für table) den Modalitäts-Eingabetext.
-func traceRequirements(fsys driven.Filesystem, rt resolvedTrace) (map[string]string, []string, map[string]string, error) {
-	if rt.format == model.TraceFormatTable {
-		return traceTableRequirements(fsys, rt.source, rt.reqPat, rt.table)
-	}
-	titles, order, err := traceHeadingRequirements(fsys, rt.source, rt.reqPat, rt.strictReqs)
-	return titles, order, nil, err
 }
 
 // traceHeadingRequirements sammelt führende Heading-Kennungen. Im Strict-

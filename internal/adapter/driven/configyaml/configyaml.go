@@ -15,6 +15,7 @@ import (
 	"path"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
@@ -673,7 +674,7 @@ type rawSource struct {
 // RTM-Quellen. Jeder Unter-Block/jedes Feld ist optional; abwesend ⇒ Default im
 // Kern (byte-identisch, DC-QA-02).
 type rawTrace struct {
-	Requirements *rawTraceRequirements `yaml:"requirements"`
+	Requirements *rawTraceRequirementsForm `yaml:"requirements"`
 	ADRs         *struct {
 		Dir         string `yaml:"dir"`
 		FilePattern string `yaml:"file-pattern"`
@@ -725,6 +726,70 @@ type rawTraceRequirements struct {
 	Format    string         `yaml:"format"`
 	Table     *rawTraceTable `yaml:"table"`
 	Modality  *rawModality   `yaml:"modality"`
+}
+
+// rawTraceRequirementsForm trägt trace.requirements als Objekt (ein Eintrag,
+// list == false) oder als Liste von Objekten (DC-FA-REQ-001). Jeder Eintrag wird
+// strikt neu dekodiert, weil yaml.Node.Decode KnownFields nicht erbt: ein
+// unbekannter Schlüssel bleibt in beiden Formen ein Fehler.
+type rawTraceRequirementsForm struct {
+	list    bool
+	entries []rawTraceRequirements
+}
+
+func (f *rawTraceRequirementsForm) UnmarshalYAML(n *yaml.Node) error {
+	if n.Kind == yaml.AliasNode && n.Alias != nil {
+		n = n.Alias
+	}
+	if n.Kind != yaml.SequenceNode {
+		var e rawTraceRequirements
+		if err := decodeStrictNode(n, &e); err != nil {
+			return err
+		}
+		f.entries = []rawTraceRequirements{e}
+		return nil
+	}
+	if len(n.Content) == 0 {
+		return fmt.Errorf("line %d: trace.requirements darf als Liste nicht leer sein", n.Line)
+	}
+	f.list = true
+	for i, item := range n.Content {
+		if item.Kind == yaml.ScalarNode && item.Tag == "!!null" {
+			return fmt.Errorf("line %d: trace.requirements[%d] ist leer (erwartet: Objekt)", item.Line, i)
+		}
+		var e rawTraceRequirements
+		if err := decodeStrictNode(item, &e); err != nil {
+			return err
+		}
+		f.entries = append(f.entries, e)
+	}
+	return nil
+}
+
+var yamlLineRef = regexp.MustCompile(`line (\d+)`)
+
+// decodeStrictNode dekodiert einen Teilbaum mit KnownFields; die Zeilennummern
+// des Fehlers beziehen sich danach auf das Dokument statt auf den Teilbaum.
+// Grenze: Kommentare und Leerzeilen im Teilbaum zählt die Neu-Serialisierung
+// nicht mit, die Zeile kann dort um diese Zeilen abweichen.
+func decodeStrictNode(n *yaml.Node, out any) error {
+	b, err := yaml.Marshal(n)
+	if err != nil {
+		return err
+	}
+	dec := yaml.NewDecoder(bytes.NewReader(b))
+	dec.KnownFields(true)
+	err = dec.Decode(out)
+	var te *yaml.TypeError
+	if errors.As(err, &te) {
+		for i, msg := range te.Errors {
+			te.Errors[i] = yamlLineRef.ReplaceAllStringFunc(msg, func(m string) string {
+				v, _ := strconv.Atoi(m[len("line "):])
+				return fmt.Sprintf("line %d", v+n.Line-1)
+			})
+		}
+	}
+	return err
 }
 
 // rawTraceTable bindet tabellarische Anforderungsquellen an exakte
@@ -988,10 +1053,8 @@ func applyTrace(r *raw, cfg *model.Config) error {
 	}
 	t := r.Trace
 	var tc model.TraceConfig
-	if req := t.Requirements; req != nil {
-		if err := applyTraceRequirements(req, &tc); err != nil {
-			return err
-		}
+	if err := applyTraceRequirementsForm(t.Requirements, &tc); err != nil {
+		return err
 	}
 	if adr := t.ADRs; adr != nil {
 		if err := validateTracePath("trace.adrs.dir", adr.Dir); err != nil {
@@ -1142,6 +1205,28 @@ func crossRanges(set *bool) bool {
 		return true
 	}
 	return *set
+}
+
+// applyTraceRequirementsForm validiert die Objekt-Form wie bisher und die
+// Listen-Form je Eintrag; ein Fehler nennt dort den Index des Eintrags
+// (DC-FA-REQ-001).
+func applyTraceRequirementsForm(f *rawTraceRequirementsForm, tc *model.TraceConfig) error {
+	if f == nil {
+		return nil
+	}
+	if !f.list {
+		return applyTraceRequirements(&f.entries[0], tc)
+	}
+	for i := range f.entries {
+		var e model.TraceConfig
+		if err := applyTraceRequirements(&f.entries[i], &e); err != nil {
+			return fmt.Errorf("%s", strings.Replace(err.Error(), "trace.requirements", fmt.Sprintf("trace.requirements[%d]", i), 1))
+		}
+		tc.Sources = append(tc.Sources, model.TraceSource{
+			Source: e.Source, ReqPattern: e.ReqPattern, Format: e.Format, Table: e.Table, Modality: e.Modality,
+		})
+	}
+	return nil
 }
 
 func applyTraceRequirements(req *rawTraceRequirements, tc *model.TraceConfig) error {

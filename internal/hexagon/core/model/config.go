@@ -929,6 +929,10 @@ type TraceConfig struct {
 	ReqPattern  *regexp.Regexp
 	Format      string
 	Table       *TraceTableConfig
+	// Sources: Listen-Form von trace.requirements (DC-FA-REQ-001); nichtleer ⇒
+	// ersetzt die Felder Source/ReqPattern/Format/Table/Modality, die dann
+	// unbelegt bleiben. nil ⇒ Objekt-Form (byte-identisch, DC-QA-02).
+	Sources     []TraceSource
 	ADRDir      string
 	ADRFile     *regexp.Regexp
 	ADRPrefix   string
@@ -1035,6 +1039,17 @@ type TraceTableConfig struct {
 	TextColumns    []string
 	ModalityColumn string
 	DuplicateIDs   string
+}
+
+// TraceSource ist ein Eintrag der Listen-Form von trace.requirements
+// (DC-FA-REQ-001): dieselben Felder wie die Objekt-Form, je Eintrag. Ein leerer
+// Wert fällt wie dort auf den Default zurück.
+type TraceSource struct {
+	Source     string
+	ReqPattern *regexp.Regexp
+	Format     string
+	Table      *TraceTableConfig
+	Modality   *TraceModality
 }
 
 // TraceModality sind die Parameter der Modalitäts-Klassifikation (DC-FA-MOD-001):

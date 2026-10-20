@@ -51,6 +51,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-XREF-001`](../../spec/lastenheft.md) | `TestDecode_CrossConsistencyFehler` | [`internal/adapter/driven/configyaml/trace_cross_test.go`](../../internal/adapter/driven/configyaml/trace_cross_test.go) |
 | [`DC-FA-XREF-001`](../../spec/lastenheft.md) | `TestDecode_CrossConsistencyHappy` | [`internal/adapter/driven/configyaml/trace_cross_test.go`](../../internal/adapter/driven/configyaml/trace_cross_test.go) |
 | [`DC-QA-02`](../../spec/lastenheft.md) | `TestDecode_CrossConsistencyOhneBlock` | [`internal/adapter/driven/configyaml/trace_cross_test.go`](../../internal/adapter/driven/configyaml/trace_cross_test.go) |
+| [`DC-QA-02`](../../spec/lastenheft.md) | `TestDecode_RequirementsObjectFormUnchanged` | [`internal/adapter/driven/configyaml/trace_requirements_list_test.go`](../../internal/adapter/driven/configyaml/trace_requirements_list_test.go) |
 | [`DC-FA-VCS-002`](../../spec/lastenheft.md) | `TestAllPathsLeereRange` | [`internal/adapter/driven/git/git_test.go`](../../internal/adapter/driven/git/git_test.go) |
 | [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestAllPathsPureRenameYieldsDelete` | [`internal/adapter/driven/git/git_test.go`](../../internal/adapter/driven/git/git_test.go) |
 | [`DC-FA-COMMITS-001`](../../spec/lastenheft.md) | `TestCommitMessages` | [`internal/adapter/driven/git/git_test.go`](../../internal/adapter/driven/git/git_test.go) |
@@ -191,6 +192,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-XREF-001`](../../spec/lastenheft.md) | `TestCrossConsistencyVakuumDurchUebergriffigesVentil` | [`internal/hexagon/core/app/trace_cross_test.go`](../../internal/hexagon/core/app/trace_cross_test.go) |
 | [`DC-FA-XREF-001`](../../spec/lastenheft.md) | `TestCrossConsistencyVakuumRueckSichtLeerUnterSuperset` | [`internal/hexagon/core/app/trace_cross_test.go`](../../internal/hexagon/core/app/trace_cross_test.go) |
 | [`DC-FA-MOD-001`](../../spec/lastenheft.md) | `TestModalityClassify` | [`internal/hexagon/core/app/trace_modality_test.go`](../../internal/hexagon/core/app/trace_modality_test.go) |
+| [`DC-QA-02`](../../spec/lastenheft.md) | `TestTraceObjectFormErrorsCarryNoIndex` | [`internal/hexagon/core/app/trace_sources_test.go`](../../internal/hexagon/core/app/trace_sources_test.go) |
 | [`DC-FA-ANCH-001`](../../spec/lastenheft.md) | `TestAnchorsHTMLModul` | [`internal/hexagon/core/rules/anchors_test.go`](../../internal/hexagon/core/rules/anchors_test.go) |
 | [`DC-FA-ANCH-001`](../../spec/lastenheft.md) | `TestAnchorsHTMLSelbeDatei` | [`internal/hexagon/core/rules/anchors_test.go`](../../internal/hexagon/core/rules/anchors_test.go) |
 | [`DC-FA-ANCH-001`](../../spec/lastenheft.md) | `TestAnchorsModul` | [`internal/hexagon/core/rules/anchors_test.go`](../../internal/hexagon/core/rules/anchors_test.go) |
