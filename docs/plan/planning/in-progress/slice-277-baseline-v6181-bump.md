@@ -111,6 +111,17 @@ Aussagen-Suche (Schritt 20): `grep -n 'wc -l' tools/harness/fetch-baseline-cache
 drei Zählstellen; Zeile 106 rechnet arithmetisch (`$(( … ))`), Zeile 218 vergleicht
 mit `-eq`, nur Zeile 343 vergleicht als String. Kein Spiegel außerhalb des Skripts.
 
+**Plan-Änderung (nachgetragen im Review-Vorlauf, Schritt 15 — hätte vor dem
+Code-Commit stehen müssen):** Zusätzlich zur Tabelle trägt der Hauptcommit eine
+Datei aus dem Frozen-Bestand: `slice-274` (am selben Tag geschlossen) enthält einen
+Markdown-Link auf den `v6.17.0`-Baum (`modul-11` §Bewusstes Brechen). Nach dem
+Entfernen des alten Baums meldete `doc-check` ihn als toten Link; die Alternative wäre
+ein neuer `ignore-refs`-Eintrag ([`MR-069`](../../../../harness/conventions.md#mr-069)),
+eine deklarierte Gate-Senkung. Der Link ist auf `v6.18.1` retargetet, der Text des
+Slice unberührt; der MR-Eintrag führt es als einzige Ausnahme von der Frozen-Regel.
+Dazu die Link-Tiefen von `MR-074` nach dem Move (eigener Commit) und die
+Zitat-Spanne `modul-10` im Reviewer-Skill (87→99).
+
 **Spiegel-Messung** ([`MR-070`](../../../../harness/conventions.md#mr-070),
 [`MR-074`](../../../../harness/conventions.md#mr-074) „für die nächste Hebung"):
 `git grep -l "v6\.17\.0"` über das **ganze** Repo, ausgenommen nur
