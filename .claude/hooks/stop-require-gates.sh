@@ -4,17 +4,17 @@
 # inhaltsbasierte Hash-Funktion wie record-gates (keine Logik-Dopplung;
 # harness/conventions.md MR-004/MR-005).
 #
-# STRENG (Default dieses Repos). Jedes Turn-Ende mit ungedecktem Inhalt blockt,
-# auch ohne neuen HEAD. Streng ist der Hook, wenn die versionierte Datei
-# `.harness/stop-gate-streng` existiert (Inhalt bedeutungslos) ODER
-# STOP_GATE_STRENG genau `1` ist; jeder andere Wert der Variablen sagt nichts und
-# hebt die Datei nicht auf. Der Hook liest die Datei, er schreibt und löscht sie nie.
+# STRENG (Default, ohne jeden Schalter). Jedes Turn-Ende mit ungedecktem Inhalt blockt,
+# auch ohne neuen HEAD. Ein fehlender, gelöschter oder unlesbarer Schalter lockert
+# nichts: gelockert wird nur durch eine Datei, die da ist.
 #
-# LOCKER (nur ohne die Datei). Der Hook blockt dann nur bei neuem HEAD UND
-# abweichendem Hash: ein Turn-Ende, dessen HEAD dem von record-gates gestempelten
+# LOCKER (nur mit `.harness/stop-gate-locker`). Der Hook blockt dann nur bei neuem HEAD
+# UND abweichendem Hash: ein Turn-Ende, dessen HEAD dem von record-gates gestempelten
 # (.harness/state/gates-passed.head) gleicht, geht auch mit ungedeckter Änderung
 # frei. Das ist eine Lockerung des Handoff-Gates und braucht eine ADR
-# (AGENTS.md §3.6); dieses Repo wählt sie nicht (MR-079).
+# (AGENTS.md §3.6); dieses Repo legt die Datei nicht an (MR-079). STOP_GATE_STRENG
+# genau `1` hebt die Datei auf; jeder andere Wert der Variablen sagt nichts. Der Hook
+# liest die Datei, er schreibt und löscht sie nie.
 #
 # Da der Hash inhaltsbasiert ist, gilt der Nachweis über Commits hinweg (gleicher
 # Inhalt = gleicher Hash) — ein Commit ohne Gate-Lauf macht den Stop dagegen NICHT
@@ -66,11 +66,11 @@ if printf '%s' "$input" | grep -q '"stop_hook_active"[[:space:]]*:[[:space:]]*tr
   approve
 fi
 
-streng=0
-if [ -e .harness/stop-gate-streng ]; then streng=1; fi
-if [ "${STOP_GATE_STRENG:-}" = 1 ]; then streng=1; fi
+locker=0
+if [ -e .harness/stop-gate-locker ]; then locker=1; fi
+if [ "${STOP_GATE_STRENG:-}" = 1 ]; then locker=0; fi
 
-if [ "$streng" -eq 0 ] && [ -e "$head_file" ]; then
+if [ "$locker" -eq 1 ] && [ -e "$head_file" ]; then
   if ! current_head="$(head_wert)" || ! recorded_head="$(cat "$head_file")"; then
     block "HEAD or the recorded HEAD stamp could not be read. Fix the cause, then run \`make gates\`."
   fi

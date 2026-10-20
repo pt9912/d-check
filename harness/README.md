@@ -190,12 +190,12 @@ keine aspirativen Texte. Aber ihre Kraft ist real begrenzt:
 - Der `Stop`-Hook
   ([`stop-require-gates.sh`](../.claude/hooks/stop-require-gates.sh)) ist
   Claude-spezifisch und gibt frische, cleane Klone ohne lokalen Gate-State
-  frei — dafür ist die CI das Netz. Er ist **streng**, solange
-  `.harness/stop-gate-streng` im Repo liegt: jedes Turn-Ende mit ungedecktem
-  Inhalt blockt. Ohne die Datei wäre er **locker** und gäbe ein Turn-Ende ohne neuen
-  `HEAD` auch mit ungedeckter Änderung frei — eine Lockerung des Handoff-Gates,
-  die nur eine ADR trägt ([`MR-079`](conventions.md#mr-079)). Die Datei zu
-  löschen ist deshalb keine Aufräumarbeit; `make selbstpruefung` fährt beide Zweige.
+  frei — dafür ist die CI das Netz. Er ist **streng** ohne jeden Schalter: jedes
+  Turn-Ende mit ungedecktem Inhalt blockt, auch ohne neuen `HEAD`. **Locker** wäre er
+  nur mit der Datei `.harness/stop-gate-locker` und gäbe ein Turn-Ende ohne neuen
+  `HEAD` auch mit ungedeckter Änderung frei — eine Lockerung des Handoff-Gates, die
+  nur eine ADR trägt ([`MR-079`](conventions.md#mr-079)); ein fehlender Schalter
+  lockert nichts. `make selbstpruefung` fährt beide Zweige.
 - Dasselbe gilt für das zweite Closure-Gate `verify-closure-notes`
   (Closure-Note-Struktur,
   [ADR-0048](../docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md)):

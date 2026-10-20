@@ -1,2 +1,0 @@
-Strenger Modus des Stop-Hooks (MR-079): ein Turn-Ende mit ungedecktem Inhalt blockt, auch ohne neuen HEAD.
-Der Inhalt dieser Datei ist bedeutungslos; ihre Anwesenheit setzt den Modus. Sie zu loeschen lockert das Handoff-Gate und braucht eine ADR (AGENTS.md §3.6).

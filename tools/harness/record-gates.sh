@@ -6,7 +6,7 @@
 #
 # HEAD-STEMPEL: neben dem Hash schreibt dieses Skript die aufgelöste Commit-SHA von
 # HEAD nach .harness/state/gates-passed.head. Den Stempel liest der Stop-Hook nur im
-# lockeren Modus (ohne .harness/stop-gate-streng, MR-079); im strengen Modus dieses
+# lockeren Modus (nur mit .harness/stop-gate-locker, MR-079); im strengen Modus dieses
 # Repos zählt allein der Hash. head_wert ermittelt den Wert genauso wie
 # .claude/hooks/stop-require-gates.sh — Kopplung: beide Fassungen gleich halten. Ist
 # HEAD nicht auflösbar und das Repo nicht eng als commitlos erkannt, endet das Skript

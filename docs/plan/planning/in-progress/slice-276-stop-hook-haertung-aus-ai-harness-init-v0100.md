@@ -115,18 +115,18 @@ Abgrenzung in §1 bleibt.
   ist streng, **solange** die Datei `.harness/stop-gate-locker` fehlt; nur sie
   schaltet den lockeren Zweig frei, und `STOP_GATE_STRENG=1` hebt sie auf. Eine
   gelöschte oder fehlende Datei kann damit nichts lockern; wer lockern will, muss
-  eine Datei anlegen, und das ist eine ADR-pflichtige Entscheidung (MR-079). Die
+  eine Datei anlegen, und das ist eine ADR-pflichtige Entscheidung ([MR-079](../../../../harness/conventions.md#mr-079)). Die
   Datei `.harness/stop-gate-streng` entfällt.
 - **Betroffen:** `.claude/hooks/stop-require-gates.sh` (Modus-Bildung),
   `tools/harness/selbstpruefung.sh` (Abschnitt 5 misst: streng ohne Datei, locker mit
   `.harness/stop-gate-locker`, streng mit Variable trotz Datei, Commit ohne Nachweis),
-  `.harness/stop-gate-streng` (gelöscht), `MR-079`, `SPEC-094`, `SPEC-103`,
+  `.harness/stop-gate-streng` (gelöscht), [`MR-079`](../../../../harness/conventions.md#mr-079), [`SPEC-094`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge), [`SPEC-103`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge),
   `harness/README.md`. Alles in §3 genannt, außer dass die Datei jetzt der
   Lockerungs-Schalter ist.
 - **Aussagen-Suche:** `grep -rn "stop-gate-streng"` über `.claude/`, `tools/`,
   `harness/`, `spec/`, `docs/plan/planning/in-progress/` und `.harness/`: Treffer in
-  Hook, `record-gates.sh`, `selbstpruefung.sh`, `MR-079`, `harness/README.md`,
-  `SPEC-094`, `SPEC-103` und diesem Plan — jeder wird nachgezogen.
+  Hook, `record-gates.sh`, `selbstpruefung.sh`, [`MR-079`](../../../../harness/conventions.md#mr-079), `harness/README.md`,
+  [`SPEC-094`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge), [`SPEC-103`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) und diesem Plan — jeder wird nachgezogen.
 - **INFO 1 des Reports:** Die Selbstprüfung unterscheidet im Abschnitt „Commit ohne
   Nachweis", über welchen Pfad der Hook blockt (streng: über den Hash; locker: neuer
   `HEAD` plus abweichender Hash) und behauptet nicht beides für beide Zweige.
