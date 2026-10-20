@@ -340,7 +340,7 @@ extract_both_trees "${tmp}/lab-regelwerk.zip" "$baseline"
 # Post-Copy-vs-Manifest-Vergleich (verify) sähe einen übergangenen Quell-Zweig
 # nicht, weil Manifest und Platte beide post-copy sind.
 dst_n="$(find "${baseline}/regelwerk" "${baseline}/templates" -type f | wc -l)"
-[ "$src_n" = "$dst_n" ] \
+[ "$src_n" -eq "$dst_n" ] \
   || { echo "fetch-baseline-cache: Quelle (${src_n}) != vendored (${dst_n}) — Kopierschritt hat Dateien übergangen" >&2; exit 1; }
 
 # Manifest über den TATSÄCHLICHEN Dateibestand BEIDER Bäume (find, nicht
