@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
-# selbstpruefung.sh — Negativ-Selbsttest des commit-msg-Hooks, adoptiert aus
-# ai-harness-init (Stand v6.13.0) · seit slice-245. EIN KOMMANDO, KEIN GATE.
+# selbstpruefung.sh — Negativ-Selbsttest des commit-msg-Hooks und des Stop-Hooks,
+# adoptiert aus ai-harness-init (Stand v0.10.0) · seit slice-245. EIN KOMMANDO,
+# KEIN GATE.
 #
 # WAS ER BELEGT. Dieses Repo klont sich selbst in ein Wegwerf-Verzeichnis,
 # stellt fest, dass der frische Klon in seiner LOKALEN Konfiguration keinen
 # core.hooksPath traegt, aktiviert dort den Traeger der Commit-Kennung
 # (`make hooks`) und faehrt danach ZWEI Commit-Versuche: einer OHNE Kennung
 # faellt und entsteht nicht, einer MIT Kennung geht durch. Zuletzt laeuft das
-# Gate-Kommando im Klon. BEIDE AUSGAENGE STEHEN IN EINEM LAUF — ein Lauf, der
-# nur den durchgelassenen Commit beobachtet, belegt nicht, dass der Traeger
-# ueberhaupt etwas aufhaelt.
+# Gate-Kommando im Klon, und der Stop-Hook faehrt dort seine Zweige: streng mit
+# der Datei .harness/stop-gate-streng, locker ohne sie, streng mit
+# STOP_GATE_STRENG=1, und ein Commit ohne Nachweis faellt in beiden. BEIDE
+# AUSGAENGE STEHEN IN EINEM LAUF — ein Lauf, der nur den durchgelassenen Commit
+# beobachtet, belegt nicht, dass der Traeger ueberhaupt etwas aufhaelt.
 #
 # WARUM EIN KLON UND NICHT DIESES ARBEITSVERZEICHNIS. Die Aktivierung ist
 # lokale Konfiguration (core.hooksPath) und reist nicht mit dem Klon; genau
@@ -47,7 +50,7 @@ git -C "$quelle" rev-parse --verify --quiet 'HEAD^{commit}' >/dev/null 2>&1 ||
 echo "selbstpruefung: Marker — Traeger=[$SELBSTPRUEFUNG_TRAEGER] Aktivierung=[$SELBSTPRUEFUNG_AKTIVIERUNG] Gate=[$SELBSTPRUEFUNG_GATE] MsgRot=[$SELBSTPRUEFUNG_MSG_ROT] MsgGruen=[$SELBSTPRUEFUNG_MSG_GRUEN]"
 echo "selbstpruefung: Quelle=[$quelle] (der Klon traegt den Stand von HEAD)"
 
-echo "selbstpruefung: Traeger, Aktivierung, die zwei Commit-Ausgaenge und das Gate-Kommando im frischen Klon ..."
+echo "selbstpruefung: Traeger, Aktivierung, die zwei Commit-Ausgaenge, das Gate-Kommando und der Stop-Hook im frischen Klon ..."
 
 arbeit="$(mktemp -d -p "${TMPDIR:-/tmp}")"
 trap 'rm -rf "$arbeit"' EXIT
@@ -153,4 +156,53 @@ fi
 # stammt aus einem fremden Werkzeug und traegt diese Unterscheidung nicht.
 echo "selbstpruefung: GATE — [$SELBSTPRUEFUNG_GATE] im Klon ist Exit 0. Ausgabe:"
 printf '%s\n' "$gate_out" | sed 's/^/selbstpruefung:   /'
-echo "selbstpruefung: OK — der Traeger [$SELBSTPRUEFUNG_TRAEGER] reist mit dem Klon, seine Aktivierung nicht; [$SELBSTPRUEFUNG_AKTIVIERUNG] nimmt genau ihn in Betrieb, danach faellt '$SELBSTPRUEFUNG_MSG_ROT' und geht '$SELBSTPRUEFUNG_MSG_GRUEN' durch, und [$SELBSTPRUEFUNG_GATE] laeuft im Klon gruen. Nicht geprueft: ob der Traeger jeden Commit-Pfad erreicht (--no-verify, Werkzeug-Commits, andere Aufrufformen)."
+
+# (5) DER STOP-HOOK IM KLON, ALLE ZWEIGE. Den Nachweis schreibt record-gates.sh
+# direkt, nicht das Gate-Kommando: ein gesetzter Gate-Marker muss record-gates nicht
+# fahren, und ohne Stempel misst der Lauf nur den strengen Zweig. Gelesen wird die
+# Entscheidung des echten Hooks, Exit 0 vorausgesetzt (MR-079).
+#
+# DIESES REPO IST STRENG: .harness/stop-gate-streng liegt versioniert im Klon, und
+# ein Turn-Ende mit ungedecktem Inhalt blockt auch ohne neuen HEAD. Der Lauf misst
+# zuerst genau das, nimmt die Datei dann weg, damit der lockere Zweig des Hooks
+# messbar ist, und setzt sie fuer den Datei-Zweig wieder.
+stop_hook="$klon/.claude/hooks/stop-require-gates.sh"
+[ -f "$stop_hook" ] || fehler "im Klon liegt kein Stop-Hook unter .claude/hooks/stop-require-gates.sh."
+[ -f "$klon/.harness/stop-gate-streng" ] || fehler "im Klon liegt .harness/stop-gate-streng nicht — dieses Repo haelt den Stop-Hook streng (MR-079); ohne die Datei gilt der lockere Zweig, der ein Turn-Ende ohne neuen HEAD auch mit ungedeckter Aenderung freigibt."
+stop_entscheid() {
+	local aus rc=0
+	aus="$(cd "$klon" && printf '{}' | env -u STOP_GATE_STRENG ${1:+"STOP_GATE_STRENG=$1"} bash .claude/hooks/stop-require-gates.sh 2>&1)" || rc=$?
+	[ "$rc" -eq 0 ] || fehler "der Stop-Hook endet mit Exit $rc (erwartet 0 mit einer Entscheidung):
+$aus"
+	case "$aus" in
+	*'"decision":"approve"'*) echo frei ;;
+	*'"decision": "block"'*) echo blockiert ;;
+	*) fehler "der Stop-Hook liefert keine lesbare Entscheidung:
+$aus" ;;
+	esac
+}
+rg_out=""
+rg_out="$(cd "$klon" && bash tools/harness/record-gates.sh 2>&1)" || fehler "record-gates.sh im Klon endet nicht mit Exit 0:
+$rg_out"
+[ -s "$klon/.harness/state/gates-passed.head" ] || fehler "record-gates.sh hat im Klon keinen HEAD-Stempel geschrieben (.harness/state/gates-passed.head)."
+entscheid="$(stop_entscheid "")"; [ "$entscheid" = frei ] || fehler "der Stop-Hook haelt einen gedeckten Stand auf — erwartet ist die Freigabe nach record-gates."
+printf 'selbstpruefung\n' >"$klon/selbstpruefung-stop.txt"
+entscheid="$(stop_entscheid "")"; [ "$entscheid" = blockiert ] || fehler "mit der Datei .harness/stop-gate-streng gibt der Stop-Hook ein Turn-Ende mit ungedeckter Aenderung frei — erwartet ist die Blockade."
+echo "selbstpruefung: STOP STRENG — mit der Datei .harness/stop-gate-streng haelt der Stop-Hook ein Turn-Ende mit ungedeckter Aenderung auf, auch ohne neuen HEAD."
+rm -f "$klon/.harness/stop-gate-streng"
+entscheid="$(stop_entscheid "")"; [ "$entscheid" = frei ] || fehler "ohne die Datei haelt der Stop-Hook ein Turn-Ende ohne neuen Commit auf — der lockere Zweig ist nicht der, den die Selbstpruefung misst."
+echo "selbstpruefung: STOP LOCKER — ohne die Datei geht ein Turn-Ende ohne neuen HEAD durch; so waere der Hook, wenn dieses Repo sie loeschte (das braucht eine ADR)."
+entscheid="$(stop_entscheid 1)"; [ "$entscheid" = blockiert ] || fehler "mit STOP_GATE_STRENG=1 gibt der Stop-Hook ein Turn-Ende mit ungedeckter Aenderung frei — erwartet ist die Blockade."
+echo "selbstpruefung: STOP VARIABLE — STOP_GATE_STRENG=1 haelt dasselbe Turn-Ende auch ohne die Datei auf."
+: >"$klon/.harness/stop-gate-streng"
+commit_out=""
+commit_out="$(git -C "$klon" add -A 2>&1 &&
+	git -C "$klon" -c user.email=selbstpruefung@example.invalid -c user.name=selbstpruefung \
+		commit -q -m "$SELBSTPRUEFUNG_MSG_GRUEN" 2>&1)" || fehler "der Commit fuer die Stop-Hook-Probe ist nicht entstanden:
+$commit_out"
+entscheid="$(stop_entscheid "")"; [ "$entscheid" = blockiert ] || fehler "mit der Datei gibt der Stop-Hook einen Commit ohne Nachweis frei — erwartet ist die Blockade."
+rm -f "$klon/.harness/stop-gate-streng"
+entscheid="$(stop_entscheid "")"; [ "$entscheid" = blockiert ] || fehler "im lockeren Zweig gibt der Stop-Hook einen Commit ohne Nachweis frei — erwartet ist die Blockade."
+echo "selbstpruefung: STOP BLOCK — der Stop-Hook haelt einen Commit ohne Nachweis auf, streng wie locker."
+
+echo "selbstpruefung: OK — der Traeger [$SELBSTPRUEFUNG_TRAEGER] reist mit dem Klon, seine Aktivierung nicht; [$SELBSTPRUEFUNG_AKTIVIERUNG] nimmt genau ihn in Betrieb, danach faellt '$SELBSTPRUEFUNG_MSG_ROT' und geht '$SELBSTPRUEFUNG_MSG_GRUEN' durch, und [$SELBSTPRUEFUNG_GATE] laeuft im Klon gruen; der Stop-Hook haelt mit der Datei .harness/stop-gate-streng ein Turn-Ende mit ungedeckter Aenderung auf, gibt es ohne sie frei, haelt es mit STOP_GATE_STRENG=1 wieder auf und haelt einen Commit ohne Nachweis auf. Nicht geprueft: ob der Traeger jeden Commit-Pfad erreicht (--no-verify, Werkzeug-Commits, andere Aufrufformen)."
