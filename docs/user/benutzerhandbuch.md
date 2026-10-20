@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.87 · **Software-Version:** [v0.86.1](../../version.md#v0.86.1) ·
-**Stand:** 2026-10-10 · **Autor:** pt9912
+**Handbuch-Version:** 1.88 · **Software-Version:** [v0.87.0](../../version.md#v0.87.0) ·
+**Stand:** 2026-10-20 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -64,7 +64,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.86.1
+docker pull ghcr.io/pt9912/d-check:v0.87.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -83,12 +83,12 @@ Ein Digest-Pin gilt deshalb für beide Registries. GHCR bleibt die Quelle;
 Docker Hub folgt ihr.
 
 ```bash
-docker pull pt9912/d-check:v0.86.1
+docker pull pt9912/d-check:v0.87.0
 ```
 
 ### Versionen und Tags
 
-- `:v0.86.1` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.87.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
@@ -117,7 +117,7 @@ Veröffentlichung je Plattform geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -176,7 +176,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -195,7 +195,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.86.1
+  ghcr.io/pt9912/d-check:v0.87.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -214,7 +214,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.86.1 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.87.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -233,7 +233,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -253,7 +253,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -262,7 +262,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -281,7 +281,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -309,7 +309,7 @@ und `ai-harness-init` lesen das Lastenheft dafür nicht.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
   --enable ids --disable anchors
 ```
 
@@ -330,7 +330,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
   --enable ids
 ```
 
@@ -351,7 +351,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
   --enable matrix
 ```
 
@@ -452,7 +452,7 @@ unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
   --enable external
 ```
 
@@ -474,7 +474,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
   --enable ids --doctor
 ```
 
@@ -509,7 +509,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
   --enable ids --doctor --json
 ```
 
@@ -557,7 +557,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -593,7 +593,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
     --enable ids --repair | git apply
   ```
 
@@ -610,7 +610,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -630,7 +630,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -692,7 +692,7 @@ Zeile) sind **Konfiguration**; die Felder, Regeln und Fehlerbilder stehen in §5
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -831,7 +831,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -876,7 +876,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.86.1 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.87.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -894,7 +894,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und dreizehn
 # Benutzerhandbuch (aufgabenorientiert, deutsch):
 #   https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md
 #   https://raw.githubusercontent.com/pt9912/d-check/refs/heads/main/docs/user/benutzerhandbuch.md  (roh, für Werkzeuge/Agenten)
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.86.1
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.87.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -959,7 +959,7 @@ planning:
 ```
 
 ```bash
-docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
   --config .d-check.closure.yml --enable planning
 ```
 
@@ -1172,7 +1172,7 @@ planning:
 ```
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.86.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.0 \
   --enable planning
 ```
 
@@ -1403,8 +1403,8 @@ Fassung, die zum Image gehört.
 **Vorgehen:**
 
 ```bash
-docker run --rm --network none ghcr.io/pt9912/d-check:v0.86.1 --manual planning
-docker run --rm --network none ghcr.io/pt9912/d-check:v0.86.1 --manual DC-FA-RVW-001
+docker run --rm --network none ghcr.io/pt9912/d-check:v0.87.0 --manual planning
+docker run --rm --network none ghcr.io/pt9912/d-check:v0.87.0 --manual DC-FA-RVW-001
 ```
 
 **Ergebnis:** Auf stdout stehen die Abschnitte von Handbuch und
@@ -1424,6 +1424,58 @@ Mount ist nicht nötig; der Modus liest das geprüfte Repo nicht.
   `--trace`, `--print-config` …) enden mit Exit 2; bei keinem Treffer nennt die
   Meldung die beiden Titel.
 - **Die Dokumente sind die des Images**, nicht die eines anderen Stands.
+
+### 4.25 Überschriften und Tabellen einer Datei in einer RTM lesen (`trace.requirements` als Liste)
+
+**Ausgangslage:** Ihr Lastenheft führt Anforderungen in zwei Formen in
+**einer** Datei — die funktionalen als Überschriften (`#### X-FA-01 — Titel`),
+die Qualitätsanforderungen als Zeilen einer Tabelle. `trace.requirements` als
+Objekt nimmt genau eine Quelle mit genau einem `format`: die RTM (§4.12) zeigt
+nur eine der beiden Gruppen. Das Lastenheft ist bindend und wird nicht umgeformt.
+
+**Ziel:** beide Gruppen in **einer** Matrix, ohne ein zweites, erzeugtes
+Dokument.
+
+**Vorgehen:** Tragen Sie in `.d-check.yml` statt des Objekts eine Liste ein, je
+Eintrag eine Quelle mit eigenem `id-pattern` und `format`:
+
+```yaml
+trace:
+  requirements:
+    - source: spec/lastenheft.md
+      id-pattern: 'SFC-FA-\d{2}'
+      format: headings
+    - source: spec/lastenheft.md
+      id-pattern: 'SFC-QA-\d{2}'
+      format: table
+      table:
+        id-column: ID
+        text-column: Anforderung
+        modality-column: Priorität
+```
+
+Dann läuft `--trace` wie gewohnt (§4.12), auch mit `--require-complete`.
+
+**Ergebnis:** Die Matrix führt die **Vereinigung** der Einträge in der
+Reihenfolge der Liste — erst die Überschriften-, dann die Tabellen-Anforderungen —
+und die Summenzeile zählt über beide. `--require-complete` wertet die Vereinigung
+aus.
+
+**Worauf Sie achten sollten:**
+
+- **Eine Kennung darf in genau einem Eintrag stehen.** Erkennen zwei Einträge
+  dieselbe Kennung (etwa weil ihre `id-pattern` sich überlappen), endet der Lauf
+  mit Exit 2; die Meldung nennt Kennung und beide Einträge. Eine
+  `first`/`last`-Politik über Einträge gibt es nicht.
+- **Jeder Eintrag hat seinen eigenen Nullmengen-Guard.** Ein Eintrag, der nichts
+  findet, endet mit Exit 2 und nennt seinen Index (`trace.requirements[1]: …`) —
+  er verschwindet nicht in der Vereinigung.
+- **`modality` gilt je Eintrag** und wird nicht vererbt; ein Eintrag ohne
+  `modality` klassifiziert nicht, und seine Waisen gatet `--require-complete`
+  alle.
+- **Eine leere Liste** ist ein Konfigurationsfehler. Die bisherige Objekt-Form
+  bleibt gültig und liefert dieselbe Ausgabe wie zuvor. Alle Felder und
+  Fehlerbilder stehen in §5.
 
 ## 5. Konfiguration
 
@@ -2978,3 +3030,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.85             | v0.85.0          | 2026-10-09 | **`reviews`, `planning` und `structure` sehen Unterverzeichnisse; `vcs` lässt einen reinen Pfad-Nachzug durch** (§6). `reviews` erkennt im Default zusätzlich die Vorlagen-Form „Review durchgeführt" und meldet eine Zusage ohne lesbare Kennung, statt sie zu überspringen — **nicht rein additiv**: ein Repo mit dieser Form und ohne Report wird rot; neu `promise-pattern`, `match: name` (für Slug-Kennungen), `require-promises`, `recursive`, `skip-pattern` ([`DC-FA-RVW-001`](../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)). `planning.closure.recursive`/`skip-pattern` und `structure[].skip-pattern` nehmen Unterverzeichnisse und archivierte Stubs auf ([`DC-FA-PLAN-001`](../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in), [`DC-FA-STRUCT-001`](../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)). `vcs.ignore-link-targets` normiert ein auflösendes Link-Ziel auf Dateiname und Anker ([`DC-FA-VCS-001`](../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)). Image mit Go 1.27.2 (zwei HIGH-CVEs der Standardbibliothek behoben) |
 | 1.86             | v0.86.0          | 2026-10-09 | **Neu `--manual <begriff>`: Handbuch und Spezifikation ohne Netz aus dem Werkzeug** (§4.24, [`DC-FA-CLI-013`](../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen)). Neu `skip-allows-empty` in `reviews`, `planning.closure` und je `structure`-Regel: eine Menge, die erst `skip-pattern` leert, ist damit der Ruhezustand eines archivierenden Repos statt ein Befund (§6). **Nicht rein additiv:** unter `reviews.match: name` deckt ein Report nur noch den längsten passenden Slice-Namen — ein Slice, den bisher nur der Report eines längeren Namens deckte, wird rot ([`DC-FA-RVW-001`](../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)). `--suggest-config ai-harness` schlägt `"8. Historie"` für `matrix.exclude-sections` mit vor |
 | 1.87             | v0.86.1          | 2026-10-10 | **Sicherheits-Fix:** `golang.org/x/net` v0.60.0 behebt vier HTTP/2-CVEs im Image (CVE-2026-78663, -78659, -78660, -78669) und CVE-2026-97032. Keine Verhaltensänderung |
+| 1.88             | v0.87.0          | 2026-10-20 | **`trace.requirements` darf eine Liste von Quellen sein** (§4.25/§5, [`DC-FA-REQ-001`](../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)): ein Lastenheft, das Anforderungen als Überschriften **und** als Tabellenzeilen führt, wird in einer RTM gelesen — Vereinigung in Listenreihenfolge, doppelte Kennung über Einträge und leere Liste Exit 2, Nullmengen-Guard und `modality` je Eintrag. Die Objekt-Form bleibt byte-identisch; `--print-config` erzeugt weiter die Objekt-Form |

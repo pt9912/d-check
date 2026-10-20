@@ -4,6 +4,39 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.87.0] — 2026-10-20
+
+### Added
+
+- slice-274 — **`trace.requirements` als Liste von Quellen: Überschriften und
+  Tabellenzeilen einer Datei in einer RTM**
+  ([`DC-FA-REQ-001`](spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen),
+  [ADR-0108](docs/plan/adr/0108-trace-requirements-als-liste-von-quellen.md)).
+  Statt eines Objekts darf `trace.requirements` eine nichtleere Liste solcher
+  Objekte sein; jeder Eintrag trägt dieselben Felder (`source`, `id-pattern`,
+  `format`, bei `table` die `table.*`-Felder, `modality`) mit derselben
+  Bedeutung, dieselbe `source` darf in mehreren Einträgen stehen. Die RTM führt
+  die Vereinigung in Listenreihenfolge, die Summenzeile zählt über alle
+  Einträge, `--require-complete` wertet die Vereinigung aus.
+  - Eine Kennung, die zwei Einträge erkennen, ist ein Konfigurationsfehler
+    (Exit 2) mit Kennung und beiden Einträgen; eine `first`/`last`-Politik über
+    Einträge gibt es nicht. Eine leere Liste ist ebenfalls Exit 2.
+  - Der Nullmengen-Guard gilt je Eintrag, fehlerhafte Einträge nennen ihren
+    Index (`trace.requirements[1]: …`).
+  - `modality` gilt je Eintrag und wird nicht vererbt; ein Eintrag ohne
+    `modality` klassifiziert nicht, seine Waisen gatet `--require-complete`
+    alle.
+  - Referenzscan, Range-Validierung von `trace.coverage` und
+    `trace.cross-consistency` erkennen eine Kennung, wenn sie auf das
+    `id-pattern` mindestens eines Eintrags passt.
+  - Die Objekt-Form und ein fehlender `trace`-Block bleiben gültig und liefern
+    byte-identische Ausgabe (gemessen gegen den Stand vor der Änderung);
+    `--print-config` und `--suggest-config` erzeugen weiter die Objekt-Form.
+  - Strikte Konfiguration bleibt strikt: unbekannte Schlüssel in einem Eintrag
+    sind Fehler, auch hinter YAML-Ankern und Merge-Keys (`<<: *anker`).
+  Handbuch §4.25 und §5. Anlass: CR eines Adopters (Lastenheft mit
+  Überschriften und Tabelle in einer Datei).
+
 ## [0.86.1] — 2026-10-10
 
 ### Security
