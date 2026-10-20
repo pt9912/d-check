@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.105.1
+**Version:** 0.106.0
 
 **Status:** Draft
 
@@ -822,6 +822,27 @@ Heading-Treffer liefert aus Kompatibilitätsgründen weiterhin die leere RTM
 mit Exit 0 ([`DC-QA-02`](#dc-qa-02--determinismus)). Beide Formate sind
 read-only ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 
+**Mehrere Anforderungsquellen.** `trace.requirements` darf statt eines Objekts
+eine **nichtleere Liste** solcher Objekte sein. Jeder Eintrag trägt dieselben
+Felder (`source`, `id-pattern`, `format`, bei `table` die `table.*`-Felder,
+`modality`) mit unveränderter Bedeutung und denselben Fehlerbildern; dieselbe
+`source` darf in mehreren Einträgen stehen, so dass eine Datei Anforderungen in
+Überschriften **und** in einer Tabelle führen kann. Die RTM führt die
+**Vereinigung** aller Einträge: in der Reihenfolge der Liste, innerhalb eines
+Eintrags in der bisherigen; die Summenzeile zählt über alle Einträge.
+`modality` gilt **je Eintrag** und wird nicht vererbt; `--require-complete`
+wertet die Vereinigung aus, jede Anforderung nach der Modalität ihres Eintrags.
+
+Die Fail-closed-Regeln gelten **je Eintrag**, und die Meldung nennt dessen
+Index (null erkannte Anforderungen bei nichtleer expliziter `source` oder
+`format: table`, fehlende Quelle, Schema- und Header-Fehler). Erkennen zwei
+Einträge **dieselbe Kennung**, ist das ein Konfigurationsfehler (Exit 2) mit
+Kennung und beiden Einträgen in der Meldung; eine Politik `first`/`last` über
+Einträge hinweg gibt es nicht — `table.duplicate-ids` wirkt weiter nur
+innerhalb einer Tabelle. Eine leere Liste ist ein Konfigurationsfehler
+(Exit 2). Die Objekt-Form und ein fehlender `trace`-Block bleiben gültig und
+liefern byte-identische Ausgabe ([`DC-QA-02`](#dc-qa-02--determinismus)).
+
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given eine explizit konfigurierte Tabellenquelle mit `Kennung | Prioritaet | Anforderung` sowie `Kennung | Prioritaet | Akzeptanzkriterium`, `format: table`, `text-columns: [Anforderung, Akzeptanzkriterium]`, 372 passende Datenzeilen und 371 eindeutige IDs (eine historische Hochstufung doppelt), when `duplicate-ids: last` gesetzt ist und `d-check --trace` läuft, then enthält die RTM genau 371 Anforderungen; die spätere Definition gewinnt, Referenzen/Waisen werden wie bei Heading-Definitionen berechnet, Exit 0.
@@ -829,12 +850,19 @@ read-only ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit
 - **Negative (Nullmenge):** Given eine mit einem **nichtleeren** Wert explizit konfigurierte `trace.requirements.source`, deren Format oder Inhalte keine einzige Definition gemäß der gewählten Grammatik und `id-pattern` ergeben, when `d-check --trace [--require-complete]` läuft, then Exit 2 mit Quelle, Format und Hinweis auf null erkannte Anforderungen; keine grüne leere RTM. `source: ""` gilt wie Abwesenheit und behält die Default-Semantik.
 - **Negative (Schema):** Given `format: table` ohne genau eine der Alternativen `text-column`/`text-columns`, mit einem fehlenden/leer benannten oder in der Quelle nicht vorhandenen Rollen-Header beziehungsweise mit unbekanntem `duplicate-ids`, when `d-check --trace` läuft, then Exit 2 mit dem betroffenen Feld oder Spaltennamen.
 - **Default byte-identisch:** Given kein `trace`-Block oder `trace.requirements.source: ""`, when `d-check --trace [--require-complete]` auf demselben Repo läuft, then bleiben Heading-Erkennung, Deduplizierung, Ausgabe und Exit-Code byte-identisch zur Fassung vor dieser Anforderung; insbesondere bleibt die unkonfigurierte Nullmenge Exit 0 ([`DC-QA-02`](#dc-qa-02--determinismus)).
+- **Happy Path (Liste):** Given eine Quelldatei mit 21 Überschriften-Anforderungen und 6 Tabellenzeilen und eine Liste aus zwei Einträgen (`format: headings`, `format: table`) mit je eigenem `id-pattern`, when `d-check --trace` läuft, then Exit 0; die 21 Überschriften-Anforderungen stehen vor den 6 Tabellen-Anforderungen, die Summenzeile zählt 27.
+- **Negative (doppelte Kennung):** Given dieselbe Liste, beide Einträge mit einem `id-pattern`, das auch die Kennung des anderen trifft, und eine Kennung, die als Überschrift und als Tabellenzeile steht, when `d-check --trace` läuft, then Exit 2 mit Kennung und beiden Einträgen.
+- **Negative (Eintrag):** Given dieselbe Liste, ein Eintrag mit einem Header, der in der Quelle nicht vorkommt, bzw. ein Eintrag ohne Treffer, when `d-check --trace` läuft, then Exit 2 mit dem Index des Eintrags, nicht stillschweigend die Vereinigung der übrigen.
+- **Negative (leere Liste):** Given `trace.requirements: []`, when `d-check --trace` läuft, then Exit 2.
+- **Boundary (Vollständigkeit):** Given dieselbe Liste und `--trace --require-complete`, when eine der Anforderungen ohne Slice- und ohne Coverage-Referenz ist, then Exit 1; sind alle belegt, Exit 0.
+- **Objekt-Form byte-identisch:** Given die Objekt-Form von `trace.requirements`, when `d-check --trace [--require-complete]` läuft, then ist die Ausgabe byte-identisch zur Fassung vor der Listen-Form.
 
 **Out-of-Scope:** HTML-Tabellen; Tabellen ohne Markdown-Header-/Trennzeile;
 zusammengeführte Zellen, mehrzeilige Tabellenzeilen oder Block-Markdown in
 einer Zelle; automatische Spalten-Ableitung über Synonyme oder Positionen;
-gleichzeitiges Mischen von Heading- und Tabellen-Definitionen in einem Lauf
-(genau ein `format`); mehrere Anforderungs-Quelldateien; semantische Bewertung
+eine Auflösungs-Politik für doppelte Kennungen **über Einträge hinweg**
+(`first`/`last` — Exit 2; innerhalb einer Tabelle bleibt `table.duplicate-ids`);
+Vererbung von `modality` zwischen Einträgen; semantische Bewertung
 des Anforderungstextes jenseits der bestehenden Keyword-Klassifikation.
 
 ---
@@ -4194,6 +4222,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.106.0 | 2026-10-20 | [`DC-FA-REQ-001`](#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen): `trace.requirements` darf eine nichtleere Liste von Quellen-Objekten sein — Vereinigung in Listenreihenfolge, doppelte Kennung über Einträge und leere Liste sind Konfigurationsfehler (Exit 2), der Nullmengen-Guard gilt je Eintrag; die Objekt-Form bleibt byte-identisch. Der Ausschluss „Mischen von Heading- und Tabellen-Definitionen / mehrere Quelldateien" entfällt, der Ausschluss einer Politik über Einträge hinweg tritt an seine Stelle. Anlass: CR eines Adopters | — |
 | 0.105.1 | 2026-10-09 | Nachzug nach Verifikation an [`DC-FA-CLI-013`](#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen): das Kriterium „Drift" vergleicht einen Abschnitt ohne Kopfzeile mit derselben Zeilenspanne der Quelle, bis auf die Leerzeilen am Ende — die Ausgabe trägt Kopfzeilen | — |
 | 0.105.0 | 2026-10-09 | Neue Anforderung [`DC-FA-CLI-013`](#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen): `--manual <begriff>` gibt die Abschnitte von Benutzerhandbuch und Spezifikation aus, deren Überschrift den Begriff nennt — netzlos, aus dem Werkzeug selbst, byte-gleich zu den Quelldateien des Build-Stands. Anlass: CR eines Adopters (Arbeit ohne Netz) | — |
 | 0.104.0 | 2026-10-09 | [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in): unter `match: name` deckt ein Report einen Slice nicht mehr, wenn sein Name auch einen längeren Slice-Basisnamen trägt, der den kürzeren enthält — gezählt über alle Slice-Dateien in `reviews.done-dir`, auch die ausgenommenen; die Grenze zur Präfix-Deckung entfällt, Kriterium „Boundary (Slug-Kennung)" entsprechend. Anlass: Befund eines Adopters | — |
