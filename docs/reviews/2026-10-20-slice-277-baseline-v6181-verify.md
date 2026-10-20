@@ -1,7 +1,7 @@
 # Verifikation — slice-277: Baseline-Pin auf v6.18.1, mechanisch
 
 - **Rolle:** Verifier (Modul 11) — DoD, Plan und MR gegen den Stand
-- **Gegenstand:** `docs/plan/planning/in-progress/slice-277-baseline-v6181-bump.md` §1, §2, §3 (samt den Plan-Änderungen), §4, §6; [MR-080](../../harness/conventions/MR-080-baseline-v6181.md)
+- **Gegenstand:** `docs/plan/planning/done/wellenlos/slice-277-baseline-v6181-bump.md` §1, §2, §3 (samt den Plan-Änderungen), §4, §6; [MR-080](../../harness/conventions/MR-080-baseline-v6181.md)
 - **Range:** `b9211511..HEAD` (Spitze `6dc40149`); der Review-Report `2026-10-20-slice-277-baseline-v6181.md` nur als Kontext
 - **Datum:** 2026-10-20
 
@@ -58,7 +58,7 @@ Dateien im Diff: Baum `v6.18.1` (neu) und `v6.17.0` (entfernt), 35 aktive `MR-*`
 
 - **HIGH / MEDIUM:** keine.
 - **LOW 1:** `MR-080` §`d-check:cite`-Neu-Ankern sagt „gemessen **17** lebende Direktiven … (die zwei Direktiven im Plan dieses Slice zählen nicht mit) … Die übrigen 16". Nachgezählt sind es **15** ohne die zwei im Plan (17 nur mit ihnen); „die übrigen" wären 14. Das Ergebnis (eine Verschiebung) trägt, die Zahl und die Ausschlussklammer widersprechen sich (`harness/conventions/MR-080-baseline-v6181.md`).
-- **LOW 2:** `slice-278` ist neu angelegt und von `MR-080` als Folge-Slice genannt, steht aber weder in der §3-Tabelle noch in einer Plan-Änderungsnotiz des Plans (§7 „Folge-Slices" ist noch `—`). Der Slice entsteht aus der Delta-Messung und ist in §1 nicht ausgeschlossen, also keine Ausweitung, aber der Plan-Wortlaut nennt ihn nicht; beim Befüllen von §7 nachtragen (`docs/plan/planning/in-progress/slice-277-baseline-v6181-bump.md`).
+- **LOW 2:** `slice-278` ist neu angelegt und von `MR-080` als Folge-Slice genannt, steht aber weder in der §3-Tabelle noch in einer Plan-Änderungsnotiz des Plans (§7 „Folge-Slices" ist noch `—`). Der Slice entsteht aus der Delta-Messung und ist in §1 nicht ausgeschlossen, also keine Ausweitung, aber der Plan-Wortlaut nennt ihn nicht; beim Befüllen von §7 nachtragen (`docs/plan/planning/done/wellenlos/slice-277-baseline-v6181-bump.md`).
 - **INFO:** Die Plan-Zahl „52 Dateien außerhalb der Frozen-Verzeichnisse … beim Anlegen" (§3) und die MR-Zahl 104 messen verschiedene Mengen (ohne bzw. mit Frozen); beide sind für sich richtig, nur der Plan nennt die 104 nicht.
 - **INFO:** Die Frozen-Ausnahme `slice-274` ist im Plan nachträglich nachgetragen (Plan nennt es selbst), im MR als einzige Ausnahme geführt; die Alternative `ignore-refs` wäre eine Gate-Senkung gewesen — die Wahl ist nachvollziehbar.
 
