@@ -43,7 +43,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: abdeckung nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test image-test-arm64 image-publish blackbox-probe semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave slice-mv selbstpruefung history-range-guard
+.PHONY: abdeckung nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test image-test-arm64 image-publish blackbox-probe semgrep versions build run doc-check trace record-gates guard-probe ci-range-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave slice-mv selbstpruefung history-range-guard
 
 # Prerequisites laufen nacheinander, in der Reihenfolge ihrer Liste, auch
 # unter `make -j`.
@@ -194,6 +194,11 @@ record-gates: ## Nachweis schreiben: Working-Tree-Hash (für den Stop-Hook).
 # Repo-Invariante, sondern eine Werkzeug-Einstellung.
 guard-probe: ## Tool-Call-Wächter gegen seine Proben fahren (werkzeug-lokal, NICHT in gates).
 	@bash tools/harness/guard-probe.sh
+
+# Die Range-Auflösung des CI-Schritts (ADR-0109) gegen ein Wegwerf-Repo. Bewusst
+# NICHT in gates: die Probe prüft ein Werkzeug, keine Repo-Invariante.
+ci-range-probe: ## Range-Auflösung des CI-Push-Laufs gegen ihre Fälle fahren (Wegwerf-Repo, NICHT in gates; ADR-0109).
+	@bash tools/harness/ci-range-probe.sh
 
 # Der vendorte Baseline-Bestand ist die netzlose Leseform des adoptierten
 # Regelwerks (MR-011-Kette). Zwei Fragen, zwei Targets, zwei Fehlerpolitiken —
