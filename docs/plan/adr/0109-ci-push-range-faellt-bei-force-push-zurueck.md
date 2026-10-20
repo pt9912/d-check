@@ -72,13 +72,14 @@ nur gegen eine echte CI-Ausführung prüfbar.
 
 **Fitness-Funktion:**
 
-- `make ci-range-probe` fährt fünf Fälle und eine Rückfall-Lücke: Pull-Request,
-  neuer Branch, normaler Push, Force-Push auf einen Feature-Branch (Range
-  `origin/<default>..head`), Force-Push auf den Default-Branch (Exit 2),
-  Force-Push ohne `origin/<default>` (Exit 2).
+- `make ci-range-probe` fährt sechs Proben: Pull-Request, neuer Branch, normaler
+  Push, Force-Push auf einen Feature-Branch (Range `origin/<default>..head`),
+  Force-Push auf den Default-Branch (Exit 2) und Force-Push ohne
+  `origin/<default>` (Exit 2).
 - Die Probe wird rot, wenn der Rückfall entfällt (die Range bleibt
-  `before..head`) und wenn die Default-Branch-Ausnahme entfällt (der Rückfall
-  liefert dort eine leere Range) — beides am Skript gebrochen und gesehen.
+  `before..head`), wenn die Default-Branch-Ausnahme entfällt (der Rückfall
+  liefert dort eine leere Range) und wenn der Wächter auf `origin/<default>`
+  entfällt — jede der drei Stellen einzeln am Skript gebrochen und gesehen.
 
 ## Konsequenzen
 
