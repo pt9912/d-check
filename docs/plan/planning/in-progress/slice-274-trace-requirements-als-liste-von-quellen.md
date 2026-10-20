@@ -79,28 +79,28 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] **Liste laden:** Der Config-Adapter akzeptiert `trace.requirements` als
+- [x] **Liste laden:** Der Config-Adapter akzeptiert `trace.requirements` als
       Objekt oder nichtleere Liste, verwirft jede andere Form und die leere
       Liste mit Exit 2 und validiert jeden Eintrag mit seinem Index
       (AK-3, AK-7); das Modell trägt die Einträge.
-- [ ] **Vereinigung führen:** Der Kern extrahiert je Eintrag, bildet die
+- [x] **Vereinigung führen:** Der Kern extrahiert je Eintrag, bildet die
       Vereinigung in Listenreihenfolge, meldet die doppelte Kennung über
       Einträge und die Nullmenge je Eintrag (Exit 2, Index in der Meldung),
       wendet `modality` je Eintrag an und lässt die Referenzseite die Muster
       aller Einträge erkennen (AK-1, AK-2, AK-4, AK-6); die Objekt-Form
       liefert byte-identische Ausgabe (AK-5).
-- [ ] **Handbuch und ADR:** Das Benutzerhandbuch (§5 `trace`, Konfigurationsbeispiel
+- [x] **Handbuch und ADR:** Das Benutzerhandbuch (§5 `trace`, Konfigurationsbeispiel
       zur `.d-check.yml`) beschreibt die Listen-Form, die doppelte Kennung und
       den Nullmengen-Guard je Eintrag; [ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md)
       steht auf `Accepted`, Kopf **und** Index.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review; Verifikation.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
       „keine Beobachtung angefallen" in §7 notiert.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -225,27 +225,56 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - **Die Referenzseite ändert das Verhalten der Objekt-Form.** Der Umbau von
   `reqPat` auf eine Mustervereinigung kann die bisherige Ganz-Token-Erkennung
   verschieben (Alternation mit Linksvorrang statt je Muster geprüft) und damit
-  AK-5 brechen. — **Ausgang:** offen bis Closure; Gegenprobe ist die
-  unveränderte Heading-Fixture byte-identisch gegen `v0.86.1`.
+  die Byte-Identität der Objekt-Form brechen. — **Ausgang:** entfallen — bei
+  einem Eintrag liefert `referencePattern` das Muster selbst, unverändert; die
+  Verifikation verglich `--trace`, `--require-complete`, `--json` und
+  `--doctor` für das Repo selbst, eine Heading- und eine Tabellen-Fixture gegen
+  ein Image von `68cae247` (stdout, stderr, Exit getrennt, `cmp`): identisch.
 - **Der Slice wächst über eine Review-Sitzung** (Adapter, Kern, Cross, Handbuch,
-  ADR). — **Ausgang:** offen bis Closure; Rückführung und Ersatz-Form stehen in
-  §4.
+  ADR). — **Ausgang:** entfallen — `trace_cross.go` und `trace_table.go`
+  blieben unverändert, der Diff blieb in zwei Schichten; Runde 1 las den
+  gesamten Diff in einer Sitzung, Runde 2 genau die Fix-Commits (Schritt 14).
+  Die Rückführung nach §4 wurde nicht gezogen.
 - **Wechselwirkung `modality` je Eintrag mit `cross-consistency` und
-  `--require-complete`.** Die Spezifikation legt `require-levels` je Eintrag
-  fest; ob ein bestehender Pfad Modalität global annimmt, zeigt erst der Code. —
-  **Ausgang:** offen bis Closure.
+  `--require-complete`.** — **Ausgang:** entfallen — `cross-consistency` liest
+  keine Modalität; `--require-complete` gatet je Eintrag
+  (`TestTraceSourcesModalityPerEntry`, Rot-Beleg D der Verifikation: ohne die
+  Eintrags-Modalität wird er rot).
 
 ## 7. Closure-Notiz
 
-<!-- Wird bei der Closure gefüllt, vor dem `git mv` nach `done/`. -->
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
+- **Was hat funktioniert:** `trace.requirements` nimmt eine Liste von Quellen
+  an; die RTM führt ihre Vereinigung in Listenreihenfolge, eine doppelte Kennung
+  über Einträge ist Exit 2, der Nullmengen-Guard gilt je Eintrag mit Index, und
+  die Objekt-Form liefert byte-identische Ausgabe (gemessen gegen `68cae247`).
+  Die Strikt-Prüfung am Knotenbaum hält unbekannte Schlüssel auch hinter Alias
+  und Merge-Key fest. Sieben Rot-Belege der Verifikation (Kreuz-Duplikat,
+  Nullmenge je Eintrag, leere Liste, `modality` je Eintrag, Mustervereinigung,
+  Strikt-Prüfung, Index) laufen aus dem richtigen Grund rot.
+- **Was ging anders als geplant:** (1) Beim Lesen des Codes fiel auf, dass
+  Referenzscan, Coverage-Ranges und `cross-consistency` ein einziges Muster
+  lesen; die Vereinigung der Muster kam als Vertragszusatz in Spezifikation und
+  ADR (Entscheidung 5) vor den Code. (2) Die erste Strikt-Prüfung
+  serialisierte jeden Eintrag neu und zerbrach damit Aliase und Merge-Keys
+  sowie die Zeilennummern der Objekt-Form (Review Runde 1, F-1, F-3); sie wurde
+  durch eine Prüfung am Knotenbaum ersetzt, daraufhin lief Runde 2 über die
+  Fix-Commits. (3) Die Verifikation fand in [ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md) eine Konsequenz, die
+  `--print-config` eine Listen-Form zusprach (V-1); sie wurde vor `Accepted`
+  berichtigt, solange die ADR editierbar war.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-274.md` in
+  [`BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft`](../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/state.md)
+  (jetzt 5×): ein neuer Leseweg (Neu-Serialisierung) wurde nur gegen den Fall
+  des CR gefahren; der fremde Leser über den Code-Commit fing ihn (Schritt 14).
+- **Folge-Slices:** keiner.
+- **Risiken aus §6:** alle drei entfallen (siehe §6). Trigger-Audit: kein
+  Carveout, kein bootstrap-aware Gate; [ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md) ist mit diesem Slice
+  `Accepted` und trägt ihren Re-Evaluierungs-Trigger; keine Hard Rule mit
+  eingetretenem Trigger. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein Eintrag mit `liegt in`; (b)
+  Folge-Slices — keiner genannt; (c) Register — die zitierte Beobachtung
+  existiert und trägt fünf Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
