@@ -8,7 +8,8 @@
 # auch ohne neuen HEAD. Ein fehlender, gelöschter oder unlesbarer Schalter lockert
 # nichts: gelockert wird nur durch eine Datei, die da ist.
 #
-# LOCKER (nur mit `.harness/stop-gate-locker`). Der Hook blockt dann nur bei neuem HEAD
+# LOCKER (nur mit `.harness/stop-gate-locker`; `-e` gilt für eine Datei wie für ein
+# Verzeichnis dieses Namens, ein toter Symlink lockert nicht). Der Hook blockt dann nur bei neuem HEAD
 # UND abweichendem Hash: ein Turn-Ende, dessen HEAD dem von record-gates gestempelten
 # (.harness/state/gates-passed.head) gleicht, geht auch mit ungedeckter Änderung
 # frei. Das ist eine Lockerung des Handoff-Gates und braucht eine ADR

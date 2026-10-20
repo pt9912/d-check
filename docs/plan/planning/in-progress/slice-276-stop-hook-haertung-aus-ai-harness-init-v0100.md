@@ -32,8 +32,8 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 **Ziel:** Stop-Hook, Gate-Nachweis und Selbstprüfung tragen die Mechanik von
 `ai-harness-init` v0.10.0 — HEAD-Stempel, `trap` auf Exit 2, strenger Zweig,
-Stop-Hook-Zweige in der Selbstprüfung —, und der **strenge Modus ist gesetzt**
-(`.harness/stop-gate-streng`): das Verhalten des Hooks bleibt das heutige, jede
+Stop-Hook-Zweige in der Selbstprüfung —, und der Hook **ist ohne jeden Schalter
+streng**: das Verhalten des Hooks bleibt das heutige, jede
 Inhaltsänderung nach dem letzten grünen Lauf blockt weiter.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
@@ -41,8 +41,8 @@ Inhaltsänderung nach dem letzten grünen Lauf blockt weiter.
 - **Die Lockerung des Defaults.** Der Upstream-Default lässt ein Turn-Ende ohne
   neuen HEAD auch mit ungedeckter Änderung frei. Das ist eine Lockerung eines
   Handoff-Gates und braucht nach `AGENTS.md` §3.6 eine ADR und die ausdrückliche
-  Entscheidung des Auftraggebers; sie ist nicht getroffen. Wer sie will, löscht
-  `.harness/stop-gate-streng` per eigener ADR.
+  Entscheidung des Auftraggebers; sie ist nicht getroffen. Wer sie will, legt
+  `.harness/stop-gate-locker` an, per eigener ADR.
 - **`slice-mv.sh`.** Es weicht in beide Richtungen ab (unsere Unterordner-Anpassung und
   Stufen-Kette, Upstreams `quelle_finden`); die Übernahme ist ein Merge und ein
   anderer Vorgang an einem anderen Werkzeug.
@@ -60,8 +60,8 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 ## 2. Definition of Done
 
 - [ ] **Hook und Nachweis:** `stop-require-gates.sh` und `record-gates.sh` tragen
-      HEAD-Stempel, `trap` auf Exit 2 und den strengen Zweig;
-      `.harness/stop-gate-streng` ist versioniert. Das Verhalten ohne Variable
+      HEAD-Stempel, `trap` auf Exit 2 und den lockeren Zweig, der nur mit
+      `.harness/stop-gate-locker` greift; die Datei gibt es nicht. Das Verhalten ohne Variable
       ist das strenge: ein Turn-Ende mit ungedecktem Inhalt blockt, auch ohne
       neuen HEAD.
 - [ ] **Selbstprüfung:** `selbstpruefung.sh` trägt die Stop-Hook-Zweige und die
@@ -87,7 +87,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 |---|---|---|
 | `.claude/hooks/stop-require-gates.sh` | update | Fassung v0.10.0: `trap`, `head_wert`, strenger Zweig; Meldungstexte bleiben die der Fassung |
 | `tools/harness/record-gates.sh` | update | schreibt den HEAD-Stempel `.harness/state/gates-passed.head` neben den Hash; `head_wert` genauso wie der Hook (Kopplung) |
-| `.harness/stop-gate-streng` | neu | setzt den strengen Modus, versioniert |
+| `.harness/stop-gate-locker` | — (nicht angelegt) | Lockerungs-Schalter; dieses Repo legt ihn nicht an, Streng ist der Default ohne Schalter |
 | `tools/harness/selbstpruefung.sh` | update | Fassung v0.10.0 mit den Markern und den Stop-Hook-Zweigen; Belegung für d-check (`.githooks/commit-msg`, `make hooks`, `make gates`) |
 | `harness/conventions/MR-<neu>-….md`, `harness/conventions.md` | neu / update | die Übernahme samt Grenze; Index-Zeile |
 | `spec/spezifikation.md` | update | [`SPEC-094`](../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) und Historie: HEAD-Stempel, strenger Modus, Fail-closed |
@@ -174,7 +174,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   Wegwerf-Klon.
 - **Eine Datei `.harness/stop-gate-streng` ist das Einzige, was den Default
   hält.** Fehlt sie in einem frischen Klon oder wird sie gelöscht, gilt der lockere
-  Default. — **Ausgang:** offen bis Closure; Prüfung, ob ein Gate sie hält.
+  Default. — **Ausgang:** eingetreten und im Design behoben — der Review der ersten
+  Fassung fand genau das (Datei weg ⇒ Hook locker); streng ist jetzt der Default ohne
+  Schalter, nur eine angelegte `.harness/stop-gate-locker` lockert (Plan-Änderung
+  oben, [`MR-079`](../../../../harness/conventions.md#mr-079)). Die Datei
+  `.harness/stop-gate-streng` entfällt.
 - **Die neue `selbstpruefung.sh` setzt Annahmen (Netz, Docker-Builds im Klon),
   die die alte nicht setzte.** — **Ausgang:** offen bis Closure.
 

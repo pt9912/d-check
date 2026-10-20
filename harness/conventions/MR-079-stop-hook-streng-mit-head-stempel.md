@@ -29,8 +29,10 @@
   trotz der Datei, und der Commit ohne Nachweis blockt; liegt die Datei im Klon, bricht
   sie ab.
 - **Grenze:** Wer `.harness/stop-gate-locker` anlegt, lockert das Gate, ohne dass ein
-  Gate es meldet — gehalten wird das von der Selbstprüfung (`make selbstpruefung`), die
-  kein Teil von `make gates` ist, und vom Review der Änderung; die Datei ist aber ein
+  Gate es meldet; `-e` ist wahr für eine Datei wie für ein Verzeichnis dieses Namens,
+  ein toter Symlink lockert nicht. Gehalten wird das von der Selbstprüfung (`make selbstpruefung`), die
+  kein Teil von `make gates` ist und den Klon von `HEAD` prüft — eine unversionierte
+  Datei im Arbeitsbaum sieht sie nicht —, und vom Review der Änderung; die Datei ist aber ein
   sichtbarer Eintrag im Diff, kein stiller Verlust. Ein frischer Klon ohne Nachweis und
   mit sauberem Baum geht weiter frei (die CI ist dort das Netz). Der Modus bindet nur
   Claude Code; wer die Hooks nicht lädt, umgeht beides.
