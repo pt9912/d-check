@@ -173,9 +173,12 @@ MEDIUM und drei LOW; alle werden behoben, die Abgrenzung in §1 bleibt.
 - **F-5:** Die Test-Kommentare nennen Gegenstand statt `AK-<N>`
   (`grep -rn "AK-[0-9]" internal/`: 11 Treffer in drei Testdateien, ein
   Zufallstreffer `LH-AK-002` in `rules/markdown_test.go` bleibt).
-- **F-6:** Die Tests belegen den Fall in AK-6 über Exit-Code und Waisenzahl, pinnen die ADR-0108-Grenze
-  (Eintrag mit `format: headings` ohne `source`) und den Fehlerzweig der
-  Mustervereinigung.
+- **F-6:** Die Tests belegen den Fall in AK-6 über Exit-Code und Waisenzahl und
+  pinnen die [ADR-0108](../../adr/0108-trace-requirements-als-liste-von-quellen.md)-Grenze
+  (Eintrag mit `format: headings` ohne `source`). Der Fehlerzweig der
+  Mustervereinigung bleibt ungetestet: weder doppelte Gruppennamen noch 40
+  Muster `\pL{1000}` lassen die Vereinigung scheitern, ein Auslöser wurde nicht
+  gefunden — der Zweig bleibt als Absicherung stehen.
 - **Zusätzlich:** Weil der Fix einen neuen Leseweg schreibt, läuft nach ihm eine
   zweite `reviewer`-Runde über genau die Fix-Commits (Schritt 14).
 
