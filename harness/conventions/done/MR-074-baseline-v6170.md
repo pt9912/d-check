@@ -52,21 +52,21 @@
      `templates/docs/plan/adr/NNNN-titel.template.md` und
      `templates/docs/plan/adr/README.template.md` (die ADR eines solchen Gates
      schärft dessen Spec-Stelle). Die Umnummerierung koppelt an die Ausnahme
-     `"7. Historie"` ([`MR-0098`](../conventions.md#mr-0098)) — eine spätere
+     `"7. Historie"` ([`MR-0098`](../../conventions.md#mr-0098)) — eine spätere
      Adoption fiele dort laut auf.
      **Eingelöst in drei Slices — slice-259:** §7 der Spezifikation besteht,
      die Historie ist §8, die Ausnahme folgt
-     ([`MR-075`](../conventions.md#mr-075)); eingetragen sind die vier Gates
+     ([`MR-075`](../../conventions.md#mr-075)); eingetragen sind die vier Gates
      `coverage-gate`, `lint`, `semgrep` und `baseline-verify`. Die übrigen
      Werkzeuge übernehmen slice-260 (Wächter, Hooks, Prüfer — eingelöst:
-     [`SPEC-093`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) bis
-     [`SPEC-096`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)) und slice-262
+     [`SPEC-093`](../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) bis
+     [`SPEC-096`](../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)) und slice-262
      (Netz- und Nachtlauf-Werkzeuge — eingelöst:
-     [`SPEC-097`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) bis
-     [`SPEC-103`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge);
+     [`SPEC-097`](../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) bis
+     [`SPEC-103`](../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge);
      `history-range-guard` und `selbstpruefung` mit eigenem Eintrag,
      `baseline-probe` als Selbsttest der Alias-Frage aus
-     [`SPEC-092`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+     [`SPEC-092`](../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
      ohne). **Bewegung 2 ist damit eingelöst.**
   3. **Reviewer** — `modul-10-review-harness.md`: kein Stil-Polizist
      (Formatierung oder Benennung ohne Konventions-Anker ist kein Finding),
@@ -111,7 +111,7 @@
   Adaptionen) und `observations/README.md` (Zeilen 5 und 18 retargetet,
   Zeile 21 bleibt — sie nennt, aus welcher Baseline-Form die Trigger-Audit-
   Adoption stammt). **Frozen, byte-stabil:** die `done/`-Slices und die
-  Welle-91-Datei, die Review-Reports, [ADR-0100](../../docs/plan/adr/0100-targets-authority-liste.md),
+  Welle-91-Datei, die Review-Reports, [ADR-0100](../../../docs/plan/adr/0100-targets-authority-liste.md),
   der eingehende CR vom 2026-10-06, die CHANGELOG-Historie, der Kommentar zur
   Vorgänger-Stufe in `.d-check.yml` und der Vorgänger-Eintrag selbst (Zug nach
   `conventions/done/`). **Anderer Gegenstand:** `tools/harness/selbstpruefung.sh`
@@ -132,7 +132,7 @@
   `templates/.harness/skills/closure-note-reviewer.template.md` 83→84) — und
   **10** tag-only.
 
-  **Zitat-Delta** ([`MR-039`](../conventions.md#mr-039)): die wörtlichen
+  **Zitat-Delta** ([`MR-039`](../../conventions.md#mr-039)): die wörtlichen
   Zitate ohne Direktive in Markdown (`AGENTS.md` „Halluzinierte Gates …" aus
   `modul-13`, `MR-056` zu `modul-05` §Lifecycle) stehen im `v6.17.0`-Wortlaut
   unverändert. **Ein Zitat hatte ein Delta:** der Kommentar zum
@@ -145,5 +145,5 @@
   reine Fortschreibung; die inhaltlichen Bewegungen (oben) warten auf eigene
   Folge-Slices.
 - **Auflösungs-Trigger:** die nächste Pin-Hebung.
-- **Löst auf:** [`MR-073`](../conventions.md#mr-073)
+- **Löst auf:** [`MR-073`](../../conventions.md#mr-073)
 - **Ausgelöst durch Baseline-Stand:** `v6.17.0`
