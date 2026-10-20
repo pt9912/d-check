@@ -98,6 +98,19 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `.d-check.yml` | update | nur, falls gemessen: nächste `ignore-refs`-Stufe |
 | dieser Plan | update | die beiden `d-check:cite`-Spannen auf den neuen Baum |
 
+**Plan-Änderung vor dem Code (2026-10-20, Schritt 15):** Der erste Re-Vendor-Lauf
+bricht auf macOS an der Under-Copy-Barriere ab (`Quelle (54) != vendored (      54)`):
+`tools/harness/fetch-baseline-cache.sh` vergleicht die zwei Zahlen als Strings
+(`[ "$src_n" = "$dst_n" ]`), und BSD-`wc -l` füllt links mit Leerzeichen auf — dieselbe
+Falle, die der Kommentar bei der Manifest-Deckung (`-eq statt =`) schon benennt.
+Die Dateizahl stimmt (54 entpackt, 54 in der Quelle). Zusätzlich zur Tabelle:
+
+| `tools/harness/fetch-baseline-cache.sh` | update | Zeile der Under-Copy-Barriere vergleicht numerisch (`-eq`); eigener Commit vor dem Re-Vendor, weil es Werkzeug ist und nicht Bestand |
+
+Aussagen-Suche (Schritt 20): `grep -n 'wc -l' tools/harness/fetch-baseline-cache.sh` —
+drei Zählstellen; Zeile 106 rechnet arithmetisch (`$(( … ))`), Zeile 218 vergleicht
+mit `-eq`, nur Zeile 343 vergleicht als String. Kein Spiegel außerhalb des Skripts.
+
 **Spiegel-Messung** ([`MR-070`](../../../../harness/conventions.md#mr-070),
 [`MR-074`](../../../../harness/conventions.md#mr-074) „für die nächste Hebung"):
 `git grep -l "v6\.17\.0"` über das **ganze** Repo, ausgenommen nur
