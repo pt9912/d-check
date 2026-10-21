@@ -29,7 +29,7 @@
 # ---------------------------------------------------------------------------
 
 ARG GO_VERSION=1.27.3
-ARG GOLANGCI_LINT_VERSION=v2.14.0
+ARG GOLANGCI_LINT_VERSION=v2.15.0
 
 # ---- deps ------------------------------------------------------------------
 # Die Go-Stufen laufen auf der Build-Plattform (kein QEMU) und kompilieren
@@ -56,7 +56,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o /tmp/d-check ./cmd/d-check
 
 # ---- lint ------------------------------------------------------------------
-FROM golangci/golangci-lint:${GOLANGCI_LINT_VERSION}@sha256:ad862ba6b3798cbe0fd9fd7408d498fd74fbd2623a92406b2fd3898faf0bf98f AS lint
+FROM golangci/golangci-lint:${GOLANGCI_LINT_VERSION}@sha256:fbfcfd12a6f8d7f1b97b3362ca80fc2a244d46863148c73cb88e7793af96c481 AS lint
 
 WORKDIR /src
 COPY --from=deps /go/pkg/mod /go/pkg/mod

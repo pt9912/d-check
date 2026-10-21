@@ -11,7 +11,7 @@
 
 IMAGE                 ?= d-check
 GO_VERSION            ?= 1.27.3
-GOLANGCI_LINT_VERSION ?= v2.14.0
+GOLANGCI_LINT_VERSION ?= v2.15.0
 
 # `--progress=plain` für CI-taugliche BuildKit-Logs (u-boot-Konvention).
 PROGRESS_FLAG :=
