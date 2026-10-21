@@ -19,20 +19,28 @@ Default.
    Ein Volltext, der diesen Marker am Zeilenanfang zitiert, fällt ebenso still
    heraus. KOPPLUNG: dieselbe Kandidatenmenge liest
    [`verify-closure-notes`](verify-closure-notes.md) am Übergang — beide
-   Profile tragen dieselben zwei Schlüssel.
+   Profile tragen dieselben drei Schlüssel (`recursive`, `skip-pattern`, `require-promises`).
 2. **Ob das Gate überhaupt Zusagen sieht, zeigt kein grüner Lauf.** Die
    DoD-Punkte dieses Repos tragen die Form der Slice-Vorlage („Review
-   durchgeführt"), die der Default erkennt; ein Slice mit anderer Formulierung
-   fällt still heraus, solange `require-promises` nicht gesetzt ist. Zeigen
-   lässt es sich mit einer Probe-Konfiguration, deren `reviews-dir` auf ein
-   Verzeichnis ohne Reports zeigt: jede erkannte Zusage meldet dann
-   `review-missing`, und die Zahl der Befunde ist die Zahl der geprüften
-   Slices.
-3. **Fail-closed bei leerer Kandidatenmenge oder unlesbarem `reviews-dir`**,
-   **nicht** bei null gefundenen Zusagen unter vorhandenen Kandidaten — ein
-   junger Bestand ohne jede Zusage ist legitim. Auch eine Menge, die erst
-   `skip-pattern` leert, bleibt ein Befund: Dieses Repo setzt
-   `reviews.skip-allows-empty` nicht, sein `done/` trägt Volltexte.
+   durchgeführt"), die der Default erkennt. Gemessen (2026-10-21, an einer
+   Wegwerf-Kopie ohne Reports): 42 erkannte Zusagen, also 42 `review-missing`.
+   Ändert sich der Wortlaut der Vorlage, so dass das Muster keine einzige Zeile
+   mehr trifft, bleibt der Lauf ohne `require-promises` grün; mit dem Schalter,
+   den dieses Repo seit slice-278 in beiden Profilen setzt, meldet er „keine
+   Review-Zusage unter N Kandidat(en)". **Grenze:** der Schalter fängt den
+   **Totalausfall**, nicht den einzelnen Slice — ein Slice mit anderer Formulierung
+   neben anderen, die das Muster treffen, fällt weiter still heraus. Zeigen lässt
+   sich die Zahl mit einer Probe-Konfiguration, deren `reviews-dir` auf ein
+   Verzeichnis ohne Reports zeigt: die Zahl der Befunde ist die Zahl der
+   erkannten Zusagen.
+3. **Fail-closed bei leerer Kandidatenmenge oder unlesbarem `reviews-dir`.**
+   Null gefundene Zusagen unter vorhandenen Kandidaten sind hier ein Befund
+   (`require-promises`); ohne den Schalter wären sie für einen jungen Bestand
+   legitim. Auch eine Menge, die erst `skip-pattern` leert, bleibt ein Befund
+   („leere Prüfmenge … fail-closed", gemessen): Dieses Repo setzt
+   `reviews.skip-allows-empty` nicht — heute liegen 22 lebende Slices als Volltext
+   in `done/`, und der Schlüssel nähme dem Modul die Fail-closed-Antwort, wenn ein
+   falsches `skip-pattern` alles ausnimmt.
 4. **Geprüft ist die Existenz eines Reports, nicht sein Inhalt** — die
    Kategorisierung eines Findings bleibt inferential.
 5. **Der Abgleich vergleicht die **erste** Kennung im Dateinamen, und nur
