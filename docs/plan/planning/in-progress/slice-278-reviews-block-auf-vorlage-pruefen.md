@@ -79,6 +79,36 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `docs/reviews/…` | — | liest nur; Messung gegen die vorhandenen Reports |
 | `harness/README.md` | update (falls gemessen nötig) | Sensor-Zeile `review-coverage` |
 
+**Messung (2026-10-21, an einer Wegwerf-Kopie des Repos unter dem Home — Docker
+mountet `/tmp` nicht —, nach der Messung entfernt; jeder Lauf mit dem Image
+`d-check:latest`, Modul `reviews` allein):**
+
+| Lauf | Kopie | Ergebnis |
+|---|---|---|
+| A | heutige Konfiguration, alle 119 Reports | Exit 0, 0 Befunde |
+| B | heutige Konfiguration, **keine** Reports | Exit 1, **42** `review-missing` — das Modul sieht 42 Zusagen (276 `done/`-Dateien, davon 254 Stubs) |
+| C | Wortlaut der Review-Zeile geändert („Durchsicht erfolgt"), keine Reports | **Exit 0, 0 Befunde — grün über leerer Menge** |
+| D | wie C, mit `require-promises: true` | Exit 1, ein Befund „keine Review-Zusage unter 47 Kandidat(en)" |
+| E | gesunder Bestand, mit `require-promises: true` | Exit 0, 0 Befunde (keine Regression) |
+| F | gesunder Bestand, mit `match: name` | Exit 1, **42** Befunde — Reports heißen nach `slice-<NNN>`, nicht nach dem vollen Slug |
+| G | alle lebenden Slices als Stub markiert | Exit 1 „leere Pruefmenge … fail-closed"; mit `skip-allows-empty: true` Exit 0 |
+
+Ergebnis je Schlüssel: **`require-promises: true` wird gesetzt** (D belegt das stille
+Grün von C, E belegt: heute folgenlos). **`match: name` bleibt weg** — F zeigt 42
+Fehlbefunde; die Vorlage empfiehlt es für Repos mit Slug-Kennungen, d-check führt
+`slice-<NNN>`. **`skip-allows-empty` bleibt weg** — G: nur der Fall „alles archiviert"
+betrifft ihn, heute liegen 22 lebende Slices; wer den Schlüssel setzt, nimmt dem Modul
+die Fail-closed-Antwort, wenn ein falsches `skip-pattern` alles ausnimmt
+([ADR-0106](../../adr/0106-skip-allows-empty-erklaert-den-ruhezustand.md)); die Entscheidung
+fällt an dem Tag, an dem alles archiviert ist.
+
+**Plan-Änderung vor dem Code (2026-10-21, Schritt 15):** Zusätzlich zur Tabelle trägt die
+Änderung `.d-check.closure.yml`: der `reviews`-Block dort ist an den von `.d-check.yml`
+**gekoppelt** (Kommentar im Block: weichen die Schlüssel ab, antworten
+`make review-coverage` und der Übergangs-Wächter `make verify-closure-notes` verschieden,
+[ADR-0082](../../adr/0082-uebergangswaechter-reviews-observations.md)/[ADR-0105](../../adr/0105-reviews-liest-done-unterverzeichnisse.md)); `require-promises` muss in beiden stehen. Dazu der Kopplungs-Kommentar
+in `.d-check.yml` („dieselben zwei Schlüssel" → drei).
+
 **Spiegel vor dem Editieren auflisten**
 ([`MR-025`](../../../../harness/conventions.md#mr-025), Schritt 17): `grep` nach
 `require-promises`, `skip-allows-empty`, `reviews.match` und `review-coverage` über
