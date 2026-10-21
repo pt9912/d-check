@@ -109,6 +109,17 @@ fällt an dem Tag, an dem alles archiviert ist.
 [ADR-0082](../../adr/0082-uebergangswaechter-reviews-observations.md)/[ADR-0105](../../adr/0105-reviews-liest-done-unterverzeichnisse.md)); `require-promises` muss in beiden stehen. Dazu der Kopplungs-Kommentar
 in `.d-check.yml` („dieselben zwei Schlüssel" → drei).
 
+**Spiegel-Treffer (Schritt 17, `grep -n "require-promises"` über das Repo ohne
+Frozen-Klassen und Baseline):** Bis auf `.d-check.yml` und `.d-check.closure.yml`
+beschreibt **eine** Datei die Lücke als offene Grenze: `harness/sensors/review-coverage.md`
+Punkt 2 und 3 („… solange `require-promises` nicht gesetzt ist") und Punkt 1 („dieselben
+zwei Schlüssel"); sie wird nachgezogen — Punkt 2 nennt jetzt die Messung und die Grenze
+des Schalters (er fängt den Totalausfall, nicht den einzelnen Slice). Die übrigen
+Treffer sind Produkt (`configyaml.go`, `reviews.go`, ihre Tests, `config_template.go`),
+Spezifikation und Lastenheft (beschreiben den Schlüssel) und das Handbuch — sie
+beschreiben das Verhalten des Moduls, nicht die Konfiguration dieses Repos, und ändern
+sich nicht.
+
 **Spiegel vor dem Editieren auflisten**
 ([`MR-025`](../../../../harness/conventions.md#mr-025), Schritt 17): `grep` nach
 `require-promises`, `skip-allows-empty`, `reviews.match` und `review-coverage` über
