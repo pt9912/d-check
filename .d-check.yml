@@ -1015,10 +1015,13 @@ workflows:
 # Wellen-Verzeichnisse); ein archivierter Stub traegt keine DoD mehr und
 # faellt ueber seinen Marker aus der Kandidatenmenge -- ebenso ein Volltext,
 # der den Marker am Zeilenanfang zitiert. Geprueft wird die Deckung, nicht die
-# Qualitaet des Reports. KOPPLUNG: der reviews-Block in .d-check.closure.yml
-# traegt dieselben zwei Schluessel; weicht einer ab, antworten der
-# Uebergangs-Waechter und `make review-coverage` verschieden (ADR-0082,
-# ADR-0105).
+# Qualitaet des Reports. `require-promises` meldet den Leerlauf: trifft das
+# Muster keine einzige Review-Zeile unter den vorhandenen Slices, ist das ein
+# Befund — ohne den Schalter bliebe der Lauf gruen, sobald sich der Wortlaut der
+# Slice-Vorlage aendert (ADR-0081). KOPPLUNG: der reviews-Block in
+# .d-check.closure.yml traegt dieselben drei Schluessel; weicht einer ab,
+# antworten der Uebergangs-Waechter und `make review-coverage` verschieden
+# (ADR-0082, ADR-0105).
 #
 # BESTANDS-AUSNAHME: keine. Die fuenf Slices, die beim Scharfschalten eine
 # Review-Zusage ohne Report trugen, sind archivierte Stubs.
@@ -1027,6 +1030,7 @@ reviews:
   reviews-dir: docs/reviews
   recursive: true
   skip-pattern: '(?m)^> \*\*ARCHIVIERT\*\* — Volltext:'
+  require-promises: true
 
 # Modul citations (DC-FA-CITE-001): parameterlos, direktiven-getrieben — der
 # Block traegt nur den Scope. Ausgenommen sind die drei EINGEFRORENEN

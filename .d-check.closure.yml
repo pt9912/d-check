@@ -286,3 +286,4 @@ reviews:
   reviews-dir: docs/reviews
   recursive: true
   skip-pattern: '(?m)^> \*\*ARCHIVIERT\*\* — Volltext:'
+  require-promises: true
