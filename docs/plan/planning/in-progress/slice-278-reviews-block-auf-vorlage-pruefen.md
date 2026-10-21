@@ -53,22 +53,22 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] **Messung:** Die Zahl der erkannten Zusagen und die Zuordnung jedes
+- [x] **Messung:** Die Zahl der erkannten Zusagen und die Zuordnung jedes
       geschlossenen Slice zu seinem Report stehen im Slice — am Lauf mit der
       heutigen Konfiguration und mit `require-promises: true`, an Kopien der
       Konfiguration, nicht am Arbeitsbaum.
-- [ ] **Konfiguration:** Der `reviews`-Block trägt die Schlüssel, die die Messung
+- [x] **Konfiguration:** Der `reviews`-Block trägt die Schlüssel, die die Messung
       als nötig ausweist (`require-promises`, `match`, `skip-allows-empty`), oder der
       Slice begründet je Schlüssel, warum er fehlen darf; `make review-coverage` ist
       grün und **nicht über leerer Menge**.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8, kein
       Self-Review; Verifikation.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
       „keine Beobachtung angefallen" in §7 notiert.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind hier geprüft.
 
 ## 3. Plan (vor Code)
@@ -92,6 +92,8 @@ mountet `/tmp` nicht —, nach der Messung entfernt; jeder Lauf mit dem Image
 | E | gesunder Bestand, mit `require-promises: true` | Exit 0, 0 Befunde (keine Regression) |
 | F | gesunder Bestand, mit `match: name` | Exit 1, **19** Befunde — 19 der 42 Zusagen haben einen Report, dessen Name nur `slice-<NNN>` trägt, nicht den vollen Slug (die übrigen 23 tragen ihn und treffen) |
 | G | alle lebenden Slices als Stub markiert | Exit 1 „leere Pruefmenge … fail-closed"; mit `skip-allows-empty: true` Exit 0 |
+| H1 | ein einzelner Slice mit anderer Formulierung, Reports vorhanden, `require-promises: true` | **Exit 0, 0 Befunde — still**: der Schalter fängt nur den Totalausfall |
+| H2 | alle 43 Slices mit Zusage als Stub markiert, 4 ohne Zusage bleiben, `skip-allows-empty: true` | Exit 1 „keine Review-Zusage unter 4 Kandidat(en)": `skip-allows-empty` greift dort nicht |
 
 Ergebnis je Schlüssel: **`require-promises: true` wird gesetzt** (D belegt das stille
 Grün von C, E belegt: heute folgenlos). **`match: name` bleibt weg** — F zeigt 19
@@ -154,21 +156,45 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Offene Risiken werden bei Closure aufgelöst.
 
 - **Die Messung ergibt einen Leerlauf, der seit Monaten bestand** — der Lauf war
-  grün über einer leeren Menge. — **Ausgang:** offen bis Closure.
+  grün über einer leeren Menge. — **Ausgang:** entfallen — das Modul sieht **42
+  Zusagen** (Lauf B), es lief nie über einer leeren Menge. Nachweisbar ist nur der
+  Fall, den die Vorlage benennt: ändert sich der Wortlaut, wird der Lauf grün über
+  leerer Menge (Lauf C) — das ist jetzt laut (Lauf D).
 - **`require-promises: true` macht den Lauf rot über Altbestand.** — **Ausgang:**
-  offen bis Closure; Abgrenzung (Carveout oder Folge-Slice).
+  entfallen — Lauf E: gesunder Bestand, Exit 0, 0 Befunde; kein Report musste
+  nachgeholt werden.
 
 ## 7. Closure-Notiz
 
-<!-- Wird bei der Closure gefüllt, vor dem `git mv` nach `done/`. -->
-
-- **Was hat funktioniert:** —
-- **Was ging anders als geplant:** —
+- **Was hat funktioniert:** Die Messung beantwortet die Frage des Slice am Lauf
+  statt am Muster: Ohne Reports meldet das Modul je erkannter Zusage einen Befund, die
+  Zahl der Befunde ist die Zahl der erkannten Zusagen (42). Die zehn Läufe (A–H) in §3
+  trennen vier Fälle sauber: der Bestand wird gesehen; der Totalausfall war still und ist
+  jetzt laut; ein einzelner Slice mit anderem Wortlaut bleibt still (Grenze); „alles
+  archiviert" ist fail-closed. `require-promises: true` steht in beiden gekoppelten
+  Profilen; nur eines davon zu setzen lässt die Profile verschieden antworten (Verifier).
+  `match: name` (19 Fehlbefunde) und `skip-allows-empty` bleiben weg, belegt.
+- **Was ging anders als geplant:** Der Plan kannte die zweite Datei
+  `.d-check.closure.yml` nicht — der Kopplungs-Kommentar im Block fand sie; die
+  Plan-Änderung kam diesmal vor dem Code. Zwei Zahlen der Messungs-Tabelle waren falsch
+  (19 statt 42, 47 statt 22 lebende Slices) und standen schon im Sensor-Vertrag;
+  Review und Verifier fanden sie durch Nachzählen. Der Reviewer schrieb keinen Report
+  (mein Auftrag las sich als Verbot), ich habe ihn aus seinen Findings geschrieben.
+  Verifier-LOW: Die Zeile „existiert in `open/`" in der Closure-Notiz von
+  [slice-277](../done/wellenlos/slice-277-baseline-v6181-bump.md) ist eine
+  Zeitpunkt-Aussage der Vorlagenform und bleibt stehen.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
-- **Beobachtungs-Register (`../observations/`):** —
-- **Folge-Slices:** —
-- **Risiken aus §6:** —
-- **Drei Paarungen:** —
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-278.md` in
+  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/state.md)
+  (jetzt 9×): zwei Zahlen aus dem falschen Lauf bzw. mit falscher Menge.
+- **Folge-Slices:** keiner. Offene Frage, die kein Slice ist: ob `skip-allows-empty`
+  gesetzt wird, entscheidet sich an dem Tag, an dem alles archiviert ist.
+- **Risiken aus §6:** beide entfallen (siehe §6). Trigger-Audit: kein Carveout, kein
+  bootstrap-aware Gate, keine ADR, keine Hard Rule mit eingetretenem Trigger;
+  `require-promises: true` ist eine Verschärfung, keine Lockerung (§3.6). Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — keiner
+  genannt; (c) Register — die zitierten Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
