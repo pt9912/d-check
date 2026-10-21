@@ -1,7 +1,7 @@
 # Verifikation — slice-278: der `reviews`-Block gegen die Vorlage von v6.18.1
 
 - **Rolle:** Verifier (Modul 11) — DoD, Plan und Sensor-Seite gegen den Stand
-- **Gegenstand:** `docs/plan/planning/in-progress/slice-278-reviews-block-auf-vorlage-pruefen.md` §1, §2, §3 (Messung, Plan-Änderung, Spiegel-Treffer), §4, §6; `harness/sensors/review-coverage.md`
+- **Gegenstand:** `docs/plan/planning/done/wellenlos/slice-278-reviews-block-auf-vorlage-pruefen.md` §1, §2, §3 (Messung, Plan-Änderung, Spiegel-Treffer), §4, §6; `harness/sensors/review-coverage.md`
 - **Range:** `607648bc..HEAD` (Spitze `1f3b537a`); der Review-Report `2026-10-21-slice-278-reviews-block.md` nur als Kontext
 - **Datum:** 2026-10-21
 
