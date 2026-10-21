@@ -86,18 +86,18 @@ mountet `/tmp` nicht —, nach der Messung entfernt; jeder Lauf mit dem Image
 | Lauf | Kopie | Ergebnis |
 |---|---|---|
 | A | heutige Konfiguration, alle 119 Reports | Exit 0, 0 Befunde |
-| B | heutige Konfiguration, **keine** Reports | Exit 1, **42** `review-missing` — das Modul sieht 42 Zusagen (276 `done/`-Dateien, davon 254 Stubs) |
+| B | heutige Konfiguration, **keine** Reports | Exit 1, **42** `review-missing` — das Modul sieht 42 Zusagen (276 Slice-Dateien unter `done/`, davon 229 Stubs, 47 lebende Kandidaten) |
 | C | Wortlaut der Review-Zeile geändert („Durchsicht erfolgt"), keine Reports | **Exit 0, 0 Befunde — grün über leerer Menge** |
 | D | wie C, mit `require-promises: true` | Exit 1, ein Befund „keine Review-Zusage unter 47 Kandidat(en)" |
 | E | gesunder Bestand, mit `require-promises: true` | Exit 0, 0 Befunde (keine Regression) |
-| F | gesunder Bestand, mit `match: name` | Exit 1, **42** Befunde — Reports heißen nach `slice-<NNN>`, nicht nach dem vollen Slug |
+| F | gesunder Bestand, mit `match: name` | Exit 1, **19** Befunde — 19 der 42 Zusagen haben einen Report, dessen Name nur `slice-<NNN>` trägt, nicht den vollen Slug (die übrigen 23 tragen ihn und treffen) |
 | G | alle lebenden Slices als Stub markiert | Exit 1 „leere Pruefmenge … fail-closed"; mit `skip-allows-empty: true` Exit 0 |
 
 Ergebnis je Schlüssel: **`require-promises: true` wird gesetzt** (D belegt das stille
-Grün von C, E belegt: heute folgenlos). **`match: name` bleibt weg** — F zeigt 42
-Fehlbefunde; die Vorlage empfiehlt es für Repos mit Slug-Kennungen, d-check führt
+Grün von C, E belegt: heute folgenlos). **`match: name` bleibt weg** — F zeigt 19
+Fehlbefunde (gezählt); die Vorlage empfiehlt es für Repos mit Slug-Kennungen, d-check führt
 `slice-<NNN>`. **`skip-allows-empty` bleibt weg** — G: nur der Fall „alles archiviert"
-betrifft ihn, heute liegen 22 lebende Slices; wer den Schlüssel setzt, nimmt dem Modul
+betrifft ihn, heute liegen 47 lebende Slices; wer den Schlüssel setzt, nimmt dem Modul
 die Fail-closed-Antwort, wenn ein falsches `skip-pattern` alles ausnimmt
 ([ADR-0106](../../adr/0106-skip-allows-empty-erklaert-den-ruhezustand.md)); die Entscheidung
 fällt an dem Tag, an dem alles archiviert ist.

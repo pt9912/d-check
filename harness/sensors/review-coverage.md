@@ -38,9 +38,14 @@ Default.
    (`require-promises`); ohne den Schalter wären sie für einen jungen Bestand
    legitim. Auch eine Menge, die erst `skip-pattern` leert, bleibt ein Befund
    („leere Prüfmenge … fail-closed", gemessen): Dieses Repo setzt
-   `reviews.skip-allows-empty` nicht — heute liegen 22 lebende Slices als Volltext
+   `reviews.skip-allows-empty` nicht — heute liegen 47 lebende Slices als Volltext
    in `done/`, und der Schlüssel nähme dem Modul die Fail-closed-Antwort, wenn ein
-   falsches `skip-pattern` alles ausnimmt.
+   falsches `skip-pattern` alles ausnimmt. **Grenze:** `require-promises` zählt die
+   Zusagen **nach** dem `skip-pattern`. Heute tragen 43 der 47 lebenden Slices eine
+   Zusage; archiviert eine Wellen-Closure alle, die eine tragen, und lässt nur
+   Slices ohne Zusage liegen, melden `make review-coverage` und
+   `make verify-closure-notes` „keine Review-Zusage unter N Kandidat(en)" — auch ohne
+   dass etwas fehlt, und `skip-allows-empty` greift dort nicht.
 4. **Geprüft ist die Existenz eines Reports, nicht sein Inhalt** — die
    Kategorisierung eines Findings bleibt inferential.
 5. **Der Abgleich vergleicht die **erste** Kennung im Dateinamen, und nur
