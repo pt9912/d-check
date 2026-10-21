@@ -8,12 +8,12 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 **Welle:** ohne Welle — reaktive Arbeit, die Closure-Bedingung ist die DoD
 selbst.
 
-**Bezug:** [`DC-FA-RVW-001`](../../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)
-(das Modul `reviews`), [ADR-0081](../../adr/0081-reviews-modul.md),
-[`MR-080`](../../../../harness/conventions.md#mr-080) (der Anlass: die Vorlage
+**Bezug:** [`DC-FA-RVW-001`](../../../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)
+(das Modul `reviews`), [ADR-0081](../../../adr/0081-reviews-modul.md),
+[`MR-080`](../../../../../harness/conventions.md#mr-080) (der Anlass: die Vorlage
 `templates/.d-check.yml` der Baseline v6.18.1 trägt Schlüssel, die der `reviews`-Block
 dieses Repos nicht führt). Anlass: Befund aus der Messung des Deltas in slice-277 — der
-`reviews`-Block der [`.d-check.yml`](../../../../.d-check.yml) trägt `done-dir`,
+`reviews`-Block der [`.d-check.yml`](../../../../../.d-check.yml) trägt `done-dir`,
 `reviews-dir`, `recursive` und `skip-pattern`, nicht aber `require-promises`, `match`
 und `skip-allows-empty`; `make review-coverage` meldet 0 Befunde, **ob der Lauf eine
 nichtleere Menge von Zusagen sieht, ist nicht gemessen**.
@@ -41,7 +41,7 @@ setzen, dass er eine nichtleere Menge sieht und Fehlen eines Reports meldet.
   schon nachgezogen; hier geht es um die **Konfiguration dieses Repos**, nicht um das
   Produkt (anderer Vorgang an anderem Gegenstand).
 - **Alle übrigen Deltas der Baseline v6.18.1** — Vorlagen-Pfade und Review-Report-
-  Dateinamen sind in [`MR-080`](../../../../harness/conventions.md#mr-080) genannt und
+  Dateinamen sind in [`MR-080`](../../../../../harness/conventions.md#mr-080) genannt und
   warten auf eigene Entscheidungen.
 - **Nachträgliche Reports für geschlossene Slices.** Meldet die Messung Slices ohne
   Report, ist das ein Befund über den Bestand: er wird benannt und je nach Ergebnis
@@ -65,11 +65,11 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 - [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8, kein
       Self-Review; Verifikation.
-- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
+- [x] Beobachtungs-Register (`../../observations/`) fortgeschrieben — oder
       „keine Beobachtung angefallen" in §7 notiert.
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind hier geprüft.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind hier geprüft.
 
 ## 3. Plan (vor Code)
 
@@ -101,14 +101,14 @@ Fehlbefunde (gezählt); die Vorlage empfiehlt es für Repos mit Slug-Kennungen, 
 `slice-<NNN>`. **`skip-allows-empty` bleibt weg** — G: nur der Fall „alles archiviert"
 betrifft ihn, heute liegen 47 lebende Slices; wer den Schlüssel setzt, nimmt dem Modul
 die Fail-closed-Antwort, wenn ein falsches `skip-pattern` alles ausnimmt
-([ADR-0106](../../adr/0106-skip-allows-empty-erklaert-den-ruhezustand.md)); die Entscheidung
+([ADR-0106](../../../adr/0106-skip-allows-empty-erklaert-den-ruhezustand.md)); die Entscheidung
 fällt an dem Tag, an dem alles archiviert ist.
 
 **Plan-Änderung vor dem Code (2026-10-21, Schritt 15):** Zusätzlich zur Tabelle trägt die
 Änderung `.d-check.closure.yml`: der `reviews`-Block dort ist an den von `.d-check.yml`
 **gekoppelt** (Kommentar im Block: weichen die Schlüssel ab, antworten
 `make review-coverage` und der Übergangs-Wächter `make verify-closure-notes` verschieden,
-[ADR-0082](../../adr/0082-uebergangswaechter-reviews-observations.md)/[ADR-0105](../../adr/0105-reviews-liest-done-unterverzeichnisse.md)); `require-promises` muss in beiden stehen. Dazu der Kopplungs-Kommentar
+[ADR-0082](../../../adr/0082-uebergangswaechter-reviews-observations.md)/[ADR-0105](../../../adr/0105-reviews-liest-done-unterverzeichnisse.md)); `require-promises` muss in beiden stehen. Dazu der Kopplungs-Kommentar
 in `.d-check.yml` („dieselben zwei Schlüssel" → drei).
 
 **Spiegel-Treffer (Schritt 17, `grep -n "require-promises"` über das Repo ohne
@@ -123,7 +123,7 @@ beschreiben das Verhalten des Moduls, nicht die Konfiguration dieses Repos, und 
 sich nicht.
 
 **Spiegel vor dem Editieren auflisten**
-([`MR-025`](../../../../harness/conventions.md#mr-025), Schritt 17): `grep` nach
+([`MR-025`](../../../../../harness/conventions.md#mr-025), Schritt 17): `grep` nach
 `require-promises`, `skip-allows-empty`, `reviews.match` und `review-coverage` über
 `harness/`, `docs/user/`, `docs/maintainer/`, `.claude/`, `tools/`, `Makefile`,
 `spec/` und `.d-check*.yml`; Treffer vor dem ersten Edit im Plan listen.
@@ -181,18 +181,18 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   Review und Verifier fanden sie durch Nachzählen. Der Reviewer schrieb keinen Report
   (mein Auftrag las sich als Verbot), ich habe ihn aus seinen Findings geschrieben.
   Verifier-LOW: Die Zeile „existiert in `open/`" in der Closure-Notiz von
-  [slice-277](../done/wellenlos/slice-277-baseline-v6181-bump.md) ist eine
+  [slice-277](./slice-277-baseline-v6181-bump.md) ist eine
   Zeitpunkt-Aussage der Vorlagenform und bleibt stehen.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-278.md` in
-  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/state.md)
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-278.md` in
+  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/state.md)
   (jetzt 9×): zwei Zahlen aus dem falschen Lauf bzw. mit falscher Menge.
 - **Folge-Slices:** keiner. Offene Frage, die kein Slice ist: ob `skip-allows-empty`
   gesetzt wird, entscheidet sich an dem Tag, an dem alles archiviert ist.
 - **Risiken aus §6:** beide entfallen (siehe §6). Trigger-Audit: kein Carveout, kein
   bootstrap-aware Gate, keine ADR, keine Hard Rule mit eingetretenem Trigger;
   `require-promises: true` ist eine Verschärfung, keine Lockerung (§3.6). Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — keiner
   genannt; (c) Register — die zitierten Beobachtungen existieren und tragen Belege.
 
@@ -212,14 +212,14 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 **Vorgelagert — offene Beobachtungen sichten:** Register durchgegangen; Treffer:
 
-- [`skip-allows-empty-macht-umzug-still`](../observations/BEO-ALL/skip-allows-empty-macht-umzug-still/observation.md)
+- [`skip-allows-empty-macht-umzug-still`](../../observations/BEO-ALL/skip-allows-empty-macht-umzug-still/observation.md)
   (1×) und
-  [`name-zuordnung-deckt-praefix-slices`](../observations/BEO-ALL/name-zuordnung-deckt-praefix-slices/observation.md)
+  [`name-zuordnung-deckt-praefix-slices`](../../observations/BEO-ALL/name-zuordnung-deckt-praefix-slices/observation.md)
   (1×): beide betreffen genau die Zuordnung und den Ruhezustand des Moduls.
-- [`stilles-gruen-ueber-leerer-range`](../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/observation.md)
+- [`stilles-gruen-ueber-leerer-range`](../../observations/BEO-ALL/stilles-gruen-ueber-leerer-range/observation.md)
   (1×): die Klasse „grün über leerer Menge", hier für Zusagen statt Commits.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 `image-scan` grün; `upstream-drift` rot, **planmäßig gelesen** (der Baseline-Pin
 steht seit slice-277 auf `v6.18.1`; veraltet sind Go, golangci-lint, semgrep und
 a-check, eigene Vorgänge).
