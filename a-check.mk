@@ -39,7 +39,7 @@
 #
 # Die drei Vorbedingungen des Architektur-Gates (tech.adapter-Liste,
 # composition_root: forbid, exclude) kamen mit v0.8.0 und tragen weiter.
-# Vor der Hebung auf v0.23.1 gemessen: derselbe Lauf ueber dieses Repo, 0
+# Vor der Hebung auf v0.23.2 gemessen: derselbe Lauf ueber dieses Repo, 0
 # Befunde in beiden Fassungen, und beide melden denselben konstruierten
 # Verstoss (app-impurity) an derselben Zeile; --print-mk ist unveraendert.
 # Der opt-in-Block shapes (seit v0.21.0) ist hier nicht konfiguriert.
@@ -50,8 +50,8 @@
 # Richtungssegment, und die ports-Schicht in `.a-check.yml` fuehrt ohnehin
 # kein `direction`-Feld, die einzige Vorbedingung, unter der die Aenderung
 # greift. Gemessen, nicht aus dem Changelog geschlossen.
-A_CHECK_VERSION ?= v0.23.1
-A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check:$(A_CHECK_VERSION)@sha256:4948e1e45a595750e6fe49ef19acde42fbfae1cd8d84ea0cca3ae0611443665d
+A_CHECK_VERSION ?= v0.23.2
+A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check:$(A_CHECK_VERSION)@sha256:2368f7b3a84f1dc5d075edccfe2201e19947d12fcbc8eaf4df84ef162d94f422
 
 .PHONY: a-check
 a-check: ## Architektur: Hexagon-Regeln via a-check (netzlos, read-only).
