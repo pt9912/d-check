@@ -9,7 +9,9 @@ harness/tools/ und internal/emit/templates/enforce/; hier ohne Inline-Code, weil
 sie in diesem Repo nicht liegen), dazu die Probenmenge des Wächters
 **Gemessen gegen:** `ai-harness-init` bei `v0.10.0-136-g2b6830c6`; Vergleichsbaum
 ist ein damit erzeugtes Repo (`v0.10.0`)
-**Stand:** offen — nicht gesendet
+**Stand:** **beantwortet** — angenommen und umgesetzt, siehe
+[Antwort](2026-10-21-antwort-ai-harness-init-guard-extraktor-parse-zweifel.md);
+ausgeliefert erst mit dem nächsten Release von `ai-harness-init`.
 
 ---
 
