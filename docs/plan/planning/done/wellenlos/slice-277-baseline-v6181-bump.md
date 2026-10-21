@@ -204,7 +204,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   (jetzt 5×) und
   [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/state.md)
   (jetzt 8×).
-- **Folge-Slices:** [`slice-278`](../../open/slice-278-reviews-block-auf-vorlage-pruefen.md)
+- **Folge-Slices:** [`slice-278`](../../next/slice-278-reviews-block-auf-vorlage-pruefen.md)
   (der `reviews`-Block gegen die Vorlage von `v6.18.1`) — `open/`, Anlass: [MR-080](../../../../../harness/conventions.md#mr-080)
   Bewegung 1. Nicht als Slice, aber als offene Frage: ob `make hooks` in diesem Klon
   aktiviert wird (Entscheidung des Auftraggebers).

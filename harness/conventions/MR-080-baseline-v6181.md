@@ -43,7 +43,7 @@
      Vorlage nur `recursive` und `skip-pattern`; `require-promises`, `match` und
      `skip-allows-empty` fehlen. `make review-coverage` meldet 0 Befunde; **nicht
      gemessen** ist, ob der Lauf eine nichtleere Menge von Zusagen sieht (der
-     Leerlauf-Fall, den die Vorlage benennt). Folge-Slice: [`slice-278`](../../docs/plan/planning/open/slice-278-reviews-block-auf-vorlage-pruefen.md).
+     Leerlauf-Fall, den die Vorlage benennt). Folge-Slice: [`slice-278`](../../docs/plan/planning/next/slice-278-reviews-block-auf-vorlage-pruefen.md).
   2. **Vorlagen-Pfade nennen die vendorte Baseline** — `templates/.harness/skills/
      reviewer.template.md`, `closure-note-reviewer.template.md`,
      `templates/harness/conventions.template.md` und
