@@ -1628,6 +1628,17 @@ weitere Konfiguration existiert nicht.
      Tilde mit Benutzername treffen damit nicht. Vorbedingung wie Unix,
      zusätzlich keine Tilde davor — eine Strikethrough-Tilde ist kein
      Home-Verweis.
+   - **Variablen-Home** (nur mit `hostpaths.variables`): `$NAME` oder
+     `${NAME}` mit einem Namen aus der Liste, optional ein schließendes
+     Anführungszeichen, Schrägstrich + erstes Zeichen, das weder Punkt noch
+     Schrägstrich noch ein Restpfad-Endzeichen ist, + Restpfad (Endzeichen wie
+     Unix). Dieselbe Punkt-Segment-Regel wie bei der Tilde; ein Name, der länger
+     ist als der gelistete (`$HOMEDIR/…`), eine Ausdrucks-Form (`${HOME:-/tmp}/…`),
+     ein Zeichen zwischen `}` und `/` und die nackte Variable treffen nicht.
+     Vorbedingung wie Home-relativ, zusätzlich weder `$` noch Backslash davor
+     (kein `$$HOME`, keine maskierte Variable). Gemeldet wird der Pfad mit der
+     Variablen, wie geschrieben, ohne das schließende Anführungszeichen. Ein
+     Unix-Treffer, der innerhalb eines Variablen-Treffers beginnt, entfällt.
    - **Windows-Laufwerk:** Buchstabe + Doppelpunkt + Backslash +
      Restpfad (Vorbedingung hier: kein Wortzeichen davor).
    - **UNC:** doppelter Backslash + Servername + Backslash +
@@ -1639,8 +1650,9 @@ weitere Konfiguration existiert nicht.
    `codepaths`-Normalisierung).
 4. **Ziel-Ventil:** trifft ein `hostpaths.exempt-targets`-Glob
    (`matchGlob`, segmentweise wie `scan.ignore`) den normalisierten
-   Pfad eines Unix- oder Home-relativen Funds, entfällt der Befund. Ein
-   Glob, das weder mit `/` noch mit `~` beginnt, träfe keinen gemeldeten
+   Pfad eines Unix-, Home-relativen oder Variablen-Funds, entfällt der Befund. Ein
+   Glob, das weder mit `/` noch mit `~` noch mit einer in `hostpaths.variables`
+   genannten Variablen (`$NAME/`, `${NAME}/`) beginnt, träfe keinen gemeldeten
    Pfad und ist ein Konfigurationsfehler (Exit 2).
    Windows- und UNC-Funde prüft das Ventil nicht — der Backslash ist im
    Glob das Escape-Zeichen, eine eigene Lexik wäre nötig. Ohne den
@@ -3543,7 +3555,8 @@ Exit 2 ohne Prüfung
 | `<modul>.scope.roots` | string[] | — (globaler Scope) | Pflicht, wenn `scope` gesetzt ist; Constraints wie `scan.roots` (Existenz, kein Repo-Escape, `"."` = Repo-Wurzel, leere Liste = nichts) |
 | `<modul>.scope.ignore` | string[] | leer | wie `scan.ignore` (Glob, Abstiegs-Pruning) |
 | `hostpaths.prefixes` | string[] | Development, home, Users, Volumes, mnt, media | ersetzt die Default-Liste; Einträge sind nicht-leere Verzeichnisnamen ohne `/` und ohne `~` (Exit 2) |
-| `hostpaths.exempt-targets` | string[] | `[]` | Globs über den normalisierten Fund-Pfad (Unix- und Home-relative Funde, nicht Windows/UNC); leeres, ungültiges oder weder mit `/` noch mit `~` beginnendes Glob ⇒ Exit 2 |
+| `hostpaths.exempt-targets` | string[] | `[]` | Globs über den normalisierten Fund-Pfad (Unix-, Home-relative und Variablen-Funde, nicht Windows/UNC); leeres, ungültiges oder weder mit `/` noch mit `~` noch mit einer in `hostpaths.variables` genannten Variablen (`$NAME/`, `${NAME}/`) beginnendes Glob ⇒ Exit 2 |
+| `hostpaths.variables` | string[] | `[]` (aus) | Namen von Shell-Variablen (`[A-Za-z_][A-Za-z0-9_]*`, ohne `$`), deren `$NAME/…`-, `${NAME}/…`- und `"$NAME"/…`-Pfade als Home-Verweis gelten; leer ⇒ kein Variablen-Fund, Befundsatz byte-identisch; leerer oder anders geformter Name ⇒ Exit 2 |
 | `ids.patterns[].regex` | string | — | muss kompilieren und darf den Leerstring nicht matchen (Exit 2) |
 | `ids.patterns[].target` | string | — | muss existieren und innerhalb der Repo-Wurzel liegen |
 | `ids.patterns[].link-policy` | string | `prose` | nur `prose` oder `always` (Exit 2); `always` macht auch Inline-Code-Vorkommen linkpflichtig |
@@ -3856,6 +3869,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-29 | §[`DC-FA-HOST-001.a`](spezifikation.md#dc-fa-host-001a--host-pfad-erkennung) um das **Variablen-Home-Muster** (`$NAME/…`, `${NAME}/…`, `"$NAME"/…`) erweitert, Schritt 4 (Ziel-Ventil) und die §2-Schema-Zeilen `hostpaths.variables` und `hostpaths.exempt-targets`: nur mit gesetztem `hostpaths.variables` aktiv, Punkt-Segment- und Wortgrenzen-Regel wie die Tilde, Unix-Treffer innerhalb eines Variablen-Treffers entfällt, ein `$`-Glob ohne passende Variable ist Exit 2. Ohne den Schlüssel ist der Befundsatz byte-identisch |
 | 2026-10-29 | §[`DC-FA-CLI-009.a`](spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) Schritt 2 und die Schema-Zeile `trace.slices.file-pattern`: ohne gesetztes Muster gilt die Default-Erkennung — Ziffern-Fall `slice-NNN-…md` (Kennung `slice-NNN`) zuerst, sonst Namens-Fall `slice-<name>.md` (Kennung = Basisname ohne `.md`, nur `[a-z0-9-]`); Namens-Dateien unter einem Pfadsegment `observations` unterhalb von `trace.slices.dir` sind im Default keine Slices (der Ziffern-Fall gilt überall). Ein gesetztes Muster gilt unverändert und ohne Ausschluss |
 | 2026-10-20 | §[7](#7-festlegungen-der-harness-werkzeuge): [`SPEC-094`](#7-festlegungen-der-harness-werkzeuge) nennt den HEAD-Stempel, den strengen und den lockeren Modus des Stop-Hooks und den Exit 2 für jeden unerwarteten Fehler; [`SPEC-103`](#7-festlegungen-der-harness-werkzeuge) nennt die Stop-Hook-Zweige der Selbstprüfung |
 | 2026-10-20 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) um Schritt 8 ergänzt: `trace.requirements` als Liste von Quellen-Einträgen — je Eintrag die Schritte 1 bis 7, Vereinigung in Listenreihenfolge, doppelte Kennung über Einträge und leere Liste Exit 2, `modality` je Eintrag; Fehlerpräzedenz und Schlüsseltabelle nachgezogen, Schritt 1 der RTM benennt die Vereinigung |

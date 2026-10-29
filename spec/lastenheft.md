@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.107.0
+**Version:** 0.108.0
 
 **Status:** Draft
 
@@ -1782,7 +1782,8 @@ dessen Verzeichnis-Aufbau. Erkannt werden:
    `~/.config`), die auf jedem Host gleich lauten, und bleiben still. Ein
    Home-relativer Pfad wird in voller Form und genau einmal gemeldet,
    auch wenn sein erstes Segment zugleich ein Unix-Präfix-Name ist,
-3. **Windows-Laufwerkspfade** (Laufwerksbuchstabe, Doppelpunkt,
+3. **Variablen-Home-Pfade** — nur mit gesetztem `hostpaths.variables`: `$NAME/…`, `${NAME}/…` und `"$NAME"/…` für einen dort genannten Namen, mit demselben ersten Segment wie bei der Tilde (ein Punkt-Segment bleibt still); die nackte Variable, ein längerer Name, eine Ausdrucks-Form wie `${HOME:-/tmp}/…` und andere Schreibweisen (Windows-`%NAME%`) treffen nicht,
+4. **Windows-Laufwerkspfade** (Laufwerksbuchstabe, Doppelpunkt,
    Backslash) und **UNC-Pfade** (doppelter Backslash plus
    Servername) — beide immer, nicht konfigurierbar.
 
@@ -1799,12 +1800,12 @@ gefundenem Pfad. Es gibt **keinen Zeilen-Marker** (der Zeilen-Marker
 die Auswege sind Fences für beabsichtigte Beispiele, die Präfixliste
 und ein **Ziel-Ventil** für repo-spezifische Sonderfälle:
 `hostpaths.exempt-targets` ist eine Glob-Liste über den gemeldeten
-(normalisierten) Pfad; ein Unix- oder Home-relativer Fund, den ein
+(normalisierten) Pfad; ein Unix-, Home-relativer oder Variablen-Fund, den ein
 Glob trifft, entfällt. Für Windows- und UNC-Funde gilt das Ventil
 nicht — beide Muster bleiben fest. Ohne den Schlüssel ist der
 Befundsatz byte-identisch
 ([`DC-QA-02`](#dc-qa-02--determinismus)); ein leeres, ungültiges oder
-weder mit Schrägstrich noch mit Tilde beginnendes Glob ist ein
+weder mit Schrägstrich noch mit Tilde noch mit einer in `hostpaths.variables` genannten Variablen beginnendes Glob ist ein
 Konfigurationsfehler.
 
 **Akzeptanzkriterien:**
@@ -1816,9 +1817,11 @@ Konfigurationsfehler.
 - **Home-relativ (Boundary):** Given eine Tilde vor einem Punkt-Segment, eine nackte Tilde mit Schrägstrich, eine Tilde mit Benutzername, eine Tilde als „ungefähr" oder eine Tilde in einem URL-Pfad, when das Modul läuft, then kein Befund.
 - **Home-relativ (kein Verlust):** Given ein absoluter Host-Pfad, dem eine Tilde unmittelbar vorausgeht, ohne selbst Teil eines Home-relativen Pfads zu sein (durchgestrichen, an einem Wort klebend), when das Modul läuft, then wird er gemeldet wie ohne die Erweiterung.
 - **Ziel-Ventil:** Given `hostpaths.exempt-targets` mit einem Glob, das einen gefundenen Unix- oder Home-relativen Pfad trifft, when das Modul läuft, then entfällt genau dieser Befund; ein Windows- oder UNC-Fund bleibt bestehen.
-- **Config-Rand:** Given ein `hostpaths.prefixes`-Eintrag mit Tilde oder ein leeres bzw. ungültiges `hostpaths.exempt-targets`-Glob, when d-check die Konfiguration lädt, then Exit 2.
+- **Variablen-Home (Negative):** Given `hostpaths.variables: [HOME]` und eine Prosa-Zeile oder ein Inline-Code-Span mit `$HOME/…`, `${HOME}/…` oder `"$HOME"/…` und einem Segment ohne führenden Punkt, when das Modul läuft, then genau ein Befund `hostpath-forbidden` mit dem vollständigen Pfad samt Variablen-Schreibweise (ohne das schließende Anführungszeichen).
+- **Variablen-Home (Boundary):** Given dieselben Zeilen **ohne** `hostpaths.variables`, oder mit dem Schlüssel eine nackte Variable, ein Punkt-Segment, einen längeren Namen, eine Ausdrucks-Form, eine nicht genannte Variable oder einen Fenced-Block, when das Modul läuft, then kein Befund; der Befundsatz ohne den Schlüssel ist byte-identisch.
+- **Config-Rand:** Given ein `hostpaths.prefixes`-Eintrag mit Tilde, ein leeres bzw. ungültiges `hostpaths.exempt-targets`-Glob, ein `$`-Glob ohne passende Variable in `hostpaths.variables` oder ein `hostpaths.variables`-Eintrag, der kein Shell-Variablen-Name ist, when d-check die Konfiguration lädt, then Exit 2.
 
-**Out-of-Scope:** Erkennung relativer Pfade (Aufgabe von `links`/`codepaths`); URL-Pfade hinter Schemata; Pfade in Fenced-Code-Blöcken; ein Zeilen-Marker für dieses Modul; die Tilde mit Benutzername (in Prosa nicht verlässlich von anderer Tilde-Verwendung zu trennen — benannte Grenze); Variablen-Formen des Home-Verzeichnisses (Umgebungsvariablen in Unix- oder Windows-Schreibweise); ein Ventil für Windows- und UNC-Funde; automatische Umschreibung.
+**Out-of-Scope:** Erkennung relativer Pfade (Aufgabe von `links`/`codepaths`); URL-Pfade hinter Schemata; Pfade in Fenced-Code-Blöcken; ein Zeilen-Marker für dieses Modul; die Tilde mit Benutzername (in Prosa nicht verlässlich von anderer Tilde-Verwendung zu trennen — benannte Grenze); Variablen-Formen des Home-Verzeichnisses außerhalb von `hostpaths.variables` (die Windows-Schreibweise `%NAME%` und Variablen mit Default-Syntax bleiben ausgeschlossen); ein Ventil für Windows- und UNC-Funde; automatische Umschreibung.
 
 ---
 
@@ -4223,6 +4226,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.108.0 | 2026-10-29 | [`DC-FA-HOST-001`](#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in): Neuer opt-in-Schlüssel `hostpaths.variables` (Liste von Shell-Variablen-Namen): `$NAME/…`, `${NAME}/…` und `"$NAME"/…` gelten dann als Home-Verweis, mit der Punkt-Segment-Regel der Tilde. `hostpaths.exempt-targets` akzeptiert `$`-Globs mit gelisteter Variable; ein `$`-Glob ohne sie ist Exit 2. Ohne den Schlüssel ist der Befundsatz byte-identisch. Der Out-of-Scope-Satz zu Variablen-Formen gilt nur noch außerhalb der Liste. Anlass: Feldmeldung eines Adopters | — |
 | 0.107.0 | 2026-10-29 | [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix): Ohne `trace.slices.file-pattern` erkennt die RTM auch Slices mit Namens-Kennung (`slice-<name>.md`, Kennung = Basisname ohne `.md`); Namens-Belege unter einem Segment `observations` sind im Default keine Slices. Das Kriterium *Default byte-identisch* gilt für den Ziffern-Fall `slice-NNN-titel.md`; neues Kriterium *Namens-Slice*. Anlass: Feldmeldung eines Adopters | —
 | 0.106.0 | 2026-10-20 | [`DC-FA-REQ-001`](#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen): `trace.requirements` darf eine nichtleere Liste von Quellen-Objekten sein — Vereinigung in Listenreihenfolge, doppelte Kennung über Einträge und leere Liste sind Konfigurationsfehler (Exit 2), der Nullmengen-Guard gilt je Eintrag; die Objekt-Form bleibt byte-identisch. Der Ausschluss „Mischen von Heading- und Tabellen-Definitionen / mehrere Quelldateien" entfällt, der Ausschluss einer Politik über Einträge hinweg tritt an seine Stelle. Anlass: CR eines Adopters | — |
 | 0.105.1 | 2026-10-09 | Nachzug nach Verifikation an [`DC-FA-CLI-013`](#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen): das Kriterium „Drift" vergleicht einen Abschnitt ohne Kopfzeile mit derselben Zeilenspanne der Quelle, bis auf die Leerzeilen am Ende — die Ausgabe trägt Kopfzeilen | — |

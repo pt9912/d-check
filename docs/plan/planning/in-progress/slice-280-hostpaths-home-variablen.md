@@ -175,6 +175,15 @@ nicht in der Liste (`$OTHER/x`) · ein Variablen-Pfad mit Host-Präfix-Namen als
 voller Form). Dazu der Lauf über den eigenen Bestand: Befundsatz von `hostpaths`
 ohne den Schlüssel gegen `v0.87.1` byte-gleich, mit `variables: [HOME]` die
 Menge der Treffer vorab gezählt (erwartet: die zwei Dateien oben).
+**Plan-Änderung vor dem Code-Commit (Schritt 19):** Die Negativliste nannte als
+Fall „ein Variablen-Pfad mit Host-Präfix-Namen als erstem Segment“ und begründete die
+Verdrängung eines Unix-Treffers damit. Die Messung zeigt: Bei dieser Form trifft das
+Unix-Muster ohnehin nicht, weil vor dem Präfix das letzte Zeichen des Variablen-Namens
+steht (Wortgrenze). Die Verdrängung ist nur nötig, wenn innerhalb des Variablen-Pfads
+ein Zeichen wie `=` vor einem Präfix-Pfad steht; der Test fährt diese Form, und die
+Aussage der Spezifikation (Treffer innerhalb eines Variablen-Treffers entfällt) bleibt
+unverändert. Der Test der Präfix-Namen-Form bleibt als Beleg, dass nichts doppelt meldet.
+
 
 ## 4. Trigger
 
