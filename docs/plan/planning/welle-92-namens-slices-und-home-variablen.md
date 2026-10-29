@@ -79,7 +79,7 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 | Slice | Titel | Bezug |
 |---|---|---|
 | [`slice-279`](done/welle-92/slice-279-trace-erkennt-namens-slices.md) | Der Trace erkennt Slices mit Namens-Kennung ohne Konfiguration | [`DC-FA-CLI-009`](../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) |
-| [`slice-280`](next/slice-280-hostpaths-home-variablen.md) | `hostpaths` erkennt `$HOME` und `${HOME}` als Home-Verweis (opt-in) | [`DC-FA-HOST-001`](../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) |
+| [`slice-280`](in-progress/slice-280-hostpaths-home-variablen.md) | `hostpaths` erkennt `$HOME` und `${HOME}` als Home-Verweis (opt-in) | [`DC-FA-HOST-001`](../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) |
 
 ## 5. Abhängigkeiten
 
@@ -89,7 +89,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 - Blockiert: keine Welle.
 - Wird blockiert von: keiner.
 - **Reihenfolge der Slices:** erst [`slice-279`](done/welle-92/slice-279-trace-erkennt-namens-slices.md),
-  dann [`slice-280`](next/slice-280-hostpaths-home-variablen.md). Beide
+  dann [`slice-280`](in-progress/slice-280-hostpaths-home-variablen.md). Beide
   schreiben eine Fassung ins Lastenheft (Versions-Zahl und Historie-Zeile in
   [`spec/lastenheft.md`](../../../spec/lastenheft.md)); das WIP-Limit 1 hält
   sie ohnehin nacheinander, die Reihenfolge verhindert den Versions-Konflikt.
@@ -115,7 +115,7 @@ der Closure-Trigger unerreichbar wird.
   eigener Slice.
 - **Weitere Variablen-Formen** (`$USERPROFILE`, `%USERPROFILE%`, `$XDG_*`):
   nicht gemeldet, nicht gemessen; der Schlüssel aus
-  [`slice-280`](next/slice-280-hostpaths-home-variablen.md) ist so geschnitten,
+  [`slice-280`](in-progress/slice-280-hostpaths-home-variablen.md) ist so geschnitten,
   dass eine weitere Variable ein Eintrag in seiner Liste wäre, aber keine
   Anforderung dieser Welle.
 - **Ein Zeilen-Marker für `hostpaths`**: bleibt ausgeschlossen
