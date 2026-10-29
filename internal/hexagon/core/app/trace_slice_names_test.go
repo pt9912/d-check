@@ -51,12 +51,11 @@ func TestTraceSliceDigitCaseUnchanged(t *testing.T) {
 	}
 }
 
-// Negative: kein Treffer für Beobachtungs-Belege, Punkt im Stamm, leeren Namen,
+// Negative: kein Treffer für Namens-Belege unter observations, Punkt im Stamm, leeren Namen,
 // Großschreibung und Dateien ohne `slice-`-Präfix.
 func TestTraceSliceNameNegatives(t *testing.T) {
 	got := sliceRefsOf(t, model.TraceConfig{}, map[string]string{
 		"docs/plan/planning/observations/BEO-X/y/evidence/slice-qa-sicherheit.md": sliceBody,
-		"docs/plan/planning/observations/BEO-X/y/evidence/slice-007-foo.md":       sliceBody,
 		"docs/plan/planning/slice-a.b.md":                                          sliceBody,
 		"docs/plan/planning/slice-.md":                                             sliceBody,
 		"docs/plan/planning/Slice-X.md":                                            sliceBody,
@@ -104,5 +103,31 @@ func TestTraceSliceDirNamedObservations(t *testing.T) {
 	})
 	if !equalStrings(got, []string{"slice-qa-sicherheit"}) {
 		t.Fatalf("got %v", got)
+	}
+}
+
+// Der observations-Ausschluss trifft nur den Namens-Fall: ein Beleg mit
+// Ziffern-Kennung und Titel blieb schon vor der Namens-Erkennung ein Slice und
+// bleibt es.
+func TestTraceSliceDigitCaseIgnoresObservationsExclusion(t *testing.T) {
+	got := sliceRefsOf(t, model.TraceConfig{}, map[string]string{
+		"docs/plan/planning/observations/BEO-X/y/evidence/slice-007-foo.md": sliceBody,
+	})
+	if !equalStrings(got, []string{"slice-007"}) {
+		t.Fatalf("Ziffern-Fall unter observations bleibt Slice: %v", got)
+	}
+}
+
+// Eine nicht bereinigte slices.dir (`observations/`) ändert
+// nichts: das Segment in dir selbst schließt nicht aus.
+func TestTraceSliceDirUncleaned(t *testing.T) {
+	for _, dir := range []string{"observations/"} {
+		got := sliceRefsOf(t, model.TraceConfig{SliceDir: dir}, map[string]string{
+			"observations/slice-qa-sicherheit.md":        sliceBody,
+			"observations/sub/observations/slice-x-y.md": sliceBody,
+		})
+		if !equalStrings(got, []string{"slice-qa-sicherheit"}) {
+			t.Fatalf("dir %q: got %v", dir, got)
+		}
 	}
 }

@@ -48,11 +48,14 @@ Kennung `slice-NNN` wie bisher. Sonst gilt der Namens-Fall: passt der Basisname
 auf `^slice-[a-z0-9]+(?:-[a-z0-9]+)*\.md$`, ist die Kennung der Basisname ohne
 `.md`. Ein Punkt im Stamm, Großschreibung und ein leerer Name sind keine Kennung.
 
-### 2. Belege unter `observations` sind im Default keine Slices
+### 2. Namens-Belege unter `observations` sind im Default keine Slices
 
 Eine Datei, die unterhalb von `trace.slices.dir` in einem Verzeichnis
-`observations` liegt, trägt im Default keine Kennung. Das Segment in
-`trace.slices.dir` selbst zählt nicht.
+`observations` liegt, trägt im Namens-Fall keine Kennung. Der Ziffern-Fall gilt
+dort wie überall — ein Beleg `slice-NNN-titel.md` war schon bisher ein Slice, und
+nur so bleibt ein Repo mit Ziffern-Slices byte-identisch. Das Segment in
+`trace.slices.dir` selbst zählt nicht; `trace.slices.dir` wird bereinigt, bevor
+das Segment gesucht wird.
 
 ### 3. Ein gesetztes `trace.slices.file-pattern` gilt unverändert
 
@@ -66,7 +69,7 @@ den `observations`-Ausschluss.
 | Nur den Schlüssel auffindbar machen (Handbuch, Gerüst) | kein Verhalten ändert sich | der Default bleibt falsch für jedes Repo mit Namens-Slices; die Waise erscheint, bevor jemand das Handbuch liest |
 | Eine Warnung für `slice-*.md`, die das Muster nicht trifft | macht den Fall sichtbar | neue Ausgabe-Klasse im `--trace`-Lauf, bricht die Byte-Identität des Ziffern-Falls; meldet die Ursache, statt sie zu beseitigen |
 | Jedes `slice-*.md` ohne Ausschluss | einfachste Regel | Belege des Beobachtungs-Registers deckten Anforderungen; Waisen würden verdeckt |
-| Gewählt: Ziffern-Fall zuerst, Namens-Fall, `observations` ausgenommen | Ziffern-Repos unverändert; Namens-Repos ohne Konfiguration korrekt | Notiz-Dateien mit `slice-`-Präfix außerhalb von `observations` zählen als Slice; Abhilfe ist ein gesetztes `file-pattern` |
+| Gewählt: Ziffern-Fall zuerst, Namens-Fall mit `observations` ausgenommen | Ziffern-Repos unverändert; Namens-Repos ohne Konfiguration korrekt | Notiz-Dateien mit `slice-`-Präfix außerhalb von `observations` zählen als Slice; Abhilfe ist ein gesetztes `file-pattern` |
 
 **Fitness-Funktion:**
 
@@ -104,3 +107,4 @@ den `observations`-Ausschluss.
 | Datum | Ereignis |
 |---|---|
 | 2026-10-29 | Entwurf zu slice-279 nach dem Feldbefund (GitHub-Issue 11). Status Proposed, bis die Umsetzung geprüft ist. |
+| 2026-10-29 | Nachzug nach Review: der `observations`-Ausschluss gilt nur für den Namens-Fall (Entscheidung 2), `trace.slices.dir` wird vor der Segment-Suche bereinigt. Vorher stand der Ausschluss vor dem Ziffern-Fall und hätte einen titelhaltigen Ziffern-Beleg aus der RTM genommen. |

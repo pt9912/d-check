@@ -36,9 +36,9 @@ var sliceNameShape = regexp.MustCompile(`^(slice-[a-z0-9]+(?:-[a-z0-9]+)*)\.md$`
 
 // observationsSegment: Belege des Beobachtungs-Registers heißen
 // `evidence/slice-<Kennung>.md` und tragen damit den Namen eines Slice, ohne
-// einer zu sein. Unterhalb von slices.dir sind sie in der Default-Erkennung
-// keine Slices; ein gesetztes `trace.slices.file-pattern` gilt ohne diesen
-// Ausschluss (DC-FA-CLI-009).
+// einer zu sein. Unterhalb von slices.dir sind sie im **Namens-Fall** der
+// Default-Erkennung keine Slices; der Ziffern-Fall gilt überall wie bisher, und
+// ein gesetztes `trace.slices.file-pattern` gilt ohne diesen Ausschluss (DC-FA-CLI-009).
 const observationsSegment = "observations"
 
 // TraceRow ist eine RTM-Zeile: eine Anforderung mit den sie referenzierenden
@@ -312,12 +312,12 @@ func (rt resolvedTrace) sliceOwner() ownerFunc {
 		return shapeOwner(rt.sliceFile, rt.slicePrefix)
 	}
 	return func(dir, file string) (string, bool) {
-		if underSegment(dir, file, observationsSegment) {
-			return "", false
-		}
 		base := path.Base(file)
 		if m := sliceFileShape.FindStringSubmatch(base); m != nil {
 			return rt.slicePrefix + m[1], true
+		}
+		if underSegment(dir, file, observationsSegment) {
+			return "", false
 		}
 		if m := sliceNameShape.FindStringSubmatch(base); m != nil {
 			return rt.slicePrefix + m[1], true
@@ -328,9 +328,13 @@ func (rt resolvedTrace) sliceOwner() ownerFunc {
 
 // underSegment sagt, ob ein Verzeichnis-Segment des Pfads unterhalb von dir
 // segment heißt. Das Segment in dir selbst zählt nicht: eine fremde
-// `slices.dir`, die selbst `observations` heißt, bleibt scanbar.
+// `slices.dir`, die selbst `observations` heißt, bleibt scanbar. dir wird
+// bereinigt (`./x`, `x/`), sonst hielte TrimPrefix das Präfix für Pfad.
 func underSegment(dir, file, segment string) bool {
-	rel := strings.TrimPrefix(file, strings.TrimSuffix(dir, "/")+"/")
+	rel := file
+	if d := path.Clean(dir); d != "." {
+		rel = strings.TrimPrefix(file, d+"/")
+	}
 	parts := strings.Split(rel, "/")
 	for _, p := range parts[:len(parts)-1] {
 		if p == segment {
