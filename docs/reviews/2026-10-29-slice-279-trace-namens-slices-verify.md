@@ -1,7 +1,7 @@
 # Verifikation — slice-279: Der Trace erkennt Slices mit Namens-Kennung
 
 - **Rolle:** Verifier (Modul 11) — DoD, Plan und Sensor-Seite gegen den Stand
-- **Gegenstand:** `docs/plan/planning/in-progress/slice-279-trace-erkennt-namens-slices.md` §1, §2, §3 (Negativliste, Spiegel), §5, §6; `ADR-0110`
+- **Gegenstand:** `docs/plan/planning/done/welle-92/slice-279-trace-erkennt-namens-slices.md` §1, §2, §3 (Negativliste, Spiegel), §5, §6; `ADR-0110`
 - **Range:** `cebdfb39..HEAD` (Spitze `ae8a7a42`); der Review-Report `2026-10-29-slice-279-trace-namens-slices.md` nur als Kontext
 - **Datum:** 2026-10-29
 

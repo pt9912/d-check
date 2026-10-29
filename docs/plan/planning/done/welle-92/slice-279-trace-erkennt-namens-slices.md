@@ -11,14 +11,14 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 
 **Welle:** welle-92
 
-**Bezug:** [`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) (Scope),
-[`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) (der Exit-Code, an dem das Feld es bemerkt hat),
-[`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus) (Byte-Identität für den Ziffern-Fall). Keine *aktive* ADR trägt die
+**Bezug:** [`DC-FA-CLI-009`](../../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) (Scope),
+[`DC-FA-CLI-011`](../../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) (der Exit-Code, an dem das Feld es bemerkt hat),
+[`DC-QA-02`](../../../../../spec/lastenheft.md#dc-qa-02--determinismus) (Byte-Identität für den Ziffern-Fall). Keine *aktive* ADR trägt die
 Erkennungsform; eine begleitende ADR hält die Entscheidung fest (Nummer bei der Anlage).
 
-**Berührte Spec-Stellen:** [`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
+**Berührte Spec-Stellen:** [`DC-FA-CLI-009`](../../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
 (Beschreibung, Akzeptanzkriterium *Default byte-identisch*) ·
-[`DC-FA-CLI-009.a`](../../../../spec/spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) Schritt 2 und die Schema-Zeile
+[`DC-FA-CLI-009.a`](../../../../../spec/spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) Schritt 2 und die Schema-Zeile
 `trace.slices.file-pattern` (`spezifikation.md §2`).
 Der Verweis zeigt **aufwärts**: Die Spec nennt diesen Slice nie
 (Baseline-Regelwerk `grundlagen-referenz-richtung.md`
@@ -110,15 +110,15 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [x] [`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) erfüllt, Test referenziert:
+- [x] [`DC-FA-CLI-009`](../../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) erfüllt, Test referenziert:
       Happy (Namens-Slice deckt die Anforderung, `--require-complete` Exit 0) ·
       Boundary (Ziffern-Slice unverändert `slice-NNN`) · Negative (Beleg unter
       `observations/` deckt nichts; gesetztes `file-pattern` übersteuert).
       Rot-Beleg: der Namens-Test läuft ohne die Änderung aus dem richtigen
       Grund rot (`WAISE` statt `ok`).
-- [x] Fassung nachgezogen: Lastenheft ([`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix),
+- [x] Fassung nachgezogen: Lastenheft ([`DC-FA-CLI-009`](../../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix),
       Kriterium *Default byte-identisch* auf den Ziffern-Fall gefasst, Version,
-      Historie-Zeile), Spezifikation ([`DC-FA-CLI-009.a`](../../../../spec/spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) Schritt 2, Schema-Zeile),
+      Historie-Zeile), Spezifikation ([`DC-FA-CLI-009.a`](../../../../../spec/spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) Schritt 2, Schema-Zeile),
       begleitende ADR samt ADR-Index.
 - [x] Spiegel der Default-Form nachgezogen: das Konfigurations-Gerüst
       (`--print-config`) beschreibt den neuen Default.
@@ -128,7 +128,7 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
 - [x] Doku-Update für die Schnittstelle `--trace` falls öffentlicher Vertrag berührt (Spec und Gerüst oben; Handbuch ist Release-Prep).
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Beobachtungs-Register (`../../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
 - [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
 - [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
@@ -141,12 +141,12 @@ Aussagen-Berührung steht hier gar nicht.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `internal/hexagon/core/app/trace.go` | update | Default-Erkennung: Ziffern-Fall wie bisher, sonst Namens-Fall, `observations`-Segment im Default ausgenommen — [`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) |
-| neue Testdatei `trace_slice_names_test` im Paket `internal/hexagon/core/app` | neu | Happy/Boundary/Negative nach [`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix); Negativliste unten |
+| `internal/hexagon/core/app/trace.go` | update | Default-Erkennung: Ziffern-Fall wie bisher, sonst Namens-Fall, `observations`-Segment im Default ausgenommen — [`DC-FA-CLI-009`](../../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) |
+| neue Testdatei `trace_slice_names_test` im Paket `internal/hexagon/core/app` | neu | Happy/Boundary/Negative nach [`DC-FA-CLI-009`](../../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix); Negativliste unten |
 | `internal/adapter/driving/cli/cli_acceptance_test.go` | update | Akzeptanz *Default byte-identisch* am Ziffern-Fall, neues Kriterium am Namens-Fall |
 | `internal/adapter/driving/cli/config_template.go` | update | Gerüst-Kommentar zu `trace.slices.file-pattern` nennt den bisherigen Default (Spiegel) |
-| `spec/lastenheft.md` | update | [`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix): Beschreibung, Kriterium, Version, Historie-Zeile ([`MR-032`](../../../../harness/conventions.md#mr-032)) |
-| `spec/spezifikation.md` | update | [`DC-FA-CLI-009.a`](../../../../spec/spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) Schritt 2, Schema-Zeile `trace.slices.file-pattern`, Historie |
+| `spec/lastenheft.md` | update | [`DC-FA-CLI-009`](../../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix): Beschreibung, Kriterium, Version, Historie-Zeile ([`MR-032`](../../../../../harness/conventions.md#mr-032)) |
+| `spec/spezifikation.md` | update | [`DC-FA-CLI-009.a`](../../../../../spec/spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) Schritt 2, Schema-Zeile `trace.slices.file-pattern`, Historie |
 | `docs/plan/adr/` · `docs/plan/adr/README.md` | neu · update | begleitende ADR (Alternativen: Schlüssel auffindbar machen · Default erweitern · Warnung); Index nachgezogen |
 
 **Zählung der Spiegel (Schritt 17/18 des Workflow-Skeletts), vor dem Code
@@ -227,8 +227,8 @@ dasteht.
 - Eine Datei `slice-*.md`, die kein Slice-Plan ist (Notiz, Vorlage), wird zum
   Slice und deckt zu großzügig. Am Namen nicht entscheidbar; der Weg ist ein
   gesetztes `file-pattern` — **Ausgang:** weiter offen — ins Beobachtungs-Register,
-  [`BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert`](../observations/BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert/state.md)
-  (jetzt 2×); die Grenze steht in [ADR-0110](../../adr/0110-trace-default-erkennt-namens-slices.md) §Konsequenzen.
+  [`BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert`](../../observations/BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert/state.md)
+  (jetzt 2×); die Grenze steht in [ADR-0110](../../../adr/0110-trace-default-erkennt-namens-slices.md) §Konsequenzen.
 
 ## 7. Closure-Notiz
 
@@ -258,26 +258,26 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   wäre aus der RTM gefallen, und der Negativ-Test pinnte genau das (Review F-1,
   MEDIUM). Der Plan (§1) hatte den Ausschluss als „im Default" beschrieben, ohne
   den Ziffern-Fall zu nennen; der Fix begrenzt ihn auf den Namens-Fall, Lastenheft,
-  Spezifikation und [ADR-0110](../../adr/0110-trace-default-erkennt-namens-slices.md) sind nachgezogen. F-2 (LOW, `slices.dir` unbereinigt)
+  Spezifikation und [ADR-0110](../../../adr/0110-trace-default-erkennt-namens-slices.md) sind nachgezogen. F-2 (LOW, `slices.dir` unbereinigt)
   ist behoben; eine unbereinigte Verzeichnisangabe mit `./`-Präfix ließ sich mit dem Test-Dateisystem nicht abbilden.
-  [ADR-0110](../../adr/0110-trace-default-erkennt-namens-slices.md) geht mit der Closure auf `Accepted`.
+  [ADR-0110](../../../adr/0110-trace-default-erkennt-namens-slices.md) geht mit der Closure auf `Accepted`.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle. Die Klasse
-  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
   ist verkörpert (Schritt 19, Prüffrage 21) und bekommt hier einen Beleg mit anderer
   Richtung: die Negativliste prüfte, was die neue Regel ausschließt, nicht was sie dem
   bisher Erkannten wegnimmt. Der Vergleich gegen `v0.87.1` fand es nicht, weil die
   Belege des Eigenbestands titellos heißen; erst der Review fand es.
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-279.md` in
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-279.md` in
   `BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet` (jetzt 6×) und in
-  [`BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert`](../observations/BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert/state.md)
+  [`BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert`](../../observations/BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert/state.md)
   (jetzt 2×).
 - **Folge-Slices:** keiner. Die Erkennung in `reviews`, `--suggest-config` und
   `tools/archive-wave` bleibt ziffern-only (§1, andere Module); slice-280 ist der
   Zwilling dieser Welle, kein Folge-Slice dieses.
 - **Risiken aus §6:** zwei entfallen, eines weiter offen (siehe §6). Trigger-Audit:
   kein Carveout, kein bootstrap-aware Gate, keine Hard Rule mit eingetretenem Trigger;
-  [ADR-0110](../../adr/0110-trace-default-erkennt-namens-slices.md) trägt Re-Evaluierungs-Trigger und geht auf `Accepted`. Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  [ADR-0110](../../../adr/0110-trace-default-erkennt-namens-slices.md) trägt Re-Evaluierungs-Trigger und geht auf `Accepted`. Nachtlauf-Stand
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — keiner
   genannt; (c) Register — die zitierten Beobachtungen existieren und tragen Belege.
 
@@ -311,11 +311,11 @@ müsste, gibt es hier nicht.
 
 **Vorgelagert — offene Beobachtungen sichten:** Register durchgegangen, Sub-Area
 `*`. Zwei Treffer:
-[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/observation.md)
+[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/observation.md)
 (5×, verkörpert in Schritt 19 des Workflow-Skeletts — die Negativliste in §3
 ist seine Anwendung; der Slice schreibt eine Erkennungsform aus einem
 Issue, das genau die Positivfälle nennt) und
-[`BEO-ALL/module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md)
+[`BEO-ALL/module-promise-only-on-scan-axis`](../../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md)
 (3×, verkörpert in `AGENTS.md` §3.8 — der `observations`-Ausschluss ist eine
 Eingabe, die der Trace liest und nicht als Slice zählt; die Frage *gilt dort
 dieselbe Zusage?* beantwortet §1). Erreicht keiner der beiden mit diesem Slice
