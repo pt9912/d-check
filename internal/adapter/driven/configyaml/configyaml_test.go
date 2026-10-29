@@ -1473,3 +1473,38 @@ func TestDecode_SkipAllowsEmpty(t *testing.T) {
 		}
 	}
 }
+
+// TestDecode_HostpathsVariables (DC-FA-HOST-001): variables nimmt Shell-
+// Variablen-Namen an und reicht sie durch; ein leerer oder anders geformter Name
+// ist Exit 2; ein exempt-targets-Glob mit `$` ist nur gültig, wenn er mit einer
+// genannten Variablen beginnt — sonst träfe er nie.
+func TestDecode_HostpathsVariables(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte("hostpaths:\n  variables: [HOME, _w2]\n  exempt-targets: [\"$HOME/Dev/**\", \"${HOME}/Lib/**\"]\n"))
+	if err != nil {
+		t.Fatalf("gültige hostpaths.variables abgelehnt: %v", err)
+	}
+	if got := cfg.Hostpaths.Variables; len(got) != 2 || got[0] != "HOME" || got[1] != "_w2" {
+		t.Fatalf("hostpaths.variables nicht durchgereicht: %+v", cfg.Hostpaths)
+	}
+	for _, v := range []string{"\"\"", "\"$HOME\"", "\"{HOME}\"", "\"1HOME\"", "\"HOME DIR\"", "\"HOME/\""} {
+		if _, err := configyaml.Decode([]byte("hostpaths:\n  variables: [" + v + "]\n")); err == nil ||
+			!strings.Contains(err.Error(), "hostpaths.variables") {
+			t.Fatalf("hostpaths.variables %s: err = %v (Ablehnung erwartet)", v, err)
+		}
+	}
+	for _, y := range []string{
+		"hostpaths:\n  exempt-targets: [\"$HOME/Dev/**\"]\n",                         // ohne variables
+		"hostpaths:\n  variables: [WORK]\n  exempt-targets: [\"$HOME/Dev/**\"]\n",   // andere Variable
+		"hostpaths:\n  variables: [HOME]\n  exempt-targets: [\"$HOMEDIR/Dev/**\"]\n", // Namens-Präfix, kein Segment
+		"hostpaths:\n  variables: [HOME]\n  exempt-targets: [\"$HOME\"]\n",            // ohne Schrägstrich
+	} {
+		if _, err := configyaml.Decode([]byte(y)); err == nil || !strings.Contains(err.Error(), "hostpaths.exempt-targets") {
+			t.Fatalf("$-Glob ohne passende Variable muss Exit 2 sein:\n%s err = %v", y, err)
+		}
+	}
+	// Ohne den Schlüssel bleibt die Config wie zuvor: Variables ist nil.
+	cfg, err = configyaml.Decode([]byte("hostpaths:\n  prefixes: [home]\n"))
+	if err != nil || cfg.Hostpaths.Variables != nil {
+		t.Fatalf("ohne variables nil erwartet: %+v, err = %v", cfg.Hostpaths, err)
+	}
+}

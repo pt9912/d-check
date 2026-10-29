@@ -808,6 +808,7 @@ type raw struct {
 		Scope         *rawScope `yaml:"scope"`
 		Prefixes      []string  `yaml:"prefixes"`
 		ExemptTargets []string  `yaml:"exempt-targets"`
+		Variables     []string  `yaml:"variables"`
 	} `yaml:"hostpaths"`
 	IDs       *rawIDs       `yaml:"ids"`
 	Matrix    *rawMatrix    `yaml:"matrix"`
@@ -1969,19 +1970,33 @@ func applyHostpaths(r *raw, cfg *model.Config) error {
 			return fmt.Errorf("%s: hostpaths.prefixes-Eintrag %q enthält '~' — Home-relative Pfade (~/…) erkennt das Modul selbst; Ausnahmen über hostpaths.exempt-targets", FileName, p)
 		}
 	}
-	if err := validateSegmentGlobs("hostpaths.exempt-targets", r.Hostpaths.ExemptTargets); err != nil {
+	if err := validateHostpathsVariables(r.Hostpaths.Variables); err != nil {
 		return err
 	}
-	for _, g := range r.Hostpaths.ExemptTargets {
-		if !strings.HasPrefix(g, "/") && !strings.HasPrefix(g, "~") {
-			return fmt.Errorf("%s: hostpaths.exempt-targets %q beginnt weder mit '/' noch mit '~' — ein gemeldeter Pfad tut immer eins von beiden, das Glob träfe nie", FileName, g)
-		}
+	if err := validateHostpathsExemptTargets(r.Hostpaths.ExemptTargets, r.Hostpaths.Variables); err != nil {
+		return err
 	}
 	cfg.Hostpaths = model.HostpathsConfig{
 		Prefixes:      r.Hostpaths.Prefixes,
 		ExemptTargets: r.Hostpaths.ExemptTargets,
+		Variables:     r.Hostpaths.Variables,
 	}
 	return nil
+}
+
+// shellIdentRE ist die Gestalt eines hostpaths.variables-Eintrags: der Name
+// einer Shell-Variablen, ohne `$` und ohne Klammern.
+var shellIdentRE = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
+
+// startsWithListedVariable sagt, ob das Glob mit `$NAME/` oder `${NAME}/` einer
+// genannten Variablen beginnt — nur dann kann ein gemeldeter Pfad es treffen.
+func startsWithListedVariable(glob string, vars []string) bool {
+	for _, v := range vars {
+		if strings.HasPrefix(glob, "$"+v+"/") || strings.HasPrefix(glob, "${"+v+"}/") {
+			return true
+		}
+	}
+	return false
 }
 
 // validateSegmentGlobs prüft eine Glob-Liste SEGMENTWEISE — so, wie die
@@ -2212,6 +2227,7 @@ func scopeOfHostpaths(v *struct {
 	Scope         *rawScope `yaml:"scope"`
 	Prefixes      []string  `yaml:"prefixes"`
 	ExemptTargets []string  `yaml:"exempt-targets"`
+	Variables     []string  `yaml:"variables"`
 }) *rawScope {
 	if v == nil {
 		return nil
@@ -2709,6 +2725,36 @@ func skipFehler(block, pattern string, allowsEmpty bool) error {
 	}
 	if allowsEmpty && pattern == "" {
 		return fmt.Errorf("%s: %s.skip-allows-empty ist ohne skip-pattern wirkungslos (halbe Aktivierung)", FileName, block)
+	}
+	return nil
+}
+
+// validateHostpathsVariables prüft, dass jeder Eintrag der Name einer Shell-Variablen ist.
+func validateHostpathsVariables(vars []string) error {
+	for _, v := range vars {
+		if !shellIdentRE.MatchString(v) {
+			return fmt.Errorf("%s: hostpaths.variables-Eintrag %q ist kein Shell-Variablen-Name ([A-Za-z_][A-Za-z0-9_]*, ohne '$' und Klammern)", FileName, v)
+		}
+	}
+	return nil
+}
+
+// validateHostpathsExemptTargets prüft die Globs segmentweise und verlangt, dass jedes
+// mit `/`, `~` oder einer in variables genannten Variablen beginnt — sonst träfe es nie.
+func validateHostpathsExemptTargets(globs, vars []string) error {
+	if err := validateSegmentGlobs("hostpaths.exempt-targets", globs); err != nil {
+		return err
+	}
+	for _, g := range globs {
+		if strings.HasPrefix(g, "$") {
+			if !startsWithListedVariable(g, vars) {
+				return fmt.Errorf("%s: hostpaths.exempt-targets %q beginnt mit '$', aber nicht mit einer in hostpaths.variables genannten Variablen ($NAME/ bzw. ${NAME}/) — das Glob träfe nie", FileName, g)
+			}
+			continue
+		}
+		if !strings.HasPrefix(g, "/") && !strings.HasPrefix(g, "~") {
+			return fmt.Errorf("%s: hostpaths.exempt-targets %q beginnt weder mit '/' noch mit '~' (noch mit einer in hostpaths.variables genannten Variablen) — ein gemeldeter Pfad tut immer eins davon, das Glob träfe nie", FileName, g)
+		}
 	}
 	return nil
 }

@@ -27,15 +27,37 @@ var (
 // unmittelbar auf die Tilde folgen muss.
 var tildeRE = regexp.MustCompile(`(^|[^A-Za-z0-9_.:/~-])(~/[^.\s<>)\]"'/` + "`" + `][^\s<>)\]"'` + "`" + `]*)`)
 
+// variableHostpathRE erkennt `$NAME/…`, `${NAME}/…` und `"$NAME"/…` für die
+// konfigurierten Variablen-Namen (DC-FA-HOST-001): dasselbe erste Segment wie
+// bei der Tilde (nicht `.`, nicht `/`), die Vorbedingung der Tilde plus `$` und
+// `\` (kein `$$HOME`, keine maskierte Variable). Namen ohne Schrägstrich direkt
+// dahinter (`$HOMEDIR/x`, `${HOME:-/tmp}/x`, `${HOME}x/y`) treffen nicht. Leere
+// Liste ⇒ nil, das Modul bleibt dann auf dem Verhalten ohne Variablen.
+func variableHostpathRE(names []string) *regexp.Regexp {
+	if len(names) == 0 {
+		return nil
+	}
+	quoted := make([]string, len(names))
+	for i, n := range names {
+		quoted[i] = regexp.QuoteMeta(n)
+	}
+	alt := strings.Join(quoted, "|")
+	return regexp.MustCompile(
+		`(^|[^A-Za-z0-9_.:/~$\\-])(\$(?:(?:` + alt + `)|\{(?:` + alt + `)\})"?/[^.\s<>)\]"'/` + "`" + `][^\s<>)\]"'` + "`" + `]*)`)
+}
+
 // CheckHostpaths meldet host-lokale absolute und Home-relative Pfade in
 // Prosa und Inline-Code (DC-FA-HOST-001, spec/spezifikation.md
 // §DC-FA-HOST-001.a). Fenced-Code-Blöcke sind ausgenommen — dort
 // gehören bewusste Beispiel-Pfade hin; es gibt keinen Zeilen-Marker.
-// Ein Unix-Treffer, der innerhalb eines Home-relativen Treffers beginnt,
-// entfällt (genau ein Befund, in voller Form). exempt-targets greift für
-// Unix- und Tilde-Funde, nicht für die festen Windows-/UNC-Muster.
+// Ein Unix-Treffer, der innerhalb eines Home-relativen oder Variablen-Treffers
+// beginnt, entfällt (genau ein Befund, in voller Form). Variablen-Funde gibt es nur mit
+// `variables`; das schließende `"` von `"$HOME"/x` gehört nicht zum gemeldeten
+// Pfad. exempt-targets greift für
+// Unix-, Tilde- und Variablen-Funde, nicht für die festen Windows-/UNC-Muster.
 func CheckHostpaths(file string, content []byte, cfg model.HostpathsConfig) []model.Finding {
 	unixRE := unixHostpathRE(cfg)
+	varRE := variableHostpathRE(cfg.Variables)
 	var findings []model.Finding
 	add := func(pl proseLine, raw string, exemptable bool) {
 		path := strings.TrimRight(raw, ".,;:")
@@ -48,19 +70,22 @@ func CheckHostpaths(file string, content []byte, cfg model.HostpathsConfig) []mo
 		})
 	}
 	for _, pl := range proseLines(content) {
-		tildes := tildeRE.FindAllStringSubmatchIndex(pl.raw, -1)
-		for _, m := range tildes {
+		// Spannen, die einen Unix-Treffer verdrängen: Tilde und Variable.
+		homes := tildeRE.FindAllStringSubmatchIndex(pl.raw, -1)
+		for _, m := range homes {
 			add(pl, pl.raw[m[4]:m[5]], true)
 		}
+		for _, m := range variableMatches(pl.raw, varRE) {
+			homes = append(homes, m)
+			add(pl, withoutClosingQuote(pl.raw[m[4]:m[5]]), true)
+		}
 		for _, m := range unixRE.FindAllStringSubmatchIndex(pl.raw, -1) {
-			if !insideSpan(m[4], tildes) {
+			if !insideSpan(m[4], homes) {
 				add(pl, pl.raw[m[4]:m[5]], true)
 			}
 		}
-		for _, re := range []*regexp.Regexp{windowsDriveRE, windowsUNCRE} {
-			for _, m := range re.FindAllStringSubmatch(pl.raw, -1) {
-				add(pl, m[2], false)
-			}
+		for _, p := range windowsPaths(pl.raw) {
+			add(pl, p, false)
 		}
 	}
 	return findings
@@ -91,4 +116,30 @@ func unixHostpathRE(cfg model.HostpathsConfig) *regexp.Regexp {
 	}
 	return regexp.MustCompile(
 		`(^|[^A-Za-z0-9_.:/-])(/(?:` + strings.Join(quoted, "|") + `)/[^\s<>)\]"'` + "`" + `]*)`)
+}
+
+// variableMatches liefert die Variablen-Treffer einer Zeile; ohne konfigurierte
+// Variablen (re == nil) keinen.
+func variableMatches(raw string, re *regexp.Regexp) [][]int {
+	if re == nil {
+		return nil
+	}
+	return re.FindAllStringSubmatchIndex(raw, -1)
+}
+
+// withoutClosingQuote entfernt das schließende `"` von `"$HOME"/x` aus dem
+// gemeldeten Pfad; das Restpfad-Zeichen schließt `"` aus, es gibt höchstens eines.
+func withoutClosingQuote(path string) string {
+	return strings.Replace(path, `"/`, "/", 1)
+}
+
+// windowsPaths liefert die Windows-Laufwerks- und UNC-Pfade einer Zeile.
+func windowsPaths(raw string) []string {
+	var out []string
+	for _, re := range []*regexp.Regexp{windowsDriveRE, windowsUNCRE} {
+		for _, m := range re.FindAllStringSubmatch(raw, -1) {
+			out = append(out, m[2])
+		}
+	}
+	return out
 }

@@ -22,6 +22,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-PLAN-001`](../../spec/lastenheft.md) | `TestDecode_ClosureFehler` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
 | [`DC-FA-COMMITS-001`](../../spec/lastenheft.md) | `TestDecode_CommitsFehler` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
 | [`DC-FA-CONF-001`](../../spec/lastenheft.md), [`DC-FA-HOST-001`](../../spec/lastenheft.md) | `TestDecode_HostpathsPrefixesFehler` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
+| [`DC-FA-HOST-001`](../../spec/lastenheft.md) | `TestDecode_HostpathsVariables` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
 | [`DC-FA-ID-001`](../../spec/lastenheft.md) | `TestDecode_LinkPolicy` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
 | [`DC-FA-MTX-003`](../../spec/lastenheft.md), [`DC-QA-02`](../../spec/lastenheft.md) | `TestDecode_MatrixAllowIfSameIDDefaultAus` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
 | [`DC-FA-MTX-003`](../../spec/lastenheft.md) | `TestDecode_MatrixAllowIfSameIDFailClosed` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |

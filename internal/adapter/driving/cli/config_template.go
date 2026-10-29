@@ -78,7 +78,8 @@ modules: [links, anchors]
 # --- hostpaths: host-lokale absolute und Home-relative Pfade (Maschinen-Layout-Leaks) ---
 # hostpaths:
 #   prefixes: [home, mnt]          # ersetzt die Default-Präfixliste (Namen ohne / und ~)
-#   exempt-targets: ["~/Library/**"]   # Globs über den gefundenen Pfad, beginnen mit / oder ~ (Unix- und Tilde-Funde, nicht Windows/UNC); ~/.<name> ist ohnehin still
+#   variables: [HOME]              # aus, solange abwesend; $HOME/…, ${HOME}/… und "$HOME"/… gelten dann als Home-Verweis (Namen ohne $)
+#   exempt-targets: ["~/Library/**"]   # Globs über den gefundenen Pfad, beginnen mit /, ~ oder einer in variables genannten Variablen ($HOME/…) (Unix-, Tilde- und Variablen-Funde, nicht Windows/UNC); ~/.<name> ist ohnehin still
 
 # --- spans: Markdown-Span-Artefakte (ungeschlossene Code-Spans u. a.) ---
 #   (keine eigenen Optionen; über modules aktivieren)
