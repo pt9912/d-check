@@ -78,7 +78,7 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [`slice-279`](next/slice-279-trace-erkennt-namens-slices.md) | Der Trace erkennt Slices mit Namens-Kennung ohne Konfiguration | [`DC-FA-CLI-009`](../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) |
+| [`slice-279`](in-progress/slice-279-trace-erkennt-namens-slices.md) | Der Trace erkennt Slices mit Namens-Kennung ohne Konfiguration | [`DC-FA-CLI-009`](../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) |
 | [`slice-280`](open/slice-280-hostpaths-home-variablen.md) | `hostpaths` erkennt `$HOME` und `${HOME}` als Home-Verweis (opt-in) | [`DC-FA-HOST-001`](../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) |
 
 ## 5. Abhängigkeiten
@@ -88,7 +88,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 
 - Blockiert: keine Welle.
 - Wird blockiert von: keiner.
-- **Reihenfolge der Slices:** erst [`slice-279`](next/slice-279-trace-erkennt-namens-slices.md),
+- **Reihenfolge der Slices:** erst [`slice-279`](in-progress/slice-279-trace-erkennt-namens-slices.md),
   dann [`slice-280`](open/slice-280-hostpaths-home-variablen.md). Beide
   schreiben eine Fassung ins Lastenheft (Versions-Zahl und Historie-Zeile in
   [`spec/lastenheft.md`](../../../spec/lastenheft.md)); das WIP-Limit 1 hält
