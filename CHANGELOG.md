@@ -4,6 +4,52 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.88.0] — 2026-10-29
+
+### Changed
+
+- **`--trace` erkennt Slices mit Namens-Kennung ohne Konfiguration**
+  ([`DC-FA-CLI-009`](spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix),
+  [ADR-0110](docs/plan/adr/0110-trace-default-erkennt-namens-slices.md), Lastenheft 0.107.0).
+  Ohne `trace.slices.file-pattern` gilt der Ziffern-Fall `slice-NNN-…md` wie bisher
+  (Kennung `slice-NNN`), sonst der Namens-Fall `slice-<name>.md` (Kennung = Basisname
+  ohne `.md`, nur `[a-z0-9-]`). Namens-Dateien unter einem Pfadsegment `observations`
+  unterhalb von `trace.slices.dir` — die Belege des Beobachtungs-Registers — sind keine
+  Slices; ein gesetztes `file-pattern` gilt unverändert und ohne diesen Ausschluss.
+  **Nicht rein additiv:** ein Repo mit Namens-Slices und ohne `trace`-Block bekommt eine
+  andere RTM — Anforderungen, die bisher als `WAISE` standen, weil ihr Slice übersehen
+  wurde, gelten nun als gedeckt, und `--trace --require-complete` endet dafür mit Exit 0.
+  Die RTM eines Repos mit Slices der Ziffern-Form ist gegen v0.87.1 byte-identisch
+  (Text, `--json`, `--yaml`). Anlass: GitHub-Issue 11.
+
+### Added
+
+- **`hostpaths.variables`: `$HOME/…`, `${HOME}/…` und `"$HOME"/…` als Home-Verweis, opt-in**
+  ([`DC-FA-HOST-001`](spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in),
+  [ADR-0111](docs/plan/adr/0111-hostpaths-variablen-home-opt-in.md), Lastenheft 0.108.0).
+  Eine Liste von Shell-Variablen-Namen (ohne `$`); mit der Punkt-Segment-Regel der Tilde
+  (`$HOME/.config/x` bleibt still). `hostpaths.exempt-targets` akzeptiert `$`-Globs, die
+  mit einer genannten Variablen beginnen; ein `$`-Glob ohne passende Variable und ein
+  Eintrag, der kein Shell-Variablen-Name ist, sind Exit 2. Ohne den Schlüssel ist der
+  Befundsatz byte-identisch zu v0.87.1 (Text, `--json`, `--yaml`). Mit dem Schlüssel
+  meldet ein Fund hinter einer gelisteten Variablen unter dem Variablen-Pfad
+  (`${HOME}/<Präfix>/x`, nicht mehr als Unix-Fund); ein `exempt-targets`-Glob auf den
+  Unix-Teil trifft dann nicht mehr. Überlappende Treffer melden genau einmal, der früher
+  beginnende gewinnt. Anlass: GitHub-Issue 12.
+
+### Changed (Repo-intern)
+
+- Dependabot-PR #10: `docker/login-action` 4.7.0 in der Release-Pipeline
+  ([ADR-0067](docs/plan/adr/0067-dependabot-als-hebender-kanal.md)).
+- Build-Toolchain gehoben ([ADR-0011](docs/plan/adr/0011-digest-pins-build-gate-images.md)):
+  Compiler-Toolchain 1.27.3 im Image, dazu `golangci-lint` v2.15.0
+  ([ADR-0006](docs/plan/adr/0006-lint-profil-solid.md)), `semgrep` 1.182.0
+  ([ADR-0010](docs/plan/adr/0010-semgrep-hermetisches-gate.md)) und `a-check` v0.23.2
+  ([ADR-0029](docs/plan/adr/0029-arch-check-via-a-check.md)) als Gate-Werkzeuge.
+- Baseline-Pin auf v6.18.1 ([MR-080](harness/conventions.md#mr-080)), Stop-Hook mit
+  HEAD-Stempel ([MR-079](harness/conventions.md#mr-079)), `reviews`-`require-promises`
+  in der Repo-Konfiguration ([ADR-0081](docs/plan/adr/0081-reviews-modul.md)).
+
 ## [0.87.1] — 2026-10-20
 
 ### Security

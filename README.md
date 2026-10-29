@@ -58,7 +58,8 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   nested links), opt-in
   ([`DC-FA-SPAN-001`](spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in))
 - `hostpaths` — host-local absolute and home-relative paths
-  (machine-layout leaks; `~/.config` and the like stay silent),
+  (machine-layout leaks; `~/.config` and the like stay silent; optionally
+  `$HOME/…` via `hostpaths.variables`),
   opt-in
   ([`DC-FA-HOST-001`](spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in))
 - `diagrams` — identifier existence in diagram fences (e.g. `mermaid`): every
@@ -321,7 +322,7 @@ works for both registries)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.88.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

@@ -57,7 +57,8 @@ Dokuments:
   verschachtelte Links), opt-in
   ([`DC-FA-SPAN-001`](spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in))
 - `hostpaths` — host-lokale absolute und Home-relative Pfade
-  (Maschinen-Layout-Leaks; `~/.config` u. ä. bleiben still),
+  (Maschinen-Layout-Leaks; `~/.config` u. ä. bleiben still; optional `$HOME/…`
+  über `hostpaths.variables`),
   opt-in
   ([`DC-FA-HOST-001`](spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in))
 - `diagrams` — Kennungs-Existenz in Diagramm-Fences (z. B. `mermaid`): jede
@@ -324,7 +325,7 @@ zusätzlich nach Docker Hub gespiegelt als
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.87.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.88.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
