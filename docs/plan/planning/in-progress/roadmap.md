@@ -32,8 +32,6 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
-- [`welle-92-namens-slices-und-home-variablen`](../welle-92-namens-slices-und-home-variablen.md)
-
 Nichts in Arbeit.
 
 ## Nächste Wellen
@@ -93,6 +91,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 
 | Welle | Abschluss | Closure-Notiz |
 |---|---|---|
+| welle-92-namens-slices-und-home-variablen | 2026-10-29 | [`welle-92-results.md`](../done/welle-92-results.md) |
 | welle-91-adoption-ai-harness-init | 2026-09-29 | [`welle-91-results.md`](../done/welle-91-results.md) |
 | welle-90-eigenstaendige-review-archivierung | 2026-09-04 | [`welle-90-results.md`](../done/welle-90-results.md) |
 | welle-89-wellenlose-review-archivierung | 2026-09-04 | [`welle-89-results.md`](../done/welle-89-results.md) |
@@ -138,6 +137,7 @@ und zwei Logs driften. Leer heißt starre Roadmap, jede Zeile voll heißt treibe
 
 | Datum | Was wurde geändert? | Warum? |
 |---|---|---|
+| 2026-10-29 | **welle-92: Closure-Trigger-Punkt „Beide Issues tragen eine Antwort mit Verweis auf das Ergebnis“ auf die Release-Prep verschoben** (alle übrigen Punkte unverändert erfüllt) | Eine Antwort mit Verweis auf das Ergebnis wäre vor Push, Tag und Release falsch: der Stand liegt nur lokal. Die Antworten an die GitHub-Issues 11 und 12 gehören zur Release-Prep und sind eine Handlung des Auftraggebers. |
 | 2026-08-29 | **slice-172 ein zweites Mal zurückgeführt, [slice-178](../done/wellenlos/slice-178-offene-tasks-roh.md) davorgeschnitten** (Entscheid des Auftraggebers, im Lauf): der DoD-Haken-Wächter wartet jetzt auf eine Bedingung, die den **rohen** Abschnittstext liest | Review und Verifikation fanden zwei **stille** Blindstellen: ein einzelner überzähliger Backtick im DoD-Absatz schaltet den Wächter **ganz** ab (gemessen: 1 Befund ⇒ 0 Befunde, Exit 0), und die Bullet-Formen `* [ ]`/`+ [ ]` laufen durch ein `forbid-pattern` auf `- \[ \]` hindurch. Beides ist die Bauform, gegen die welle-86 gebaut ist — ein Wächter, der grün meldet, wo er nichts gesehen hat. Zwei Auswege standen zur Wahl: die Blindstelle benennen und den Wächter stehen lassen, oder die Produkt-Frage zuerst lösen. Gewählt ist die zweite; die Alternative wäre ein benannter Blindfleck in einer **Vorbedingung** gewesen. Die Regel, ihre Adaption und die Zustellung sind zurückgenommen, die Messungen bleiben in slice-172 §2 |
 | 2026-08-29 | **slice-172 zurückgeführt, [slice-177](../done/wellenlos/slice-177-structure-hint.md) davorgeschnitten** (Entscheid des Auftraggebers, im Lauf): der DoD-Haken-Sensor von [slice-172](../done/welle-86/slice-172-closure-uebergang-waechtern.md) wartet auf ein neues Feld `structure[].hint`, statt seinen §2 Punkt 4 fallenzulassen | Der Sensor war fertig entworfen und **beidseitig gemessen** (37 Befunde ohne Bestands-Ausnahme, null mit ihr, Positiv-Probe grün), als sein eigener §2 auf eine **Produkt-Grenze** traf: er verlangt eine Meldung, die sagt, *was zu tun ist*, und `structure` kennt keine regel-eigene Meldung — der `--doctor`-Klartext hängt am **Grund-Code**, nicht an der Regel. Zwei Auswege standen zur Wahl: die Grenze benennen und den Punkt in einen Folge-Kandidaten verschieben, oder die Fähigkeit bauen. Gewählt ist die zweite, als **eigener** Slice vor slice-172 — die Fähigkeit gehört jeder `structure`-Regel, nicht nur dieser. Die gemessene Vorarbeit bleibt in slice-172 §2 stehen, damit die nächste Beanspruchung sie nicht wiederholt |
 | 2026-08-29 | **slice-168 im Umfang erweitert** (Entscheid des Auftraggebers, im Lauf): zusätzlich zur neunten Bedingung wird die **Konfigurationsform** aller tabellenbezogenen `structure`-Bedingungen umgeformt — eine Klammer `table`, die Zellengrenzen als **Liste je Spalte** ([ADR-0070](../../adr/0070-tabellen-klammer-und-spaltenliste.md)). Das migriert `table-order`/`table-column` aus der **ausgelieferten** [ADR-0057](../../adr/0057-structure-tabellen-monotonie.md) mit; beide ADRs sind jetzt teil-superseded | Der erste echte Konsument zeigte, was die flache Form kostet: vier Spalten desselben Abschnitts brauchten vier Regeln mit viermal wortgleichem `files`/`section`. Das ist heute **einmal** real, aber es ist die Form, die jede künftige Mehrspalten-Zusage erbt — und `cell-max-column` war zusätzlich falsch benannt (er trug `max` im Namen, auch wo nur eine Untergrenze stand; der eigene Bestand belegte es). **Das Zeitfenster gab den Ausschlag:** die Bedingung stand unter `[Unreleased]`, und gemessen führte kein Schwester-Repo einen der Schlüssel — heute eine Korrektur vor der Auslieferung, nach dem Release eine Migration mit Konsumenten. Kein zweiter Slice, weil das WIP-Limit hart ist (Eintrag 2026-07-17) |
