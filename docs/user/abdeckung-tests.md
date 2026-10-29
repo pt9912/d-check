@@ -105,6 +105,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-QA-02`](../../spec/lastenheft.md) | `TestCLI008_Repair_Determinismus` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CLI-008`](../../spec/lastenheft.md) | `TestCLI008_Repair_Inkompatibel` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CLI-008`](../../spec/lastenheft.md) | `TestCLI008_Repair_RoundTrip` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
+| [`DC-FA-CLI-009`](../../spec/lastenheft.md) | `TestCLI009_Trace_NamensSlice` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-QA-03`](../../spec/lastenheft.md) | `TestCLI036_Trace_Markdown` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CLI-010`](../../spec/lastenheft.md) | `TestCLI044_PrintMK_TraceTargets` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CLI-011`](../../spec/lastenheft.md) | `TestCLI044_RequireComplete_KeineWaisen` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |

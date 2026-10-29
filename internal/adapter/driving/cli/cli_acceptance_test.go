@@ -3290,3 +3290,33 @@ func TestPrintConfigVerfuegbarDecktRegistry(t *testing.T) {
 	}
 }
 
+
+// DC-FA-CLI-009: ohne trace.slices.file-pattern deckt ein Slice mit
+// Namens-Kennung seine Anforderung; ein Beleg des Beobachtungs-Registers
+// (observations/…/evidence/slice-<Kennung>.md) deckt keine.
+func TestCLI009_Trace_NamensSlice(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md",
+		"### DC-FA-TRC-001 — Gedeckt\nText.\n\n### DC-FA-TRC-002 — Nur ein Beleg\nText.\n")
+	write(t, root, "docs/plan/planning/done/slice-qa-sicherheit.md", "# Slice\nBezug: DC-FA-TRC-001\n")
+	write(t, root, "docs/plan/planning/observations/BEO-X/y/evidence/slice-qa-beleg.md", "# Beleg\nBezug: DC-FA-TRC-002\n")
+
+	code, stdout, stderr := run(t, "--trace", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	if !strings.Contains(stdout, "slice-qa-sicherheit") {
+		t.Fatalf("Namens-Slice fehlt in der RTM:\n%s", stdout)
+	}
+	if strings.Contains(stdout, "slice-qa-beleg") {
+		t.Fatalf("Beleg unter observations/ darf keine Anforderung decken:\n%s", stdout)
+	}
+	if code, _, _ := run(t, "--trace", "--require-complete", root); code != 1 {
+		t.Fatalf("DC-FA-TRC-002 bleibt Waise, Exit = %d, want 1", code)
+	}
+
+	write(t, root, "docs/plan/planning/done/slice-qa-zwei.md", "# Slice\nBezug: DC-FA-TRC-002\n")
+	if code, _, stderr := run(t, "--trace", "--require-complete", root); code != 0 {
+		t.Fatalf("beide Anforderungen gedeckt, Exit = %d, stderr = %q", code, stderr)
+	}
+}

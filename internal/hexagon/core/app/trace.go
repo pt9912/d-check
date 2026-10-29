@@ -27,6 +27,20 @@ var reqIDFull = regexp.MustCompile(`[A-Z][A-Z0-9]*-(?:FA-[A-Z]+|QA)-\d+[A-Za-z]?
 var adrFileShape = regexp.MustCompile(`^(\d{4})-.*\.md$`)
 var sliceFileShape = regexp.MustCompile(`^(slice-\d+)-.*\.md$`)
 
+// sliceNameShape ist der Namens-Fall der Default-Erkennung (DC-FA-CLI-009):
+// `slice-qa-sicherheit.md` → `slice-qa-sicherheit`, die Kennung ist der
+// Basisname ohne `.md`. Bewusst nur `[a-z0-9-]`: ein Punkt im Stamm, Großschreibung
+// und ein leerer Name sind keine Slice-Kennung. Der Ziffern-Fall (sliceFileShape)
+// gilt zuerst.
+var sliceNameShape = regexp.MustCompile(`^(slice-[a-z0-9]+(?:-[a-z0-9]+)*)\.md$`)
+
+// observationsSegment: Belege des Beobachtungs-Registers heißen
+// `evidence/slice-<Kennung>.md` und tragen damit den Namen eines Slice, ohne
+// einer zu sein. Unterhalb von slices.dir sind sie in der Default-Erkennung
+// keine Slices; ein gesetztes `trace.slices.file-pattern` gilt ohne diesen
+// Ausschluss (DC-FA-CLI-009).
+const observationsSegment = "observations"
+
 // TraceRow ist eine RTM-Zeile: eine Anforderung mit den sie referenzierenden
 // ADRs/Slices, den kuratierten Coverage-Labels (DC-FA-COV-001; `omitempty` ⇒
 // ohne Coverage byte-identisch) und der Waisen-Markierung (weder Slice noch
@@ -100,7 +114,7 @@ func resolveTrace(tc model.TraceConfig) (resolvedTrace, error) {
 	rt := resolvedTrace{
 		entries: resolveEntries(tc),
 		adrDir:  traceADRDir, adrFile: adrFileShape, adrPrefix: "ADR-",
-		sliceDir: traceSliceDir, sliceFile: sliceFileShape, slicePrefix: tc.SlicePrefix,
+		sliceDir: traceSliceDir, slicePrefix: tc.SlicePrefix,
 		coverage: tc.Coverage,
 	}
 	reqPat, err := referencePattern(rt.entries)
@@ -139,11 +153,11 @@ func BuildTraceMatrix(fsys driven.Filesystem, tc model.TraceConfig) (TraceMatrix
 	if err != nil {
 		return TraceMatrix{}, err
 	}
-	adrRefs, err := traceRefs(fsys, rt.adrDir, rt.adrFile, rt.adrPrefix, rt.reqPat)
+	adrRefs, err := traceRefs(fsys, rt.adrDir, shapeOwner(rt.adrFile, rt.adrPrefix), rt.reqPat)
 	if err != nil {
 		return TraceMatrix{}, err
 	}
-	sliceRefs, err := traceRefs(fsys, rt.sliceDir, rt.sliceFile, rt.slicePrefix, rt.reqPat)
+	sliceRefs, err := traceRefs(fsys, rt.sliceDir, rt.sliceOwner(), rt.reqPat)
 	if err != nil {
 		return TraceMatrix{}, err
 	}
@@ -275,12 +289,62 @@ func traceTitle(plain, id string) string {
 	return strings.TrimSpace(strings.TrimLeft(p, "—-:· "))
 }
 
+// ownerFunc leitet aus dem Pfad einer Datei unter dem Scan-Verzeichnis ihre
+// eigene Kennung ab; false ⇒ die Datei trägt keine (z. B. README.md).
+type ownerFunc func(dir, file string) (string, bool)
+
+// shapeOwner leitet die Kennung über den Basisnamen ab (fileShape-Capture 1 +
+// prefix) — der Weg für ADRs und für ein gesetztes `file-pattern`.
+func shapeOwner(fileShape *regexp.Regexp, prefix string) ownerFunc {
+	return func(_, file string) (string, bool) {
+		m := fileShape.FindStringSubmatch(path.Base(file))
+		if m == nil {
+			return "", false
+		}
+		return prefix + m[1], true
+	}
+}
+
+// sliceOwner wählt die Erkennung der Slices: ein gesetztes `file-pattern` gilt
+// unverändert und ohne Ausschluss, sonst die Default-Erkennung (DC-FA-CLI-009).
+func (rt resolvedTrace) sliceOwner() ownerFunc {
+	if rt.sliceFile != nil {
+		return shapeOwner(rt.sliceFile, rt.slicePrefix)
+	}
+	return func(dir, file string) (string, bool) {
+		if underSegment(dir, file, observationsSegment) {
+			return "", false
+		}
+		base := path.Base(file)
+		if m := sliceFileShape.FindStringSubmatch(base); m != nil {
+			return rt.slicePrefix + m[1], true
+		}
+		if m := sliceNameShape.FindStringSubmatch(base); m != nil {
+			return rt.slicePrefix + m[1], true
+		}
+		return "", false
+	}
+}
+
+// underSegment sagt, ob ein Verzeichnis-Segment des Pfads unterhalb von dir
+// segment heißt. Das Segment in dir selbst zählt nicht: eine fremde
+// `slices.dir`, die selbst `observations` heißt, bleibt scanbar.
+func underSegment(dir, file, segment string) bool {
+	rel := strings.TrimPrefix(file, strings.TrimSuffix(dir, "/")+"/")
+	parts := strings.Split(rel, "/")
+	for _, p := range parts[:len(parts)-1] {
+		if p == segment {
+			return true
+		}
+	}
+	return false
+}
+
 // traceRefs scannt die Markdown-Dateien unter dir, leitet je Datei ihre
-// eigene Kennung über den Dateinamen ab (fileShape-Capture 1 + prefix) und
-// sammelt pro referenzierter Anforderungs-Kennung (reqPat) die referenzierenden
-// Datei-Kennungen (dedupliziert, sortiert). Dateien ohne passende Kennung
-// (z. B. README.md) werden übersprungen.
-func traceRefs(fsys driven.Filesystem, dir string, fileShape *regexp.Regexp, prefix string, reqPat *regexp.Regexp) (map[string][]string, error) {
+// eigene Kennung ab (owner) und sammelt pro referenzierter
+// Anforderungs-Kennung (reqPat) die referenzierenden Datei-Kennungen
+// (dedupliziert, sortiert). Dateien ohne Kennung werden übersprungen.
+func traceRefs(fsys driven.Filesystem, dir string, owner ownerFunc, reqPat *regexp.Regexp) (map[string][]string, error) {
 	if !pathExists(fsys, dir) {
 		return map[string][]string{}, nil
 	}
@@ -290,11 +354,10 @@ func traceRefs(fsys driven.Filesystem, dir string, fileShape *regexp.Regexp, pre
 	}
 	seen := map[string]map[string]bool{}
 	for _, f := range files {
-		m := fileShape.FindStringSubmatch(path.Base(f))
-		if m == nil {
+		own, ok := owner(dir, f)
+		if !ok {
 			continue
 		}
-		owner := prefix + m[1]
 		content, err := fsys.ReadFile(f)
 		if err != nil {
 			return nil, err
@@ -303,7 +366,7 @@ func traceRefs(fsys driven.Filesystem, dir string, fileShape *regexp.Regexp, pre
 			if seen[ref] == nil {
 				seen[ref] = map[string]bool{}
 			}
-			seen[ref][owner] = true
+			seen[ref][own] = true
 		}
 	}
 	return sortedSets(seen), nil

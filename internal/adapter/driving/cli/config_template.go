@@ -319,7 +319,7 @@ modules: [links, anchors]
 #     id-prefix: 'ADR-'
 #   slices:
 #     dir: docs/plan/planning
-#     file-pattern: '^(slice-\d+)-.*\.md$'      # z. B. '^(\d+)-.*\.md$' für NNN-titel.md
+#     file-pattern: '^(slice-\d+)-.*\.md$'      # Default: Ziffern-Fall slice-NNN-titel.md, sonst Namens-Fall slice-name.md (ohne observations/); gesetzt gilt es unverändert
 #     id-prefix: ''                             # der Owner-Kennung vorangestellt (Default leer)
 #   coverage:                                   # kuratierte Coverage-Quellen (Liste; eigene RTM-Spalte)
 #     - files: [docs/plan/traceability.md]      # EXPLIZITE Dateien (keine dir/pattern) — gegen ADR-Kontamination
