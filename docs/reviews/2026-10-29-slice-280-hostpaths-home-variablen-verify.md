@@ -1,7 +1,7 @@
 # Verifikation — slice-280: `hostpaths` erkennt `$HOME` und `${HOME}` als Home-Verweis
 
 - **Rolle:** Verifier (Modul 11) — DoD, Plan und Spiegel gegen den Stand
-- **Gegenstand:** `docs/plan/planning/in-progress/slice-280-hostpaths-home-variablen.md` §1, §2, §3 (Negativliste, Plan-Änderungen, Spiegel), §5, §6; `ADR-0111`
+- **Gegenstand:** `docs/plan/planning/done/welle-92/slice-280-hostpaths-home-variablen.md` §1, §2, §3 (Negativliste, Plan-Änderungen, Spiegel), §5, §6; `ADR-0111`
 - **Range:** `ab7de630..HEAD` (Spitze `57ba771b`); der Review-Report `2026-10-29-slice-280-hostpaths-home-variablen.md` nur als Kontext
 - **Datum:** 2026-10-29
 

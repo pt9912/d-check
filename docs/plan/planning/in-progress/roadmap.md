@@ -34,6 +34,8 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 
 - [`welle-92-namens-slices-und-home-variablen`](../welle-92-namens-slices-und-home-variablen.md)
 
+Nichts in Arbeit.
+
 ## Nächste Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`

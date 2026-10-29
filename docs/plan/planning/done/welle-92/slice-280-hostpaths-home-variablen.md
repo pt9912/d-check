@@ -11,13 +11,13 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 
 **Welle:** welle-92
 
-**Bezug:** [`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) (Scope),
-[`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus) (Byte-Identität ohne den neuen Schlüssel). Keine *aktive* ADR trägt die
+**Bezug:** [`DC-FA-HOST-001`](../../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) (Scope),
+[`DC-QA-02`](../../../../../spec/lastenheft.md#dc-qa-02--determinismus) (Byte-Identität ohne den neuen Schlüssel). Keine *aktive* ADR trägt die
 Erkennungsform; eine begleitende ADR hält die Entscheidung fest (Nummer bei der Anlage).
 
-**Berührte Spec-Stellen:** [`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in)
+**Berührte Spec-Stellen:** [`DC-FA-HOST-001`](../../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in)
 (Beschreibung, Out-of-Scope, Akzeptanzkriterien) ·
-[`DC-FA-HOST-001.a`](../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung) und die
+[`DC-FA-HOST-001.a`](../../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung) und die
 Schema-Zeilen `hostpaths.*` (`spezifikation.md §2`).
 Der Verweis zeigt **aufwärts**: Die Spec nennt diesen Slice nie
 (Baseline-Regelwerk `grundlagen-referenz-richtung.md`
@@ -48,7 +48,7 @@ und ein absoluter Pfad unter einem Host-Präfix melden `hostpath-forbidden`, `$H
 Wortgrenzen-Vorbedingung des Unix-Musters sieht vor `/Dev…` das `E` von `HOME`.
 Dass `hostpaths` das einzige Modul ist, das Inline-Code mitliest, macht die
 Lücke zum blinden Fleck für Maschinen-Layout-Leaks. Der Vorgänger-Slice
-[`slice-249`](../done/wellenlos/slice-249-hostpaths-tilde-exempt-targets.md)
+[`slice-249`](../../done/wellenlos/slice-249-hostpaths-tilde-exempt-targets.md)
 hatte die Variablen-Formen ausgeschlossen, *weil kein belegter Anlass bestand
 (Bestand: null Vorkommen)* — dieser Anlass ist jetzt belegt, der Ausschluss
 fällt damit.
@@ -93,7 +93,7 @@ fällt damit.
   rot an Stellen, die nicht mehr geändert werden. Der Slice liefert das Modul,
   nicht die Anwendung auf sich selbst.
 - **Ein Zeilen-Marker** — bleibt ausgeschlossen
-  ([`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in)); die Auswege sind Fences,
+  ([`DC-FA-HOST-001`](../../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in)); die Auswege sind Fences,
   Präfixliste und Ziel-Ventil.
 - **Handbuch, README und CHANGELOG** — Release-Prep, nicht Feature-Commit
   (`AGENTS.md` §5 Zeile 17).
@@ -116,7 +116,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [x] [`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) erfüllt, Test referenziert:
+- [x] [`DC-FA-HOST-001`](../../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) erfüllt, Test referenziert:
       Happy (`$HOME/Dev/x`, `${HOME}/Dev/z`, `"$HOME"/Dev/w` melden mit
       gesetztem `variables`) · Boundary (ohne den Schlüssel kein Befund, Befundsatz
       byte-identisch; `$HOME/.config/x` und nacktes `$HOME` still) · Negative
@@ -124,9 +124,9 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       Fund, `$`-Glob ohne passende Variable ist Exit 2). Rot-Beleg: der
       `$HOME`-Test läuft ohne die Änderung aus dem richtigen Grund rot (kein
       Befund statt `hostpath-forbidden`).
-- [x] Fassung nachgezogen: Lastenheft ([`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in): Beschreibung,
+- [x] Fassung nachgezogen: Lastenheft ([`DC-FA-HOST-001`](../../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in): Beschreibung,
       Out-of-Scope-Satz zu Variablen-Formen, Kriterien, Version, Historie-Zeile),
-      Spezifikation ([`DC-FA-HOST-001.a`](../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung), Schema-Zeile
+      Spezifikation ([`DC-FA-HOST-001.a`](../../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung), Schema-Zeile
       `hostpaths.variables`, Historie), begleitende ADR samt ADR-Index.
 - [x] Spiegel nachgezogen: das Konfigurations-Gerüst (`--print-config`) führt
       den Schlüssel; die Zählung der übrigen Fundstellen steht in §3.
@@ -136,7 +136,7 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
 - [x] Doku-Update für die Schnittstelle `hostpaths` falls öffentlicher Vertrag berührt (Spec und Gerüst oben; Handbuch ist Release-Prep).
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Beobachtungs-Register (`../../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
 - [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
 - [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
@@ -149,14 +149,14 @@ Aussagen-Berührung steht hier gar nicht.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `internal/hexagon/core/rules/hostpaths.go` | update | Variablen-Muster aus der Namensliste; Treffer innerhalb eines Variablen-Treffers verdrängt den Unix-Treffer — [`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) |
+| `internal/hexagon/core/rules/hostpaths.go` | update | Variablen-Muster aus der Namensliste; Treffer innerhalb eines Variablen-Treffers verdrängt den Unix-Treffer — [`DC-FA-HOST-001`](../../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) |
 | `internal/hexagon/core/model/config.go` | update | `HostpathsConfig` bekommt die Namensliste |
 | `internal/adapter/driven/configyaml/configyaml.go` | update | `hostpaths.variables` lesen und validieren; `exempt-targets` akzeptiert `$`-Globs nur mit passender Variable |
-| `internal/hexagon/core/rules/hostpaths_test.go` | update | Happy/Boundary/Negative nach [`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in); Negativliste unten |
+| `internal/hexagon/core/rules/hostpaths_test.go` | update | Happy/Boundary/Negative nach [`DC-FA-HOST-001`](../../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in); Negativliste unten |
 | `internal/adapter/driven/configyaml/configyaml_test.go` | update | Config-Rand: leerer/ungültiger Name, `$`-Glob ohne Variable → Exit 2 |
 | `internal/adapter/driving/cli/config_template.go` | update | Gerüst führt `hostpaths.variables` (Spiegel) |
-| `spec/lastenheft.md` | update | [`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in): Beschreibung, Out-of-Scope, Kriterien, Version, Historie-Zeile ([`MR-032`](../../../../harness/conventions.md#mr-032)) |
-| `spec/spezifikation.md` | update | [`DC-FA-HOST-001.a`](../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung), Schema-Zeile, Historie |
+| `spec/lastenheft.md` | update | [`DC-FA-HOST-001`](../../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in): Beschreibung, Out-of-Scope, Kriterien, Version, Historie-Zeile ([`MR-032`](../../../../../harness/conventions.md#mr-032)) |
+| `spec/spezifikation.md` | update | [`DC-FA-HOST-001.a`](../../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung), Schema-Zeile, Historie |
 | `docs/plan/adr/` · `docs/plan/adr/README.md` | neu · update | begleitende ADR (Alternativen: Default `[HOME]` an · opt-in abwesend = aus · Variablen-Ausnahme im Unix-Muster); Index nachgezogen |
 
 **Zählung der Spiegel (Schritt 17/18 des Workflow-Skeletts), vor dem Code
@@ -285,22 +285,22 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   Wortlaut einer Fehlermeldung. Die Plan-Erwartung „zwei Treffer-Dateien im Eigenbestand“
   war überholt: mit dem Schlüssel träfe er fünf Dateien, alle Text dieser Welle.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle, aber ein Befund mit Richtung:
-  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
   bekommt zum zweiten Mal in Folge (slice-279, slice-280) einen Beleg derselben
   Richtung: die Negativliste prüft, was die neue Regel nicht treffen darf, nicht was sie
   an **bereits Erkanntem** ändert (Menge in slice-279, Ziel in slice-280). Tritt es ein
   drittes Mal auf, gehört die Frage *was ändert sich am Bestand der Funde?* in
   Schritt 19 des Workflow-Skeletts.
-- **Beobachtungs-Register (`../observations/`):** `evidence/slice-280.md` in
+- **Beobachtungs-Register (`../../observations/`):** `evidence/slice-280.md` in
   `BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet` (jetzt 7×) und in
-  [`BEO-ALL/begruendung-traegt-entscheidung-nicht`](../observations/BEO-ALL/begruendung-traegt-entscheidung-nicht/state.md):
+  [`BEO-ALL/begruendung-traegt-entscheidung-nicht`](../../observations/BEO-ALL/begruendung-traegt-entscheidung-nicht/state.md):
   richtige Verdrängung, Begründung nur für eine der drei Formen gültig.
 - **Folge-Slices:** keiner. Weitere Variablen (`$USERPROFILE`, `$XDG_*`) sind ein
   Eintrag der Liste und keine Anforderung; die Windows-Schreibweise bleibt ausgeschlossen.
 - **Risiken aus §6:** alle drei entfallen (siehe §6). Trigger-Audit: kein Carveout, kein
   bootstrap-aware Gate, keine Hard Rule mit eingetretenem Trigger;
-  [ADR-0111](../../adr/0111-hostpaths-variablen-home-opt-in.md) trägt Re-Evaluierungs-Trigger und geht auf
-  `Accepted`. Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  [ADR-0111](../../../adr/0111-hostpaths-variablen-home-opt-in.md) trägt Re-Evaluierungs-Trigger und geht auf
+  `Accepted`. Nachtlauf-Stand ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — keiner
   genannt; (c) Register — die zitierten Beobachtungen existieren und tragen Belege.
 
@@ -333,15 +333,15 @@ Modus-Deklaration (`tools/harness/` bleibt unberührt).
 
 **Vorgelagert — offene Beobachtungen sichten:** Register durchgegangen, Sub-Area
 `*`. Drei Treffer:
-[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/observation.md)
+[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/observation.md)
 (5×, verkörpert in Schritt 19 des Workflow-Skeletts — die Negativliste in §3
 ist seine Anwendung; das Issue nennt drei Positivfälle),
-[`BEO-ALL/prosa-verschwindet-in-inline-code-spanne`](../observations/BEO-ALL/prosa-verschwindet-in-inline-code-spanne/observation.md)
+[`BEO-ALL/prosa-verschwindet-in-inline-code-spanne`](../../observations/BEO-ALL/prosa-verschwindet-in-inline-code-spanne/observation.md)
 (2×, offen — `hostpaths` liest Inline-Code, und die Beobachtung betrifft
 absatzweit gepaarte Backticks; ob eine fehlgepaarte Spanne auch den
 Variablen-Treffer verschwinden lässt, ist ein Fall für die Negativliste, nicht
 vorab entschieden) und
-[`BEO-ALL/module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md)
+[`BEO-ALL/module-promise-only-on-scan-axis`](../../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md)
 (3×, verkörpert in `AGENTS.md` §3.8 — die Zusage gilt für die Scan-Menge des
 Moduls; `exempt-targets` ist eine Eingabe, die nicht gescannt wird). Der Zähler
 folgt aus den Dateien der Closure.
