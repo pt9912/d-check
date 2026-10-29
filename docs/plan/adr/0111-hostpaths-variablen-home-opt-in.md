@@ -1,6 +1,6 @@
 # ADR-0111: `hostpaths` erkennt Variablen-Home-Pfade über einen opt-in-Schlüssel
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-29
 
@@ -118,3 +118,4 @@ Konfigurationsfehler.
 | Datum | Ereignis |
 |---|---|
 | 2026-10-29 | Entwurf zu slice-280 nach dem Feldbefund (GitHub-Issue 12). Status Proposed, bis die Umsetzung geprüft ist. |
+| 2026-10-29 | **Accepted** — umgesetzt, Review (zwei MEDIUM, drei LOW, alle umgesetzt oder benannt) und Verifikation ohne DoD-Verletzung; die Mutationen wurden einzeln rot gesehen, der Befundsatz ohne den Schlüssel ist gegen `v0.87.1` byte-gleich. Die Begründung der Verdrängung wurde vor der Annahme berichtigt: sie gilt in allen drei Schreibweisen, nicht nur bei `$NAME/`. |

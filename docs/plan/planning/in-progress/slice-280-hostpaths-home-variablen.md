@@ -116,7 +116,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] [`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) erfüllt, Test referenziert:
+- [x] [`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in) erfüllt, Test referenziert:
       Happy (`$HOME/Dev/x`, `${HOME}/Dev/z`, `"$HOME"/Dev/w` melden mit
       gesetztem `variables`) · Boundary (ohne den Schlüssel kein Befund, Befundsatz
       byte-identisch; `$HOME/.config/x` und nacktes `$HOME` still) · Negative
@@ -124,21 +124,21 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       Fund, `$`-Glob ohne passende Variable ist Exit 2). Rot-Beleg: der
       `$HOME`-Test läuft ohne die Änderung aus dem richtigen Grund rot (kein
       Befund statt `hostpath-forbidden`).
-- [ ] Fassung nachgezogen: Lastenheft ([`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in): Beschreibung,
+- [x] Fassung nachgezogen: Lastenheft ([`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in): Beschreibung,
       Out-of-Scope-Satz zu Variablen-Formen, Kriterien, Version, Historie-Zeile),
       Spezifikation ([`DC-FA-HOST-001.a`](../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung), Schema-Zeile
       `hostpaths.variables`, Historie), begleitende ADR samt ADR-Index.
-- [ ] Spiegel nachgezogen: das Konfigurations-Gerüst (`--print-config`) führt
+- [x] Spiegel nachgezogen: das Konfigurations-Gerüst (`--print-config`) führt
       den Schlüssel; die Zählung der übrigen Fundstellen steht in §3.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Doku-Update für die Schnittstelle `hostpaths` falls öffentlicher Vertrag berührt (Spec und Gerüst oben; Handbuch ist Release-Prep).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
+- [x] Doku-Update für die Schnittstelle `hostpaths` falls öffentlicher Vertrag berührt (Spec und Gerüst oben; Handbuch ist Release-Prep).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
 ## 3. Plan (vor Code)
 
@@ -239,14 +239,14 @@ dasteht.
 - Das Variablen-Muster liest Shell-Ausdrücke, die kein Home-Verweis sind
   (Parameter-Expansion, Befehlsersetzung), als Pfad und meldet falsch positiv.
   Die Negativliste in §3 deckt die benannten Formen; die Klasse ist offen —
-  **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  **Ausgang:** entfallen — die Negativliste testet Parameter-Expansion, Namens-Fortsetzung und Maskierung; eine Befehlsersetzung kann nicht treffen, weil unmittelbar nach dem Namen ein Schrägstrich stehen muss. Der Verifier hat die Randfälle am gebauten Image gemessen.
 - Die Kopplung von `exempt-targets` an `variables` ist eine Entwurfs-Wahl, die
   das Issue anders formuliert (Globs mit `$` *akzeptieren*, ohne Bedingung).
   Wird sie beim Review umgestoßen, ändert sich die Config-Rand-Zusage im
-  Lastenheft — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  Lastenheft — **Ausgang:** entfallen — Review und Verifikation haben die Kopplung nicht umgestoßen; das Lastenheft führt sie als Config-Rand-Kriterium, der Verifier hat sie am Image gemessen (Exit 2 ohne passende Variable, Gegenprobe nimmt genau den Fund aus).
 - Wer `variables` aktiviert, bekommt Funde in Dokumenten, die bisher grün
   waren; das ist beabsichtigt (opt-in), aber die Meldung nennt den Schlüssel
-  nicht — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  nicht — **Ausgang:** entfallen — die Meldung ändert sich nicht und nennt für keine Erkennungsform ihren Schlüssel (auch Präfixe und Tilde nicht); die Auffindbarkeit tragen das Gerüst (`--print-config`) und das Handbuch in der Release-Prep.
 
 ## 7. Closure-Notiz
 
@@ -262,7 +262,47 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-Wird bei der Closure gefüllt.
+- **Was hat funktioniert:** Die Variablen-Erkennung als eigene Regex aus der Namensliste
+  neben Tilde und Unix, mit einer allgemeinen Verdrängung (der früher beginnende Treffer
+  gewinnt), trug alle Negativfälle aus §3 ohne Sonderfall. Gemessen: ohne den Schlüssel
+  sind Befundsatz, `--json` und `--yaml` über das Fixture aus Issue 12 und über den
+  Eigenbestand byte-gleich zu `v0.87.1`; mit `variables: [HOME]` meldet das Fixture alle
+  drei Formen und den Inline-Code-Fall. Der Verifier hat sieben Mutationen einzeln
+  gebrochen und aus dem richtigen Grund rot gesehen (Erkennung, Verdrängung,
+  Punkt-Segment, Wortgrenze, Schließ-Anführungszeichen, `$`-Glob-Kopplung, Namens-Form).
+- **Was ging anders als geplant:** Die Plan-Annahme zur Verdrängung stimmte nur für
+  `$NAME/…` (siehe die Plan-Änderungen vor §4): Ein Mutationstest, der die Verdrängung
+  entfernte und grün blieb, deckte auf, dass der Test die Form fuhr, in der sie nichts
+  bewirkt. Der Review fand zwei weitere Folgen (F-2: das Ziel eines Funds hinter einer
+  Variablen wechselt, ein Bestands-Glob trifft nicht mehr; F-3: überlappende Treffer
+  meldeten doppelt) und beide sind umgesetzt; die Verdrängung ist jetzt allgemein.
+  Die Lint-Grenze (`gocognit`, `gochecknoglobals`) verlangte eine Zerlegung in kleine
+  Funktionen statt einer Suppression (§3.2). Die Doku des Repos selbst meldete meine
+  Beispiele mit dem Default-Präfix (Dogfooding); sie stehen jetzt mit Platzhalter.
+  Verifier V-1 (LOW, Wortlaut „kein Befund" im Boundary-Kriterium) ist im Lastenheft
+  berichtigt. Review F-6 (INFO): der Exit-2-Text für ein Ventil-Glob ohne `/` oder `~`
+  ist auch ohne den Schlüssel umformuliert; die Zusage gilt dem Befundsatz, nicht dem
+  Wortlaut einer Fehlermeldung. Die Plan-Erwartung „zwei Treffer-Dateien im Eigenbestand“
+  war überholt: mit dem Schlüssel träfe er fünf Dateien, alle Text dieser Welle.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle, aber ein Befund mit Richtung:
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+  bekommt zum zweiten Mal in Folge (slice-279, slice-280) einen Beleg derselben
+  Richtung: die Negativliste prüft, was die neue Regel nicht treffen darf, nicht was sie
+  an **bereits Erkanntem** ändert (Menge in slice-279, Ziel in slice-280). Tritt es ein
+  drittes Mal auf, gehört die Frage *was ändert sich am Bestand der Funde?* in
+  Schritt 19 des Workflow-Skeletts.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-280.md` in
+  `BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet` (jetzt 7×) und in
+  [`BEO-ALL/begruendung-traegt-entscheidung-nicht`](../observations/BEO-ALL/begruendung-traegt-entscheidung-nicht/state.md):
+  richtige Verdrängung, Begründung nur für eine der drei Formen gültig.
+- **Folge-Slices:** keiner. Weitere Variablen (`$USERPROFILE`, `$XDG_*`) sind ein
+  Eintrag der Liste und keine Anforderung; die Windows-Schreibweise bleibt ausgeschlossen.
+- **Risiken aus §6:** alle drei entfallen (siehe §6). Trigger-Audit: kein Carveout, kein
+  bootstrap-aware Gate, keine Hard Rule mit eingetretenem Trigger;
+  [ADR-0111](../../adr/0111-hostpaths-variablen-home-opt-in.md) trägt Re-Evaluierungs-Trigger und geht auf
+  `Accepted`. Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — keiner
+  genannt; (c) Register — die zitierten Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
