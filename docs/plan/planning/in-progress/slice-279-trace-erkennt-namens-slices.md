@@ -110,27 +110,27 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] [`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) erfüllt, Test referenziert:
+- [x] [`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) erfüllt, Test referenziert:
       Happy (Namens-Slice deckt die Anforderung, `--require-complete` Exit 0) ·
       Boundary (Ziffern-Slice unverändert `slice-NNN`) · Negative (Beleg unter
       `observations/` deckt nichts; gesetztes `file-pattern` übersteuert).
       Rot-Beleg: der Namens-Test läuft ohne die Änderung aus dem richtigen
       Grund rot (`WAISE` statt `ok`).
-- [ ] Fassung nachgezogen: Lastenheft ([`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix),
+- [x] Fassung nachgezogen: Lastenheft ([`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix),
       Kriterium *Default byte-identisch* auf den Ziffern-Fall gefasst, Version,
       Historie-Zeile), Spezifikation ([`DC-FA-CLI-009.a`](../../../../spec/spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) Schritt 2, Schema-Zeile),
       begleitende ADR samt ADR-Index.
-- [ ] Spiegel der Default-Form nachgezogen: das Konfigurations-Gerüst
+- [x] Spiegel der Default-Form nachgezogen: das Konfigurations-Gerüst
       (`--print-config`) beschreibt den neuen Default.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Doku-Update für die Schnittstelle `--trace` falls öffentlicher Vertrag berührt (Spec und Gerüst oben; Handbuch ist Release-Prep).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
+- [x] Doku-Update für die Schnittstelle `--trace` falls öffentlicher Vertrag berührt (Spec und Gerüst oben; Handbuch ist Release-Prep).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
 ## 3. Plan (vor Code)
 
@@ -213,17 +213,22 @@ dasteht.
   `observations`-Ausnahme fängt den gemessenen Fall; ob es einen zweiten Ort
   gibt (Review-Reports liegen unter `docs/reviews/`, außerhalb von
   `slices.dir`), ist an der Menge der Dateien unter `docs/plan/planning/`
-  nachzuzählen, bevor der Ausschluss als vollständig gilt — **Ausgang:** wird
-  bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  nachzuzählen, bevor der Ausschluss als vollständig gilt — **Ausgang:** entfallen —
+  nachgezählt in Review und Verifikation: 549 Dateien `slice-*.md` unter `docs/plan/planning/`,
+  279 Ziffern-Slices, die übrigen 270 liegen alle unter `observations/<BEO>/…/evidence/`;
+  außerhalb des Planning-Baums gibt es keine.
 - Ein Repo mit Namens-Slices und ohne `trace`-Block bekommt eine andere RTM als
   zuvor — beabsichtigt (Waisen werden zu `ok`), aber nicht byte-identisch zum
   Vorgänger. Das Kriterium *Default byte-identisch* im Lastenheft muss darauf
-  gefasst werden, sonst widerspricht die Spec dem Verhalten — **Ausgang:** wird
-  bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  gefasst werden, sonst widerspricht die Spec dem Verhalten — **Ausgang:** entfallen —
+  das Lastenheft (0.107.0) fasst *Default byte-identisch* auf den Ziffern-Fall und führt das
+  Kriterium *Namens-Slice*; am Eigenbestand ist die Byte-Identität gegen `v0.87.1` gemessen
+  (RTM in drei Formen, 549 Dateien).
 - Eine Datei `slice-*.md`, die kein Slice-Plan ist (Notiz, Vorlage), wird zum
   Slice und deckt zu großzügig. Am Namen nicht entscheidbar; der Weg ist ein
-  gesetztes `file-pattern` — **Ausgang:** wird bei der Closure gesetzt
-  (eingetreten / entfallen / weiter offen)
+  gesetztes `file-pattern` — **Ausgang:** weiter offen — ins Beobachtungs-Register,
+  [`BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert`](../observations/BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert/state.md)
+  (jetzt 2×); die Grenze steht in [ADR-0110](../../adr/0110-trace-default-erkennt-namens-slices.md) §Konsequenzen.
 
 ## 7. Closure-Notiz
 
@@ -239,7 +244,42 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-Wird bei der Closure gefüllt.
+- **Was hat funktioniert:** Die Erkennung als Funktion statt als zweite Regex
+  (Ziffern-Fall zuerst, dann Namens-Fall, `observations` nur dort ausgenommen) trug
+  alle Negativfälle aus §3 ohne Sonderfall; ein gesetztes `file-pattern` läuft über
+  denselben Weg wie die ADR-Erkennung. Gemessen: die RTM über eine Kopie des
+  Planning-Baums (549 Dateien `slice-*.md`, 270 Belege unter `observations/`) ist in
+  `--trace`, `--json` und `--yaml` byte-gleich zu `v0.87.1`; das Fixture aus Issue 11
+  kippt von `WAISE`/Exit 1 auf `ok`/Exit 0. Der Verifier hat den Rot-Beleg an drei
+  Stellen einzeln gebrochen und gesehen (ohne Namens-Fall, ohne Ausschluss, Ausschluss
+  vor dem Ziffern-Fall).
+- **Was ging anders als geplant:** Der Ausschluss stand zuerst vor dem Ziffern-Fall;
+  ein titelhaltiger Beleg `evidence/slice-007-foo.md`, bisher ein erkannter Slice,
+  wäre aus der RTM gefallen, und der Negativ-Test pinnte genau das (Review F-1,
+  MEDIUM). Der Plan (§1) hatte den Ausschluss als „im Default" beschrieben, ohne
+  den Ziffern-Fall zu nennen; der Fix begrenzt ihn auf den Namens-Fall, Lastenheft,
+  Spezifikation und [ADR-0110](../../adr/0110-trace-default-erkennt-namens-slices.md) sind nachgezogen. F-2 (LOW, `slices.dir` unbereinigt)
+  ist behoben; eine unbereinigte Verzeichnisangabe mit `./`-Präfix ließ sich mit dem Test-Dateisystem nicht abbilden.
+  [ADR-0110](../../adr/0110-trace-default-erkennt-namens-slices.md) geht mit der Closure auf `Accepted`.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle. Die Klasse
+  [`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/state.md)
+  ist verkörpert (Schritt 19, Prüffrage 21) und bekommt hier einen Beleg mit anderer
+  Richtung: die Negativliste prüfte, was die neue Regel ausschließt, nicht was sie dem
+  bisher Erkannten wegnimmt. Der Vergleich gegen `v0.87.1` fand es nicht, weil die
+  Belege des Eigenbestands titellos heißen; erst der Review fand es.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-279.md` in
+  `BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet` (jetzt 6×) und in
+  [`BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert`](../observations/BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert/state.md)
+  (jetzt 2×).
+- **Folge-Slices:** keiner. Die Erkennung in `reviews`, `--suggest-config` und
+  `tools/archive-wave` bleibt ziffern-only (§1, andere Module); slice-280 ist der
+  Zwilling dieser Welle, kein Folge-Slice dieses.
+- **Risiken aus §6:** zwei entfallen, eines weiter offen (siehe §6). Trigger-Audit:
+  kein Carveout, kein bootstrap-aware Gate, keine Hard Rule mit eingetretenem Trigger;
+  [ADR-0110](../../adr/0110-trace-default-erkennt-namens-slices.md) trägt Re-Evaluierungs-Trigger und geht auf `Accepted`. Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — keiner
+  genannt; (c) Register — die zitierten Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

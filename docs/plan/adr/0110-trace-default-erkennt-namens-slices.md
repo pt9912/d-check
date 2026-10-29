@@ -1,6 +1,6 @@
 # ADR-0110: Die Default-Erkennung des Trace führt Slices mit Namens-Kennung
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-29
 
@@ -108,3 +108,4 @@ den `observations`-Ausschluss.
 |---|---|
 | 2026-10-29 | Entwurf zu slice-279 nach dem Feldbefund (GitHub-Issue 11). Status Proposed, bis die Umsetzung geprüft ist. |
 | 2026-10-29 | Nachzug nach Review: der `observations`-Ausschluss gilt nur für den Namens-Fall (Entscheidung 2), `trace.slices.dir` wird vor der Segment-Suche bereinigt. Vorher stand der Ausschluss vor dem Ziffern-Fall und hätte einen titelhaltigen Ziffern-Beleg aus der RTM genommen. |
+| 2026-10-29 | **Accepted** — umgesetzt, Review (ein MEDIUM, ein LOW, beide behoben) und Verifikation ohne DoD-Verletzung; der Rot-Beleg wurde an drei Stellen einzeln gesehen, die RTM des Eigenbestands ist gegen `v0.87.1` byte-gleich. |
