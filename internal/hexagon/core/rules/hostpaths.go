@@ -70,19 +70,17 @@ func CheckHostpaths(file string, content []byte, cfg model.HostpathsConfig) []mo
 		})
 	}
 	for _, pl := range proseLines(content) {
-		// Spannen, die einen Unix-Treffer verdrängen: Tilde und Variable.
-		homes := tildeRE.FindAllStringSubmatchIndex(pl.raw, -1)
-		for _, m := range homes {
-			add(pl, pl.raw[m[4]:m[5]], true)
-		}
-		for _, m := range variableMatches(pl.raw, varRE) {
-			homes = append(homes, m)
-			add(pl, withoutClosingQuote(pl.raw[m[4]:m[5]]), true)
-		}
-		for _, m := range unixRE.FindAllStringSubmatchIndex(pl.raw, -1) {
-			if !insideSpan(m[4], homes) {
-				add(pl, pl.raw[m[4]:m[5]], true)
+		tildes := tildeRE.FindAllStringSubmatchIndex(pl.raw, -1)
+		unix := unixRE.FindAllStringSubmatchIndex(pl.raw, -1)
+		vars := dropInside(variableMatches(pl.raw, varRE), tildes, unix)
+		tildes = dropInside(tildes, vars)
+		for _, ms := range [][][]int{tildes, vars} {
+			for _, m := range ms {
+				add(pl, withoutClosingQuote(pl.raw[m[4]:m[5]]), true)
 			}
+		}
+		for _, m := range dropInside(unix, tildes, vars) {
+			add(pl, pl.raw[m[4]:m[5]], true)
 		}
 		for _, p := range windowsPaths(pl.raw) {
 			add(pl, p, false)
@@ -142,4 +140,21 @@ func windowsPaths(raw string) []string {
 		}
 	}
 	return out
+}
+
+// dropInside verwirft die Treffer, deren Pfad innerhalb eines Treffers aus
+// spans beginnt: ein Pfad wird genau einmal und in voller Form gemeldet. Ohne
+// spans (leer) bleibt ms unverändert — das Verhalten ohne `variables`.
+func dropInside(ms [][]int, spans ...[][]int) [][]int {
+	var kept [][]int
+	for _, m := range ms {
+		inner := false
+		for _, s := range spans {
+			inner = inner || insideSpan(m[4], s)
+		}
+		if !inner {
+			kept = append(kept, m)
+		}
+	}
+	return kept
 }

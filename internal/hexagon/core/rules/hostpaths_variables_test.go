@@ -130,3 +130,48 @@ func TestHostpathsVariablesVerdraengtUnix(t *testing.T) {
 		t.Fatalf("Targets = %q\nwant   %q", got, want)
 	}
 }
+
+// Ist das erste Segment des Variablen-Pfads ein Präfix-Name, trifft das
+// Unix-Muster bei `}` oder `"` vor dem Präfix (beide stehen nicht in seiner
+// Sperrklasse): die Verdrängung sorgt für genau einen Fund in voller Form. Bei
+// `$HOME/…` verhindert schon das `E` des Namens den Doppeltreffer.
+func TestHostpathsVariablesPraefixAlsErstesSegment(t *testing.T) {
+	got := hostTargets(t,
+		"${HOME}/Development/a/b und \"$HOME\"/Development/c/d und $HOME/Development/e/f\n", homeVars())
+	want := []string{"$HOME/Development/c/d", "$HOME/Development/e/f", "${HOME}/Development/a/b"}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("Targets = %q\nwant   %q", got, want)
+	}
+}
+
+// Überlappende Treffer in einer Zeile (ein Komma ist Pfadzeichen und Wortgrenze
+// zugleich) melden genau einmal, der früher beginnende gewinnt — in allen
+// Richtungen: Tilde in Variable, Variable in Tilde, Variable in Unix.
+func TestHostpathsVariablesUeberlappungGenauEinmal(t *testing.T) {
+	got := hostTargets(t,
+		"$HOME/a/b,~/c/d\n"+
+			"~/e/f,$HOME/g/h\n"+
+			"/home/i/j,$HOME/k/l\n", homeVars())
+	want := []string{"$HOME/a/b,~/c/d", "~/e/f,$HOME/g/h", "/home/i/j,$HOME/k/l"}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("Targets = %q\nwant   %q", got, want)
+	}
+}
+
+// Mit gesetztem variables wechselt das Ziel eines bisherigen Unix-Funds hinter
+// einer Variablen: er meldet in voller Form, ein Bestands-Glob auf den
+// Unix-Teil trifft dann nicht mehr; das Glob muss mit der Variablen beginnen.
+func TestHostpathsVariablesZielWechselt(t *testing.T) {
+	line := "${HOME}/Development/x/y\n"
+	if got := hostTargets(t, line, model.HostpathsConfig{}); !reflect.DeepEqual(got, []string{"/Development/x/y"}) {
+		t.Fatalf("ohne variables bleibt der Unix-Fund: %q", got)
+	}
+	cfg := model.HostpathsConfig{Variables: []string{"HOME"}, ExemptTargets: []string{"/Development/**"}}
+	if got := hostTargets(t, line, cfg); !reflect.DeepEqual(got, []string{"${HOME}/Development/x/y"}) {
+		t.Fatalf("mit variables meldet die volle Form, das Unix-Glob trifft nicht: %q", got)
+	}
+	cfg.ExemptTargets = []string{"${HOME}/Development/**"}
+	if got := hostTargets(t, line, cfg); len(got) != 0 {
+		t.Fatalf("das Variablen-Glob nimmt den Fund aus: %q", got)
+	}
+}

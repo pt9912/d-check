@@ -175,14 +175,27 @@ nicht in der Liste (`$OTHER/x`) · ein Variablen-Pfad mit Host-Präfix-Namen als
 voller Form). Dazu der Lauf über den eigenen Bestand: Befundsatz von `hostpaths`
 ohne den Schlüssel gegen `v0.87.1` byte-gleich, mit `variables: [HOME]` die
 Menge der Treffer vorab gezählt (erwartet: die zwei Dateien oben).
-**Plan-Änderung vor dem Code-Commit (Schritt 19):** Die Negativliste nannte als
-Fall „ein Variablen-Pfad mit Host-Präfix-Namen als erstem Segment“ und begründete die
-Verdrängung eines Unix-Treffers damit. Die Messung zeigt: Bei dieser Form trifft das
-Unix-Muster ohnehin nicht, weil vor dem Präfix das letzte Zeichen des Variablen-Namens
-steht (Wortgrenze). Die Verdrängung ist nur nötig, wenn innerhalb des Variablen-Pfads
-ein Zeichen wie `=` vor einem Präfix-Pfad steht; der Test fährt diese Form, und die
-Aussage der Spezifikation (Treffer innerhalb eines Variablen-Treffers entfällt) bleibt
-unverändert. Der Test der Präfix-Namen-Form bleibt als Beleg, dass nichts doppelt meldet.
+**Plan-Änderungen (Schritt 19 und Review):**
+
+- **Verdrängung nur bei `$NAME/` redundant.** Die Negativliste nannte „ein Variablen-Pfad
+  mit Host-Präfix-Namen als erstem Segment“ und begründete die Verdrängung eines
+  Unix-Treffers damit. Bei `$HOME/<Präfix>/x` trifft das Unix-Muster ohnehin nicht
+  (vor dem Präfix steht das `E` des Namens); bei `${HOME}/<Präfix>/x` und
+  `"$HOME"/<Präfix>/x` steht `}` bzw. `"` davor, das Muster träfe, und die Verdrängung
+  verhindert den zweiten Fund. Die Tests fahren alle drei Formen und die `=`-Form.
+- **Verdrängung ist allgemein** (Review F-3): der früher beginnende Treffer gewinnt in
+  allen Richtungen zwischen Tilde, Variable und Unix. Ohne `variables` bleibt das
+  Verhalten gleich, denn dann gibt es nur Tilde und Unix.
+- **`**$HOME/x**` ist kein „kein Fund“** (Review F-4, Umkehrung der Negativliste): die
+  Hervorhebung am Rand verhält sich wie bei der Tilde und meldet mit den Stern-Zeichen
+  im Ziel. Die Negativliste hatte das offen gelassen; die Spezifikation führt die
+  Hervorhebung als benannte Grenze.
+- **Das Ziel eines Funds hinter einer Variablen wechselt** (Review F-2): mit gesetztem
+  `variables` meldet `${HOME}/<Präfix>/x` unter dem Variablen-Pfad, ein Bestands-Glob
+  auf den Unix-Teil trifft nicht mehr. Das gehört in Lastenheft, Spezifikation und ADR und
+  steht dort.
+- **Anlass-Beispiel:** `$HOME/Dev/…` aus dem Issue setzt ein konfiguriertes Präfix `Dev`
+  voraus; im Default heißt das Präfix `Development` (Review F-7).
 
 
 ## 4. Trigger

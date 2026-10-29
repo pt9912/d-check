@@ -59,7 +59,7 @@ ein Zeichen zwischen `}` und `/`.
 
 Der Pfad wird mit der Variablen gemeldet, wie geschrieben; das schließende `"` von
 `"$HOME"/x` gehört nicht dazu, damit `exempt-targets` einheitlich greift. Ein
-Unix-Treffer, der innerhalb eines Variablen-Treffers beginnt, entfällt.
+Treffer, der innerhalb eines anderen beginnt, entfällt; der früher beginnende gewinnt (Variable in Tilde, Tilde in Variable, Variable und Unix in beiden Richtungen).
 
 ### 4. `exempt-targets` akzeptiert `$`-Globs mit gelisteter Variable
 
@@ -93,11 +93,16 @@ Konfigurationsfehler.
   `**$HOME/x/y**` meldet mit den Stern-Zeichen. Eine Variable, die ein Werkzeug erst
   zur Laufzeit auflöst, ist kein Layout-Leak; die Erkennung kann das nicht
   unterscheiden und meldet jede gelistete.
-- **Grenze:** Die Verdrängung eines Unix-Treffers greift nur, wenn vor dem
-  Präfix-Pfad innerhalb des Variablen-Pfads ein Zeichen steht, das die Wortgrenze des
-  Unix-Musters erfüllt (etwa `=`). Ist das erste Segment des Variablen-Pfads selbst
-  ein Präfix-Name, trifft das Unix-Muster ohnehin nicht, weil davor das letzte Zeichen
-  des Variablen-Namens steht.
+- **Folge für Bestands-Globs:** Mit gesetztem `variables` meldet ein Fund hinter einer
+  gelisteten Variablen unter dem Variablen-Pfad. `${HOME}/<Präfix>/x` meldete bisher
+  als Unix-Fund `/<Präfix>/x`; ein `exempt-targets`-Glob auf den Unix-Teil trifft
+  dann nicht mehr, das Glob muss mit der Variablen beginnen. Ohne den Schlüssel ändert
+  sich nichts; die Folge trifft nur, wer ihn einschaltet.
+- **Grenze:** Ob das Unix-Muster in einem Variablen-Pfad überhaupt einen eigenen Treffer
+  hätte, hängt vom Zeichen davor ab: bei `$HOME/<Präfix>/x` steht das `E` des Namens
+  davor (Wortgrenze), bei `${HOME}/<Präfix>/x` und `"$HOME"/<Präfix>/x` stehen
+  `}` bzw. `"` davor, und der Treffer entstünde. Die Verdrängung sorgt in allen Formen
+  für genau einen Fund.
 - Weitere Variablen sind ein Eintrag in der Liste, keine neue Anforderung.
 
 ## Re-Evaluierungs-Trigger

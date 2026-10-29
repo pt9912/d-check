@@ -1792,7 +1792,7 @@ leben solche Pfade typischerweise); Fenced-Code-Blöcke sind
 ausgenommen — Beispiel- und Lehrinhalte mit bewussten Host-Pfaden
 gehören in Fences. Vorbedingung ist eine Wortgrenze (kein
 unmittelbar vorangehendes URL-, Pfad- oder Wortzeichen, vor einem
-Home-relativen Pfad auch keine Tilde); schließende Satzzeichen werden vom gemeldeten Pfad
+Home-relativen Pfad auch keine Tilde, vor einem Variablen-Pfad weder `$` noch Backslash); schließende Satzzeichen werden vom gemeldeten Pfad
 abgetrennt. Grund-Code `hostpath-forbidden` mit Datei, Zeile und
 gefundenem Pfad. Es gibt **keinen Zeilen-Marker** (der Zeilen-Marker
 `d-check:ignore` bleibt auf andere Module beschränkt,
@@ -1816,8 +1816,9 @@ Konfigurationsfehler.
 - **Home-relativ (Negative):** Given eine Prosa-Zeile mit Tilde, Schrägstrich und einem Segment ohne führenden Punkt, when das Modul läuft, then genau ein Befund `hostpath-forbidden` mit dem vollständigen Pfad samt Tilde.
 - **Home-relativ (Boundary):** Given eine Tilde vor einem Punkt-Segment, eine nackte Tilde mit Schrägstrich, eine Tilde mit Benutzername, eine Tilde als „ungefähr" oder eine Tilde in einem URL-Pfad, when das Modul läuft, then kein Befund.
 - **Home-relativ (kein Verlust):** Given ein absoluter Host-Pfad, dem eine Tilde unmittelbar vorausgeht, ohne selbst Teil eines Home-relativen Pfads zu sein (durchgestrichen, an einem Wort klebend), when das Modul läuft, then wird er gemeldet wie ohne die Erweiterung.
-- **Ziel-Ventil:** Given `hostpaths.exempt-targets` mit einem Glob, das einen gefundenen Unix- oder Home-relativen Pfad trifft, when das Modul läuft, then entfällt genau dieser Befund; ein Windows- oder UNC-Fund bleibt bestehen.
+- **Ziel-Ventil:** Given `hostpaths.exempt-targets` mit einem Glob, das einen gefundenen Unix-, Home-relativen oder Variablen-Pfad trifft, when das Modul läuft, then entfällt genau dieser Befund; ein Windows- oder UNC-Fund bleibt bestehen.
 - **Variablen-Home (Negative):** Given `hostpaths.variables: [HOME]` und eine Prosa-Zeile oder ein Inline-Code-Span mit `$HOME/…`, `${HOME}/…` oder `"$HOME"/…` und einem Segment ohne führenden Punkt, when das Modul läuft, then genau ein Befund `hostpath-forbidden` mit dem vollständigen Pfad samt Variablen-Schreibweise (ohne das schließende Anführungszeichen).
+- **Variablen-Home (genau einmal, Ziel):** Given `hostpaths.variables: [HOME]` und ein Variablen-Pfad, in dem ein Unix- oder Home-relativer Pfad beginnt (etwa `${HOME}/<Präfix>/…` oder ein Komma-getrennter Doppelpfad), when das Modul läuft, then genau ein Befund in voller Form unter dem früher beginnenden Treffer; ein `exempt-targets`-Glob auf den Unix-Teil trifft dann nicht mehr, das Glob muss mit der Variablen beginnen.
 - **Variablen-Home (Boundary):** Given dieselben Zeilen **ohne** `hostpaths.variables`, oder mit dem Schlüssel eine nackte Variable, ein Punkt-Segment, einen längeren Namen, eine Ausdrucks-Form, eine nicht genannte Variable oder einen Fenced-Block, when das Modul läuft, then kein Befund; der Befundsatz ohne den Schlüssel ist byte-identisch.
 - **Config-Rand:** Given ein `hostpaths.prefixes`-Eintrag mit Tilde, ein leeres bzw. ungültiges `hostpaths.exempt-targets`-Glob, ein `$`-Glob ohne passende Variable in `hostpaths.variables` oder ein `hostpaths.variables`-Eintrag, der kein Shell-Variablen-Name ist, when d-check die Konfiguration lädt, then Exit 2.
 

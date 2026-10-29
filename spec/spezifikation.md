@@ -1638,7 +1638,11 @@ weitere Konfiguration existiert nicht.
      Vorbedingung wie Home-relativ, zusätzlich weder `$` noch Backslash davor
      (kein `$$HOME`, keine maskierte Variable). Gemeldet wird der Pfad mit der
      Variablen, wie geschrieben, ohne das schließende Anführungszeichen. Ein
-     Unix-Treffer, der innerhalb eines Variablen-Treffers beginnt, entfällt.
+     Treffer, der innerhalb eines anderen beginnt, entfällt — der früher beginnende
+     gewinnt (Variable in Tilde, Tilde in Variable, Variable und Unix in
+     beiden Richtungen); ein Fund hinter einer gelisteten Variablen meldet damit
+     unter dem Variablen-Pfad, nicht unter dem Unix-Teil (ein Bestands-Glob auf
+     den Unix-Teil trifft dann nicht mehr).
    - **Windows-Laufwerk:** Buchstabe + Doppelpunkt + Backslash +
      Restpfad (Vorbedingung hier: kein Wortzeichen davor).
    - **UNC:** doppelter Backslash + Servername + Backslash +
