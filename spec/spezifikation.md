@@ -367,7 +367,9 @@ Map-Iteration in der Ausgabe):
    über den Basisnamen `trace.adrs.file-pattern`, Default `NNNN-…md` → Capture 1,
    Präfix `trace.adrs.id-prefix` Default `ADR-` → `ADR-NNNN`) und
    `trace.slices.dir` (Default `docs/plan/planning/`; Owner-Kennung
-   `trace.slices.file-pattern`, Default `slice-NNN-…md` → Capture 1, Präfix
+   `trace.slices.file-pattern`; Default: Ziffern-Fall `slice-NNN-…md` → `slice-NNN`, sonst
+   Namens-Fall `slice-<name>.md` (nur `[a-z0-9-]`) → Basisname ohne `.md`, beide ohne Dateien
+   unter einem Pfadsegment `observations` unterhalb von `trace.slices.dir`; Präfix
    `trace.slices.id-prefix` Default leer → `slice-NNN`): je Datei alle Vorkommen
    einer Anforderungs-Kennung (`trace.requirements.id-pattern`) sammeln; Dateien,
    deren Basisname das `file-pattern` **nicht** matcht (z. B. `README.md`),
@@ -3677,7 +3679,7 @@ Exit 2 ohne Prüfung
 | `trace.adrs.file-pattern` | string | `^(\d{4})-.*\.md$` | Regex auf den **Basisnamen**; **Capture-Gruppe 1** = Owner-Kennung der Datei; muss kompilieren **und ≥1 Capture-Gruppe** haben (sonst Exit 2 — sonst wäre die Owner-Ableitung undefiniert); Dateien ohne Treffer übersprungen; leer ⇒ Default |
 | `trace.adrs.id-prefix` | string | `ADR-` | der Owner-Kennung (Capture-Gruppe 1) vorangestellt (`ADR-` + Capture `NNNN` ⇒ die ADR-Kennung `ADR-NNNN`); leer ⇒ Default `ADR-` (ein leerer ADR-Präfix ist nicht ausdrückbar, [`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) Out-of-Scope) |
 | `trace.slices.dir` | string | `docs/plan/planning` | Wurzel-relatives Referenz-Verzeichnis der Slices (rekursiv); fehlt es ⇒ keine Slice-Referenzen (alle Anforderungen Waisen); leer ⇒ Default |
-| `trace.slices.file-pattern` | string | `^(slice-\d+)-.*\.md$` | Regex auf den **Basisnamen**; **Capture-Gruppe 1** = Owner-Kennung; muss kompilieren **und ≥1 Capture-Gruppe** haben (sonst Exit 2); Dateien ohne Treffer (z. B. `README.md`) übersprungen; leer ⇒ Default |
+| `trace.slices.file-pattern` | string | Default-Erkennung: `^(slice-\d+)-.*\.md$`, sonst `^(slice-[a-z0-9]+(?:-[a-z0-9]+)*)\.md$`, ohne Dateien unter einem Segment `observations` unterhalb von `trace.slices.dir` | Regex auf den **Basisnamen**, gilt gesetzt unverändert und ohne den `observations`-Ausschluss; **Capture-Gruppe 1** = Owner-Kennung; muss kompilieren **und ≥1 Capture-Gruppe** haben (sonst Exit 2); Dateien ohne Treffer (z. B. `README.md`) übersprungen; leer ⇒ Default |
 | `trace.slices.id-prefix` | string | leer | der Owner-Kennung vorangestellt; Default **leer** (der Slice-Dateiname trägt die volle Kennung `slice-NNN`); setzbar (z. B. `Slice ` ⇒ `Slice 063`) |
 | `trace.coverage` | list | leer | opt-in **Liste** kuratierter Coverage-Quellen ([`DC-FA-COV-001`](lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)); leer/abwesend ⇒ **keine** Coverage-Spalte, RTM byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)) |
 | `trace.coverage[].files` | string[] | — | **explizite** Wurzel-relative Pfad-Liste (keine `dir`/`file-pattern`-Ableitung — gegen ADR-/Slice-Kontamination); nicht leer; jede Datei muss existieren (sonst Exit 2, fail-closed) |
@@ -3854,6 +3856,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-29 | §[`DC-FA-CLI-009.a`](spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) Schritt 2 und die Schema-Zeile `trace.slices.file-pattern`: ohne gesetztes Muster gilt die Default-Erkennung — Ziffern-Fall `slice-NNN-…md` (Kennung `slice-NNN`) zuerst, sonst Namens-Fall `slice-<name>.md` (Kennung = Basisname ohne `.md`, nur `[a-z0-9-]`); Dateien unter einem Pfadsegment `observations` unterhalb von `trace.slices.dir` sind im Default keine Slices. Ein gesetztes Muster gilt unverändert und ohne Ausschluss |
 | 2026-10-20 | §[7](#7-festlegungen-der-harness-werkzeuge): [`SPEC-094`](#7-festlegungen-der-harness-werkzeuge) nennt den HEAD-Stempel, den strengen und den lockeren Modus des Stop-Hooks und den Exit 2 für jeden unerwarteten Fehler; [`SPEC-103`](#7-festlegungen-der-harness-werkzeuge) nennt die Stop-Hook-Zweige der Selbstprüfung |
 | 2026-10-20 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) um Schritt 8 ergänzt: `trace.requirements` als Liste von Quellen-Einträgen — je Eintrag die Schritte 1 bis 7, Vereinigung in Listenreihenfolge, doppelte Kennung über Einträge und leere Liste Exit 2, `modality` je Eintrag; Fehlerpräzedenz und Schlüsseltabelle nachgezogen, Schritt 1 der RTM benennt die Vereinigung |
 | 2026-10-09 | §2, Beispiel des `--suggest-config ai-harness`-Vorschlags: `matrix.exclude-sections` nennt auch `"8. Historie"`, den Ort der Historie einer Spezifikation nach der Baseline-Vorlage |
