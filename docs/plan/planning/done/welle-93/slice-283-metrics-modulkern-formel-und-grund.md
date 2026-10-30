@@ -11,13 +11,13 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 
 **Welle:** welle-93
 
-**Bezug:** die Anforderung des Moduls `metrics` aus [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) (Kennung dort vergeben; dieser Slice trägt
+**Bezug:** die Anforderung des Moduls `metrics` aus [`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) (Kennung dort vergeben; dieser Slice trägt
 die Hälften „Obergrenze gegen Formel“ und „leerer Grund“),
-[`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus) (Byte-Identität ohne `metrics`-Konfiguration),
-[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) (hermetisch: kein git, kein Netz). Die begleitende ADR aus
-[`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) ist die aktive Entscheidungsgrundlage.
+[`DC-QA-02`](../../../../../spec/lastenheft.md#dc-qa-02--determinismus) (Byte-Identität ohne `metrics`-Konfiguration),
+[`DC-QA-03`](../../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) (hermetisch: kein git, kein Netz). Die begleitende ADR aus
+[`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) ist die aktive Entscheidungsgrundlage.
 
-**Berührte Spec-Stellen:** die in [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) angelegten Stellen
+**Berührte Spec-Stellen:** die in [`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) angelegten Stellen
 (Anforderung, Schema-Zeilen `metrics.*`, Grund-Codes) — gelesen, nicht verändert,
 außer dem Fassungsstand der Historie.
 Der Verweis zeigt **aufwärts**: Die Spec nennt diesen Slice nie
@@ -48,25 +48,25 @@ mit leerem Grund als Befund — rein arithmetisch, ohne git, einzeln lieferbar.
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Die Config-Schlüssel `estimate-inputs`, `table.*` und `excluded`** — das Schema der Spezifikation
-  kommt stückweise: `excluded` mit der Messung ([`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle)), `estimate-inputs` und `table.*` mit der
-  Tabelle ([`slice-285`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle)). Bis dahin kennt der Config-Rand sie nicht (unbekannter Schlüssel, Exit 2);
+  kommt stückweise: `excluded` mit der Messung ([`slice-284`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle)), `estimate-inputs` und `table.*` mit der
+  Tabelle ([`slice-285`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle)). Bis dahin kennt der Config-Rand sie nicht (unbekannter Schlüssel, Exit 2);
   der Hinweis „Marke ausstehend“ nennt hier noch keine Zahlen und prüft nicht auf die Eingaben der
   Schätzung.
 - **Die Tabellenzählung (Schätzung aus der Tabelle, Prüfung 2, Hinweis „Marke ausstehend“)**
-  — Folge-Slice: [`slice-285`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) trägt sie, weil Prüfung 2 den Zustand „Messung 0 / ≥ 1“
+  — Folge-Slice: [`slice-285`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) trägt sie, weil Prüfung 2 den Zustand „Messung 0 / ≥ 1“
   aus der Messung braucht. Hier ist `schaetzung` ein Zahlenfeld des Blocks, kein Ergebnis
   einer Tabelle. Die Prosa-Form-Erkennung ist nach der Antwort des Issue-Autors kein
   Zustand des Moduls: ein Plan ohne Block gibt nur den Hinweis „kein Block“, der den Plan
   nennt (Urteil gleich, nicht gemessen).
 - **Die Messung aus git und der Vergleich mit der Obergrenze** — Schicht-Abgrenzung
-  und Folge-Slice: [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) trägt VCS-Port, Adapter und den Vergleich;
+  und Folge-Slice: [`slice-284`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) trägt VCS-Port, Adapter und den Vergleich;
   dieser Slice bleibt hermetisch (kein `.git` nötig), damit seine Hälfte ohne die andere
   prüfbar ist.
 - **Release-Prep: `CHANGELOG.md`, Handbuch-Kopf, Digest-Pins, Prosa über die
   Modul-Aufzählung hinaus** — eigener Vorgang nach der Welle
-  ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 17). **Ausgenommen sind die Orte, die
+  ([`AGENTS.md`](../../../../../AGENTS.md) §5 Zeile 17). **Ausgenommen sind die Orte, die
   `registry_mirror_test.go` in beide Richtungen gegen `model.ValidModules()` hält** —
-  Modulsatz in [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl), Glossar-Zeile „Regelmodul“, Optionen-Tabelle in
+  Modulsatz in [`DC-FA-CLI-002`](../../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl), Glossar-Zeile „Regelmodul“, Optionen-Tabelle in
   `operations.md`, Modulliste in `README.md` und `README.de.md`, §6-Tabelle des
   Handbuchs. Sie gehören hierher, weil `make gates` sonst ab der Registrierung rot ist;
   mehr als die Aufzählung schreibt dieser Slice dort nicht. (Der Test gewinnt hier
@@ -115,7 +115,7 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 - [x] Grund-Codes dieses Slice (`metrics-limit-mismatch`, `metrics-reason-empty`, `metrics-cut-reason-missing`): Zeile in der Tabelle von `spec/spezifikation.md` §4, Eintrag in `AllReasons()` und `--doctor`-Klartext (`TestAllReasonsDeckungGegenSpezifikationGrundCodes`); `internal/hexagon/core/model/finding.go` und `internal/hexagon/core/app/diagnose.go` (`AllReasons()`) kommen in die Plan-Tabelle (§3).
       `CHANGELOG.md`, Handbuch-Kopf und Digest-Pins **nicht** (Release-Prep).
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Beobachtungs-Register (`../../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
 - [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
 - [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
@@ -136,8 +136,8 @@ Aussagen-Berührung steht hier gar nicht.
 | `internal/adapter/driving/cli/config_template.go` | update | Gerüst führt den Block (Spiegel) |
 | `metrics_test.go` im Regel-Paket | neu | Happy/Boundary/Negative nach der Anforderung; Negativliste unten |
 | `internal/adapter/driven/configyaml/metrics_test.go` | neu | Config-Rand → Exit 2 (eigene Datei neben `mentions_test.go`, statt `configyaml_test.go` zu verlängern); `docs/user/abdeckung-tests.md` wird mit `make abdeckung` neu erzeugt |
-| `internal/hexagon/core/app/registry_mirror_test.go` | update (falls nötig) | Spiegel-Deckung ([`BEO-ALL/modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)); der Test liest die Menge aus `ValidModules()`, eine Änderung ist nur bei einem neuen Ort nötig |
-| `spec/lastenheft.md` | update | Modulsatz in [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl), §6 Glossar-Zeile „Regelmodul“, Fassungsstand und Historie; die Anforderung selbst kommt aus [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) |
+| `internal/hexagon/core/app/registry_mirror_test.go` | update (falls nötig) | Spiegel-Deckung ([`BEO-ALL/modulliste-spiegel-ungegated`](../../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)); der Test liest die Menge aus `ValidModules()`, eine Änderung ist nur bei einem neuen Ort nötig |
+| `spec/lastenheft.md` | update | Modulsatz in [`DC-FA-CLI-002`](../../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl), §6 Glossar-Zeile „Regelmodul“, Fassungsstand und Historie; die Anforderung selbst kommt aus [`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) |
 | `spec/spezifikation.md` | update | nur Fassungsstand und Historie |
 | `docs/user/operations.md` · `README.md` · `README.de.md` · `docs/user/benutzerhandbuch.md` | update | nur die Modul-Aufzählung, die der Spiegel-Test hält (§1); Handbuch ohne Slice-Verweise |
 
@@ -166,7 +166,7 @@ leerem Block-Satz **kein** Befund und gegen das Vorher-Image byte-gleich.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
-**Start** (`next` → `in-progress`): [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) liegt in `done/` (Anforderung,
+**Start** (`next` → `in-progress`): [`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) liegt in `done/` (Anforderung,
 Schema und ADR stehen, die Entscheide 1–9 sind gesetzt), und welle-93 ist offen. Der
 Übergang landet auf dem Hauptzweig, vor der Arbeit.
 
@@ -176,11 +176,11 @@ Schema und ADR stehen, die Entscheide 1–9 sind gesetzt), und welle-93 ist offe
   Spiegel zusammen tragen mehr als eine Review-Sitzung (Plan-Tabelle über zehn Dateien
   im Diff, mehr als zwei Schichten) — dann wandert die Block-Lexik in einen eigenen
   Slice davor, ausdrücklich nicht still weiter. **Wird die Rückführung nicht gezogen**,
-  steht im Review-Report nach [`MR-066`](../../../../harness/conventions.md#mr-066) der
+  steht im Review-Report nach [`MR-066`](../../../../../harness/conventions.md#mr-066) der
   Grund **und** die Ersatz-Form der Prüfung: zwei Review-Durchgänge, Teil A
   Registrierung, Config-Rand und Spiegel, Teil B Block-Lexik, Formel und Grund.
 - `in-progress` → `open` (blockiert — Carveout?): die Anforderung aus
-  [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) wird beim Implementieren als nicht umsetzbar erkannt (z. B.
+  [`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) wird beim Implementieren als nicht umsetzbar erkannt (z. B.
   Ganzzahl-Arithmetik oder die einzelne Aufrundung reicht für die Werte des Anlass-Repos nicht).
 
 ## 5. Closure-Trigger
@@ -203,10 +203,10 @@ dasteht.
 
 - Die Block-Lexik liest einen Fence, den der Markdown-Leser des Repos anders begrenzt
   (Einrückung, Fence in Fence, Tilde-Fence); ein Block verschwindet still und der Plan
-  gilt als „ohne Block“ — **Ausgang:** weiter offen — die Spezifikation legt die Leseweise der RTM-Leser fest (Zaun nach Space und Tab vorn); ob Pläne des Anlass-Repos davon abhängen, zeigt die Paritäts-Probe ([`BEO-ALL/gemeinsame-leser-sind-zwei-familien`](../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md))
+  gilt als „ohne Block“ — **Ausgang:** weiter offen — die Spezifikation legt die Leseweise der RTM-Leser fest (Zaun nach Space und Tab vorn); ob Pläne des Anlass-Repos davon abhängen, zeigt die Paritäts-Probe ([`BEO-ALL/gemeinsame-leser-sind-zwei-familien`](../../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md))
 - Das Modul liest die Pläne unterhalb des konfigurierten Verzeichnisses, aber das
   Verzeichnis kann außerhalb der Scan-Wurzeln liegen; die Zusage der Scan-Menge
-  ([`AGENTS.md`](../../../../AGENTS.md) §3.8) gilt dort nicht — **Ausgang:** weiter offen — die Grenze steht in Anforderung, Spezifikation, Handbuch, Gerüst und Code; die Messung des Verzeichnisses selbst bleibt eine Zusage der Anforderung ([`BEO-ALL/module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md))
+  ([`AGENTS.md`](../../../../../AGENTS.md) §3.8) gilt dort nicht — **Ausgang:** weiter offen — die Grenze steht in Anforderung, Spezifikation, Handbuch, Gerüst und Code; die Messung des Verzeichnisses selbst bleibt eine Zusage der Anforderung ([`BEO-ALL/module-promise-only-on-scan-axis`](../../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md))
 - Ein Plan ohne Block gilt als „nicht gemessen“ und meldet nur einen Hinweis; wer den Block
   vergisst, umgeht die Marke vollständig — **Ausgang:** entfallen — der Hinweis „kein Block“ nennt den Plan und steht in der Zusammenfassung; der Issue-Autor bestätigt für Pläne ohne Block dasselbe Urteil (grün, nicht gemessen, Exit 0) wie sein bisheriges Programm
 
@@ -237,18 +237,18 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   der Spezifikation kamen erst hier, weil `TestAllReasonsDeckungGegenSpezifikationGrundCodes` sie an den Code bindet.
   (3) Zwei meiner Testfälle lagen über der Schwellenregel und lieferten einen zweiten Befund; die belegten Zahlen
   2222 und 2223 fangen die Mutation `<=` zu `<` nicht, erst ein Test mit Schwelle genau auf der Grenze (Review R1 F-3).
-- **[`MR-066`](../../../../harness/conventions.md#mr-066) — Rückführung nicht gezogen:** der Slice lag mit 15 Dateien in vier Schichten über der Ein-Sitzungs-Grenze.
+- **[`MR-066`](../../../../../harness/conventions.md#mr-066) — Rückführung nicht gezogen:** der Slice lag mit 15 Dateien in vier Schichten über der Ein-Sitzungs-Grenze.
   Grund: Registrierung, Gerüst und Spiegel sind mechanisch und bilden das Modul nicht ohne den Kern ab; die Zerlegung hätte
   einen Slice ergeben, dessen Gates ohne den Kern rot sind (Spiegel-Test, Grund-Code-Test). Ersatz-Form der Prüfung: der
   Review R1 las die Regel und die Spiegel getrennt (Teil Regel: `rules/metrics.go`, `run.go`, Tests; Teil Rand: Config-Leser,
   Gerüst, Klartext, Spiegel), der Verifier fuhr das Image und zwei Mutationen. Ein Re-Review der Fix-Commits entfiel,
   weil der Fix genau die Befunde umsetzt (keine neue Zusage, kein neuer Mechanismus).
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
-- **Beobachtungs-Register (`../observations/`):** keine Beobachtung angefallen, die ein Beleg wäre. Benannt, nicht gezählt: zwei Gleichheits-Mutationen
+- **Beobachtungs-Register (`../../observations/`):** keine Beobachtung angefallen, die ein Beleg wäre. Benannt, nicht gezählt: zwei Gleichheits-Mutationen
   blieben ohne Test, bis Review und Verifikation sie fanden (Review R1 F-3); die Negativliste (Schritt 19) war angewandt.
-- **Folge-Slices:** [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) und [`slice-285`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) in `open/`.
+- **Folge-Slices:** [`slice-284`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) und [`slice-285`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) in `open/`.
 - **Risiken aus §6:** zwei weiter offen (mit Verweis), eines entfallen (mit Grund). Trigger-Audit: kein Carveout, kein
-  bootstrap-aware Gate, keine ADR mit eingetretenem Trigger ([`ADR-0112`](../../adr/0112-metrics-modul.md) bleibt `Proposed`), keine Hard Rule mit
+  bootstrap-aware Gate, keine ADR mit eingetretenem Trigger ([`ADR-0112`](../../../adr/0112-metrics-modul.md) bleibt `Proposed`), keine Hard Rule mit
   eingetretenem Trigger, keine Schwelle gesenkt.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — die genannten Slices liegen in `open/`;
   (c) Register — die zitierten Beobachtungen existieren und tragen Belege.
@@ -282,17 +282,17 @@ Modus-Deklaration (`tools/harness/` bleibt unberührt).
 
 **Vorgelagert — offene Beobachtungen sichten:** Register durchgegangen, Sub-Area
 `*`. Treffer:
-[`BEO-ALL/modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
+[`BEO-ALL/modulliste-spiegel-ungegated`](../../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
 (3×, verkörpert in den Spiegel-Deckungstests — die DoD verlangt, dass sie das neue
 Modul fangen),
-[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/observation.md)
+[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/observation.md)
 (7×, verkörpert in Schritt 19 des Workflow-Skeletts — die Negativliste in §3 ist seine
 Anwendung) und
-[`BEO-ALL/module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md)
-(3×, verkörpert in [`AGENTS.md`](../../../../AGENTS.md) §3.8 — das Pläne-Verzeichnis ist eine
+[`BEO-ALL/module-promise-only-on-scan-axis`](../../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md)
+(3×, verkörpert in [`AGENTS.md`](../../../../../AGENTS.md) §3.8 — das Pläne-Verzeichnis ist eine
 Eingabe außerhalb der Scan-Menge, §6). Der Zähler folgt aus den Dateien der Closure.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 `make nightly-state` am 2026-10-30: `upstream-drift` grün (jüngster Lauf 2026-10-30T06:41:15Z), `image-scan`
 grün (2026-10-30T10:04:41Z). Nichts zu lesen, nichts ausstehend.
 
