@@ -108,6 +108,7 @@ func AllReasons() []string {
 		rules.ReasonArtifactUnmentioned,
 		rules.ReasonFileNoMatch, rules.ReasonFileLinesExceeded, rules.ReasonFileBytesExceeded,
 		rules.ReasonMetricsLimitMismatch, rules.ReasonMetricsReasonEmpty, rules.ReasonMetricsCutReasonMissing,
+		rules.ReasonMetricsOverLimit,
 	}
 }
 
@@ -193,6 +194,7 @@ func reasonTexts() map[string]string {
 		rules.ReasonMetricsLimitMismatch:          "Obergrenze des Blocks entspricht nicht der Formel über der Schätzung des Blocks",
 		rules.ReasonMetricsReasonEmpty:            "Ausnahme-Eintrag mit leerem Grund — ein Befund unabhängig von der Messung",
 		rules.ReasonMetricsCutReasonMissing:       "Schwellenregel erfüllt, aber das Pflichtfeld fehlt oder ist leer",
+		rules.ReasonMetricsOverLimit:              "Messung aus git liegt über der Obergrenze, und kein Ausnahme-Eintrag mit N ≥ Messung deckt sie",
 	}
 }
 

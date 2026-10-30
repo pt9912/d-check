@@ -285,6 +285,7 @@ modules: [links, anchors]
 #   surcharge: {numerator: 135, denominator: 10000}   # Bruch der Aufrundung; Pflicht
 #   rounding: 100                                # Einheit, auf deren Vielfaches die Obergrenze aufgerundet wird; Pflicht
 #   cut-threshold: 300000                        # ab numerator · Schätzung > Schwelle ist cut-reason Pflicht; leer ⇒ keine Schwellenregel
+#   excluded: []                                 # literale Pfade, die die Messung immer ausnimmt (kein Glob)
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---
 # external:

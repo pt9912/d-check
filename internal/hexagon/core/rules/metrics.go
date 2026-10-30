@@ -28,6 +28,7 @@ const (
 	ReasonMetricsLimitMismatch    = "metrics-limit-mismatch"
 	ReasonMetricsReasonEmpty      = "metrics-reason-empty"
 	ReasonMetricsCutReasonMissing = "metrics-cut-reason-missing"
+	ReasonMetricsOverLimit        = "metrics-over-limit"
 )
 
 // MetricsResult traegt die Befunde, die Hinweise (keine Befunde) und die
@@ -75,7 +76,7 @@ type metricsBlock struct {
 // CheckMetrics ist das Regelmodul metrics (hermetischer Teil). Der
 // error-Rueckgabewert traegt die Eingabefehler; der Aufrufer mappt ihn auf
 // Exit 2.
-func CheckMetrics(fsys driven.Filesystem, cfg model.MetricsConfig) (MetricsResult, error) {
+func CheckMetrics(fsys driven.Filesystem, vcs driven.VCS, cfg model.MetricsConfig) (MetricsResult, error) {
 	var res MetricsResult
 	if cfg.PlansDir == "" || cfg.Block == "" {
 		return res, fmt.Errorf("das Modul metrics braucht metrics.plans-dir und metrics.block (DC-FA-MET-001, fail-closed)")
@@ -92,7 +93,7 @@ func CheckMetrics(fsys driven.Filesystem, cfg model.MetricsConfig) (MetricsResul
 	fields := cfg.EffectiveFields()
 	for _, name := range names {
 		plan := dir + "/" + name
-		if err := checkMetricsPlan(fsys, plan, cfg, fields, &res); err != nil {
+		if err := checkMetricsPlan(fsys, vcs, plan, cfg, fields, &res); err != nil {
 			return MetricsResult{}, fmt.Errorf("metrics: %s: %v (DC-FA-MET-001, fail-closed)", plan, err)
 		}
 	}
@@ -129,7 +130,7 @@ func listMetricsPlans(fsys driven.Filesystem, dir string) ([]string, error) {
 
 // checkMetricsPlan liest und prueft einen Plan und haengt Befunde und
 // Hinweise an res.
-func checkMetricsPlan(fsys driven.Filesystem, plan string, cfg model.MetricsConfig, f model.MetricsFields, res *MetricsResult) error {
+func checkMetricsPlan(fsys driven.Filesystem, vcs driven.VCS, plan string, cfg model.MetricsConfig, f model.MetricsFields, res *MetricsResult) error {
 	content, err := fsys.ReadFile(plan)
 	if err != nil {
 		return err
@@ -144,7 +145,7 @@ func checkMetricsPlan(fsys driven.Filesystem, plan string, cfg model.MetricsConf
 		return nil
 	}
 	res.WithBlock++
-	fs, hints, err := checkMetricsBlock(plan, blk, cfg, f)
+	fs, hints, err := checkMetricsBlock(plan, blk, vcs, cfg, f)
 	if err != nil {
 		return err
 	}
@@ -280,7 +281,7 @@ func (b *metricsBlock) set(key, val string, line int, f model.MetricsFields) err
 }
 
 func (b *metricsBlock) setPath(val string, line int) error {
-	if err := validMetricsPath(val); err != nil {
+	if err := model.ValidLiteralPath(val); err != nil {
 		return fmt.Errorf("zeile %d: %v", line, err)
 	}
 	b.paths = append(b.paths, val)
@@ -354,32 +355,9 @@ func validMetricsBase(s string) bool {
 	return true
 }
 
-// validMetricsPath prueft einen Wurzel-relativen, literalen Pfad.
-func validMetricsPath(p string) error {
-	if p == "" {
-		return fmt.Errorf("pfad ist leer")
-	}
-	if strings.HasPrefix(p, "/") {
-		return fmt.Errorf("pfad %q beginnt mit '/'", p)
-	}
-	for _, seg := range strings.Split(p, "/") {
-		if seg == ".." {
-			return fmt.Errorf("pfad %q enthält '..'", p)
-		}
-	}
-	if i := strings.IndexFunc(p, isMetricsBadPathRune); i >= 0 {
-		return fmt.Errorf("pfad %q enthält ein steuer- oder glob-zeichen (pfade sind literal)", p)
-	}
-	return nil
-}
-
-func isMetricsBadPathRune(r rune) bool {
-	return r < 0x20 || r == 0x7f || r == '*' || r == '?' || r == '['
-}
-
 // checkMetricsBlock wendet die Pruefungen 1, 4 und 5 an; die Zustaende folgen
 // aus den vorhandenen Feldern.
-func checkMetricsBlock(plan string, b *metricsBlock, cfg model.MetricsConfig, f model.MetricsFields) ([]model.Finding, []string, error) {
+func checkMetricsBlock(plan string, b *metricsBlock, vcs driven.VCS, cfg model.MetricsConfig, f model.MetricsFields) ([]model.Finding, []string, error) {
 	hint, done, err := metricsState(plan, b, f)
 	if err != nil || done {
 		return nil, hint, err
@@ -393,7 +371,12 @@ func checkMetricsBlock(plan string, b *metricsBlock, cfg model.MetricsConfig, f 
 	if err != nil {
 		return nil, nil, err
 	}
-	return append(out, cut...), nil, nil
+	out = append(out, cut...)
+	mf, hints, err := checkMetricsMeasure(plan, b, vcs, cfg, f)
+	if err != nil {
+		return nil, nil, err
+	}
+	return append(out, mf...), hints, nil
 }
 
 // metricsState bestimmt den Zustand: done heisst "Marke ausstehend" (nur ein
@@ -488,4 +471,56 @@ func metricsLimit(estimate int, cfg model.MetricsConfig) (int, error) {
 		return 0, fmt.Errorf("obergrenze %d · %d läuft über", cfg.Rounding, q)
 	}
 	return cfg.Rounding * q, nil
+}
+
+// checkMetricsMeasure ist Pruefung 3 samt Hinweisen: die Messung aus git
+// (Zeilen-Summe zwischen Basis und HEAD ueber die Pfade des Blocks) liegt auf
+// oder unter der Marke, oder ein Ausnahme-Eintrag mit N >= Messung deckt sie.
+// Ein Ausnahme-Eintrag mit leerem Grund deckt trotzdem (er ist selbst ein
+// Befund der Pruefung 4).
+func checkMetricsMeasure(plan string, b *metricsBlock, vcs driven.VCS, cfg model.MetricsConfig, f model.MetricsFields) ([]model.Finding, []string, error) {
+	if vcs == nil {
+		return nil, nil, fmt.Errorf("das Modul metrics braucht den git-Port (.git) fuer die Messung (DC-FA-MET-001, fail-closed)")
+	}
+	stat, err := vcs.LineChanges(b.base, "HEAD", b.paths, cfg.Excluded)
+	if err != nil {
+		return nil, nil, err
+	}
+	hints := metricsMeasureHints(plan, b, stat, f)
+	if stat.Lines <= b.limit || metricsCovered(b, stat.Lines) {
+		return nil, hints, nil
+	}
+	return []model.Finding{{
+		File: plan, Line: b.limitLine, Rule: "metrics", Target: f.Limit,
+		Reason:  ReasonMetricsOverLimit,
+		Message: fmt.Sprintf("Messung %d liegt ueber %s %d und kein Ausnahme-Eintrag deckt sie", stat.Lines, f.Limit, b.limit),
+	}}, hints, nil
+}
+
+// metricsCovered meldet, ob ein Ausnahme-Eintrag mit N >= Messung die
+// Ueberschreitung deckt.
+func metricsCovered(b *metricsBlock, measured int) bool {
+	for _, e := range b.exceptions {
+		if e.limit >= measured {
+			return true
+		}
+	}
+	return false
+}
+
+// metricsMeasureHints formuliert die Hinweise der Messung: Binaerdateien,
+// Pfade ohne Vorkommen an Basis und HEAD, Ausnahme-Eintraege ohne
+// Ueberschreitung.
+func metricsMeasureHints(plan string, b *metricsBlock, stat driven.LineStat, f model.MetricsFields) []string {
+	var hints []string
+	if n := len(stat.Binary); n > 0 {
+		hints = append(hints, fmt.Sprintf("metrics: %s: %d Binärdatei(en) nicht gezählt", plan, n))
+	}
+	for _, p := range stat.Missing {
+		hints = append(hints, fmt.Sprintf("metrics: %s: Pfad %s existiert weder an der Basis noch an HEAD", plan, p))
+	}
+	if stat.Lines <= b.limit && len(b.exceptions) > 0 {
+		hints = append(hints, fmt.Sprintf("metrics: %s: %s ohne Überschreitung (Messung %d, %s %d)", plan, f.Exception, stat.Lines, f.Limit, b.limit))
+	}
+	return hints
 }

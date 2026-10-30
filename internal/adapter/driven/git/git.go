@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"sort"
+	"strings"
 
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -352,4 +353,126 @@ func (a *Adapter) fileFromIndex(path string) ([]byte, bool, error) {
 		return b, true, nil
 	}
 	return nil, false, nil
+}
+
+// LineChanges liefert die Zeilen-Summe der Änderungen zwischen base und head
+// über die Pfade paths (DC-FA-MET-001): ohne Rename-Erkennung, über literale
+// Pfade, ohne die Pfade aus excluded. Ein nicht auflösbares Ref oder eine
+// Basis, die kein Vorfahr von head ist, ⇒ Fehler (fail-closed).
+func (a *Adapter) LineChanges(base, head string, paths, excluded []string) (driven.LineStat, error) {
+	var stat driven.LineStat
+	baseTree, headTree, err := a.rangeTrees(base, head)
+	if err != nil {
+		return stat, err
+	}
+	changes, err := object.DiffTree(baseTree, headTree)
+	if err != nil {
+		return stat, fmt.Errorf("diff %s..%s nicht lesbar: %w", base, head, err)
+	}
+	for _, ch := range changes {
+		name := changeName(ch)
+		if !underAny(name, paths) || underAny(name, excluded) {
+			continue
+		}
+		n, binary, err := changeLines(ch)
+		if err != nil {
+			return stat, fmt.Errorf("änderung an %s nicht lesbar: %w", name, err)
+		}
+		if binary {
+			stat.Binary = append(stat.Binary, name)
+		}
+		stat.Lines += n
+	}
+	sort.Strings(stat.Binary)
+	stat.Missing = missingPaths(paths, baseTree, headTree)
+	return stat, nil
+}
+
+// rangeTrees löst base und head auf, verlangt base als Vorfahr von head
+// (einschließlich Gleichheit) und liefert beide Trees.
+func (a *Adapter) rangeTrees(base, head string) (*object.Tree, *object.Tree, error) {
+	baseHash, err := a.repo.ResolveRevision(plumbing.Revision(base))
+	if err != nil {
+		return nil, nil, fmt.Errorf("basis %q nicht auflösbar: %w", base, err)
+	}
+	headHash, err := a.repo.ResolveRevision(plumbing.Revision(head))
+	if err != nil {
+		return nil, nil, fmt.Errorf("spitze %q nicht auflösbar: %w", head, err)
+	}
+	anc, err := a.ancestors(*headHash)
+	if err != nil {
+		return nil, nil, fmt.Errorf("vorfahren von %q nicht lesbar: %w", head, err)
+	}
+	if !anc[*baseHash] {
+		return nil, nil, fmt.Errorf("basis %q ist kein Vorfahr von %q", base, head)
+	}
+	baseTree, err := a.treeAt(base)
+	if err != nil {
+		return nil, nil, fmt.Errorf("tree von %q nicht lesbar: %w", base, err)
+	}
+	headTree, err := a.treeAt(head)
+	if err != nil {
+		return nil, nil, fmt.Errorf("tree von %q nicht lesbar: %w", head, err)
+	}
+	return baseTree, headTree, nil
+}
+
+// changeName ist der Pfad einer Änderung: der Zielpfad, bei einer Löschung der
+// Ausgangspfad.
+func changeName(ch *object.Change) string {
+	if ch.To.Name != "" {
+		return ch.To.Name
+	}
+	return ch.From.Name
+}
+
+// changeLines zählt Einfügungen plus Löschungen einer Änderung; binary meldet
+// eine Binärdatei (sie trägt 0 bei).
+func changeLines(ch *object.Change) (lines int, binary bool, err error) {
+	patch, err := ch.Patch()
+	if err != nil {
+		return 0, false, err
+	}
+	for _, fp := range patch.FilePatches() {
+		if fp.IsBinary() {
+			return 0, true, nil
+		}
+	}
+	for _, st := range patch.Stats() {
+		lines += st.Addition + st.Deletion
+	}
+	return lines, false, nil
+}
+
+// underAny meldet, ob name unter einem der literalen Pfade liegt: gleich oder
+// ein Eintrag darunter (ein Verzeichnis zählt rekursiv).
+func underAny(name string, paths []string) bool {
+	for _, p := range paths {
+		p = strings.TrimSuffix(p, "/")
+		if name == p || strings.HasPrefix(name, p+"/") {
+			return true
+		}
+	}
+	return false
+}
+
+// missingPaths liefert die Pfade, die weder im Basis- noch im Spitzen-Tree als
+// Datei oder Verzeichnis existieren, sortiert.
+func missingPaths(paths []string, trees ...*object.Tree) []string {
+	var out []string
+	for _, p := range paths {
+		clean := strings.TrimSuffix(p, "/")
+		found := false
+		for _, t := range trees {
+			if _, err := t.FindEntry(clean); err == nil {
+				found = true
+				break
+			}
+		}
+		if !found {
+			out = append(out, p)
+		}
+	}
+	sort.Strings(out)
+	return out
 }

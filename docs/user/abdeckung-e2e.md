@@ -17,3 +17,4 @@ die Anforderung prüfen soll, nicht, dass sie es tut.
 | [`DC-FA-DIST-001`](../../spec/lastenheft.md) | `(3) Negative: kein Mount → Exit 2 + Mount-Hinweis` | [`tools/image-test.sh`](../../tools/image-test.sh) |
 | [`DC-FA-CLI-007`](../../spec/lastenheft.md), [`DC-FA-CLI-008`](../../spec/lastenheft.md), [`DC-QA-02`](../../spec/lastenheft.md) | `(4) Modi: --doctor und --repair nativ vs. Container` | [`tools/image-test.sh`](../../tools/image-test.sh) |
 | [`DC-FA-CLI-013`](../../spec/lastenheft.md), [`DC-QA-02`](../../spec/lastenheft.md) | `(5) Doku aus dem Image: --manual netzlos, nativ vs. Container` | [`tools/image-test.sh`](../../tools/image-test.sh) |
+| [`DC-FA-MET-001`](../../spec/lastenheft.md) | `(6) metrics: Messung aus git unter :ro, fremdem Eigentümer, ohne .git` | [`tools/image-test.sh`](../../tools/image-test.sh) |

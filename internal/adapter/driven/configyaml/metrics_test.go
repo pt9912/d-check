@@ -80,10 +80,25 @@ func TestDecode_MetricsRand(t *testing.T) {
 		"unbekannter Schlüssel":            mtYAML + "  unbekannt: 1\n",
 		"unbekannter Schlüssel in fields":  base("cut-reason: schnitt-grund", "cut-reasons: x"),
 		"rounding keine Zahl":              base("rounding: 100", "rounding: hundert"),
+		"excluded mit Glob":                mtYAML + "  excluded: [\"a/*\"]\n",
+		"excluded absolut":                 mtYAML + "  excluded: [/a]\n",
+		"excluded mit ..":                  mtYAML + "  excluded: [a/../b]\n",
+		"excluded leer":                    mtYAML + "  excluded: [\"\"]\n",
 	}
 	for name, doc := range cases {
 		if _, err := configyaml.Decode([]byte(doc)); err == nil {
 			t.Errorf("%s: erwartet Fehler (Exit 2)", name)
 		}
+	}
+}
+
+// Die ausgenommenen Pfade werden gelesen.
+func TestDecode_MetricsExcluded(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(mtYAML + "  excluded: [spec/vertraege/, docs/x]\n"))
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	if got := cfg.Metrics.Excluded; len(got) != 2 || got[0] != "spec/vertraege/" || got[1] != "docs/x" {
+		t.Fatalf("excluded nicht gelesen: %v", got)
 	}
 }

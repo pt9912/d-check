@@ -2774,6 +2774,7 @@ type rawMetrics struct {
 	Surcharge    rawSurcharge     `yaml:"surcharge"`
 	Rounding     *int             `yaml:"rounding"`
 	CutThreshold *int             `yaml:"cut-threshold"`
+	Excluded     []string         `yaml:"excluded"`
 }
 
 type rawMetricsFields struct {
@@ -2807,6 +2808,7 @@ func applyMetrics(r *rawMetrics) (model.MetricsConfig, error) {
 		SurchargeNumerator:   *r.Surcharge.Numerator,
 		SurchargeDenominator: *r.Surcharge.Denominator,
 		Rounding:             *r.Rounding,
+		Excluded:             r.Excluded,
 	}
 	if r.CutThreshold != nil {
 		cfg.CutThreshold, cfg.CutEnabled = *r.CutThreshold, true
@@ -2830,6 +2832,17 @@ func validateRawMetrics(r *rawMetrics) error {
 	}
 	if *r.Surcharge.Numerator < 0 || *r.Surcharge.Denominator < 1 || *r.Rounding < 1 {
 		return fmt.Errorf("%s: metrics.surcharge.numerator muss >= 0, metrics.surcharge.denominator und metrics.rounding >= 1 sein", FileName)
+	}
+	return validateMetricsOptional(r)
+}
+
+// validateMetricsOptional prüft die optionalen Schlüssel: die Schwelle und die
+// ausgenommenen Pfade (literal).
+func validateMetricsOptional(r *rawMetrics) error {
+	for _, p := range r.Excluded {
+		if err := model.ValidLiteralPath(p); err != nil {
+			return fmt.Errorf("%s: metrics.excluded: %v", FileName, err)
+		}
 	}
 	if r.CutThreshold != nil && *r.CutThreshold < 0 {
 		return fmt.Errorf("%s: metrics.cut-threshold muss >= 0 sein", FileName)

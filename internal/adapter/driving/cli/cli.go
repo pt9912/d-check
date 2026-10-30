@@ -713,10 +713,11 @@ func vcsRefs(opts options) (base, head, msg string) {
 // inaktiv), 2 = fail-closed (Nutzungs-/git-Fehler, bereits auf stderr gemeldet —
 // fehlende/kaputte Range oder fehlendes/unlesbares .git).
 func resolveVCS(opts options, modules []string, stderr io.Writer) (driven.VCS, string, string, int) {
-	// tracked braucht den Adapter, aber KEINE Range (nur der Index-Stand,
-	// DC-FA-TRK-001); vcs/commits brauchen Adapter + Range.
+	// tracked und metrics brauchen den Adapter, aber KEINE Range (tracked: nur der
+	// Index-Stand, DC-FA-TRK-001; metrics: die Basis steht im Plan, HEAD ist fest,
+	// DC-FA-MET-001); vcs/commits brauchen Adapter + Range.
 	rangeNeeded := gitModuleActive(modules)
-	indexNeeded := moduleActive(modules, "tracked")
+	indexNeeded := moduleActive(modules, "tracked") || moduleActive(modules, "metrics")
 	if !rangeNeeded && !indexNeeded {
 		return nil, "", "", 0
 	}

@@ -48,4 +48,22 @@ type VCS interface {
 	// enthalten. Ein unlesbarer Index ⇒ Fehler (fail-closed, Exit 2);
 	// ein leerer Index (frisches Repo) ist kein Fehler (leere Menge).
 	TrackedPaths() (map[string]bool, error)
+	// LineChanges liefert die Zeilen-Summe (Einfügungen plus Löschungen) der
+	// Änderungen zwischen base und head über die Pfade paths — die Eingabe des
+	// Moduls metrics (DC-FA-MET-001). Gezählt wird ohne Rename-Erkennung (eine
+	// Umbenennung ist Löschung plus Einfügung); ein Pfad ist literal (ein
+	// Verzeichnis zählt rekursiv, kein Glob), dieselbe Datei über zwei Pfade
+	// zählt einmal, die Pfade aus excluded zählen nie. Binärdateien tragen 0
+	// bei und stehen in LineStat.Binary; ein Pfad, der weder an base noch an
+	// head existiert, steht in LineStat.Missing. Ein nicht auflösbares Ref oder
+	// eine Basis, die kein Vorfahr von head ist, ⇒ Fehler (fail-closed, Exit 2).
+	LineChanges(base, head string, paths, excluded []string) (LineStat, error)
+}
+
+// LineStat ist das Ergebnis von VCS.LineChanges: die Zeilen-Summe sowie die
+// Pfade, die nicht in die Summe eingehen (Binärdateien) bzw. nichts trafen.
+type LineStat struct {
+	Lines   int
+	Binary  []string
+	Missing []string
 }

@@ -15,6 +15,8 @@
 #   (5) Doku:     --manual ohne Netz und ohne Mount → Abschnitte aus
 #                 Handbuch und Spezifikation, nativ vs. Container
 #                 byte-identisch (DC-FA-CLI-013).
+#   (6) metrics:  Messung aus git im Container unter :ro, mit fremdem Benutzer
+#                 und ohne .git (DC-FA-MET-001).
 #
 # „Nativ" in einem Docker-only-Repo: das statische Binary wird aus dem
 # Runtime-Image extrahiert (docker cp) und direkt ausgeführt — kein
@@ -157,4 +159,41 @@ grep -q '^==> spec/spezifikation.md:' "$WORK/c.manual.out" \
   || fail "--manual: kein Abschnitt aus der Spezifikation"
 echo "image-test: (5) --manual — netzlos im Container, nativ == Container, Exit 0"
 
-echo "image-test: OK — Akzeptanzkriterien erfüllt (DC-FA-DIST-001, DC-FA-CLI-007, DC-FA-CLI-008, DC-FA-CLI-013)"
+# --- (6) metrics: Messung aus git unter :ro, fremdem Eigentümer, ohne .git ---
+# abdeckung: DC-FA-MET-001
+# Das Fixture ist ein echtes git-Repo (Basis-Commit, danach Änderungen über der
+# Marke). Der Container läuft als anderer Benutzer als der Eigentümer des Repos
+# und mit :ro; ohne `.git` endet der Lauf mit Exit 2 (nicht „0 Befunde").
+mfx="$WORK/metricsfix"
+mkdir -p "$mfx/src" "$mfx/plans"
+cat > "$mfx/.d-check.yml" <<'YML'
+modules: [links]
+metrics:
+  plans-dir: plans
+  block: groessenmarke
+  surcharge: {numerator: 135, denominator: 10000}
+  rounding: 100
+YML
+printf 'a\nb\n' > "$mfx/src/x.txt"
+git -C "$mfx" init -q .
+git -C "$mfx" add -A
+git -C "$mfx" -c user.name=t -c user.email=t@example.invalid commit -q -m base
+base="$(git -C "$mfx" rev-parse --short=7 HEAD)"
+seq 1 1600 > "$mfx/src/x.txt"
+printf '# Plan\n\n```groessenmarke\npath: src/\nbase: %s\nestimate: 1000\nlimit: 1400\n```\n' "$base" > "$mfx/plans/slice-1.md"
+git -C "$mfx" add -A
+git -C "$mfx" -c user.name=t -c user.email=t@example.invalid commit -q -m head
+chmod -R a+rX "$mfx"
+mx=0
+docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none --user 12345:12345 -v "$mfx":/repo:ro "$REF" --enable metrics \
+  > "$WORK/m.out" 2> "$WORK/m.err" || mx=$?
+[ "$mx" -eq 1 ] || fail "metrics: Exit $mx unter :ro und fremdem Benutzer, want 1 ($(cat "$WORK/m.err"))"
+grep -q 'metrics-over-limit' "$WORK/m.out" || fail "metrics: metrics-over-limit fehlt: $(cat "$WORK/m.out")"
+rm -rf "$mfx/.git"
+mx=0
+docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none -v "$mfx":/repo:ro "$REF" --enable metrics \
+  > "$WORK/m2.out" 2> "$WORK/m2.err" || mx=$?
+[ "$mx" -eq 2 ] || fail "metrics ohne .git: Exit $mx, want 2"
+echo "image-test: (6) metrics — Messung unter :ro und fremdem Benutzer, Exit 1; ohne .git Exit 2"
+
+echo "image-test: OK — Akzeptanzkriterien erfüllt (DC-FA-DIST-001, DC-FA-CLI-007, DC-FA-CLI-008, DC-FA-CLI-013, DC-FA-MET-001)"

@@ -20,6 +20,8 @@ type fakeVCS struct {
 	allPathsErr map[string]error             // ref → Fehler von AllPaths an genau diesem Ende
 	commits     []driven.CommitMeta          // Modul commits (DC-FA-COMMITS-001)
 	tracked     map[string]bool              // Modul tracked (DC-FA-TRK-001)
+	lineStat    driven.LineStat              // Modul metrics (DC-FA-MET-001)
+	lineCall    *lineCall                    // letzter LineChanges-Aufruf
 	err         error
 	fileErr     error // FileAt scheitert — unlesbares Objekt oder unlesbarer Tree-Eintrag
 }
@@ -352,4 +354,19 @@ func TestVCSAllPathsFehlerAnBeidenEnden(t *testing.T) {
 	if got, err := CheckVCS(echtNeu, cfg, "BASE", "HEAD"); err != nil || len(got) != 0 {
 		t.Errorf("neu angelegte Datei falsch behandelt: %d Befund(e), err=%v", len(got), err)
 	}
+}
+
+// lineCall hält die Argumente des letzten LineChanges-Aufrufs fest.
+type lineCall struct {
+	base, head string
+	paths      []string
+	excluded   []string
+}
+
+func (f *fakeVCS) LineChanges(base, head string, paths, excluded []string) (driven.LineStat, error) {
+	if f.err != nil {
+		return driven.LineStat{}, f.err
+	}
+	f.lineCall = &lineCall{base: base, head: head, paths: paths, excluded: excluded}
+	return f.lineStat, nil
 }

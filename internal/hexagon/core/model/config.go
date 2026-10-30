@@ -1241,6 +1241,8 @@ type MetricsConfig struct {
 	// nur wirksam, wenn CutEnabled gesetzt ist.
 	CutThreshold int
 	CutEnabled   bool
+	// Excluded sind literale Pfade, die die Messung immer ausnimmt.
+	Excluded []string
 }
 
 // MetricsFields sind die Feldnamen im Block (DC-FA-MET-001).
@@ -1285,4 +1287,29 @@ func (c MetricsConfig) EffectiveFields() MetricsFields {
 		f.CutReason = MetricsFieldCutReason
 	}
 	return f
+}
+
+// ValidLiteralPath prüft einen Wurzel-relativen, literalen Pfad (DC-FA-MET-001):
+// nicht leer, ohne führenden '/', ohne '..'-Segment, ohne Steuer- und
+// Glob-Zeichen.
+func ValidLiteralPath(p string) error {
+	if p == "" {
+		return fmt.Errorf("pfad ist leer")
+	}
+	if strings.HasPrefix(p, "/") {
+		return fmt.Errorf("pfad %q beginnt mit '/'", p)
+	}
+	for _, seg := range strings.Split(p, "/") {
+		if seg == ".." {
+			return fmt.Errorf("pfad %q enthält '..'", p)
+		}
+	}
+	if strings.IndexFunc(p, isBadPathRune) >= 0 {
+		return fmt.Errorf("pfad %q enthält ein steuer- oder glob-zeichen (pfade sind literal)", p)
+	}
+	return nil
+}
+
+func isBadPathRune(r rune) bool {
+	return r < 0x20 || r == 0x7f || r == '*' || r == '?' || r == '['
 }

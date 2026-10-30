@@ -1,11 +1,13 @@
 package rules
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
+	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
 // mtCfg: Zuschlag 135/10000, Einheit 100, Schwelle 300000 (DC-FA-MET-001).
@@ -24,7 +26,7 @@ func mtPlan(body string) string {
 
 func mtRun(t *testing.T, files map[string]string, cfg model.MetricsConfig) (MetricsResult, error) {
 	t.Helper()
-	return CheckMetrics(coretest.NewMemFS(files), cfg)
+	return CheckMetrics(coretest.NewMemFS(files), &fakeVCS{}, cfg)
 }
 
 func mtOne(t *testing.T, content string) (MetricsResult, error) {
@@ -307,7 +309,7 @@ func TestMetricsDeterminismus(t *testing.T) {
 func TestMetricsPlanSymlinkIstEinFehler(t *testing.T) {
 	fs := coretest.NewMemFS(map[string]string{"plans/slice-1.md": "x\n"})
 	fs.AddSymlink("plans/slice-1.md")
-	if _, err := CheckMetrics(fs, mtCfg()); err == nil || !strings.Contains(err.Error(), "Symlink") {
+	if _, err := CheckMetrics(fs, &fakeVCS{}, mtCfg()); err == nil || !strings.Contains(err.Error(), "Symlink") {
 		t.Fatalf("erwartet Symlink-Fehler, got %v", err)
 	}
 }
@@ -360,5 +362,86 @@ func TestMetricsZaunAbgrenzung(t *testing.T) {
 	inline := "```groessenmarke `x`\npath: x\n```\n"
 	if r, err := mtOne(t, inline); err != nil || r.WithBlock != 0 {
 		t.Fatalf("Backtick im Info-String öffnet keinen Zaun: %v / %+v", err, r)
+	}
+}
+
+func mtMeasured(t *testing.T, lines int, body string, v *fakeVCS) (MetricsResult, error) {
+	t.Helper()
+	v.lineStat.Lines = lines
+	return CheckMetrics(coretest.NewMemFS(map[string]string{"plans/slice-1.md": mtPlan(body)}), v, mtCfg())
+}
+
+// Prüfung 3: Messung auf oder unter der Marke ist grün; darüber ohne
+// Ausnahme-Eintrag ein Befund; mit N ≥ Messung gedeckt; mit N < Messung nicht.
+func TestMetricsMessungGegenMarke(t *testing.T) {
+	body := mtComplete("1000", "1400", "")
+	for _, lines := range []int{0, 1399, 1400} {
+		if r, err := mtMeasured(t, lines, body, &fakeVCS{}); err != nil || len(r.Findings) != 0 {
+			t.Fatalf("Messung %d ≤ Marke: %v / %+v", lines, err, r.Findings)
+		}
+	}
+	r, err := mtMeasured(t, 1401, body, &fakeVCS{})
+	if err != nil || len(r.Findings) != 1 || r.Findings[0].Reason != ReasonMetricsOverLimit {
+		t.Fatalf("Messung 1401 > Marke: %v / %+v", err, r.Findings)
+	}
+	if f := r.Findings[0]; f.Line != 7 || f.Target != "limit" || f.Rule != "metrics" {
+		t.Fatalf("Befund-Felder falsch: %+v", f)
+	}
+	covered := mtComplete("1000", "1400", "exception: 1600 | Fix-Runden nach Review\n")
+	if r, err = mtMeasured(t, 1600, covered, &fakeVCS{}); err != nil || len(r.Findings) != 0 {
+		t.Fatalf("N = Messung deckt: %v / %+v", err, r.Findings)
+	}
+	if r, err = mtMeasured(t, 1601, covered, &fakeVCS{}); err != nil || len(r.Findings) != 1 {
+		t.Fatalf("N < Messung deckt nicht: %v / %+v", err, r.Findings)
+	}
+}
+
+// Ein Ausnahme-Eintrag mit leerem Grund deckt die Überschreitung trotzdem und
+// ist selbst der Befund der Prüfung 4.
+func TestMetricsAusnahmeOhneGrundDecktUndIstBefund(t *testing.T) {
+	body := mtComplete("1000", "1400", "exception: 1600 |\n")
+	r, err := mtMeasured(t, 1500, body, &fakeVCS{})
+	if err != nil || len(r.Findings) != 1 || r.Findings[0].Reason != ReasonMetricsReasonEmpty {
+		t.Fatalf("erwartet nur reason-empty: %v / %+v", err, r.Findings)
+	}
+}
+
+// Die Messung bekommt Basis, HEAD, Pfade und ausgenommene Pfade; Hinweise für
+// Binärdateien, Pfade ohne Vorkommen und einen Eintrag ohne Überschreitung.
+func TestMetricsMessungArgumenteUndHinweise(t *testing.T) {
+	cfg := mtCfg()
+	cfg.Excluded = []string{"vertraege/"}
+	v := &fakeVCS{lineStat: driven.LineStat{Lines: 10, Binary: []string{"a.bin", "b.bin"}, Missing: []string{"src/tippfehler"}}}
+	body := "path: src/\npath: test/\nbase: 9a0efa5\nestimate: 1000\nlimit: 1400\nexception: 2000 | Grund\n"
+	r, err := CheckMetrics(coretest.NewMemFS(map[string]string{"plans/slice-1.md": mtPlan(body)}), v, cfg)
+	if err != nil || len(r.Findings) != 0 {
+		t.Fatalf("erwartet befundfrei: %v / %+v", err, r.Findings)
+	}
+	c := v.lineCall
+	if c == nil || c.base != "9a0efa5" || c.head != "HEAD" || len(c.paths) != 2 || c.paths[1] != "test/" || len(c.excluded) != 1 || c.excluded[0] != "vertraege/" {
+		t.Fatalf("Aufruf falsch: %+v", c)
+	}
+	notes := strings.Join(r.Notes(), "\n")
+	for _, want := range []string{"2 Binärdatei(en) nicht gezählt", "Pfad src/tippfehler existiert weder an der Basis noch an HEAD", "exception ohne Überschreitung (Messung 10, limit 1400)"} {
+		if !strings.Contains(notes, want) {
+			t.Fatalf("Hinweis %q fehlt in %q", want, notes)
+		}
+	}
+}
+
+// Fail-closed: kein git-Port, ein Fehler des Ports (Basis nicht auflösbar,
+// kein Vorfahr, kein .git) ⇒ Fehler; im Zustand Marke ausstehend keine Messung.
+func TestMetricsMessungFailClosed(t *testing.T) {
+	files := map[string]string{"plans/slice-1.md": mtPlan(mtComplete("1000", "1400", ""))}
+	if _, err := CheckMetrics(coretest.NewMemFS(files), nil, mtCfg()); err == nil {
+		t.Fatal("ohne git-Port erwartet Fehler")
+	}
+	_, err := CheckMetrics(coretest.NewMemFS(files), &fakeVCS{err: fmt.Errorf("Basis nicht auflösbar")}, mtCfg())
+	if err == nil || !strings.Contains(err.Error(), "plans/slice-1.md") {
+		t.Fatalf("Port-Fehler muss den Plan nennen: %v", err)
+	}
+	pending := map[string]string{"plans/slice-1.md": mtPlan("path: src/\n")}
+	if _, err := CheckMetrics(coretest.NewMemFS(pending), nil, mtCfg()); err != nil {
+		t.Fatalf("Marke ausstehend misst nicht: %v", err)
 	}
 }

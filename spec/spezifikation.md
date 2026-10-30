@@ -3954,6 +3954,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-104` | `metrics-limit-mismatch` | metrics | die Obergrenze des Blocks entspricht nicht der Formel über der Schätzung des Blocks (Prüfung 1). |
 | `SPEC-105` | `metrics-reason-empty` | metrics | ein Ausnahme-Eintrag trägt einen leeren oder nur aus Leerraum bestehenden Grund, unabhängig von der Messung (Prüfung 4). |
 | `SPEC-106` | `metrics-cut-reason-missing` | metrics | die Schwellenregel ist erfüllt, das Pflichtfeld fehlt oder ist leer (Prüfung 5). |
+| `SPEC-107` | `metrics-over-limit` | metrics | die Messung aus git liegt über der Obergrenze, und kein Ausnahme-Eintrag mit `N` ≥ Messung deckt sie (Prüfung 3). |
 | `SPEC-084` | `file-no-match` | file | eine Regel trifft keine Datei (auch nach Abzug von `exempt-paths`) — oder der Dateibaum ist nicht lesbar (ein Befund je Regel, kein Sammel-Befund); `line` = 1, `target` = die Regel-Identität (`files`-Glob) |
 | `SPEC-085` | `file-lines-exceeded` | file | eine Datei hat mehr Zeilen, als `max-lines` erlaubt — roh gezählt wie `wc -l` plus eine unvollständige Schlusszeile, **nicht** der von `structure` bereinigte Text; `line` = 1 |
 | `SPEC-086` | `file-bytes-exceeded` | file | eine Datei ist größer, als `max-bytes` erlaubt — die rohe Byte-Länge, **kein** bereinigter Text: Fenced-Code und Inline-Code zählen mit; `line` = 1 |
