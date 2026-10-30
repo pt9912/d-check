@@ -2,7 +2,7 @@
 
 **Rolle:** Verifier (Modul 8/11, „Bauen wir es richtig?" gegen Plan und DoD)
 **Gegenstand:** Arbeitsbaum auf `bb792e8e` plus gestagter Fix zu den Befunden F-1 bis F-11 aus [`2026-10-30-slice-285-r1.md`](2026-10-30-slice-285-r1.md)
-**Eingang:** Plan `docs/plan/planning/in-progress/slice-285-metrics-tabellenzaehlung-und-schaetzung.md` (§1, §2, §3 samt Negativliste), [`welle-93`](../plan/planning/welle-93-metrics-modul.md), [`ADR-0112`](../plan/adr/0112-metrics-modul.md) Entscheid 9, [`DC-FA-MET-001`](../../spec/lastenheft.md#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in) (Lastenheft 0.110.3), [`DC-FA-MET-001.a`](../../spec/spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics) Schritte 5 bis 8, Tabellenformat aus GitHub-Issue 13 (nur gelesen).
+**Eingang:** Plan `docs/plan/planning/done/welle-93/slice-285-metrics-tabellenzaehlung-und-schaetzung.md` (§1, §2, §3 samt Negativliste), [`welle-93`](../plan/planning/welle-93-metrics-modul.md), [`ADR-0112`](../plan/adr/0112-metrics-modul.md) Entscheid 9, [`DC-FA-MET-001`](../../spec/lastenheft.md#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in) (Lastenheft 0.110.3), [`DC-FA-MET-001.a`](../../spec/spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics) Schritte 5 bis 8, Tabellenformat aus GitHub-Issue 13 (nur gelesen).
 **Datum:** 2026-10-30
 
 ## Befund vorab: Stand des Gegenstands

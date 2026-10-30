@@ -11,13 +11,13 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 
 **Welle:** welle-93
 
-**Bezug:** die Anforderung des Moduls `metrics` aus [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) (die Hälfte „Schätzung aus der
+**Bezug:** die Anforderung des Moduls `metrics` aus [`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) (die Hälfte „Schätzung aus der
 Tabelle“),
-[`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus) (gleiche Tabelle ⇒ gleiche Zählung),
-[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) (lesend, hermetisch). Die ADR aus
-[`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) ist die aktive Entscheidungsgrundlage (Entscheid 9).
+[`DC-QA-02`](../../../../../spec/lastenheft.md#dc-qa-02--determinismus) (gleiche Tabelle ⇒ gleiche Zählung),
+[`DC-QA-03`](../../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) (lesend, hermetisch). Die ADR aus
+[`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) ist die aktive Entscheidungsgrundlage (Entscheid 9).
 
-**Berührte Spec-Stellen:** die in [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) angelegten Stellen (Anforderung,
+**Berührte Spec-Stellen:** die in [`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) angelegten Stellen (Anforderung,
 Schema `metrics.*` für das Tabellenformat, Eingabefehler, Hinweise) — gelesen, nicht
 verändert, außer dem Fassungsstand der Historie.
 Der Verweis zeigt **aufwärts**: Die Spec nennt diesen Slice nie
@@ -49,7 +49,7 @@ berechneten Schätzung und Marke. Tabellenfehler sind Eingabefehler (Exit 2).
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Block, Marke gegen Formel, leerer Grund, Messung** — Bestand von
-  [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) und [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle), davor `done/`: Prüfung 2 braucht den Zustand
+  [`slice-283`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) und [`slice-284`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle), davor `done/`: Prüfung 2 braucht den Zustand
   „Messung 0 / ≥ 1“ aus der Messung; dieser Slice nimmt ihn als gegeben.
 - **Die Prosa-Form-Erkennung** (ältere Zeile statt Block) — nach der Antwort des Issue-Autors
   kein Zustand des Moduls: sie kommt nur in Plänen vor, die das Verzeichnis „in Arbeit“
@@ -58,7 +58,7 @@ berechneten Schätzung und Marke. Tabellenfehler sind Eingabefehler (Exit 2).
   mehrere Tabellen) — der Anlass verlangt Zeilen je Klasse; mehr wäre eine neue
   Anforderung.
 - **Release-Prep (Handbuch-Kopf, CHANGELOG, Digest-Pins)** — ein anderer Vorgang
-  ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 17).
+  ([`AGENTS.md`](../../../../../AGENTS.md) §5 Zeile 17).
 
 ## 2. Definition of Done
 
@@ -92,7 +92,7 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 - [x] Grund-Code `metrics-estimate-mismatch`: Zeile in der Tabelle von `spec/spezifikation.md` §4, Eintrag in `AllReasons()` und `--doctor`-Klartext (`TestAllReasonsDeckungGegenSpezifikationGrundCodes`).
       (Release-Prep, §1).
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Beobachtungs-Register (`../../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
 - [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
 - [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
@@ -134,7 +134,7 @@ Modul und ohne Block **kein** Befund, gegen das Vorher-Image byte-gleich.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
-**Start** (`next` → `in-progress`): [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) liegt in `done/` (Messung und der
+**Start** (`next` → `in-progress`): [`slice-284`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) liegt in `done/` (Messung und der
 Zustand „Messung 0 / ≥ 1“ stehen), und welle-93 ist offen. Der Übergang landet auf dem
 Hauptzweig, vor der Arbeit.
 
@@ -142,7 +142,7 @@ Hauptzweig, vor der Arbeit.
 
 - `in-progress` → `next` (zu groß, zurück zur Zerlegung): Tabellen-Leser und Prüfung
   tragen zusammen mehr als eine Review-Sitzung — dann wandert der Leser in einen eigenen
-  Slice davor, ausdrücklich nicht still weiter ([`MR-066`](../../../../harness/conventions.md#mr-066)).
+  Slice davor, ausdrücklich nicht still weiter ([`MR-066`](../../../../../harness/conventions.md#mr-066)).
 - `in-progress` → `open` (blockiert — Carveout?): die Tabellenformate weiterer Pläne des
   Anlass-Repos weichen vom beschriebenen ab (Rückfrage im Issue).
 
@@ -167,11 +167,11 @@ dasteht.
 
 - Die Tabellen-Erkennung liest einen Zaun oder eine Zeile anders als der
   Markdown-Leser des Repos; eine Tabelle verschwindet still oder wird mehrdeutig —
-  **Ausgang:** weiter offen — die Abweichungen der Leseweise vom Programm des Anlass-Repos sind in der Anforderung benannt; ob ein Plan davon abhängt, zeigt die Paritäts-Probe ([`BEO-ALL/gemeinsame-leser-sind-zwei-familien`](../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md))
+  **Ausgang:** weiter offen — die Abweichungen der Leseweise vom Programm des Anlass-Repos sind in der Anforderung benannt; ob ein Plan davon abhängt, zeigt die Paritäts-Probe ([`BEO-ALL/gemeinsame-leser-sind-zwei-familien`](../../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md))
 - Das Tabellenformat ist repo-spezifisch; ein zweiter Konsument bräuchte ein anderes
-  Format, das die Konfiguration nicht ausdrückt — **Ausgang:** weiter offen — die Konfiguration drückt Kopf, Schlüssel- und Klassenspalte und Faktoren aus; ein zweites Format wäre eine neue Anforderung, kein Befund dieses Slice ([`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md))
+  Format, das die Konfiguration nicht ausdrückt — **Ausgang:** weiter offen — die Konfiguration drückt Kopf, Schlüssel- und Klassenspalte und Faktoren aus; ein zweites Format wäre eine neue Anforderung, kein Befund dieses Slice ([`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md))
 - Die Paritäts-Probe vergleicht Exit-Code und Inhalt der Befunde und Hinweise, nicht den
-  Wortlaut; eine Abweichung im Inhalt zeigt sich erst beim Eigentümer — **Ausgang:** weiter offen — der Vergleich liegt beim Eigentümer des Anlass-Repos nach dem Release ([`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md))
+  Wortlaut; eine Abweichung im Inhalt zeigt sich erst beim Eigentümer — **Ausgang:** weiter offen — der Vergleich liegt beim Eigentümer des Anlass-Repos nach dem Release ([`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md))
 
 ## 7. Closure-Notiz
 
@@ -202,20 +202,20 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   Wortlaut „längengleich“ in der bereits `Accepted`-ADR berichtigen; `make adr-check` lehnte das zu Recht ab. Die
   Spezifikation trägt die richtige Formulierung (mindestens gleiche Länge), die ADR behält den ungenauen Wortlaut. (4) Die
   Plan-Tabelle nannte `spec/lastenheft.md` nicht (Zeile im Nachgang, Review R1).
-- **[`MR-066`](../../../../harness/conventions.md#mr-066) — Rückführung nicht gezogen:** die DoD führt vier Liefer-Punkte (Config-Schlüssel, Tabellen-Leser,
+- **[`MR-066`](../../../../../harness/conventions.md#mr-066) — Rückführung nicht gezogen:** die DoD führt vier Liefer-Punkte (Config-Schlüssel, Tabellen-Leser,
   Schätzung samt Prüfung 2, Hinweis) statt höchstens drei. Grund: der Hinweis nutzt dieselbe Schätzung wie Prüfung 2, der
   Leser trägt ohne die Schätzung nichts; eine Zerlegung ergäbe Slices ohne eigenen Lieferwert. Ersatz-Form der Prüfung:
   Review und Verifikation lasen Leser und Schätzung getrennt, der Verifier fuhr das Image mit den Beispielen des Issues. Ein
   zweiter Review-Durchgang über das Fix-Commit entfiel: es setzt genau die Befunde um (Spalte 0, Tests, Benennung), der
   Verifier hat Spalte 0 und Klassen-Check gebrochen und rot gesehen.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
-- **Beobachtungs-Register (`../observations/`):**
-  [`gemeinsame-leser-sind-zwei-familien`](../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md)
+- **Beobachtungs-Register (`../../observations/`):**
+  [`gemeinsame-leser-sind-zwei-familien`](../../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md)
   bekommt einen zweiten Beleg (Beschreibung desselben Lesers an zwei Stellen verschieden, Review R1 F-5).
 - **Folge-Slices:** keiner. Der Abschluss der Welle (Ergebnis-Notiz, `make fullbuild`) und die Release-Prep sind eigene
   Vorgänge.
 - **Risiken aus §6:** alle drei weiter offen (mit Verweis). Trigger-Audit: kein Carveout, kein bootstrap-aware Gate, keine ADR
-  mit eingetretenem Trigger ([`ADR-0112`](../../adr/0112-metrics-modul.md) bleibt `Accepted`), keine Hard Rule mit eingetretenem Trigger, keine
+  mit eingetretenem Trigger ([`ADR-0112`](../../../adr/0112-metrics-modul.md) bleibt `Accepted`), keine Hard Rule mit eingetretenem Trigger, keine
   Schwelle gesenkt.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — keiner genannt; (c) Register — die zitierten
   Beobachtungen existieren und tragen Belege.
@@ -249,15 +249,15 @@ Regelmodul, Konfigurations-Rand, Gerüst; keine Sub-Area mit eigener Modus-Dekla
 
 **Vorgelagert — offene Beobachtungen sichten:** Register durchgegangen, Sub-Area
 `*`. Treffer:
-[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/observation.md)
+[`BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet`](../../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/observation.md)
 (7×, verkörpert in Schritt 19 des Workflow-Skeletts — die Negativliste in §3 ist seine
 Anwendung; die Tabellen-Erkennung ist eine neue Erkennungsform) und
-[`BEO-ALL/module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md)
-(3×, verkörpert in [`AGENTS.md`](../../../../AGENTS.md) §3.8 — die Tabelle liegt im selben
+[`BEO-ALL/module-promise-only-on-scan-axis`](../../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md)
+(3×, verkörpert in [`AGENTS.md`](../../../../../AGENTS.md) §3.8 — die Tabelle liegt im selben
 Plan, den das Modul liest; die Grenze steht in der Anforderung). Der Zähler folgt aus
 den Dateien der Closure.
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 `make nightly-state` am 2026-10-30: `upstream-drift` grün (jüngster Lauf 2026-10-30T06:41:15Z), `image-scan`
 grün (2026-10-30T10:04:41Z). Nichts zu lesen, nichts ausstehend.
 
