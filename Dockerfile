@@ -35,7 +35,7 @@ ARG GOLANGCI_LINT_VERSION=v2.15.0
 # Die Go-Stufen laufen auf der Build-Plattform (kein QEMU) und kompilieren
 # in `build` für die Ziel-Plattform; erst die Runtime-Stufe trägt die
 # Ziel-Plattform (DC-FA-DIST-001, ADR-0102).
-FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}@sha256:6928d94d1142af58816fed5a62338d605a266ccd53a0deaab6b1096f19059261 AS deps
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}@sha256:2920bb124f1a2e12a1d39f0cab756ae0068441ee1da7655dec7f5e374944095b AS deps
 
 WORKDIR /src
 ENV GOFLAGS="-mod=readonly -buildvcs=false" \
