@@ -112,6 +112,10 @@ Aussagen-Berührung steht hier gar nicht.
 | `internal/adapter/driven/git/git_test.go` | update | Fixture-Gleichheit mit `git diff --numstat`, Randformen aus der DoD |
 | `metrics_test.go` im Regel-Paket | update | Happy/Boundary/Negative nach der Anforderung; Negativliste unten |
 | `tools/image-test.sh` | update | `:ro` und fremder Eigentümer am gebauten Image (`make image-test`) |
+| `internal/hexagon/core/model/config.go` · `internal/adapter/driven/configyaml/configyaml.go` · `internal/adapter/driving/cli/config_template.go` | update | `metrics.excluded` am Config-Rand (`model.ValidLiteralPath`), Gerüst-Zeile |
+| `internal/hexagon/core/app/diagnose.go` | update | Grund-Code `metrics-over-limit` in `AllReasons()` samt Klartext |
+| `internal/adapter/driven/git/git_lines_test.go` · `internal/adapter/driven/configyaml/metrics_test.go` | neu · update | Fixture-Gleichheit mit `git diff --numstat` in eigener Datei neben `git_test.go`; Config-Test für `excluded` |
+| `spec/spezifikation.md` · `docs/user/abdeckung-tests.md` | update | Zeile `metrics-over-limit` in der Tabelle von §4, Abdeckung per `make abdeckung` |
 
 **Negativliste der Messung (Schritt 19, vor dem Code-Commit zu testen):** Pfad im Block
 existiert weder an der Basis noch an `HEAD` (Messung 0, kein Fehler — Entscheid in der
