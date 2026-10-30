@@ -3078,6 +3078,42 @@ func TestCLI185_PrintMK_UsageTarget(t *testing.T) {
 	}
 }
 
+// DC-FA-CLI-010-Erweiterung (13→14): das --print-mk-Fragment trägt zusätzlich
+// das Target doc-manual. Es reicht den Begriff MANUAL an --manual
+// (DC-FA-CLI-013) weiter und wählt wie doc-usage KEIN Modul ab. Echo
+// unterdrückt, weil die Abschnitte auf stdout die Nutzlast sind.
+func TestCLI281_PrintMK_ManualTarget(t *testing.T) {
+	code, stdout, stderr := run(t, "--print-mk")
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	if !strings.Contains(stdout, "\ndoc-manual: ## ") {
+		t.Fatalf("d-check.mk ohne doc-manual-Target:\n%s", stdout)
+	}
+	line := mkTargetRecipe(t, stdout, "$(DCHECK_REF) --manual")
+	for _, want := range []string{
+		"\t@docker run", // Echo unterdrückt: stdout trägt nur die Abschnitte
+		"--network none",
+		"-v \"$(CURDIR):/repo:ro\"",
+		"--manual \"$(MANUAL)\"", // der Begriff in Anführungszeichen, leer bleibt leer
+	} {
+		if !strings.Contains(line, want) {
+			t.Fatalf("doc-manual-Recipe ohne %q:\n%s", want, line)
+		}
+	}
+	if strings.Contains(line, "--enable") || strings.Contains(line, "--disable") {
+		t.Fatalf("doc-manual trägt fälschlich eine Modul-Wahl:\n%s", line)
+	}
+	// Vierzehn Targets: die Zählung am erzeugten Fragment, nicht an der Beschreibung.
+	if n := strings.Count(stdout, "\n.PHONY: "); n != 14 {
+		t.Fatalf(".PHONY-Targets = %d, want 14:\n%s", n, stdout)
+	}
+	// doc-help listet das neue Target über seine ##-Annotation.
+	if !strings.Contains(stdout, "doc-help: ## ") {
+		t.Fatalf("doc-help fehlt:\n%s", stdout)
+	}
+}
+
 // crossDoc erweitert traceDoc um die Kreuzverweis-Befunde (DC-FA-XREF-001).
 type crossDoc struct {
 	Total            int `json:"total"`

@@ -135,6 +135,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-REQ-001`](../../spec/lastenheft.md) | `TestCLI077_StillerUebersprungGrenze` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CLI-001`](../../spec/lastenheft.md), [`DC-FA-CLI-010`](../../spec/lastenheft.md) | `TestCLI185_PrintMK_UsageTarget` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CLI-006`](../../spec/lastenheft.md) | `TestCLI234_RB_AbwesendByteGleich` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
+| [`DC-FA-CLI-010`](../../spec/lastenheft.md), [`DC-FA-CLI-013`](../../spec/lastenheft.md) | `TestCLI281_PrintMK_ManualTarget` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CODE-001`](../../spec/lastenheft.md) | `TestCODE001` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CONF-001`](../../spec/lastenheft.md) | `TestCONF001_IDTargetFehlt` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CONF-001`](../../spec/lastenheft.md) | `TestCONF001_IDTargetVerlaesstWurzel` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
