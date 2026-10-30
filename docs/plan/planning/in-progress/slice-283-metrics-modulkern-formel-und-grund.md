@@ -260,6 +260,10 @@ Anwendung) und
 (3×, verkörpert in [`AGENTS.md`](../../../../AGENTS.md) §3.8 — das Pläne-Verzeichnis ist eine
 Eingabe außerhalb der Scan-Menge, §6). Der Zähler folgt aus den Dateien der Closure.
 
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+`make nightly-state` am 2026-10-30: `upstream-drift` grün (jüngster Lauf 2026-10-30T06:41:15Z), `image-scan`
+grün (2026-10-30T10:04:41Z). Nichts zu lesen, nichts ausstehend.
+
 ### Sub-Area: `*` (Default)
 
 Alle berührten Sub-Areas GF.
