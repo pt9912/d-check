@@ -3382,6 +3382,97 @@ Schwelle für eine konkrete Datei dieses oder eines anderen Repos.
 
 ---
 
+### DC-FA-MET-001.a — Kennzahl eines Planungsdokuments gegen Messung aus git (`metrics`)
+
+Verfeinert [`DC-FA-MET-001`](lastenheft.md#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in).
+Das Modul ist **opt-in** und **nicht hermetisch**: es liest den Dateibaum und über
+den VCS-Port `.git`, ohne git-Binary und ohne Netz. Die Prüfungen 1, 2, 4 und 5 sind
+reine Arithmetik über dem Plan-Text; nur Prüfung 3 und der Zustand „Messung 0 oder
+≥ 1“ brauchen die Messung.
+
+1. **Config.** **Exit 2** vor dem Lauf bei einem `metrics`-Block, dem
+   `plans-dir`, `block`, `table.header`, `table.key-column`, `table.class-column`,
+   `table.classes`, `surcharge.numerator`, `surcharge.denominator` oder `rounding`
+   fehlt; bei einer Zahl, die keine ganze Zahl ≥ 0 ist (`surcharge.denominator` und
+   `rounding` ≥ 1); bei einem Feld in `estimate-inputs` ohne Faktor; bei
+   `table.key-column` oder `table.class-column`, die nicht im Kopf stehen; bei
+   gleichen Zellen im Kopf oder gleichen Feldnamen; bei einer leeren Klassenliste; bei
+   einem Pfad in `excluded` mit Glob-Zeichen, `..`, führendem `/` oder Steuerzeichen.
+   Ohne Block bleibt die Konfiguration leer.
+2. **Plan-Suche.** Geprüft wird jede Datei `slice-*.md` **unmittelbar** in
+   `metrics.plans-dir` (nicht rekursiv), nach Namen sortiert. Ein fehlendes
+   Verzeichnis ist **Exit 2**; ein vorhandenes ohne Treffer ist ein grüner Lauf mit dem
+   Hinweis „kein Plan“. `plans-dir` wird nicht auf `scan.roots` beschränkt.
+3. **Block erkennen.** Ein Zaun ist eine Zeile mit drei oder mehr Backticks oder Tilden
+   und 0 bis 3 Leerzeichen Einrückung; bei Backticks darf der Rest der Zeile keinen
+   Backtick tragen. Ein Block ist ein Zaun, dessen Info-String (getrimmt) `metrics.block`
+   ist; der Schluss-Zaun trägt dasselbe Zeichen mindestens in der Länge des Öffners. Kein
+   Block ⇒ Zustand *kein Block*. Mehr als ein Block ⇒ Eingabefehler; ein Block ohne
+   Schluss-Zaun ⇒ Eingabefehler. Zäune anderer Info-Strings werden übersprungen und
+   verbergen ihren Inhalt.
+4. **Felder lesen.** Je Zeile `<schluessel>: <wert>`, am ersten `:` getrennt, beide
+   Seiten getrimmt; eine Zeile ohne `:` ist ein Eingabefehler, Leerzeilen werden
+   ignoriert. `metrics.fields.path` und `metrics.fields.exception` dürfen mehrfach
+   stehen, jeder andere Schlüssel höchstens einmal. Zahlenfelder sind ASCII-Ziffern ohne
+   führende Null; ein Pfad ist relativ zur Wurzel, ohne Glob-Zeichen, `..`, führenden
+   `/` und Steuerzeichen; die Basis besteht aus 7 bis 40 Zeichen `0-9a-f`. Unbekannte
+   Schlüssel werden ignoriert. Ein Ausnahme-Eintrag hat die Form `<N> | <Grund>` mit `N`
+   als Zahlenfeld; ein Eintrag ohne `|` ist ein Eingabefehler, ein leerer oder
+   nur-Leerraum-Grund ist erlaubt (und der Befund aus Schritt 8).
+5. **Zustand bestimmen.** *Marke ausstehend*, wenn der Block mindestens einen Pfad und
+   alle Felder aus `estimate-inputs` trägt, aber weder Basis noch Schätzung noch Marke;
+   *vollständig*, wenn Pfad, Basis, Schätzung und Marke (und alle Eingaben) stehen. Jede
+   andere Kombination ist ein Eingabefehler.
+6. **Tabelle lesen** (nur bei *Marke ausstehend* und *vollständig*). Genau eine Tabelle
+   außerhalb umzäunter Blöcke, deren Kopf aus genau den Zellen von `table.header` besteht
+   (getrimmt, bytegleich): keine ⇒ Eingabefehler, mehr als eine mit passendem Kopf ⇒
+   Eingabefehler; andere Tabellen werden nicht gelesen. Die Trennzeile folgt direkt dem Kopf,
+   hat genauso viele Zellen, jede aus `-` mit optionalem `:` an einem oder beiden Enden.
+   Datenzeilen sind alle folgenden Zeilen, die mit `|` beginnen; die Tabelle endet an der
+   ersten Zeile, die nicht so beginnt. Zellen sind durch `|` getrennt, außer `\|`; der
+   Anfangsstrich steht, der Schlussstrich darf fehlen; Leerraum hinter dem Schlussstrich ist
+   keine Zelle. Eine Zeile mit anderer Zellenzahl als der Kopf, eine leere oder doppelte
+   Schlüsselzelle, eine Klasse außerhalb von `table.classes` (Vergleich bytegleich nach
+   Trimmen) und eine Tabelle ohne Datenzeile sind Eingabefehler. Gezählt werden Zeilen je
+   Klasse. `\r` unmittelbar vor `\n` gehört nicht zur Zeile.
+7. **Schätzung und Marke berechnen.** `S = Σ (Klassenfaktor · Zeilen der Klasse) +
+   Σ (Faktor · Wert des Feldes)` über `table.classes` und `estimate-inputs`; die
+   Marke ist `rounding · ⌈surcharge.numerator · S / surcharge.denominator⌉`,
+   ganzzahlig gerechnet, ohne Gleitkomma, mit Überlauf-Prüfung (Überlauf ⇒ Eingabefehler).
+   Die Schwellenregel gilt, wenn `surcharge.numerator · S` größer als `cut-threshold` ist.
+8. **Prüfungen** (Zustand *vollständig*; ein Eingabefehler dieses Plans unterdrückt alle):
+   (1) Marke des Blocks ≠ `rounding · ⌈numerator · Schätzung des Blocks / denominator⌉`
+   ⇒ `metrics-limit-mismatch`; (2) Schätzung des Blocks ≠ `S` aus Schritt 7:
+   bei Messung 0 ⇒ `metrics-estimate-mismatch`, bei Messung ≥ 1 ein Hinweis;
+   (3) Messung > Marke und kein Ausnahme-Eintrag mit `N` ≥ Messung ⇒ `metrics-over-limit`;
+   (4) ein Ausnahme-Eintrag mit leerem Grund ⇒ `metrics-reason-empty` (auch wenn er deckt);
+   (5) Schwellenregel erfüllt und `metrics.fields.cut-reason` fehlt oder ist leer ⇒
+   `metrics-cut-reason-missing`. Ein Ausnahme-Eintrag bei Messung ≤ Marke ist ein Hinweis.
+   Zustand *Marke ausstehend*: ein Hinweis mit `S` und der berechneten Marke. Zustand
+   *kein Block*: ein Hinweis.
+9. **Messung.** Über den VCS-Port: die Summe aus Einfügungen und Löschungen zwischen
+   Basis und `HEAD` über die Pfade des Blocks, mit Rename-Erkennung **aus**, als
+   **literale** Pathspecs (ein Verzeichnis rekursiv; ein Pfad ohne Treffer trägt 0 bei;
+   dieselbe Datei über zwei Pfade zählt einmal), abzüglich der Pfade aus
+   `metrics.excluded`; Binärdateien (`-` in `numstat`) zählen 0 und erscheinen in einem
+   Hinweis; nicht eingecheckte Änderungen zählt die Messung nicht. Eine Basis, die nicht
+   auflöst oder kein Vorfahr von `HEAD` ist, ein nicht lesbares `HEAD` und ein fehlendes
+   `.git` sind **Exit 2** (fail-closed, wie `vcs` und `commits`). Messung 0 gilt als
+   „vor dem ersten Code-Commit“, Messung ≥ 1 als „im Code“.
+10. **Befund.** `file` = der Plan-Pfad, `line` = die Zeile des betroffenen Feldes im Plan
+    (bei `metrics-over-limit` die Zeile der Marke), `target` = der Feldname. Befunde zählen
+    für Exit 1; Hinweise tragen den Exit nicht.
+11. **Bezugsmenge in der Zusammenfassung.** Der Lauf trägt eine Zeile bei:
+    `metrics: <N> Plan/Pläne geprüft, <K> mit Block`. Sie erscheint im Default-Modus auf
+    stderr und unter `--json`/`--yaml` in `summary.notes`; die Hinweise stehen ebenfalls
+    dort.
+
+**Nicht Gegenstand:** eine Rename-Erkennung nach git-Art; Kopien-Erkennung; andere
+Messgrößen als die Zeilen-Summe; mehrere Tabellen; das Schreiben von Block oder Marke; die
+Erkennung einer Prosa-Form statt des Blocks; Pläne außerhalb von `plans-dir`.
+
+---
+
 
 ## 2. Datenstrukturen und Schemas
 
@@ -3688,6 +3779,17 @@ Exit 2 ohne Prüfung
 | `mentions.artifacts` | Liste von Globs | leer (aus) | **Soll-Menge**: die Artefakte, deren Erwähnung geprüft wird. Aufgesammelt aus dem **ganzen** Baum ab der Repository-Wurzel unter der Skip-Liste **und** `scan.ignore`, **nicht** eingeschränkt auf `scan.roots`; Glob-Semantik wie `scan.ignore` (`**` über beliebig viele Segmente). Verzeichnisse sind keine Mitglieder. Ohne `mentions.documents` ⇒ Exit 2; leeres Glob oder Treffermenge leer ⇒ Exit 2 |
 | `mentions.documents` | Liste von Globs | leer (aus) | **Ist-Menge**: die Dokumente, in denen gesucht wird — als **Vereinigung** gelesen. Ein Block ist **ein** Paar: zwei unabhängige Invarianten in einem Block halten keine von beiden. Ohne `mentions.artifacts` ⇒ Exit 2; Treffermenge leer ⇒ Exit 2 |
 | `mentions.match` | `path` \| `basename` | `path` | Erkennungsform: der '/'-relative Pfad oder nur der Dateiname. Gesucht wird als **eigenständige Nennung** (Grenz-Prüfung links und rechts; links unter `basename` ist `/` ausgenommen). Ein anderer Wert ⇒ Exit 2 |
+| `metrics.plans-dir` | string | leer (aus) | Verzeichnis der Pläne; geprüft wird jede Datei `slice-*.md` **unmittelbar** darin (nicht rekursiv). **Pflicht**, sobald ein `metrics`-Block steht; ein fehlendes Verzeichnis ist Exit 2. Nicht auf `scan.roots` beschränkt. |
+| `metrics.block` | string | leer (aus) | Info-String des Fenced-Blocks. **Pflicht.** |
+| `metrics.fields.path` · `.base` · `.estimate` · `.limit` · `.exception` · `.cut-reason` | string | `path` · `base` · `estimate` · `limit` · `exception` · `cut-reason` | Feldnamen im Block: Pfad (wiederholbar), Basis, Schätzung, Obergrenze, Ausnahme-Eintrag (wiederholbar), Pflichtfeld der Schwellenregel. Verschieden voneinander. |
+| `metrics.estimate-inputs` | Abbildung Feldname → Faktor | leer | Zahlenfelder des Blocks, die mit ihrem Faktor in die Schätzung eingehen. |
+| `metrics.table.header` | string[] | leer (aus) | Zellen des Tabellenkopfs, bytegleich und in dieser Reihenfolge. **Pflicht.** |
+| `metrics.table.key-column` · `.class-column` | string | leer | Kopfzelle der Schlüsselspalte (nicht leer, eindeutig) bzw. der Klassenspalte; beide stehen im Kopf. **Pflicht.** |
+| `metrics.table.classes` | Abbildung Klasse → Faktor | leer | zulässige Werte der Klassenspalte mit dem Faktor je Zeile; jede andere Zelle ist ein Eingabefehler. **Pflicht**, nicht leer. |
+| `metrics.surcharge.numerator` · `.denominator` | ganze Zahl | leer | Bruch `numerator / denominator` der Aufrundung `rounding · ⌈numerator · Schätzung / denominator⌉`; `denominator` ≥ 1 (im Anlass-Repo 135 und 10000: Zuschlag 1,35, durch die Einheit 100 geteilt). **Pflicht.** |
+| `metrics.rounding` | ganze Zahl ≥ 1 | leer | Einheit, auf deren Vielfaches die Obergrenze aufgerundet wird. **Pflicht.** |
+| `metrics.cut-threshold` | ganze Zahl ≥ 0 | leer (aus) | Schwelle für `numerator · Schätzung`; darüber ist das Feld `cut-reason` Pflicht. Leer: keine Schwellenregel. |
+| `metrics.excluded` | string[] | leer | Pfade (literal), die die Messung immer ausnimmt, auch wenn ein Pfad des Blocks sie enthält. |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien **oder Glob-Muster** (Eintrag mit `*`/`?`/`[`, `matchGlob`, `**` erlaubt), aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Richtungen 1 und 2 inert (Schritt 5a läuft unabhängig); eine fehlende/unlesbare Datei, ein Glob ohne Treffer oder ein ungültiges Glob ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
@@ -3885,6 +3987,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-30 | Neues Modul-Verfahren §[`DC-FA-MET-001.a`](spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics) samt Schema-Zeilen `metrics.*` in §2; die Grund-Codes stehen im Verfahren und kommen mit ihrer Umsetzung in die Tabelle von §4. Block, Formel, Tabellenformat und Messregeln stammen aus den Angaben des Anlass-Repos, nicht aus einer Messung an ihm; die Gleichheit der Zeilen-Summe mit `git diff --numstat --no-renames` ist noch nicht am Fixture belegt |
 | 2026-10-30 | §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) Punkt 5 um das **vierzehnte** Target `doc-manual` erweitert ([`DC-FA-CLI-010`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 0.109.0, Change Request des Auftraggebers): Zahl, Aufzählungspunkt und die Zählung am erzeugten Fragment (sechs der vierzehn tragen eine Fokus-Liste, acht nicht). Es exponiert `--manual` aus [`DC-FA-CLI-013`](lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen) als **Modus**-Target; der Begriff kommt aus `MANUAL`, das nicht vorbelegt ist. Kein neues Verhalten des Werkzeugs, kein Grund-Code, keine Schema-Zeile — dieselbe Bauform wie `doc-usage` | — |
 | 2026-10-29 | §[`DC-FA-HOST-001.a`](spezifikation.md#dc-fa-host-001a--host-pfad-erkennung) um das **Variablen-Home-Muster** (`$NAME/…`, `${NAME}/…`, `"$NAME"/…`) erweitert, Schritt 4 (Ziel-Ventil) und die §2-Schema-Zeilen `hostpaths.variables` und `hostpaths.exempt-targets`: nur mit gesetztem `hostpaths.variables` aktiv, Punkt-Segment- und Wortgrenzen-Regel wie die Tilde, Unix-Treffer innerhalb eines Variablen-Treffers entfällt, ein `$`-Glob ohne passende Variable ist Exit 2. Ohne den Schlüssel ist der Befundsatz byte-identisch |
 | 2026-10-29 | §[`DC-FA-CLI-009.a`](spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) Schritt 2 und die Schema-Zeile `trace.slices.file-pattern`: ohne gesetztes Muster gilt die Default-Erkennung — Ziffern-Fall `slice-NNN-…md` (Kennung `slice-NNN`) zuerst, sonst Namens-Fall `slice-<name>.md` (Kennung = Basisname ohne `.md`, nur `[a-z0-9-]`); Namens-Dateien unter einem Pfadsegment `observations` unterhalb von `trace.slices.dir` sind im Default keine Slices (der Ziffern-Fall gilt überall). Ein gesetztes Muster gilt unverändert und ohne Ausschluss |

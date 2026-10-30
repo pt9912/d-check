@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.109.0
+**Version:** 0.110.0
 
 **Status:** Draft
 
@@ -77,7 +77,8 @@ statt per Code-Kopie.
 > (Workflow-Deklarations-Konsistenz, Modul `workflows`), `RVW`
 > (Review-Report-Deckung, Modul `reviews`), `MENT`
 > (Erwähnungs-Deckung einer Artefakt-Menge, Modul `mentions`), `FILE`
-> (Zeilen-/Byte-Obergrenzen einer ganzen Datei, Modul `file`), `CONF`
+> (Zeilen-/Byte-Obergrenzen einer ganzen Datei, Modul `file`), `MET`
+> (Kennzahl eines Planungsdokuments gegen Messung aus git, Modul `metrics`), `CONF`
 > (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
@@ -4183,6 +4184,121 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 ---
 
+### DC-FA-MET-001 — Kennzahl eines Planungsdokuments gegen Messung aus git (Modul `metrics`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `metrics` prüft d-check pro
+Planungsdokument mit einem **maschinenlesbaren Block**, ob die im Block genannte
+Obergrenze („Marke“) der konfigurierten Formel entspricht, ob die **Messung**
+aus git — die Summe aus Einfügungen und Löschungen von `git diff --numstat`
+zwischen der Basis des Blocks und `HEAD` über die Pfade des Blocks — auf oder
+unter der Obergrenze liegt, und ob ein **Ausnahme-Eintrag** einen nicht leeren
+Grund trägt. Geprüft wird jede Datei `slice-*.md` **unmittelbar** im
+konfigurierten Plan-Verzeichnis (nicht rekursiv); der Block, die Felder, die
+Formel samt allen Zahlen und das Tabellenformat sind Konfiguration, keine feste
+Regel — die Faktoren sind Fachlogik des Repos, das Modul liefert den Mechanismus.
+
+**Der Block** ist ein Fenced-Block (Backticks oder Tilden) mit dem
+konfigurierten Info-String, genau einer je Plan. Er trägt eine Zeile je Eintrag
+`<schluessel>: <wert>`, getrennt am ersten `:`, beide Seiten getrimmt; Pfade
+und Ausnahme-Einträge dürfen mehrfach stehen, jeder andere Schlüssel höchstens
+einmal. Keine Verschachtelung, keine Listen-Syntax, **kein YAML**. Zahlen sind
+ASCII-Ziffern ohne führende Null und ohne Tausendertrennung. Felder des Blocks,
+die die Konfiguration nicht nennt, werden ignoriert. Die Basis ist ein Feld des
+Blocks (Kurz- oder Voll-Hash); `HEAD` ist fest.
+
+**Die Formel ist ganzzahlig und hat zwei Stufen.** Die **Schätzung** ist die
+Summe aus Klassenfaktor mal Zeilenzahl je Klasse der Tabelle des Plans und
+Feldfaktor mal Feld des Blocks. Die **Obergrenze** ist
+`Einheit · ⌈Zähler · Schätzung / Nenner⌉` — genau eine Aufrundung auf ein
+Vielfaches der Einheit, ohne Gleitkomma. Dazu eine **Schwellenregel**: übersteigt
+`Zähler · Schätzung` die konfigurierte Schwelle, ist ein konfiguriertes weiteres
+Feld Pflicht. Die Formel ändert sich nie mit dem Zustand eines Plans.
+
+**Die Tabelle** ist **genau eine** Markdown-Tabelle des Plans außerhalb
+umzäunter Blöcke, mit konfiguriertem Kopf (Zellen bytegleich), konfigurierter
+Schlüsselspalte (nicht leer, eindeutig) und Klassenspalte; jede Zelle der
+Klassenspalte ist genau eine der konfigurierten Klassen. Gezählt werden Zeilen je
+Klasse, nicht Zusagen.
+
+**Die Zustände eines Plans ergeben sich aus dem Plan:** *kein Block* (nicht
+gemessen, Hinweis), *Marke ausstehend* (Block ohne Basis, Schätzung und Marke:
+Hinweis mit berechneter Schätzung und Marke), *vollständig* (alle Felder, wird
+geprüft). Innerhalb von *vollständig* gilt: Messung 0 bedeutet „vor dem ersten
+Code-Commit“, Messung ≥ 1 „im Code“.
+
+**Die fünf Prüfungen** eines vollständigen Plans: (1) die Marke entspricht der
+Formel über der Schätzung des Blocks (`metrics-limit-mismatch`); (2) die
+Schätzung des Blocks entspricht der aus der Tabelle (`metrics-estimate-mismatch`,
+nur solange die Messung 0 ist, danach nur ein Hinweis); (3) die Messung liegt auf
+oder unter der Marke, oder ein Ausnahme-Eintrag `<N> | <Grund>` mit `N` ≥ Messung
+deckt sie (`metrics-over-limit`); (4) ein Ausnahme-Eintrag mit leerem Grund ist
+ein Befund, unabhängig von der Messung (`metrics-reason-empty`) — er deckt die
+Überschreitung trotzdem; (5) übersteigt die Schätzung die Schwelle, fehlt das
+Pflichtfeld (`metrics-cut-reason-missing`). Ein Ausnahme-Eintrag bei einer Messung
+im Rahmen ist nur ein Hinweis; wächst die Messung über `N`, braucht es einen neuen
+Eintrag.
+
+**Ein Eingabefehler eines Plans ist Exit 2 und kein Befund:** Block
+unvollständig, ungeschlossen oder doppelt, Zahl ungültig, Tabelle fehlt,
+mehrdeutig oder ohne Zeilen, Trennzeile fehlt, Zeile mit falscher Zellenzahl,
+Schlüsselzelle leer oder doppelt, Klasse unbekannt, Basis nicht auflösbar oder
+kein Vorfahr von `HEAD`, `git` nicht lesbar. Er unterdrückt die Befunde
+desselben Plans.
+
+**Die Messung** läuft über den VCS-Port ohne git-Binary und ohne Netz, **ohne
+Rename-Erkennung** (eine Umbenennung zählt als Löschung plus Einfügung), über
+**literale** Pfade (keine Glob-Muster; ein Verzeichnis zählt rekursiv; ein Pfad
+ohne Treffer trägt 0 bei; dieselbe Datei über zwei Pfade zählt einmal). Eine
+Binärdatei zählt 0 mit Hinweis; ein konfigurierter Teilbaum ist immer
+ausgenommen; nicht eingecheckte Änderungen zählt die Messung nicht. Ohne `.git`
+endet der Lauf mit Exit 2.
+
+**Das Modul liest Eingaben, die es nicht scannt, und dort gilt die Zusage der
+Scan-Menge nicht.** Die Plan-Dateien werden als Text gelesen — dort gilt sie. Die
+**Pfade des Blocks** liegen außerhalb der Scan-Wurzeln und sind keine
+Markdown-Dateien, und die **git-Revisionen** (Basis, `HEAD`) sind kein Dateibaum:
+Ihre Auflösung und Zählung ist eine Aussage über den Stand von `.git`, nicht über
+den Arbeitsbaum. Das Plan-Verzeichnis wird nicht auf `scan.roots` beschränkt.
+
+**Die Zeilen-Summe ist eine Zusage, die erst die Umsetzung belegt:** ihre
+Gleichheit mit `git diff --numstat --no-renames` wird am Fixture mit allen
+Randformen geprüft; ein Unterschied ändert diese Zusage, nicht das Fixture. **Die
+Fachlogik (Formel, Tabellenformat, Block-Form) ist aus den Angaben des
+Anlass-Repos übernommen, nicht an seinem Repo gemessen;** die Abnahme führt dessen
+Eigentümer mit dem veröffentlichten Image und vergleicht je Plan Exit-Code und
+Inhalt der Befunde und Hinweise.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given ein Plan mit vollständigem Block, dessen Marke der Formel entspricht und dessen Messung auf oder unter der Marke liegt, when `metrics` aktiviert läuft, then Exit 0 und keine Befunde.
+- **Formel (belegte Zahlen):** Given die Schätzungen 6790, 5036, 5430, 9215 und 4670, when die Obergrenze berechnet wird, then 9200, 6800, 7400, 12500 und 6400; die Grenzfälle 2000, 2001, 2222 und 2223 ergeben 2700, 2800, 3000 und 3100, und nur 2223 löst die Schwellenregel aus.
+- **Negative (Marke ≠ Formel):** Given eine Marke, die nicht der Formel entspricht, when der Lauf erfolgt, then Befund `metrics-limit-mismatch`.
+- **Negative (Schätzung ≠ Tabelle):** Given eine Schätzung im Block, die von der aus der Tabelle abweicht, when die Messung 0 ist, then Befund `metrics-estimate-mismatch`; bei Messung ≥ 1 nur ein Hinweis.
+- **Negative (Überschreitung):** Given eine Messung über der Marke ohne Ausnahme-Eintrag, when der Lauf erfolgt, then Befund `metrics-over-limit`; mit Eintrag `N` ≥ Messung und Grund kein Befund.
+- **Negative (leerer Grund):** Given ein Ausnahme-Eintrag mit leerem oder nur-Leerraum-Grund, when der Lauf erfolgt, then Befund `metrics-reason-empty`, unabhängig von der Messung.
+- **Negative (Schnittfrage):** Given eine Schätzung über der Schwelle ohne das Pflichtfeld, when der Lauf erfolgt, then Befund `metrics-cut-reason-missing`.
+- **Zustände:** Given ein Plan ohne Block, when der Lauf erfolgt, then ein Hinweis und kein Befund; Given ein Block ohne Basis, Schätzung und Marke, then ein Hinweis mit berechneter Schätzung und Marke.
+- **Negative (Eingabefehler, fail-closed):** Given einen Plan mit unvollständigem Block, ungültiger Zahl, fehlender oder mehrdeutiger Tabelle, unbekannter Klasse oder nicht auflösbarer Basis, when der Lauf erfolgt, then Exit 2 mit Klartext und kein Befund dieses Plans.
+- **Negative (kein `.git`):** Given ein Repo ohne `.git`, when `metrics` aktiviert läuft, then Exit 2, nicht „0 Befunde“.
+- **Messung:** Given die Randformen Hinzufügen, Löschen, Ändern, leere Datei, Binärdatei, Rename, Pfad außerhalb der Pfade, Zeilenenden-Wechsel, ausgenommener Teilbaum, when die Summe gebildet wird, then sie gleicht `git diff --numstat --no-renames` über denselben Pfaden.
+- **Betrieb:** Given das gebaute Image, when der Lauf unter `:ro` und gegen ein Repo mit anderem Eigentümer erfolgt, then dasselbe Ergebnis wie gegen ein eigenes beschreibbares Repo.
+- **Determinismus:** Given dieselbe Eingabe, when der Lauf zweimal erfolgt, then byte-identische Ausgabe in stdout, stderr und Exit-Code.
+- **Default byte-identisch:** Given **kein** `metrics`-Block und kein `--enable metrics`, when `d-check` läuft, then Ausgabe und Exit-Code sind byte-identisch zu einem Lauf ohne dieses Modul.
+
+**Out-of-Scope:** (1) **Eine feste Regel statt der konfigurierbaren Formel** —
+die Faktoren sind Fachlogik des Repos. (2) **Andere Messgrößen** als die
+`numstat`-Summe (Dateizahl, Commit-Zahl, Zyklomatik) — eine neue Größe ist eine
+neue Anforderung. (3) **Schreibende Wege** — den Block fortschreiben, die
+Obergrenze eintragen: [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
+schließt sie aus; ein Vorschlag wäre Ausgabe, nie Schreiben. (4) **Mehrere
+Tabellen oder andere Tabellen-Auswertungen** als die Zählung je Klasse. (5) **Eine
+Rename-Erkennung nach git-Art, Kopien-Erkennung, Gewichtung von Binärdateien.**
+(6) **Plan-Dateien außerhalb des konfigurierten Verzeichnisses** (offen,
+nächste, erledigt) — sie werden nicht geprüft. (7) **Die Erkennung einer älteren
+Prosa-Form** statt des Blocks — falls gewünscht, eine eigene Anforderung.
+
+---
+
 ## 4. Nichtfunktionale Anforderungen
 
 ### DC-QA-01 — Performance
@@ -4233,6 +4349,7 @@ Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.110.0 | 2026-10-30 | Neue Anforderung [`DC-FA-MET-001`](#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in) — **Kennzahl eines Planungsdokuments gegen Messung aus git** (Modul `metrics`, opt-in) samt neuem Bereichskürzel `MET` in §3: pro Plan mit einem maschinenlesbaren Block hält d-check die Obergrenze gegen die konfigurierte Formel, die Zeilen-Summe aus `git diff --numstat` gegen die Obergrenze und einen Ausnahme-Eintrag auf einen nicht leeren Grund; die Tabelle des Plans liefert die Schätzung. **Anlass ist ein GitHub-Issue** eines Repos, das diese Prüfung mit einem eigenen Programm von rund 5300 Zeilen fährt. **Die Fachlogik (Block, Formel, Tabellenformat, Messregeln) stammt aus den anonymisierten Angaben des Issue-Autors, nicht aus einer Messung am Anlass-Repo** — es ist nicht lesbar; die Abnahme führt dessen Eigentümer mit dem veröffentlichten Image. Die Modul-Aufzählung in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) und das Glossar nennen `metrics` erst, wenn das Modul registriert ist. Begründung in begleitender ADR | GitHub-Issue 13 |
 | 0.109.0 | 2026-10-30 | Change Request (Auftraggeber): [`DC-FA-CLI-010`](#dc-fa-cli-010--makefile-fragment-ausgeben) (`--print-mk`-Fragment) um ein **vierzehntes** Target erweitert — `doc-manual` exponiert `--manual` aus [`DC-FA-CLI-013`](#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen) als Target (Begriff aus der Variablen `MANUAL`, Recipe-Echo unterdrückt, Abschnitte auf stdout, leerer Begriff ⇒ Exit 2 des Werkzeugs), ohne Modul-Wahl. Out-of-Scope: Begriffe mit `"`, `$` oder Backtick (Shell-Quoting von make). Happy Path, Boundary und Out-of-Scope nachgezogen. Anlass: Frage des Auftraggebers, ob `d-check.mk` ein `manual`-Target habe | — |
 | 0.108.0 | 2026-10-29 | [`DC-FA-HOST-001`](#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in): Neuer opt-in-Schlüssel `hostpaths.variables` (Liste von Shell-Variablen-Namen): `$NAME/…`, `${NAME}/…` und `"$NAME"/…` gelten dann als Home-Verweis, mit der Punkt-Segment-Regel der Tilde. `hostpaths.exempt-targets` akzeptiert `$`-Globs mit gelisteter Variable; ein `$`-Glob ohne sie ist Exit 2. Ohne den Schlüssel ist der Befundsatz byte-identisch. Der Out-of-Scope-Satz zu Variablen-Formen gilt nur noch außerhalb der Liste. Anlass: Feldmeldung eines Adopters | — |
 | 0.107.0 | 2026-10-29 | [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix): Ohne `trace.slices.file-pattern` erkennt die RTM auch Slices mit Namens-Kennung (`slice-<name>.md`, Kennung = Basisname ohne `.md`); Namens-Belege unter einem Segment `observations` sind im Default keine Slices. Das Kriterium *Default byte-identisch* gilt für den Ziffern-Fall `slice-NNN-titel.md`; neues Kriterium *Namens-Slice*. Anlass: Feldmeldung eines Adopters | —

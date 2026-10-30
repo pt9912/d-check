@@ -80,7 +80,7 @@ ist intern in drei Pakete mit einbahniger Importrichtung geschnitten —
 | `ARC-002` | Kern | Markdown-Vorverarbeitung, Link-/Heading-/Kennungs-Extraktion, Slug, Regelmodule, Befund-Modell, deterministische Sortierung, Pfad-/Escape-Regeln; definiert die Ports | reine Standardbibliothek ohne I/O; Port-Interfaces | Dateisystem-, Netzwerk-, Prozess-APIs; Adapter; YAML-Bibliothek |
 | `ARC-003` | Filesystem-Adapter | Datei-Discovery, Lesen, Symlink-Erkennung (Lstat) | Kern-Ports; Dateisystem-API | andere Adapter; Netzwerk |
 | `ARC-004` | HTTP-Adapter | HEAD/GET-Erreichbarkeit, Timeout, Redirect-Limit | Kern-Ports; HTTP-Client | andere Adapter; Dateisystem |
-| `ARC-005` | VCS-/git-Adapter | Lesen der git-Historie aus `.git`: Datei-Inhalt an einem Commit-Ref, geänderte Pfade einer Commit-Range, Commit-Messages einer Range; **rein lesend**, ohne externes git-Binary, ohne Netz (opt-in Module `vcs`, `commits`) | Kern-Ports; git-Objekt-Bibliothek; read-only `.git` | andere Adapter; Netzwerk; Schreiben ins Repository |
+| `ARC-005` | VCS-/git-Adapter | Lesen der git-Historie aus `.git`: Datei-Inhalt an einem Commit-Ref, geänderte Pfade einer Commit-Range, Commit-Messages einer Range, Zeilen-Summe (Einfügungen plus Löschungen) über Pfade zwischen zwei Ständen; **rein lesend**, ohne externes git-Binary, ohne Netz (opt-in Module `vcs`, `commits`, `metrics`) | Kern-Ports; git-Objekt-Bibliothek; read-only `.git` | andere Adapter; Netzwerk; Schreiben ins Repository |
 | `ARC-006` | Config-Adapter | `.d-check.yml` strikt dekodieren, zweistufig validieren — den Datei-Inhalt beschafft das CLI über den Filesystem-Adapter, der die einzige Dateisystem-Tür bleibt | Kern-Typen; YAML-Bibliothek | andere Adapter; Dateisystem; Netzwerk |
 | `ARC-007` | Reporter-Adapter | Text-/JSON-Rendering auf stdout/stderr | Kern-Typen; Serialisierung | andere Adapter; Netzwerk; Dateizugriffe jenseits stdout/stderr |
 | `ARC-001` | CLI | Argument-Parsing, Composition Root, Exit-Code | alles oben | — |
@@ -96,7 +96,7 @@ sie aufwärts. Eine Lockerung ist eine neue ADR (`AGENTS.md` §3.6).
 |---|---|---|---|
 | `ARC-008` | YAML-Bibliothek | Decoding im Config-Adapter | hoch — vollständig im Adapter gekapselt |
 | `ARC-009` | HTTP-Client der Standardbibliothek | Erreichbarkeits-Checks im HTTP-Adapter | hoch — hinter dem HTTP-Port |
-| `ARC-010` | git-Objekt-Bibliothek (rein in der Implementierungssprache, **kein** externes git-Binary) | Lesen von `.git` im VCS-Adapter (opt-in Module `vcs`, `commits`) | mittel — hinter dem VCS-Port; read-only, netzlos |
+| `ARC-010` | git-Objekt-Bibliothek (rein in der Implementierungssprache, **kein** externes git-Binary) | Lesen von `.git` im VCS-Adapter (opt-in Module `vcs`, `commits`, `metrics`) | mittel — hinter dem VCS-Port; read-only, netzlos |
 | `ARC-011` | Minimal-Runtime ohne Shell/Paketmanager | Auslieferung | mittel — CA-Bundle-/Non-root-Annahmen |
 
 ## 4. Sequenz-Diagramme
@@ -150,7 +150,7 @@ sequenceDiagram
 | Scan-Wurzel/Datei nicht lesbar | Filesystem-Adapter → CLI | stderr, Exit 2 (kein Teilergebnis als Erfolg) |
 | Regelverletzung in Doku | Kern (Regelmodule) | Befund, Exit 1 |
 | HTTP-Fehler/Timeout (`external`) | HTTP-Adapter → Kern | Befund, kein Abbruch |
-| `.git` fehlt/unlesbar, Range unauflösbar oder Message-Datei unlesbar (`vcs`, `commits`) | VCS-Adapter → CLI | stderr, Exit 2 (fail-closed; eine fehlende git-Eingabe ist kein stilles Grün) |
+| `.git` fehlt/unlesbar, Range unauflösbar oder Message-Datei unlesbar, Basis nicht auflösbar oder kein Vorfahr (`vcs`, `commits`, `metrics`) | VCS-Adapter → CLI | stderr, Exit 2 (fail-closed; eine fehlende git-Eingabe ist kein stilles Grün) |
 
 Der Kern wirft keine I/O-Fehler selbst — sie erreichen ihn als
 Port-Ergebnisse; das geprüfte Repository wird nie beschrieben
