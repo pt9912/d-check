@@ -2,7 +2,7 @@
 
 **Rolle:** Architect (Modul 8), frischer Kontext, **vor** Code.
 **Gegenstand:** [welle-93](../plan/planning/welle-93-metrics-modul.md) und ihre drei Slice-Pläne
-[slice-282](../plan/planning/next/slice-282-metrics-anforderung-und-adr.md),
+[slice-282](../plan/planning/in-progress/slice-282-metrics-anforderung-und-adr.md),
 [slice-283](../plan/planning/open/slice-283-metrics-modulkern-formel-und-grund.md),
 [slice-284](../plan/planning/open/slice-284-metrics-messung-aus-git.md) (alle uncommittet).
 **Anlass:** GitHub-Issue 13 (opt-in-Modul `metrics`).
@@ -30,7 +30,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
   in **beide** Richtungen gegen `model.ValidModules()`
   ([registry_mirror_test.go](../../internal/hexagon/core/app/registry_mirror_test.go) Z. 57–62 „kein bekanntes
   Modul (verwaist?)", Z. 108–160 die sieben Fundorte).
-- [slice-282](../plan/planning/next/slice-282-metrics-anforderung-und-adr.md) Z. 140 trägt `metrics` in die
+- [slice-282](../plan/planning/in-progress/slice-282-metrics-anforderung-und-adr.md) Z. 140 trägt `metrics` in die
   Glossar-Zeile „Regelmodul" ein, aber die Registrierung in `ValidModules()` liegt erst in
   [slice-283](../plan/planning/open/slice-283-metrics-modulkern-formel-und-grund.md) Z. 72. Ab slice-282 wäre
   `TestModulRegistrySpiegel_LastenheftGlossar` rot (verwaister Eintrag). Der zweite Lastenheft-Fundort, der Modulsatz in
@@ -45,7 +45,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
 
 ### F-2 — Block-Syntax „YAML" und Kern ohne YAML-Bibliothek — **V2** (Entscheid 6 in der slice-282-ADR)
 
-- Entscheid 1 empfiehlt einen Fenced-**YAML**-Block ([slice-282](../plan/planning/next/slice-282-metrics-anforderung-und-adr.md) Z. 51).
+- Entscheid 1 empfiehlt einen Fenced-**YAML**-Block ([slice-282](../plan/planning/in-progress/slice-282-metrics-anforderung-und-adr.md) Z. 51).
   slice-283 §3 Z. 103 liest ihn in einer Datei des Regel-Pakets („Fence mit konfiguriertem Info-String") — ohne Port, ohne Adapter.
 - Der Kern darf keine YAML-Bibliothek tragen: [architecture.md](../../spec/architecture.md) Z. 80 (ARC-002, Verbotsspalte
   „YAML-Bibliothek"); durchgesetzt in [.a-check.yml](../../.a-check.yml) (Eintrag zu `gopkg.in/yaml.v3`, nur
@@ -73,7 +73,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
 
 ### F-4 — Port-Erweiterung, Alternativen, Spec-Schärfung fehlen im ADR-Umfang — **V2** (Entscheid 8 in derselben ADR)
 
-- Der ADR-Umfang in [slice-282](../plan/planning/next/slice-282-metrics-anforderung-und-adr.md) Z. 116 deckt „Entscheide 1–4". Die neue VCS-Port-Methode
+- Der ADR-Umfang in [slice-282](../plan/planning/in-progress/slice-282-metrics-anforderung-und-adr.md) Z. 116 deckt „Entscheide 1–4". Die neue VCS-Port-Methode
   ([slice-284](../plan/planning/open/slice-284-metrics-messung-aus-git.md) Z. 69, 102) ist keiner davon. Präzedenz: Port-Erweiterungen stehen in der Modul-ADR
   ([ADR-0027](../plan/adr/0027-commits-traceability-modul.md) Schärft-Feld, [ADR-0030](../plan/adr/0030-tracked-referenz-ziele.md) „Port-Erweiterungs-Präzedenz").
 - Eine Alternative fehlt: Der Kern könnte aus den vorhandenen Methoden `AllPaths`/`FileAt`
