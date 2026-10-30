@@ -3078,7 +3078,7 @@ func TestCLI185_PrintMK_UsageTarget(t *testing.T) {
 	}
 }
 
-// DC-FA-CLI-010-Erweiterung (13→14): das --print-mk-Fragment trägt zusätzlich
+// DC-FA-CLI-010: das --print-mk-Fragment trägt zusätzlich
 // das Target doc-manual. Es reicht den Begriff MANUAL an --manual
 // (DC-FA-CLI-013) weiter und wählt wie doc-usage KEIN Modul ab. Echo
 // unterdrückt, weil die Abschnitte auf stdout die Nutzlast sind.
@@ -3108,7 +3108,7 @@ func TestCLI281_PrintMK_ManualTarget(t *testing.T) {
 	if n := strings.Count(stdout, "\n.PHONY: "); n != 14 {
 		t.Fatalf(".PHONY-Targets = %d, want 14:\n%s", n, stdout)
 	}
-	// doc-help listet das neue Target über seine ##-Annotation.
+	// doc-help bleibt neben den Modus-Targets bestehen.
 	if !strings.Contains(stdout, "doc-help: ## ") {
 		t.Fatalf("doc-help fehlt:\n%s", stdout)
 	}
