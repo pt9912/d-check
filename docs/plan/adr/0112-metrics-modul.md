@@ -19,8 +19,8 @@ slice-282 <!-- d-check:status-provenance -->.
 **Schärft:**
 [`DC-FA-MET-001.a`](../../../spec/spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics)
 (neues Modul-Verfahren) und, in der Zuständigkeitsspalte des VCS-Adapters,
-[`ARC-005`](../../../spec/architecture.md) und [`ARC-010`](../../../spec/architecture.md)
-(Sektion „Komponenten“, Tabellenzellen ohne eigenen Anker).
+[`ARC-005`](../../../spec/architecture.md#2-schichten-und-constraints) und [`ARC-010`](../../../spec/architecture.md#3-externe-abhängigkeiten)
+sowie die Fehlerzeile zum VCS-Adapter ([§5](../../../spec/architecture.md#5-fehlermodelle-und-resilienz)); die Kennungen stehen in Tabellenzellen ohne eigenen Anker.
 
 **Regeln:** Baseline-Regelwerk
 [`modul-04-adrs.md` §Ziel-Form: ADR (MADR)](../../../.harness/baseline/v6.18.1/regelwerk/modul-04-adrs.md).
@@ -47,7 +47,7 @@ bleibt byte-identisch.
 ## Entscheidung
 
 Wir führen ein **eigenes opt-in-Modul `metrics`** mit diesen Festlegungen (die Nummern
-sind die der Entscheide in der Anforderung):
+dienen dieser Liste als Bezug):
 
 1. **Block:** ein Fenced-Block mit konfiguriertem Info-String und Zeilen-Syntax
    `schluessel: wert` (am ersten `:` getrennt, getrimmt); Pfade und Ausnahmen
@@ -60,9 +60,9 @@ sind die der Entscheide in der Anforderung):
    Einheit) — plus eine Schwellenregel (Pflichtfeld ab Schwelle). Alle Zahlen sind
    Konfiguration.
 4. **Messung:** `--no-renames`-Semantik, literale Pfade, rekursive Verzeichnisse,
-   Binärdateien zählen 0 mit Hinweis, ausgenommener Teilbaum, nur Eingechecktes.
-5. **Fehlerklassen:** ein Eingabefehler eines Plans ist Exit 2 mit Klartext und
-   unterdrückt die Befunde dieses Plans; Befunde sind
+   Binärdateien und Pfade ohne Treffer zählen 0 mit Hinweis, ausgenommene Teilbäume, nur Eingechecktes.
+5. **Fehlerklassen:** ein Eingabefehler eines Plans ist Exit 2 mit Klartext; der Lauf
+   bricht beim ersten Fehler ab, kein Befund erscheint; Befunde sind
    `metrics-limit-mismatch`, `metrics-estimate-mismatch`, `metrics-over-limit`,
    `metrics-reason-empty` und `metrics-cut-reason-missing`; Hinweise sind keine Befunde.
 6. **Lesen im Kern:** die Zeilen-Syntax wird im Kern gelesen; **kein Parse-Port**.

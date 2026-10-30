@@ -4198,7 +4198,11 @@ Formel samt allen Zahlen und das Tabellenformat sind Konfiguration, keine feste
 Regel — die Faktoren sind Fachlogik des Repos, das Modul liefert den Mechanismus.
 
 **Der Block** ist ein Fenced-Block (Backticks oder Tilden) mit dem
-konfigurierten Info-String, genau einer je Plan. Er trägt eine Zeile je Eintrag
+konfigurierten Info-String, genau einer je Plan. Zäune und Tabellenzeilen erkennt das
+Modul mit denselben Lesern wie die übrigen Module; wo das Programm des Anlass-Repos
+strenger liest (Einrückung des Zauns höchstens drei Leerzeichen, Anfangsstrich der
+Tabellenzeile Pflicht), gilt die Leseweise des Produkts, und die Abnahme zeigt, ob ein
+Plan davon abhängt. Er trägt eine Zeile je Eintrag
 `<schluessel>: <wert>`, getrennt am ersten `:`, beide Seiten getrimmt; Pfade
 und Ausnahme-Einträge dürfen mehrfach stehen, jeder andere Schlüssel höchstens
 einmal. Keine Verschachtelung, keine Listen-Syntax, **kein YAML**. Zahlen sind
@@ -4211,7 +4215,7 @@ Summe aus Klassenfaktor mal Zeilenzahl je Klasse der Tabelle des Plans und
 Feldfaktor mal Feld des Blocks. Die **Obergrenze** ist
 `Einheit · ⌈Zähler · Schätzung / Nenner⌉` — genau eine Aufrundung auf ein
 Vielfaches der Einheit, ohne Gleitkomma. Dazu eine **Schwellenregel**: übersteigt
-`Zähler · Schätzung` die konfigurierte Schwelle, ist ein konfiguriertes weiteres
+`Zähler · Schätzung des Blocks` die konfigurierte Schwelle, ist ein konfiguriertes weiteres
 Feld Pflicht. Die Formel ändert sich nie mit dem Zustand eines Plans.
 
 **Die Tabelle** ist **genau eine** Markdown-Tabelle des Plans außerhalb
@@ -4233,7 +4237,7 @@ nur solange die Messung 0 ist, danach nur ein Hinweis); (3) die Messung liegt au
 oder unter der Marke, oder ein Ausnahme-Eintrag `<N> | <Grund>` mit `N` ≥ Messung
 deckt sie (`metrics-over-limit`); (4) ein Ausnahme-Eintrag mit leerem Grund ist
 ein Befund, unabhängig von der Messung (`metrics-reason-empty`) — er deckt die
-Überschreitung trotzdem; (5) übersteigt die Schätzung die Schwelle, fehlt das
+Überschreitung trotzdem; (5) übersteigt `Zähler · Schätzung des Blocks` die Schwelle, fehlt das
 Pflichtfeld (`metrics-cut-reason-missing`). Ein Ausnahme-Eintrag bei einer Messung
 im Rahmen ist nur ein Hinweis; wächst die Messung über `N`, braucht es einen neuen
 Eintrag.
@@ -4242,14 +4246,15 @@ Eintrag.
 unvollständig, ungeschlossen oder doppelt, Zahl ungültig, Tabelle fehlt,
 mehrdeutig oder ohne Zeilen, Trennzeile fehlt, Zeile mit falscher Zellenzahl,
 Schlüsselzelle leer oder doppelt, Klasse unbekannt, Basis nicht auflösbar oder
-kein Vorfahr von `HEAD`, `git` nicht lesbar. Er unterdrückt die Befunde
-desselben Plans.
+kein Vorfahr von `HEAD`, `git` nicht lesbar. Der Lauf bricht beim ersten Fehler in
+der Reihenfolge der Plan-Namen ab: Exit 2, ein Klartext mit Plan und Ursache, **kein**
+Befund und kein Hinweis aus keinem Plan.
 
 **Die Messung** läuft über den VCS-Port ohne git-Binary und ohne Netz, **ohne
 Rename-Erkennung** (eine Umbenennung zählt als Löschung plus Einfügung), über
 **literale** Pfade (keine Glob-Muster; ein Verzeichnis zählt rekursiv; ein Pfad
-ohne Treffer trägt 0 bei; dieselbe Datei über zwei Pfade zählt einmal). Eine
-Binärdatei zählt 0 mit Hinweis; ein konfigurierter Teilbaum ist immer
+ohne Treffer trägt 0 bei und erscheint in einem Hinweis; dieselbe Datei über zwei Pfade zählt einmal). Eine
+Binärdatei zählt 0 mit Hinweis; die konfigurierten Teilbäume sind immer
 ausgenommen; nicht eingecheckte Änderungen zählt die Messung nicht. Ohne `.git`
 endet der Lauf mit Exit 2.
 
@@ -4258,7 +4263,11 @@ Scan-Menge nicht.** Die Plan-Dateien werden als Text gelesen — dort gilt sie. 
 **Pfade des Blocks** liegen außerhalb der Scan-Wurzeln und sind keine
 Markdown-Dateien, und die **git-Revisionen** (Basis, `HEAD`) sind kein Dateibaum:
 Ihre Auflösung und Zählung ist eine Aussage über den Stand von `.git`, nicht über
-den Arbeitsbaum. Das Plan-Verzeichnis wird nicht auf `scan.roots` beschränkt.
+den Arbeitsbaum. **Ein Tippfehler im Pfad liefert still 0** und hält die Prüfung der
+Messung dauerhaft grün; der Hinweis zum Pfad ohne Treffer macht ihn sichtbar, und die
+Bezeichnung „vor dem ersten Code-Commit“ für Messung 0 ist ein Stellvertreter, kein
+Beleg. Das Plan-Verzeichnis wird nicht auf `scan.roots` beschränkt; `scan.ignore` und
+die Skip-Liste gelten für dieses ausdrücklich benannte Verzeichnis nicht.
 
 **Die Zeilen-Summe ist eine Zusage, die erst die Umsetzung belegt:** ihre
 Gleichheit mit `git diff --numstat --no-renames` wird am Fixture mit allen
@@ -4271,16 +4280,16 @@ Inhalt der Befunde und Hinweise.
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given ein Plan mit vollständigem Block, dessen Marke der Formel entspricht und dessen Messung auf oder unter der Marke liegt, when `metrics` aktiviert läuft, then Exit 0 und keine Befunde.
-- **Formel (belegte Zahlen):** Given die Schätzungen 6790, 5036, 5430, 9215 und 4670, when die Obergrenze berechnet wird, then 9200, 6800, 7400, 12500 und 6400; die Grenzfälle 2000, 2001, 2222 und 2223 ergeben 2700, 2800, 3000 und 3100, und nur 2223 löst die Schwellenregel aus.
+- **Formel (belegte Zahlen):** Given die Konfiguration Zähler 135, Nenner 10000, Einheit 100 und Schwelle 300000 und die Schätzungen 6790, 5036, 5430, 9215 und 4670, when die Obergrenze berechnet wird, then 9200, 6800, 7400, 12500 und 6400; die Grenzfälle 2000, 2001, 2222 und 2223 ergeben 2700, 2800, 3000 und 3100, und nur bei 2223 übersteigt `Zähler · Schätzung` (300105) die Schwelle (bei 2222: 299970).
 - **Negative (Marke ≠ Formel):** Given eine Marke, die nicht der Formel entspricht, when der Lauf erfolgt, then Befund `metrics-limit-mismatch`.
 - **Negative (Schätzung ≠ Tabelle):** Given eine Schätzung im Block, die von der aus der Tabelle abweicht, when die Messung 0 ist, then Befund `metrics-estimate-mismatch`; bei Messung ≥ 1 nur ein Hinweis.
 - **Negative (Überschreitung):** Given eine Messung über der Marke ohne Ausnahme-Eintrag, when der Lauf erfolgt, then Befund `metrics-over-limit`; mit Eintrag `N` ≥ Messung und Grund kein Befund.
 - **Negative (leerer Grund):** Given ein Ausnahme-Eintrag mit leerem oder nur-Leerraum-Grund, when der Lauf erfolgt, then Befund `metrics-reason-empty`, unabhängig von der Messung.
 - **Negative (Schnittfrage):** Given eine Schätzung über der Schwelle ohne das Pflichtfeld, when der Lauf erfolgt, then Befund `metrics-cut-reason-missing`.
 - **Zustände:** Given ein Plan ohne Block, when der Lauf erfolgt, then ein Hinweis und kein Befund; Given ein Block ohne Basis, Schätzung und Marke, then ein Hinweis mit berechneter Schätzung und Marke.
-- **Negative (Eingabefehler, fail-closed):** Given einen Plan mit unvollständigem Block, ungültiger Zahl, fehlender oder mehrdeutiger Tabelle, unbekannter Klasse oder nicht auflösbarer Basis, when der Lauf erfolgt, then Exit 2 mit Klartext und kein Befund dieses Plans.
+- **Negative (Eingabefehler, fail-closed):** Given einen Plan mit unvollständigem Block, ungültiger Zahl, fehlender oder mehrdeutiger Tabelle, unbekannter Klasse oder nicht auflösbarer Basis, when der Lauf erfolgt, then Exit 2 mit Klartext und kein Befund aus keinem Plan.
 - **Negative (kein `.git`):** Given ein Repo ohne `.git`, when `metrics` aktiviert läuft, then Exit 2, nicht „0 Befunde“.
-- **Messung:** Given die Randformen Hinzufügen, Löschen, Ändern, leere Datei, Binärdatei, Rename, Pfad außerhalb der Pfade, Zeilenenden-Wechsel, ausgenommener Teilbaum, when die Summe gebildet wird, then sie gleicht `git diff --numstat --no-renames` über denselben Pfaden.
+- **Messung:** Given die Randformen Hinzufügen, Löschen, Ändern, leere Datei, Binärdatei, Rename, Pfad außerhalb der Pfade, Zeilenenden-Wechsel, ausgenommener Teilbaum, Pfad ohne Treffer, when die Summe gebildet wird, then sie gleicht `git diff --numstat --no-renames` über denselben Pfaden.
 - **Betrieb:** Given das gebaute Image, when der Lauf unter `:ro` und gegen ein Repo mit anderem Eigentümer erfolgt, then dasselbe Ergebnis wie gegen ein eigenes beschreibbares Repo.
 - **Determinismus:** Given dieselbe Eingabe, when der Lauf zweimal erfolgt, then byte-identische Ausgabe in stdout, stderr und Exit-Code.
 - **Default byte-identisch:** Given **kein** `metrics`-Block und kein `--enable metrics`, when `d-check` läuft, then Ausgabe und Exit-Code sind byte-identisch zu einem Lauf ohne dieses Modul.

@@ -84,9 +84,9 @@ Anforderung). Die Empfehlungen folgen den Angaben des Anlass-Repos:
    ist eine **Behauptung, die [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) am Fixture belegt**, nicht dieser Slice.
 5. **Befunde, Eingabefehler, Hinweise und der Ausnahme-Eintrag.** Ein **Eingabefehler**
    eines Plans (Block unvollständig, Zahl ungültig, Fence ungeschlossen, Basis
-   unauflösbar) ist Exit 2 mit Klartext und schließt jeden Befund desselben Plans aus —
+   unauflösbar) ist Exit 2 mit Klartext; der Lauf bricht beim ersten Fehler ab, kein Befund erscheint —
    kein Befund-Code, damit `metrics-block-invalid` entfällt. **Befunde:**
-   `metrics-limit-mismatch`, `metrics-over-limit`, `metrics-reason-empty`,
+   `metrics-limit-mismatch`, `metrics-estimate-mismatch`, `metrics-over-limit`, `metrics-reason-empty`,
    `metrics-cut-reason-missing` (Schwellenregel ohne Pflichtfeld). **Hinweise** (keine
    Befunde): Plan ohne Block, Binärdateien nicht gezählt, Ausnahme-Eintrag ohne
    Überschreitung. Ausnahme-Eintrag `<N> | <Grund>`: deckt eine Messung bis `N`

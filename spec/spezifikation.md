@@ -3402,45 +3402,55 @@ reine Arithmetik über dem Plan-Text; nur Prüfung 3 und der Zustand „Messung 
 2. **Plan-Suche.** Geprüft wird jede Datei `slice-*.md` **unmittelbar** in
    `metrics.plans-dir` (nicht rekursiv), nach Namen sortiert. Ein fehlendes
    Verzeichnis ist **Exit 2**; ein vorhandenes ohne Treffer ist ein grüner Lauf mit dem
-   Hinweis „kein Plan“. `plans-dir` wird nicht auf `scan.roots` beschränkt.
-3. **Block erkennen.** Ein Zaun ist eine Zeile mit drei oder mehr Backticks oder Tilden
-   und 0 bis 3 Leerzeichen Einrückung; bei Backticks darf der Rest der Zeile keinen
-   Backtick tragen. Ein Block ist ein Zaun, dessen Info-String (getrimmt) `metrics.block`
-   ist; der Schluss-Zaun trägt dasselbe Zeichen mindestens in der Länge des Öffners. Kein
-   Block ⇒ Zustand *kein Block*. Mehr als ein Block ⇒ Eingabefehler; ein Block ohne
-   Schluss-Zaun ⇒ Eingabefehler. Zäune anderer Info-Strings werden übersprungen und
-   verbergen ihren Inhalt.
+   Hinweis „kein Plan“. `plans-dir` wird nicht auf `scan.roots` beschränkt; `scan.ignore`
+   und die Skip-Liste gelten für dieses ausdrücklich benannte Verzeichnis nicht.
+3. **Block erkennen.** Ein Zaun ist, was der gemeinsame Öffner-Test des Produkts als Zaun
+   wertet (drei oder mehr Backticks oder Tilden nach Entfernen von Space und Tab vorn; bei
+   Backticks darf der Rest der Zeile keinen Backtick tragen). Ein Block ist ein Zaun, dessen
+   Info-String (getrimmt) `metrics.block` ist; der Schluss-Zaun folgt der gemeinsamen
+   Schluss-Regel. Kein Block ⇒ Zustand *kein Block*. Mehr als ein Block ⇒ Eingabefehler;
+   ein Block ohne Schluss-Zaun ⇒ Eingabefehler. Zäune anderer Info-Strings werden
+   übersprungen und verbergen ihren Inhalt. **Abweichung vom Programm des Anlass-Repos:**
+   dort sind höchstens drei Leerzeichen Einrückung erlaubt; das Produkt erlaubt Space und
+   Tab beliebig.
 4. **Felder lesen.** Je Zeile `<schluessel>: <wert>`, am ersten `:` getrennt, beide
    Seiten getrimmt; eine Zeile ohne `:` ist ein Eingabefehler, Leerzeilen werden
    ignoriert. `metrics.fields.path` und `metrics.fields.exception` dürfen mehrfach
    stehen, jeder andere Schlüssel höchstens einmal. Zahlenfelder sind ASCII-Ziffern ohne
    führende Null; ein Pfad ist relativ zur Wurzel, ohne Glob-Zeichen, `..`, führenden
    `/` und Steuerzeichen; die Basis besteht aus 7 bis 40 Zeichen `0-9a-f`. Unbekannte
-   Schlüssel werden ignoriert. Ein Ausnahme-Eintrag hat die Form `<N> | <Grund>` mit `N`
+   Schlüssel werden ignoriert (auch ein Protokoll-Eintrag über frühere Marken, den ein
+   Repo mitführt). Ein Ausnahme-Eintrag hat die Form `<N> | <Grund>` mit `N`
    als Zahlenfeld; ein Eintrag ohne `|` ist ein Eingabefehler, ein leerer oder
    nur-Leerraum-Grund ist erlaubt (und der Befund aus Schritt 8).
 5. **Zustand bestimmen.** *Marke ausstehend*, wenn der Block mindestens einen Pfad und
    alle Felder aus `estimate-inputs` trägt, aber weder Basis noch Schätzung noch Marke;
    *vollständig*, wenn Pfad, Basis, Schätzung und Marke (und alle Eingaben) stehen. Jede
    andere Kombination ist ein Eingabefehler.
-6. **Tabelle lesen** (nur bei *Marke ausstehend* und *vollständig*). Genau eine Tabelle
-   außerhalb umzäunter Blöcke, deren Kopf aus genau den Zellen von `table.header` besteht
-   (getrimmt, bytegleich): keine ⇒ Eingabefehler, mehr als eine mit passendem Kopf ⇒
-   Eingabefehler; andere Tabellen werden nicht gelesen. Die Trennzeile folgt direkt dem Kopf,
-   hat genauso viele Zellen, jede aus `-` mit optionalem `:` an einem oder beiden Enden.
-   Datenzeilen sind alle folgenden Zeilen, die mit `|` beginnen; die Tabelle endet an der
-   ersten Zeile, die nicht so beginnt. Zellen sind durch `|` getrennt, außer `\|`; der
-   Anfangsstrich steht, der Schlussstrich darf fehlen; Leerraum hinter dem Schlussstrich ist
-   keine Zelle. Eine Zeile mit anderer Zellenzahl als der Kopf, eine leere oder doppelte
-   Schlüsselzelle, eine Klasse außerhalb von `table.classes` (Vergleich bytegleich nach
-   Trimmen) und eine Tabelle ohne Datenzeile sind Eingabefehler. Gezählt werden Zeilen je
-   Klasse. `\r` unmittelbar vor `\n` gehört nicht zur Zeile.
+6. **Tabelle lesen** (nur bei *Marke ausstehend* und *vollständig*). Zäune und
+   Tabellenzeilen erkennt das Modul mit denselben Lesern wie die übrigen Module (ein Zaun
+   ist eine Zeile, die der gemeinsame Öffner-Test als Zaun wertet, nach Entfernen von Space
+   und Tab vorn; Zellen teilt der gemeinsame Zeilen-Teiler: unescapte Pipes außerhalb
+   einzeiliger Code-Spans, `\|` als Zeichen, Anfangs- und Schlussstrich optional). Genau
+   eine Tabelle außerhalb umzäunter Blöcke, deren Kopf aus genau den Zellen von
+   `table.header` besteht (getrimmt, bytegleich): keine ⇒ Eingabefehler, mehr als eine mit
+   passendem Kopf ⇒ Eingabefehler; andere Tabellen werden nicht gelesen. Die Trennzeile
+   folgt direkt dem Kopf, hat genauso viele Zellen, jede aus `-` mit optionalem `:` an einem
+   oder beiden Enden. Datenzeilen sind alle folgenden Zeilen, die der Zeilen-Teiler als
+   Tabellenzeile liest; die Tabelle endet an der ersten Zeile, die keine ist. Eine Zeile
+   mit anderer Zellenzahl als der Kopf, eine leere oder doppelte Schlüsselzelle, eine Klasse
+   außerhalb von `table.classes` (Vergleich bytegleich nach Trimmen) und eine Tabelle ohne
+   Datenzeile sind Eingabefehler. Gezählt werden Zeilen je Klasse. `\r` unmittelbar vor
+   `\n` gehört nicht zur Zeile. **Abweichung vom Programm des Anlass-Repos:** dort ist der
+   Anfangsstrich Pflicht und ein ungeschütztes `|` im Code-Span ein Fehler; das Produkt
+   liest beides toleranter, und die Abnahme zeigt, ob ein Plan davon abhängt.
 7. **Schätzung und Marke berechnen.** `S = Σ (Klassenfaktor · Zeilen der Klasse) +
    Σ (Faktor · Wert des Feldes)` über `table.classes` und `estimate-inputs`; die
    Marke ist `rounding · ⌈surcharge.numerator · S / surcharge.denominator⌉`,
    ganzzahlig gerechnet, ohne Gleitkomma, mit Überlauf-Prüfung (Überlauf ⇒ Eingabefehler).
-   Die Schwellenregel gilt, wenn `surcharge.numerator · S` größer als `cut-threshold` ist.
-8. **Prüfungen** (Zustand *vollständig*; ein Eingabefehler dieses Plans unterdrückt alle):
+   Die Schwellenregel (Prüfung 5) gilt, wenn `surcharge.numerator ·` **Schätzung des Blocks**
+   größer als `cut-threshold` ist; im Zustand *Marke ausstehend* rechnet der Hinweis mit `S`.
+8. **Prüfungen** (Zustand *vollständig*; ein Eingabefehler beendet den Lauf, Schritt 12):
    (1) Marke des Blocks ≠ `rounding · ⌈numerator · Schätzung des Blocks / denominator⌉`
    ⇒ `metrics-limit-mismatch`; (2) Schätzung des Blocks ≠ `S` aus Schritt 7:
    bei Messung 0 ⇒ `metrics-estimate-mismatch`, bei Messung ≥ 1 ein Hinweis;
@@ -3452,20 +3462,29 @@ reine Arithmetik über dem Plan-Text; nur Prüfung 3 und der Zustand „Messung 
    *kein Block*: ein Hinweis.
 9. **Messung.** Über den VCS-Port: die Summe aus Einfügungen und Löschungen zwischen
    Basis und `HEAD` über die Pfade des Blocks, mit Rename-Erkennung **aus**, als
-   **literale** Pathspecs (ein Verzeichnis rekursiv; ein Pfad ohne Treffer trägt 0 bei;
-   dieselbe Datei über zwei Pfade zählt einmal), abzüglich der Pfade aus
-   `metrics.excluded`; Binärdateien (`-` in `numstat`) zählen 0 und erscheinen in einem
-   Hinweis; nicht eingecheckte Änderungen zählt die Messung nicht. Eine Basis, die nicht
+   **literale** Pathspecs (ein Verzeichnis rekursiv; dieselbe Datei über zwei Pfade zählt
+   einmal), abzüglich der Pfade aus `metrics.excluded`. Ein Pfad ohne Treffer trägt 0 bei
+   und erscheint in einem Hinweis (ein Tippfehler im Pfad liefert sonst still 0);
+   Binärdateien (`-` in `numstat`) zählen 0 und erscheinen ebenfalls in einem Hinweis;
+   nicht eingecheckte Änderungen zählt die Messung nicht. Eine Basis, die nicht
    auflöst oder kein Vorfahr von `HEAD` ist, ein nicht lesbares `HEAD` und ein fehlendes
    `.git` sind **Exit 2** (fail-closed, wie `vcs` und `commits`). Messung 0 gilt als
-   „vor dem ersten Code-Commit“, Messung ≥ 1 als „im Code“.
+   „vor dem ersten Code-Commit“, Messung ≥ 1 als „im Code“ — ein Stellvertreter für den
+   Zustand des Plans, kein Beleg.
 10. **Befund.** `file` = der Plan-Pfad, `line` = die Zeile des betroffenen Feldes im Plan
-    (bei `metrics-over-limit` die Zeile der Marke), `target` = der Feldname. Befunde zählen
-    für Exit 1; Hinweise tragen den Exit nicht.
+    (bei `metrics-over-limit` die Zeile der Marke; bei `metrics-cut-reason-missing` die
+    Zeile der Schätzung, weil das fehlende Feld keine Zeile hat), `target` = der Feldname.
+    Befunde zählen für Exit 1; Hinweise tragen den Exit nicht.
 11. **Bezugsmenge in der Zusammenfassung.** Der Lauf trägt eine Zeile bei:
     `metrics: <N> Plan/Pläne geprüft, <K> mit Block`. Sie erscheint im Default-Modus auf
     stderr und unter `--json`/`--yaml` in `summary.notes`; die Hinweise stehen ebenfalls
     dort.
+12. **Eingabefehler.** Der Lauf bricht beim ersten Eingabefehler ab, in der Reihenfolge der
+    Plan-Namen: Exit 2, ein Klartext mit Plan und Ursache auf stderr, **kein** Befund und
+    kein Hinweis aus keinem Plan — so verhält sich jeder Fehler eines Moduls, das ein
+    Ergebnis und einen Fehler liefert. Ursachen: Block unvollständig, ungeschlossen
+    oder doppelt, ungültige Zahl, Tabellenfehler (Schritt 6), Basis nicht auflösbar oder kein
+    Vorfahr, `.git` fehlt.
 
 **Nicht Gegenstand:** eine Rename-Erkennung nach git-Art; Kopien-Erkennung; andere
 Messgrößen als die Zeilen-Summe; mehrere Tabellen; das Schreiben von Block oder Marke; die

@@ -93,7 +93,7 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       genannte verglichen (`metrics-limit-mismatch`); die Schwellenregel meldet ein
       fehlendes Pflichtfeld (`metrics-cut-reason-missing`). Ein formal ungültiger Block
       (unvollständig, Zahl ungültig, Fence ungeschlossen) ist ein **Eingabefehler**:
-      Exit 2 mit Klartext, kein Befund, und er schließt jeden Befund desselben Plans aus.
+      Exit 2 mit Klartext, kein Befund, und der Lauf bricht beim ersten Fehler ab.
       Test referenziert, Negativliste (§3) getestet; die Testfälle sind die belegten
       Zahlen der Anforderung (E = 6790 ⇒ 9200; Grenzfälle E = 2000 ⇒ 2700, 2001 ⇒ 2800,
       2222 ⇒ 3000, 2223 ⇒ 3100 samt Schwellenregel; 5036 ⇒ 6800; 5430 ⇒ 7400; 9215 ⇒ 12500; 4670 ⇒ 6400); unbekannte Block-Felder werden ignoriert.
