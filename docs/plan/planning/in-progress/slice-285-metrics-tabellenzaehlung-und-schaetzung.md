@@ -120,7 +120,7 @@ Aussagen-Berührung steht hier gar nicht.
 Tabelle mit ähnlichem Kopf, aber anderer Zellenzahl · zweite Tabelle mit passendem Kopf
 (mehrdeutig) · Tabelle im umzäunten Block (Backticks und Tilden, Einrückung 0 bis 3
 Leerzeichen, Zaun mit Backtick im Rest der Zeile) · Zeile mit `\|` in einer Zelle ·
-ungeschütztes `|` im Code-Span (Fehler, kein geratener Wert) · fehlender Schlussstrich ·
+`|` im Code-Span (kein Fehler: der Span ist eine Zelle, wie bei den übrigen Tabellen-Lesern des Produkts) · fehlender Schlussstrich ·
 Leerraum hinter dem Schlussstrich · Tabelle endet an Leerzeile, an Text, an `>`-Zeile, an
 Zaun · späteres `|`-Stück nach dem Ende gehört nicht dazu · Trennzeile mit `:` an einem
 und beiden Enden, mit anderer Zellenzahl · `Nr.` leer und doppelt · Klasse leer,
