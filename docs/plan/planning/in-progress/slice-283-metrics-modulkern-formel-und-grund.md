@@ -130,7 +130,7 @@ Aussagen-Berührung steht hier gar nicht.
 | `internal/adapter/driven/configyaml/configyaml.go` | update | `metrics.*` lesen und validieren |
 | `internal/adapter/driving/cli/config_template.go` | update | Gerüst führt den Block (Spiegel) |
 | `metrics_test.go` im Regel-Paket | neu | Happy/Boundary/Negative nach der Anforderung; Negativliste unten |
-| `internal/adapter/driven/configyaml/configyaml_test.go` | update | Config-Rand → Exit 2 |
+| `internal/adapter/driven/configyaml/metrics_test.go` | neu | Config-Rand → Exit 2 (eigene Datei neben `mentions_test.go`, statt `configyaml_test.go` zu verlängern); `docs/user/abdeckung-tests.md` wird mit `make abdeckung` neu erzeugt |
 | `internal/hexagon/core/app/registry_mirror_test.go` | update (falls nötig) | Spiegel-Deckung ([`BEO-ALL/modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)); der Test liest die Menge aus `ValidModules()`, eine Änderung ist nur bei einem neuen Ort nötig |
 | `spec/lastenheft.md` | update | Modulsatz in [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl), §6 Glossar-Zeile „Regelmodul“, Fassungsstand und Historie; die Anforderung selbst kommt aus [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) |
 | `spec/spezifikation.md` | update | nur Fassungsstand und Historie |
