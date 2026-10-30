@@ -41,11 +41,16 @@ zusammen mit der Begründungs-Pflicht je Punkt.
 
 **Ziel:** Bei aktiviertem Modul `metrics` liest d-check aus jedem Plan unter dem
 konfigurierten Verzeichnis den Block, hält die darin genannte Obergrenze gegen die
-konfigurierte Formel über den Eingaben des Blocks und meldet einen Ausnahme-Eintrag
+konfigurierte Formel über den Eingaben des Blocks (lineare Schätzung, eine
+Aufrundung, Schwellenregel) und meldet einen Ausnahme-Eintrag
 mit leerem Grund als Befund — rein arithmetisch, ohne git, einzeln lieferbar.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
+- **Die Eingabe aus einer Tabelle des Plans und die Prosa-Form-Erkennung** — beides
+  nutzt das Programm des Anlass-Repos, keines ist in der Anforderung des Issues
+  (Entscheid 9 der ADR: eigene Anforderung, falls gewünscht); die Parität ist an dieser
+  Stelle benannt eingeschränkt.
 - **Die Messung aus git und der Vergleich mit der Obergrenze** — Schicht-Abgrenzung
   und Folge-Slice: [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) trägt VCS-Port, Adapter und den Vergleich;
   dieser Slice bleibt hermetisch (kein `.git` nötig), damit seine Hälfte ohne die andere
@@ -76,19 +81,25 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
 - [ ] **Registrierung und Konfiguration:** das Modul steht in `model.ValidModules()`,
       `metrics.*` wird gelesen und validiert (Config-Rand: leere Formel, unbekanntes Feld,
-      Faktor ohne Eingabe → Exit 2), das Gerüst (`--print-config`) führt den Block; der
+      Faktor ohne Eingabe, Teiler 0 → Exit 2), das Gerüst (`--print-config`) führt den Block; der
       Spiegel-Test (`registry_mirror_test.go`) ist grün, weil alle von ihm gehaltenen Orte
       (§1) `metrics` nennen. `gate_consistency_test.go` bleibt unverändert: das Modul
       steht nicht in der `modules:`-Liste von `.d-check.yml`, die dritte Richtung des
       Tests greift nicht; ob `metrics` später in `forbiddenInNetless()` gehört (es
       braucht `.git`), entscheidet die Aufnahme in diese Liste.
-- [ ] **Prüfung „Obergrenze = Formel“:** pro Plan mit Block wird die Obergrenze aus den
-      Eingaben berechnet und gegen die genannte verglichen (`metrics-limit-mismatch`),
-      ein formal ungültiger Block meldet `metrics-block-invalid`; Test referenziert,
-      Negativliste (§3) getestet.
-- [ ] **Prüfung „Eintrag mit leerem Grund“:** ein Ausnahme-Eintrag mit leerem oder
-      nur-Leerraum-Grund ist ein Befund (`metrics-reason-empty`), **unabhängig** von einer
-      Messung; Test referenziert.
+- [ ] **Prüfung „Obergrenze = Formel“:** pro Plan mit Block wird die Schätzung linear
+      und die Obergrenze mit genau einer ganzzahligen Aufrundung berechnet und gegen die
+      genannte verglichen (`metrics-limit-mismatch`); die Schwellenregel meldet ein
+      fehlendes Pflichtfeld (`metrics-cut-reason-missing`). Ein formal ungültiger Block
+      (unvollständig, Zahl ungültig, Fence ungeschlossen) ist ein **Eingabefehler**:
+      Exit 2 mit Klartext, kein Befund, und er schließt jeden Befund desselben Plans aus.
+      Test referenziert, Negativliste (§3) getestet; die Testfälle sind die belegten
+      Zahlen der Anforderung (S = 6790 ⇒ 9200; Grenzfälle S = 2000 ⇒ 2700, 2001 ⇒ 2800,
+      2222 ⇒ 3000, 2223 ⇒ 3100 samt Schwellenregel; S = 5036 ⇒ 6800; S = 4670 ⇒ 6400).
+- [ ] **Prüfung „Eintrag mit leerem Grund“:** ein Ausnahme-Eintrag `<N> | <Grund>` mit
+      leerem oder nur-Leerraum-Grund ist ein Befund (`metrics-reason-empty`),
+      **unabhängig** von einer Messung; Plan-Suche nur unmittelbar im konfigurierten
+      Verzeichnis (`slice-*.md`, ohne Datei grün); Test referenziert.
 - [ ] `make gates` grün.
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
@@ -109,7 +120,7 @@ Aussagen-Berührung steht hier gar nicht.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `metrics.go` im Regel-Paket | neu | Block aus dem Plan-Text lesen (Fence mit konfiguriertem Info-String, Zeilen-Syntax ohne YAML, auf `metrics` begrenzte Fence-Ausnahme — Entscheide 6/7 der ADR), Formel ganzzahlig auswerten, Befunde `metrics-limit-mismatch`, `metrics-block-invalid`, `metrics-reason-empty` |
+| `metrics.go` im Regel-Paket | neu | Block aus dem Plan-Text lesen (Fence mit konfiguriertem Info-String, Zeilen-Syntax ohne YAML, auf `metrics` begrenzte Fence-Ausnahme — Entscheide 6/7 der ADR), Formel ganzzahlig auswerten (lineare Schätzung, eine Aufrundung, Schwellenregel), Befunde `metrics-limit-mismatch`, `metrics-cut-reason-missing`, `metrics-reason-empty`; Eingabefehler als Exit 2 |
 | `internal/hexagon/core/rules/run.go` | update | Modul in die Regel-Kette einhängen |
 | `internal/hexagon/core/model/config.go` | update | `MetricsConfig`, Eintrag in `ValidModules()` |
 | `internal/adapter/driven/configyaml/configyaml.go` | update | `metrics.*` lesen und validieren |
@@ -135,7 +146,7 @@ Target (kein `make`-Ziel in diesem Slice; Gate-Index unverändert).
 **Negativliste der Block-Erkennung (Schritt 19, vor dem Code-Commit zu testen):**
 Block mit anderem Info-String · zwei Blöcke im selben Plan · Block in einer
 Einrückung/Zitat-Ebene · Block im Fenced-Block eines Fensters (Fence in Fence) ·
-Block ohne Schluss-Fence (⇒ `metrics-block-invalid`, nicht „ohne Block“) · Pflichtfeld fehlt · Pflichtfeld doppelt · Eingabe negativ
+Block ohne Schluss-Fence (⇒ Eingabefehler Exit 2, nicht „ohne Block“) · Backtick- und Tilde-Fence · zwei Blöcke im Plan (Eingabefehler) · mehrfacher Schlüssel, der nur einmal stehen darf · Zahl mit führender Null oder Tausendertrennung · Schwellenregel genau auf der Schwelle (S = 2222 ohne, S = 2223 mit Pflichtfeld) · Ausnahme-Eintrag mit N kleiner als die Messung · Pflichtfeld fehlt · Pflichtfeld doppelt · Eingabe negativ
 oder nicht ganzzahlig · Überlauf der Ganzzahl-Arithmetik · Grund nur aus Leerraum ·
 Plan ohne Block (kein Befund, kein Abbruch) · Plan außerhalb des konfigurierten
 Verzeichnisses. Dazu der Lauf über den eigenen Bestand: mit aktiviertem Modul und
@@ -147,7 +158,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
 **Start** (`next` → `in-progress`): [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) liegt in `done/` (Anforderung,
-Schema und ADR stehen, die Entscheide 1–8 sind gesetzt), und welle-93 ist offen. Der
+Schema und ADR stehen, die Entscheide 1–9 sind gesetzt), und welle-93 ist offen. Der
 Übergang landet auf dem Hauptzweig, vor der Arbeit.
 
 **Rückführungen — vorab benennen, nicht erst im Nachhinein begründen:**
@@ -161,7 +172,7 @@ Schema und ADR stehen, die Entscheide 1–8 sind gesetzt), und welle-93 ist offe
   Registrierung, Config-Rand und Spiegel, Teil B Block-Lexik, Formel und Grund.
 - `in-progress` → `open` (blockiert — Carveout?): die Anforderung aus
   [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) wird beim Implementieren als nicht umsetzbar erkannt (z. B.
-  Ganzzahl-Arithmetik reicht für die Faktoren des Anlass-Repos nicht).
+  Ganzzahl-Arithmetik oder die einzelne Aufrundung reicht für die Werte des Anlass-Repos nicht).
 
 ## 5. Closure-Trigger
 
@@ -187,7 +198,7 @@ dasteht.
 - Das Modul liest die Pläne unterhalb des konfigurierten Verzeichnisses, aber das
   Verzeichnis kann außerhalb der Scan-Wurzeln liegen; die Zusage der Scan-Menge
   ([`AGENTS.md`](../../../../AGENTS.md) §3.8) gilt dort nicht — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
-- Ein Plan ohne Block gilt als „nicht gemessen“ und meldet nichts; wer den Block
+- Ein Plan ohne Block gilt als „nicht gemessen“ und meldet nur einen Hinweis; wer den Block
   vergisst, umgeht die Marke vollständig — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
 
 ## 7. Closure-Notiz

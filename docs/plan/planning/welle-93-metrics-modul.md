@@ -59,7 +59,11 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     erst der gemeinsame Lauf.
   - **Der Anlass trägt:** das Modul fällt über die Pläne des Anlass-Repos (die
     Pläne, deren Block das Issue beschreibt) **dasselbe Urteil je Plan** wie dessen
-    bisheriges Programm — Plan für Plan verglichen, nicht als Summe. Weicht ein
+    bisheriges Programm — Plan für Plan verglichen, nicht als Summe. Die Probe fährt der
+    **Eigentümer des Anlass-Repos** mit dem veröffentlichten Image und meldet das
+    Ergebnis im Issue (Zusage im Kommentar vom 2026-10-30); das Repo ist für diese
+    Planung nicht lesbar. Bekannte Abweichung: die Tabellenprüfung des Programms
+    (Entscheid 9 der ADR) fällt das Modul nicht. Weicht ein
     Urteil ab, ist die Abweichung benannt und entweder in der Anforderung
     verankert oder behoben. Dieser Lauf braucht die Pläne aus dem Anlass-Repo; sie
     stellt der Auftraggeber bereit (siehe §5). **Beobachtbar** wird er durch die
@@ -101,15 +105,19 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   ohnehin nacheinander.
 - **Offene Entscheide des Auftraggebers, die [`slice-282`](open/slice-282-metrics-anforderung-und-adr.md)
   vor dem Schreiben der Anforderung braucht** (das Issue legt sie nicht fest):
-  acht, darunter die Syntax des Blocks im Plan, woher die Basis `<basis>` stammt, die
+  neun, darunter die Syntax des Blocks im Plan, woher die Basis `<basis>` stammt, die
   Formel-Form, wo der Block gelesen wird (der Kern trägt keine YAML-Bibliothek) und
-  wo die Zeilen gezählt werden. Der Slice benennt sie mit Empfehlung; ohne Entscheid
+  wo die Zeilen gezählt werden, und ob die Tabellenzählung des Anlass-Repos ins Modul
+  gehört. Der Slice benennt sie mit Empfehlung; ohne Entscheid
   beginnt kein Code. Fällt Entscheid 6 auf den Parse-Port, wird die Block-Lexik ein
   eigener Slice vor [`slice-283`](open/slice-283-metrics-modulkern-formel-und-grund.md), und die Slice-Tabelle in §4 wächst.
-- **Das Anlass-Repo und seine Pläne** für Gegenprobe und Paritäts-Probe: der
-  Auftraggeber benennt das Repo (das Issue nennt es nicht) und stellt die Pläne
-  bereit; ohne sie ist die Probe nicht fahrbar, und die Welle schließt nicht mit einer
-  Behauptung, sondern bleibt offen.
+- **Die Angaben und die Rückmeldung des Anlass-Repos:** das Repo ist nicht lesbar. Die
+  Gegenprobe stützt sich auf die anonymisierten Angaben im Issue (Kommentar vom
+  2026-10-30, erledigt); die Paritäts-Probe fährt der Eigentümer mit dem veröffentlichten
+  Image und meldet je Plan im Issue. Ohne diese Rückmeldung ist die Probe nicht
+  fahrbar, und die Welle schließt nicht mit einer Behauptung, sondern bleibt offen.
+  Offen im Issue: die Slices B und C der Angaben lassen sich aus den genannten Zahlen
+  nicht nachrechnen.
 
 ## 6. Out-of-Scope für diese Welle
 

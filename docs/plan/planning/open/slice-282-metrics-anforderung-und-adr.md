@@ -42,53 +42,77 @@ zusammen mit der Begründungs-Pflicht je Punkt.
 
 **Ziel:** Die Anforderung des Moduls `metrics` steht im Lastenheft, ihre
 Schnittstelle in der Spezifikation und ihre Entscheide in einer ADR — **bevor**
-Code entsteht, und gegen die Pläne des Anlass-Repos gemessen statt aus dem Issue
-geraten.
+Code entsteht, und gegen die anonymisierten Angaben des Anlass-Repos gemessen
+(Issue-Kommentar vom 2026-10-30: Block, Formel, Zustände, Messung), statt aus dem
+Issue geraten. Das Repo selbst ist nicht lesbar.
 
-**Die acht Entscheide, die das Issue offenlässt** und die dieser Slice setzt (mit
+**Die neun Entscheide, die das Issue offenlässt** und die dieser Slice setzt (mit
 Empfehlung; die Entscheide trifft der Auftraggeber, vor dem Schreiben der
-Anforderung):
+Anforderung). Die Empfehlungen folgen den Angaben des Anlass-Repos:
 
-1. **Syntax des Blocks im Plan.** Empfehlung: ein Fenced-Block, dessen
-   Info-String der konfigurierte Blockname ist, mit **einfacher Zeilen-Syntax**
-   `Feld: Ganzzahl` bzw. `Feld: Text` je Zeile — **kein YAML** (siehe Entscheid 6);
-   die Feldnamen sind ebenfalls Konfiguration (Issue: „Blockname … Feldnamen“).
-   Maßgeblich ist die Form, die die Pläne des Anlass-Repos **schon haben** — sie wird
-   gelesen, nicht erfunden. Trägt die Zeilen-Syntax sie nicht (Verschachtelung,
-   Listen), fällt Entscheid 6 auf den Parse-Port.
-2. **Woher die Basis `<basis>` kommt.** Empfehlung: ein Feld des Blocks (der Plan
-   kennt seine Basis), `HEAD` ist fest. Nicht `--range` auf der Kommandozeile: ein
-   Lauf prüft mehrere Pläne mit je eigener Basis.
-3. **Form der Formel.** Empfehlung: linear, `Obergrenze = Konstante + Σ Faktor ·
-   Eingabe`, mit **ganzzahliger** Arithmetik (feste Rundungsregel) — kein
-   Ausdrucks-Parser, kein Gleitkomma ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)). Ob die Fachlogik des Anlass-Repos
-   („Zustände“ im Issue) eine Verzweigung nach einem Zustandsfeld verlangt, sagt die
-   Gegenprobe; wenn ja, ist sie Teil der Anforderung, sonst ausdrücklich nicht.
-4. **Was `git diff --numstat` hier heißt.** Zu setzen: Einfügungen plus Löschungen
-   je Datei, Pathspec-Semantik der Block-Pfade, Umgang mit Binärdateien (`-` in
-   `numstat`) und mit Renames (Empfehlung: Rename-Erkennung aus, Messung also wie
-   `--no-renames`; der Wert ist in der Spezifikation benannt). Die Messung läuft
-   über den VCS-Port ohne git-Binary — die Gleichheit mit dem Kommando ist eine
-   **Behauptung, die [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) am Fixture belegt**, nicht dieser Slice.
-5. **Grund-Codes und der Ausnahme-Eintrag.** Vorschlag: `metrics-limit-mismatch`,
-   `metrics-over-limit`, `metrics-reason-empty`, `metrics-block-invalid`; ein
-   Ausnahme-Eintrag mit Grund bei einer Messung **im** Rahmen ist kein Befund.
+1. **Syntax des Blocks im Plan und Plan-Suche.** Ein Fenced-Block (Backticks oder
+   Tilden, genau einer je Plan), dessen Info-String der konfigurierte Blockname ist,
+   mit **Zeilen-Syntax** `<schluessel>: <wert>`, getrennt am ersten `:`, beide Seiten
+   getrimmt; Schlüssel für Pfade und Ausnahmen dürfen mehrfach stehen, alle anderen
+   höchstens einmal; keine Verschachtelung, keine Listen — **kein YAML** (siehe
+   Entscheid 6). Zahlen: ASCII-Ziffern, keine führende Null. Schlüssel- und Feldnamen
+   sind Konfiguration (Issue: „Blockname … Feldnamen“). Geprüft wird jede Datei
+   `slice-*.md` **unmittelbar** im konfigurierten Plan-Verzeichnis (nicht rekursiv,
+   nach Namen sortiert); ohne Datei ist der Lauf grün.
+2. **Woher die Basis `<basis>` kommt.** Ein Feld des Blocks (7 bis 40 Zeichen
+   `0-9a-f`), `HEAD` ist fest. Nicht `--range` auf der Kommandozeile: ein Lauf prüft
+   mehrere Pläne mit je eigener Basis. Eine Basis, die nicht auflöst oder kein
+   Vorfahr von `HEAD` ist, ist ein Eingabefehler (Exit 2).
+3. **Form der Formel.** Zwei Stufen, **ganzzahlig** ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus), kein Gleitkomma,
+   kein Ausdrucks-Parser): die Schätzung ist linear, `S = Konstante + Σ Faktor ·
+   Eingabe`; die Obergrenze ist `Einheit · ⌈Zähler · S / Nenner⌉` (genau eine
+   Aufrundung auf ein Vielfaches der Einheit). Dazu eine **Schwellenregel**: ab einer
+   konfigurierten Schwelle für `Zähler · S` ist ein weiteres Feld Pflicht. Die Werte
+   (im Anlass-Repo 85/80/200/1, 135/10000, Einheit 100, Schwelle 300000) sind
+   Konfiguration, nicht Code. Die Formel ändert sich nie mit einem Zustand; Zustände
+   entscheiden nur, welche Prüfungen laufen.
+4. **Was `git diff --numstat` hier heißt.** Einfügungen plus Löschungen je Datei,
+   **Rename-Erkennung aus** (wie `--no-renames`: Löschung plus Einfügung); Pfade als
+   **literale** Pathspecs (keine Glob-Muster, ein Verzeichnis zählt rekursiv, ein Pfad
+   ohne Treffer trägt 0 bei, dieselbe Datei über zwei Pfade zählt einmal);
+   Binärdateien (`-` in `numstat`) zählen 0 mit Hinweis; ein konfigurierter Teilbaum
+   ist immer ausgenommen; nicht eingecheckte Änderungen zählt die Messung nicht. Die
+   Messung läuft über den VCS-Port ohne git-Binary — die Gleichheit mit dem Kommando
+   ist eine **Behauptung, die [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) am Fixture belegt**, nicht dieser Slice.
+5. **Befunde, Eingabefehler, Hinweise und der Ausnahme-Eintrag.** Ein **Eingabefehler**
+   eines Plans (Block unvollständig, Zahl ungültig, Fence ungeschlossen, Basis
+   unauflösbar) ist Exit 2 mit Klartext und schließt jeden Befund desselben Plans aus —
+   kein Befund-Code, damit `metrics-block-invalid` entfällt. **Befunde:**
+   `metrics-limit-mismatch`, `metrics-over-limit`, `metrics-reason-empty`,
+   `metrics-cut-reason-missing` (Schwellenregel ohne Pflichtfeld). **Hinweise** (keine
+   Befunde): Plan ohne Block, Binärdateien nicht gezählt, Ausnahme-Eintrag ohne
+   Überschreitung. Ausnahme-Eintrag `<N> | <Grund>`: deckt eine Messung bis `N`
+   (`N` ≥ Messung); ein leerer Grund ist selbst ein Befund, auch wenn er deckt; bei
+   Messung im Rahmen ist der Eintrag nur ein Hinweis. Ein Protokoll-Eintrag über
+   frühere Marken wird nicht geprüft.
 6. **Wo der Block gelesen wird.** Der Kern trägt keine YAML-Bibliothek
    ([`ARC-002`](../../../../spec/architecture.md), Verbotsspalte; `yaml.v3` ist in `.a-check.yml` auf die Adapter
-   `configyaml`, `report`, `workflowyaml` beschränkt). Zwei Wege: (a) **Zeilen-Syntax**
-   im Kern, kein YAML (Empfehlung — kein neuer Port, drei Slices bleiben); (b) ein
-   **Parse-Port** nach dem Muster von `WorkflowParser`
-   ([`ADR-0072`](../../adr/0072-workflows-modul.md)), dann wächst
-   [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) um Port und Adapter, und die Block-Lexik wird vorab ein eigener Slice.
+   `configyaml`, `report`, `workflowyaml` beschränkt). Die Zeilen-Syntax aus
+   Entscheid 1 braucht keinen: (a) **Zeilen-Syntax im Kern** (Empfehlung — kein neuer
+   Port, drei Slices bleiben); (b) ein Parse-Port nach dem Muster von `WorkflowParser`
+   ([`ADR-0072`](../../adr/0072-workflows-modul.md)) wäre nur nötig, wenn die Syntax
+   YAML verlangte — nach den Angaben des Anlass-Repos nicht.
 7. **Fence-Behandlung.** Die geteilte Vorverarbeitung entfernt Fenced-Code für alle
    Module; das Modul braucht eine **auf `metrics` begrenzte** Ausnahme, die den Block
    liest, ohne das Verhalten anderer Module zu verschieben. Ein **ungeschlossener**
-   Fence ist `metrics-block-invalid`, nicht still „ohne Block“.
+   Fence ist ein Eingabefehler (Entscheid 5), nicht still „ohne Block“.
 8. **Wo die Zeilen gezählt werden.** Empfehlung: neue Methode am VCS-Port (der
-   Adapter besitzt den Diff). Die Alternative — der Kern zählt selbst über `AllPaths`
-   und `FileAt` — braucht keinen Port-Zuwachs, aber einen Zeilen-Diff im Kern; die
+   Adapter besitzt den Diff; Parameter: Basis, Pfade, ausgenommener Teilbaum). Die
+   Alternative — der Kern zählt selbst über `AllPaths` und `FileAt` — braucht keinen
+   Port-Zuwachs, aber einen Zeilen-Diff im Kern; die
    ADR verwirft eine der beiden mit Begründung, und `spec/architecture.md`
    ([`ARC-005`](../../../../spec/architecture.md), [`ARC-010`](../../../../spec/architecture.md), Fehlerzeile) wird in diesem Slice entsprechend geschärft.
+9. **Eingabe aus einer Tabelle des Plans.** Das Programm des Anlass-Repos zählt die
+   Eingaben der Schätzung zusätzlich aus einer Markdown-Tabelle desselben Plans und
+   prüft vor dem ersten Code-Commit „Schätzung gleich Tabelle“. Empfehlung: **nicht in
+   diesem Modul** — das Issue nennt die Eingaben des Blocks; die Tabellenprüfung wäre
+   eine eigene Anforderung. Die Abweichung zur Parität ist benannt: das Modul fällt
+   Prüfung 2 des Programms nicht, die übrigen Urteile je Plan sind gleich.
 
 **Die Frage aus [`AGENTS.md`](../../../../AGENTS.md) §3.8 wird in der Anforderung beantwortet, nicht erst im Code:**
 das Modul liest Eingaben, die es nie scannt — die Pfade des Blocks (außerhalb
@@ -134,20 +158,22 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
 - [ ] **Lastenheft:** die Anforderung des Moduls mit Beschreibung (inkl. der
       §3.8-Grenze), Out-of-Scope, Akzeptanzkriterien, Bereichskürzel in §3, Version und
-      Historie-Zeile ([`MR-032`](../../../../harness/conventions.md#mr-032)); die acht Entscheide aus §1 sind gesetzt.
+      Historie-Zeile ([`MR-032`](../../../../harness/conventions.md#mr-032)); die neun Entscheide aus §1 sind gesetzt.
       **Ohne** Modulsatz in [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl) und ohne Glossar-Zeile (§1).
 - [ ] **Spezifikation:** Schema `metrics.*` (§2), Block-Syntax, Formel samt
       Rundungsregel, Messsemantik der Summe, Grund-Codes (§7) — jeder neue Grund-Code
       mit `--doctor`-Klartext-Vorgabe; dazu die Schärfung von `spec/architecture.md`
       ([`ARC-005`](../../../../spec/architecture.md), [`ARC-010`](../../../../spec/architecture.md), Fehlerzeile) für den Zuwachs am VCS-Port (Entscheid 8).
-- [ ] **ADR** mit Alternativen-Tabelle zu den Entscheiden 1–8, Re-Evaluierungs-Trigger,
+- [ ] **ADR** mit Alternativen-Tabelle zu den Entscheiden 1–9, Re-Evaluierungs-Trigger,
       `Schärft:`-Feld; ADR-Index nachgezogen ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeilen 4/5).
       **Status `Proposed` bis zur Closure von [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle)** — dort wird die `numstat`-Zusage
       belegt oder korrigiert; erst danach `Accepted`. Sonst bräuchte eine Korrektur
       eine Folge-ADR ([`AGENTS.md`](../../../../AGENTS.md) §3.5).
-- [ ] Bestands-Gegenprobe am Anlass-Repo dokumentiert (§3): Block-Syntax, Formel und
-      die 16 Fälle aus dem Issue sind **gelesen und in der Anforderung belegt**, nicht
-      nacherzählt.
+- [ ] Bestands-Gegenprobe an den Angaben des Anlass-Repos dokumentiert (§3): Block,
+      Formel, Zustände und Messregeln aus dem Issue-Kommentar vom 2026-10-30 sind in der
+      Anforderung belegt, die Prüfvorlage steht als Tabelle in der Closure-Notiz. Das
+      Repo selbst ist **nicht gelesen**; die Anforderung kennzeichnet, was aus
+      Angaben stammt und nicht am Repo gemessen ist (§3.8).
 - [ ] `make gates` grün.
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
@@ -170,15 +196,21 @@ Aussagen-Berührung steht hier gar nicht.
 | `spec/lastenheft.md` | update | neue Anforderung des Moduls; §3 Bereichskürzel-Liste ([`MR-025`](../../../../harness/conventions.md#mr-025): Spiegel vor dem Editieren auflisten); Version, Historie-Zeile. **Nicht:** Modulsatz in [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl), Glossar-Zeile (→ [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle)) |
 | `spec/spezifikation.md` | update | Schema-Zeilen `metrics.*`, Algorithmus-Abschnitt zur Anforderung, Grund-Codes, Historie |
 | `spec/architecture.md` | update | [`ARC-005`](../../../../spec/architecture.md), [`ARC-010`](../../../../spec/architecture.md) und Fehlerzeile nennen `metrics` und die Zeilen-Zählung am Adapter; ohne Modul-Pfade ([`MR-033`](../../../../harness/conventions.md#mr-033)) |
-| `docs/plan/adr/` · `docs/plan/adr/README.md` | neu · update | ADR zu Entscheid 1–8 (Alternativen-Tabelle), Status `Proposed`, Index nachgezogen |
+| `docs/plan/adr/` · `docs/plan/adr/README.md` | neu · update | ADR zu Entscheid 1–9 (Alternativen-Tabelle), Status `Proposed`, Index nachgezogen |
 
 **Bestands-Gegenprobe vor dem Schreiben (nicht danach):**
 
-- Die Pläne des Anlass-Repos lesen: Block-Syntax, Feldnamen, die Zahl der Fälle
-  (Issue: 16 von 16 überschritten), und welche **Zustände** vorkommen. Ergebnis ist
-  eine Tabelle Plan → Eingaben → Marke → Messung → Urteil, die der Slice-Closure-
-  Notiz anhängt; sie ist zugleich die Vorlage der Paritäts-Probe in
-  [`welle-93`](../welle-93-metrics-modul.md) §3.
+- Die Angaben des Anlass-Repos (Issue-Kommentar vom 2026-10-30) gegenlesen: Block-Syntax,
+  Feldnamen, Formel, Zustände, Messregeln. Ergebnis ist eine Tabelle Plan → Eingaben →
+  Marke → Messung → Urteil, die der Slice-Closure-Notiz anhängt; sie ist zugleich die
+  Vorlage für die Testfälle von [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) und die Paritäts-Probe in
+  [`welle-93`](../welle-93-metrics-modul.md) §3. **Belegt sind** das durchgerechnete
+  Beispiel (S = 6790 ⇒ Marke 9200), die Grenzfälle (S = 2000, 2001, 2222, 2223), der
+  Slice A (S = 5036 ⇒ 6800) und der Plan mit S = 4670 ⇒ 6400. **Nicht aus den
+  genannten Zahlen reproduzierbar** sind die Slices B und C (Tabellenzeilen und
+  Fakes ergeben nicht die genannte Schätzung); sie bleiben Rückfrage im Issue und
+  gehen nicht als Testfall ein. Die 16 Überschreitungen der Prosa-Zeit haben kein
+  Urteil des Programms und sind keine Prüfvorlage.
 - Der eigene Bestand dieses Repos trägt keinen solchen Block; die Probe „kein Block ⇒
   kein Befund“ folgt in [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle).
 - Das Modul zählt über den VCS-Port; ob die Summe mit `git diff --numstat
@@ -192,20 +224,22 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 **Start** (`next` → `in-progress`): welle-93 ist offen, das WIP-Limit ist frei, und
 der Auftraggeber hat die offenen Entscheide aus [`welle-93`](../welle-93-metrics-modul.md) §5
-beantwortet oder die Empfehlungen aus §1 (Entscheide 1–8) bestätigt, **und** das
-Anlass-Repo ist vom Auftraggeber **benannt** (Name und Stand) und seine Pläne liegen
-zum Lesen vor. Der Übergang landet auf dem Hauptzweig, vor der Arbeit.
+beantwortet oder die Empfehlungen aus §1 (Entscheide 1–9) bestätigt — Entscheide 5
+und 9 sind gegenüber der ersten Fassung neu und noch nicht bestätigt —, **und** die
+Angaben des Anlass-Repos liegen im Issue vor (erledigt, Kommentar vom 2026-10-30).
+Der Übergang landet auf dem Hauptzweig, vor der Arbeit.
 
 **Rückführungen — vorab benennen, nicht erst im Nachhinein begründen:**
 
 - `in-progress` → `next` (zu groß, zurück zur Zerlegung): die Gegenprobe zeigt eine
-  Fachlogik jenseits einer linearen Formel (Verzweigung nach Zustand, mehrere
+  Fachlogik jenseits der zweistufigen Formel (Verzweigung nach Zustand, mehrere
   Messgrößen) — dann gehört die Formel-Sprache in einen eigenen Slice vor diesem.
-  Ebenso, wenn die Block-Form des Anlass-Repos echtes YAML verlangt und Entscheid 6
-  auf den Parse-Port fällt: dann ist die Block-Lexik ein eigener Slice davor.
-- `in-progress` → `open` (blockiert — Carveout?): die Pläne des Anlass-Repos sind
-  nicht verfügbar, oder der Auftraggeber entscheidet die Basis (Entscheid 2) so, dass
-  sie nicht aus dem Plan stammt.
+  Ebenso, wenn der Auftraggeber Entscheid 9 anders setzt (Tabellenzählung im Modul):
+  dann ist die Tabellen-Eingabe ein eigener Slice, oder wenn die Block-Form doch YAML
+  verlangt und Entscheid 6 auf den Parse-Port fällt.
+- `in-progress` → `open` (blockiert — Carveout?): der Auftraggeber entscheidet die
+  Basis (Entscheid 2) so, dass sie nicht aus dem Plan stammt, oder die Angaben des
+  Anlass-Repos erweisen sich als widersprüchlich (Rückfrage zu den Slices B und C).
 
 ## 5. Closure-Trigger
 
@@ -224,15 +258,17 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 **einen** Ausgang, und kein Slice geht nach `done/`, während eines ohne Ausgang
 dasteht.
 
-- Die Fachlogik des Anlass-Repos passt nicht in eine lineare Formel; eine zu enge
+- Die Fachlogik des Anlass-Repos passt nicht in die zweistufige Formel samt
+  Schwellenregel (etwa wenn Entscheid 9 die Tabellenprüfung doch verlangt); eine zu enge
   Anforderung zwingt das Anlass-Repo, sein Programm zu behalten, und das Modul wäre
   ohne Konsumenten — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
 - Die Anforderung beschreibt die Messung per `numstat`-Gleichheit, bevor der Adapter
   steht; ein Unterschied zwischen reiner-Go-Diff und git-Kommando (Zeilenenden,
   Binärdateien, große Dateien) würde sie nachträglich ändern. Die Zusage ist
   deshalb als noch nicht belegt gekennzeichnet — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
-- Die Pläne des Anlass-Repos ändern sich zwischen Gegenprobe und Paritäts-Probe;
-  die Tabelle misst dann einen alten Stand — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+- Die Angaben sind anonymisiert und vom Eigentümer selbst zusammengestellt; Stand und
+  Pläne des Anlass-Repos ändern sich bis zur Paritäts-Probe, und die Tabelle misst
+  dann einen alten Stand oder eine Auswahl — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
 
 ## 7. Closure-Notiz
 
@@ -282,7 +318,7 @@ Spec und ADR; keine Sub-Area mit eigener Modus-Deklaration.
 (3×, verkörpert in [`AGENTS.md`](../../../../AGENTS.md) §3.8 — das Modul liest Pfade und
 git-Revisionen, die es nicht scannt; die Grenze steht in der Anforderung, §1) und
 [`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
-(17×, gemischt — die Gegenprobe misst die Pläne des Anlass-Repos, nicht den Eigenbestand,
+(17×, gemischt — die Gegenprobe stützt sich auf die Angaben des Anlass-Repos, nicht auf den Eigenbestand,
 der keinen Block trägt; die Anforderung sagt, was am Fremdbestand gemessen ist und
 was nur behauptet). Der Zähler folgt aus den Dateien der Closure.
 

@@ -68,7 +68,7 @@ gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst —
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
 - [ ] **Port und Adapter** (Entscheid 8 der ADR; bei Entscheid für das Zählen im Kern
-      entfällt die Port-Methode, und die Zeilen-Zählung steht im Regel-Paket): der VCS-Port trägt eine Methode für die Zeilen-Summe über
+      entfällt die Port-Methode, und die Zeilen-Zählung steht im Regel-Paket): der VCS-Port trägt eine Methode für die Zeilen-Summe (literale Pfade, ausgenommener Teilbaum) über
       Pfade zwischen zwei Ständen; der reine-Go-Adapter implementiert sie ohne
       git-Binary. **Gleichheit mit `git diff --numstat` (bzw. `--no-renames`, je
       Entscheid 4) ist an einem Fixture mit allen Randformen belegt** — Hinzufügen,
@@ -101,7 +101,7 @@ Aussagen-Berührung steht hier gar nicht.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `internal/hexagon/port/driven/vcs.go` | update | eine Methode für die Zeilen-Summe über Pfade zwischen zwei Ständen |
+| `internal/hexagon/port/driven/vcs.go` | update | eine Methode für die Zeilen-Summe über literale Pfade zwischen zwei Ständen, mit ausgenommenem Teilbaum; Basis auch als Kurz-Hash auflösbar |
 | `internal/adapter/driven/git/git.go` | update | Implementierung über den reinen-Go-Diff, ohne git-Binary |
 | `metrics.go` im Regel-Paket | update | Messung abfragen, Vergleich mit der Obergrenze, Ausnahme-Logik |
 | `internal/hexagon/core/rules/run.go` (`runPostPasses`) | update | Modul in die nicht-datei-scannenden Läufe aufnehmen; Fail-closed ohne `.git` wie `vcs`/`commits` |
@@ -113,10 +113,10 @@ Aussagen-Berührung steht hier gar nicht.
 
 **Negativliste der Messung (Schritt 19, vor dem Code-Commit zu testen):** Pfad im Block
 existiert weder an der Basis noch an `HEAD` (Messung 0, kein Fehler — Entscheid in der
-Anforderung) · Basis ist `HEAD` (Summe 0) · Basis ist kein Vorfahre von `HEAD` ·
-Basis auf einem anderen Zweig · shallow-Klon ohne Basis · Binärdatei (`-` in numstat) ·
+Anforderung) · Basis ist `HEAD` (Summe 0) · Basis ist kein Vorfahre von `HEAD` (Exit 2) · Basis als Kurz-Hash (7 Zeichen) und als voller Hash · konfigurierter Teilbaum, den ein Pfad des Blocks enthält (ausgenommen) · nicht eingecheckte Änderung (zählt nicht) · dieselbe Datei über zwei Pfade (zählt einmal) ·
+Basis auf einem anderen Zweig · shallow-Klon ohne Basis · Binärdatei (`-` in numstat, zählt 0 mit Hinweis) ·
 Datei, die nur Rechte ändert · Rename mit und ohne Inhaltsänderung · Pathspec mit
-Verzeichnis-Präfix und mit Glob · Pfad mit Leerzeichen und Nicht-ASCII · lokaler
+Verzeichnis-Präfix und mit `*`/`[` im Namen (literal, kein Glob) · Pfad mit Leerzeichen und Nicht-ASCII · lokaler
 Branchname, der wie eine Revision aussieht ([`BEO-ALL/range-leerfall-mit-lokalem-branchnamen`](../observations/BEO-ALL/range-leerfall-mit-lokalem-branchnamen/observation.md)) ·
 frisch erzeugtes Fixture-Repo, dessen Index „racily clean“ ist ([`BEO-ALL/racily-clean-git-fixture`](../observations/BEO-ALL/racily-clean-git-fixture/observation.md)).
 
