@@ -758,7 +758,7 @@ eingebetteten Version):
    `@sha256:`-Digest) leitet `DCHECK_REF` auf `…/d-check@$(DCHECK_DIGEST)` um und
    **sticht** so den Tag von `DCHECK_IMAGE`; sonst `DCHECK_REF := $(DCHECK_IMAGE)`.
 4. `TRACE_FLAGS ?=` — überschreibbare Flag-Variable für die RTM-Targets.
-5. Dreizehn `.PHONY`-Targets, jeweils mit `##`-Annotation (die das `help` des
+5. Vierzehn `.PHONY`-Targets, jeweils mit `##`-Annotation (die das `help` des
    Konsumenten aufgreift) und **TAB**-eingerücktem
    `docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) …`:
    - `doc-check` (Befund-Gate, ohne Zusatz-Flag),
@@ -814,15 +814,27 @@ eingebetteten Version):
      [`DC-FA-CLI-001`](lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)) — das
      Target exponiert einen **Modus**, kein Regelmodul, und trägt deshalb keine
      `--enable`/`--disable`-Wahl — darin steht es neben `doc-check`,
-     `doc-trace`, `doc-complete`, `doc-doctor`, `doc-repair` und `doc-help`
-     (gezählt am erzeugten Fragment: sechs der dreizehn tragen eine
-     Fokus-Liste, sieben nicht). Das Recipe ist
+     `doc-trace`, `doc-complete`, `doc-doctor`, `doc-repair`, `doc-manual` und `doc-help`
+     (gezählt am erzeugten Fragment: sechs der vierzehn tragen eine
+     Fokus-Liste, acht nicht). Das Recipe ist
      mit `@` **echo-unterdrückt** (wie `doc-repair`/`doc-help`): die Hilfe ist
      die Nutzlast, nicht ein Befund. **Sie erscheint auf `stderr`** — der
      Hilfe-Pfad setzt die Ausgabe des Flag-Satzes dorthin, bevor er sie
      schreibt; eine Umleitung von stdout fängt nichts. Der Mount bleibt, obwohl
      `--help` ihn nicht braucht (Kurzschluss vor der Wurzel-Auflösung): die
      Form ist für alle Targets dieselbe zugesagt,
+   - `doc-manual` (`--manual "$(MANUAL)"`,
+     [`DC-FA-CLI-013`](lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen))
+     — wie `doc-usage` ein **Modus**-Target ohne `--enable`/`--disable`-Wahl. Der
+     Begriff kommt aus der Variablen `MANUAL`, die das Fragment **nicht**
+     vorbelegt: ein leeres `MANUAL` reicht einen leeren Begriff durch, den das
+     Werkzeug mit Exit 2 beantwortet (`make` meldet den Fehler des Rezepts). Das
+     Recipe ist mit `@` **echo-unterdrückt**, weil die Abschnitte auf **stdout**
+     die Nutzlast sind — eine Umleitung `make doc-manual MANUAL=planning > datei`
+     fängt genau sie. Der Begriff steht in Anführungszeichen, ein Begriff mit
+     Leerzeichen bleibt einer; ein `"`, `$` oder Backtick im Begriff gehört dem
+     Shell-Quoting von `make` und ist nicht zugesagt. Der Mount bleibt aus
+     demselben Grund wie bei `doc-usage`,
    - `doc-help` (listet die `doc-*`-Targets via `grep … $(MAKEFILE_LIST) | sed`
      über die `##`-Annotationen; **namespaced** statt `help`, um die
      Namens-Kollision mit dem Konsumenten-Makefile zu vermeiden).
@@ -3873,6 +3885,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-30 | §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) Punkt 5 um das **vierzehnte** Target `doc-manual` erweitert ([`DC-FA-CLI-010`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 0.109.0, Change Request des Auftraggebers): Zahl, Aufzählungspunkt und die Zählung am erzeugten Fragment (sechs der vierzehn tragen eine Fokus-Liste, acht nicht). Es exponiert `--manual` aus [`DC-FA-CLI-013`](lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen) als **Modus**-Target; der Begriff kommt aus `MANUAL`, das nicht vorbelegt ist. Kein neues Verhalten des Werkzeugs, kein Grund-Code, keine Schema-Zeile — dieselbe Bauform wie `doc-usage` | — |
 | 2026-10-29 | §[`DC-FA-HOST-001.a`](spezifikation.md#dc-fa-host-001a--host-pfad-erkennung) um das **Variablen-Home-Muster** (`$NAME/…`, `${NAME}/…`, `"$NAME"/…`) erweitert, Schritt 4 (Ziel-Ventil) und die §2-Schema-Zeilen `hostpaths.variables` und `hostpaths.exempt-targets`: nur mit gesetztem `hostpaths.variables` aktiv, Punkt-Segment- und Wortgrenzen-Regel wie die Tilde, Unix-Treffer innerhalb eines Variablen-Treffers entfällt, ein `$`-Glob ohne passende Variable ist Exit 2. Ohne den Schlüssel ist der Befundsatz byte-identisch |
 | 2026-10-29 | §[`DC-FA-CLI-009.a`](spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) Schritt 2 und die Schema-Zeile `trace.slices.file-pattern`: ohne gesetztes Muster gilt die Default-Erkennung — Ziffern-Fall `slice-NNN-…md` (Kennung `slice-NNN`) zuerst, sonst Namens-Fall `slice-<name>.md` (Kennung = Basisname ohne `.md`, nur `[a-z0-9-]`); Namens-Dateien unter einem Pfadsegment `observations` unterhalb von `trace.slices.dir` sind im Default keine Slices (der Ziffern-Fall gilt überall). Ein gesetztes Muster gilt unverändert und ohne Ausschluss |
 | 2026-10-20 | §[7](#7-festlegungen-der-harness-werkzeuge): [`SPEC-094`](#7-festlegungen-der-harness-werkzeuge) nennt den HEAD-Stempel, den strengen und den lockeren Modus des Stop-Hooks und den Exit 2 für jeden unerwarteten Fehler; [`SPEC-103`](#7-festlegungen-der-harness-werkzeuge) nennt die Stop-Hook-Zweige der Selbstprüfung |
