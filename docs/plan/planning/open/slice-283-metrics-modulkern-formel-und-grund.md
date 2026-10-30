@@ -106,6 +106,7 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
 - [ ] Doku-Update für die Spiegel, die ein Test hält (§1, nur die Aufzählung);
+- [ ] Grund-Codes dieses Slice (`metrics-limit-mismatch`, `metrics-reason-empty`, `metrics-cut-reason-missing`): Zeile in der Tabelle von `spec/spezifikation.md` §4, Eintrag in `AllReasons()` und `--doctor`-Klartext (`TestAllReasonsDeckungGegenSpezifikationGrundCodes`); `internal/hexagon/core/model/finding.go` und `internal/hexagon/core/app/diagnose.go` (`AllReasons()`) kommen in die Plan-Tabelle (§3).
       `CHANGELOG.md`, Handbuch-Kopf und Digest-Pins **nicht** (Release-Prep).
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
@@ -122,6 +123,7 @@ Aussagen-Berührung steht hier gar nicht.
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | `metrics.go` im Regel-Paket | neu | Block aus dem Plan-Text lesen (Fence mit konfiguriertem Info-String, Zeilen-Syntax ohne YAML, auf `metrics` begrenzte Fence-Ausnahme — Entscheide 6/7 der ADR), Formel ganzzahlig auswerten (Summe über Block-Felder, eine Aufrundung, Schwellenregel), Befunde `metrics-limit-mismatch`, `metrics-cut-reason-missing`, `metrics-reason-empty`; Eingabefehler als Exit 2 |
+| `internal/hexagon/core/model/finding.go` · `internal/hexagon/core/app/diagnose.go` | update | Grund-Code-Konstanten und `AllReasons()` samt Klartext (Spiegel zur Tabelle von `spec/spezifikation.md` §4) |
 | `internal/hexagon/core/rules/run.go` | update | Modul in die Regel-Kette einhängen |
 | `internal/hexagon/core/model/config.go` | update | `MetricsConfig`, Eintrag in `ValidModules()` |
 | `internal/adapter/driven/configyaml/configyaml.go` | update | `metrics.*` lesen und validieren |

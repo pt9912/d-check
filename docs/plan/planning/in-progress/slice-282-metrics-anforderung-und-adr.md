@@ -169,8 +169,10 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       Historie-Zeile ([`MR-032`](../../../../harness/conventions.md#mr-032)); die neun Entscheide aus §1 sind gesetzt.
       **Ohne** Modulsatz in [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl) und ohne Glossar-Zeile (§1).
 - [ ] **Spezifikation:** Schema `metrics.*` (§2), Block-Syntax, Formel samt
-      Rundungsregel, Messsemantik der Summe, Grund-Codes (§7) — jeder neue Grund-Code
-      mit `--doctor`-Klartext-Vorgabe; dazu die Schärfung von `spec/architecture.md`
+      Rundungsregel, Messsemantik der Summe, die Grund-Codes **im Verfahren** (§1) — die
+      Zeilen der Tabelle in §4 und der `--doctor`-Klartext kommen mit der Umsetzung des
+      jeweiligen Codes, weil `TestAllReasonsDeckungGegenSpezifikationGrundCodes` die Tabelle
+      gegen `AllReasons()` hält; dazu die Schärfung von `spec/architecture.md`
       ([`ARC-005`](../../../../spec/architecture.md), [`ARC-010`](../../../../spec/architecture.md), Fehlerzeile) für den Zuwachs am VCS-Port (Entscheid 8).
 - [ ] **ADR** mit Alternativen-Tabelle zu den Entscheiden 1–9, Re-Evaluierungs-Trigger,
       `Schärft:`-Feld; ADR-Index nachgezogen ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeilen 4/5).
@@ -202,7 +204,7 @@ Aussagen-Berührung steht hier gar nicht.
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | `spec/lastenheft.md` | update | neue Anforderung des Moduls; §3 Bereichskürzel-Liste ([`MR-025`](../../../../harness/conventions.md#mr-025): Spiegel vor dem Editieren auflisten); Version, Historie-Zeile. **Nicht:** Modulsatz in [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl), Glossar-Zeile (→ [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle)) |
-| `spec/spezifikation.md` | update | Schema-Zeilen `metrics.*`, Algorithmus-Abschnitt zur Anforderung, Grund-Codes, Historie |
+| `spec/spezifikation.md` | update | Schema-Zeilen `metrics.*`, Algorithmus-Abschnitt zur Anforderung (Grund-Codes im Text), Historie. **Nicht:** Zeilen in der Tabelle von §4 (→ Umsetzung, siehe DoD) |
 | `spec/architecture.md` | update | [`ARC-005`](../../../../spec/architecture.md), [`ARC-010`](../../../../spec/architecture.md) und Fehlerzeile nennen `metrics` und die Zeilen-Zählung am Adapter; ohne Modul-Pfade ([`MR-033`](../../../../harness/conventions.md#mr-033)) |
 | `docs/plan/adr/` · `docs/plan/adr/README.md` | neu · update | ADR zu Entscheid 1–9 (Alternativen-Tabelle), Status `Proposed`, Index nachgezogen |
 
