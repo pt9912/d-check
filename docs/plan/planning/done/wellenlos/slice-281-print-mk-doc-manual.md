@@ -8,15 +8,15 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 **Welle:** ohne Welle — Auftraggeber-Wunsch, die Closure-Bedingung ist die DoD
 selbst.
 
-**Bezug:** [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+**Bezug:** [`DC-FA-CLI-010`](../../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
 (das `--print-mk`-Fragment),
-[`DC-FA-CLI-013`](../../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen)
+[`DC-FA-CLI-013`](../../../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen)
 (`--manual <begriff>`). Anlass: Der Auftraggeber fragt, ob `d-check.mk` ein
 `manual`-Target hat — es hat keines. Wer das Fragment einbindet, erreicht die
 Hilfe des Werkzeugs über `doc-usage`, Handbuch und Spezifikation des gepinnten Image aber nur
 über den selbst zusammengesetzten `docker run`-Aufruf.
 
-**Berührte Spec-Stellen:** [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+**Berührte Spec-Stellen:** [`DC-FA-CLI-010`](../../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
 
 **Verantwortlich:** pt9912
 
@@ -38,7 +38,7 @@ gibt die passenden Abschnitte von Benutzerhandbuch und Spezifikation auf **stdou
 - **Änderungen an `--manual` selbst** (Treffer-Regel, Kopfzeilen, Fehlerhinweis). Das Target
   exponiert den Modus, wie `doc-usage` den Hilfe-Modus; die Anforderung dazu steht und
   ändert sich nicht (anderer Gegenstand: Werkzeug statt Fragment).
-- **Eine Vorbelegung von `MANUAL`.** Ein leerer Begriff ist nach [`DC-FA-CLI-013`](../../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen) Exit 2;
+- **Eine Vorbelegung von `MANUAL`.** Ein leerer Begriff ist nach [`DC-FA-CLI-013`](../../../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen) Exit 2;
   eine Vorbelegung wäre eine zweite Wahrheit neben dem Werkzeug und ließe `make doc-manual`
   etwas ausgeben, das niemand gefragt hat.
 - **Ein Make-Guard für leeres `MANUAL`** (`$(error …)`). Das Werkzeug beantwortet den Fall
@@ -48,7 +48,7 @@ gibt die passenden Abschnitte von Benutzerhandbuch und Spezifikation auf **stdou
   der die Dokumente selbst wählt.
 - **Release-Prep v0.89.0** (CHANGELOG, `version.md`, Pins, Handbuch-Kopf und §11): eigener
   Vorgang nach der Closure
-  ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 17), kein Feature-Commit.
+  ([`AGENTS.md`](../../../../../AGENTS.md) §5 Regel 17), kein Feature-Commit.
 
 Was hier steht, ist die Grenze, an der ein wachsender Slice sich messen lässt:
 Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
@@ -62,7 +62,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 - [x] **Lauf:** `make doc-manual MANUAL=planning` gegen ein eingebundenes Fragment gibt
       auf stdout die Abschnitte beider Dokumente aus (Exit 0); ohne `MANUAL` Exit 2 des
       Werkzeugs, durchgereicht von make.
-- [x] **Anforderung und Spiegel:** Lastenheft 0.109.0 ([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben): vierzehn Targets,
+- [x] **Anforderung und Spiegel:** Lastenheft 0.109.0 ([`DC-FA-CLI-010`](../../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben): vierzehn Targets,
       Akzeptanzkriterien, Out-of-Scope, Historie), Spezifikation (Punkt 5, neuer Punkt,
       Zählung, Historie).
 - [x] **Test:** `TestCLI281_PrintMK_ManualTarget` ist rot ohne das Target (Rot-Beleg), grün mit.
@@ -70,7 +70,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 - [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8, kein
       Self-Review; Verifikation.
-- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
+- [x] Beobachtungs-Register (`../../observations/`) fortgeschrieben — oder
       „keine Beobachtung angefallen" in §7 notiert.
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
@@ -82,30 +82,30 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 |---|---|---|
 | `internal/adapter/driving/cli/print_mk.go` | update | Target im Template, Kopfkommentar „vierzehn" |
 | `internal/adapter/driving/cli/cli_acceptance_test.go` | update | `TestCLI281_PrintMK_ManualTarget` neben dem `doc-usage`-Test |
-| `spec/lastenheft.md` | update | [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben), 0.109.0, Historie |
-| `spec/spezifikation.md` | update | [`DC-FA-CLI-010.a`](../../../../spec/spezifikation.md#dc-fa-cli-010a--makefile-fragment) Punkt 5, neuer Punkt, Zählung, Historie |
+| `spec/lastenheft.md` | update | [`DC-FA-CLI-010`](../../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben), 0.109.0, Historie |
+| `spec/spezifikation.md` | update | [`DC-FA-CLI-010.a`](../../../../../spec/spezifikation.md#dc-fa-cli-010a--makefile-fragment) Punkt 5, neuer Punkt, Zählung, Historie |
 | `docs/user/benutzerhandbuch.md` | Release-Prep | §4.16 (Zahl, Aufzählung, Beispiel, Hinweis-Absatz) und Kopf/§11 — siehe Plan-Änderung |
 | `docs/user/operations.md` | Release-Prep | Zeile `--print-mk` — siehe Plan-Änderung |
 | `docs/user/abdeckung-tests.md` | regenerieren | `make abdeckung` nach dem neuen Test |
 
 Kein ADR: derselbe Zuschnitt wie die Erweiterung um `doc-usage` (eine Anforderungs-Änderung
-in [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben), keine neue Architekturentscheidung; keine ADR trägt `doc-usage`).
+in [`DC-FA-CLI-010`](../../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben), keine neue Architekturentscheidung; keine ADR trägt `doc-usage`).
 
 **Plan-Änderung vor dem Code (2026-10-30, Schritt 15):** Handbuch (§4.16, Kopf, §11) und
 `docs/user/operations.md` reisen nicht im Feature-Commit, sondern in der Release-Prep —
-[`AGENTS.md`](../../../../AGENTS.md) §5 Regel 17 hält Handbuch-Kopf und -Pflege am Release fest, und der
+[`AGENTS.md`](../../../../../AGENTS.md) §5 Regel 17 hält Handbuch-Kopf und -Pflege am Release fest, und der
 Feature-Commit fasst Handbuch und READMEs nicht an. Der Wortlaut liegt vor (am gebauten Image
 gelaufen, Exit 0/2, Begriff mit Leerzeichen, Begriff mit `"` bricht die Shell) und wird dort
 eingespielt. Zwischen Feature-Commit und Release-Prep nennen die Nutzer-Dokumente noch dreizehn
 Targets — der Zustand des letzten Releases, bis der nächste erscheint.
 
-**Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025), Schritt 17;
+**Spiegel vor dem Editieren** ([`MR-025`](../../../../../harness/conventions.md#mr-025), Schritt 17;
 Zählung: `grep -rniE 'dreizehn|thirteen|doc-usage' .` über das Repo ohne `.git`, Frozen-Klassen
 `docs/plan/planning/done`, `docs/reviews`, `docs/plan/adr` und `CHANGELOG.md`):
 
 - Lastenheft: Beschreibung („dreizehn `##`-annotierte Targets"), Aufzählung bei `doc-usage`/`doc-help`,
   Happy Path, Boundary, Out-of-Scope („jenseits der gelisteten dreizehn", Aufzählung),
-  Kopf `Version`, Historie. Nicht betroffen: „dreizehn Quell-Tools" ([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)).
+  Kopf `Version`, Historie. Nicht betroffen: „dreizehn Quell-Tools" ([`DC-QA-04`](../../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)).
 - Spezifikation: Punkt 5 („Dreizehn `.PHONY`-Targets"), `doc-usage`-Punkt mit der Zählung
   („sechs der dreizehn tragen eine Fokus-Liste, sieben nicht"), Historie.
 - Produkt: `print_mk.go` Kopfkommentar (Zeilen 22–25).
@@ -163,22 +163,22 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   Anführungszeichen um `$(MANUAL)` weg und sah den Test aus genau diesem Grund rot werden. Die Spiegel standen
   vor dem Editieren im Plan (Schritt 17); danach blieb keine alte Zahl außerhalb der deklarierten Ausnahme stehen.
 - **Was ging anders als geplant:** Der Plan wies Handbuch und `operations.md` dem Feature-Commit zu, gegen
-  [`AGENTS.md`](../../../../AGENTS.md) §5 Regel 17 (Pflege des Handbuchs am Release). Ich habe es vor dem ersten Commit
+  [`AGENTS.md`](../../../../../AGENTS.md) §5 Regel 17 (Pflege des Handbuchs am Release). Ich habe es vor dem ersten Commit
   bemerkt, den Wortlaut als Patch zurückgelegt und die Abweichung als Plan-Änderung vor dem Code notiert. Der Review
   fand weder Befund noch Folgearbeit (nur drei INFO, zwei davon Testkommentare, behoben). Der Verifier-LOW zum Begriff mit
   Leerzeichen war gemessen, aber noch nicht im Plan notiert; §6 trägt die Messung jetzt.
 - **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
-- **Beobachtungs-Register (`../observations/`):** keine Beobachtung angefallen, die ein Beleg wäre. Die
+- **Beobachtungs-Register (`../../observations/`):** keine Beobachtung angefallen, die ein Beleg wäre. Die
   Fehlzuordnung der Handbuch-Dateien im Plan wurde vor dem Commit selbst bemerkt und ist einmalig:
   benannt, nicht gezählt. Schritt 17 wurde diesmal befolgt
-  ([`guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/state.md)
+  ([`guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/state.md)
   bleibt bei 4×, verkörpert).
 - **Folge-Slices:** keiner. Die Release-Prep v0.89.0 ist ein eigener Vorgang nach der Closure: Handbuch §4.16,
   Kopf und §11 sowie `operations.md` Zeile 41 (Wortlaut liegt als Patch vor), dazu CHANGELOG, `version.md`
   und die Pins.
 - **Risiken aus §6:** beide entfallen (siehe §6). Trigger-Audit: kein Carveout, kein bootstrap-aware Gate, keine ADR
   und keine Hard Rule mit eingetretenem Trigger; keine Schwelle gesenkt (§3.6). Nachtlauf-Stand
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+  ([`MR-053`](../../../../../harness/conventions.md#mr-053)): wie in §8.
 - **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — keiner genannt; (c) Register — die
   zitierte Beobachtung existiert und trägt Belege.
 
@@ -198,13 +198,13 @@ Default `*` (`ALL`, GF); keine eigene Sub-Area.
 
 **Vorgelagert — offene Beobachtungen sichten:** Register durchgegangen; Treffer:
 
-- [`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md)
+- [`rule-drawn-from-occasion-not-inventory`](../../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md)
   (9×, verkörpert): die Spezifikation von `doc-usage` wurde damals aus dem Anlass geschrieben, nicht
   aus dem Bestand — hier ist die Gegenprobe die Zählung am erzeugten Fragment (§3).
-- [`guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/observation.md)
+- [`guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/observation.md)
   (4×, verkörpert): Handbuch und `operations.md` sind Spiegel der Zahl „dreizehn" (§3 listet sie).
 
-**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 `image-scan` rot am 2026-10-29 — **planmäßig gelesen**: das `HIGH` (`stdlib`, `CVE-2026-111943`,
 Fix in Go 1.27.3) betraf das damalige `:latest` (v0.87.1, Go 1.27.2); ein frischer
 `make image-scan` gegen das heutige `:latest` (v0.88.0, Go 1.27.3) meldet 0 `HIGH`/`CRITICAL`,
