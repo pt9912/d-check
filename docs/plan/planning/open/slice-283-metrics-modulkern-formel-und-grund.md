@@ -50,8 +50,9 @@ mit leerem Grund als Befund — rein arithmetisch, ohne git, einzeln lieferbar.
 - **Die Tabellenzählung (Schätzung aus der Tabelle, Prüfung 2, Hinweis „Marke ausstehend“)**
   — Folge-Slice: [`slice-285`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) trägt sie, weil Prüfung 2 den Zustand „Messung 0 / ≥ 1“
   aus der Messung braucht. Hier ist `schaetzung` ein Zahlenfeld des Blocks, kein Ergebnis
-  einer Tabelle. Die Prosa-Form-Erkennung ist im Issue offen (Rückfrage) und nicht Teil
-  dieses Slice.
+  einer Tabelle. Die Prosa-Form-Erkennung ist nach der Antwort des Issue-Autors kein
+  Zustand des Moduls: ein Plan ohne Block gibt nur den Hinweis „kein Block“, der den Plan
+  nennt (Urteil gleich, nicht gemessen).
 - **Die Messung aus git und der Vergleich mit der Obergrenze** — Schicht-Abgrenzung
   und Folge-Slice: [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) trägt VCS-Port, Adapter und den Vergleich;
   dieser Slice bleibt hermetisch (kein `.git` nötig), damit seine Hälfte ohne die andere

@@ -51,9 +51,9 @@ berechneten Schätzung und Marke. Tabellenfehler sind Eingabefehler (Exit 2).
 - **Block, Marke gegen Formel, leerer Grund, Messung** — Bestand von
   [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) und [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle), davor `done/`: Prüfung 2 braucht den Zustand
   „Messung 0 / ≥ 1“ aus der Messung; dieser Slice nimmt ihn als gegeben.
-- **Die Prosa-Form-Erkennung** (ältere Zeile statt Block) — ob das Modul sie gibt, ist
-  im Issue offen (Rückfrage); gibt es sie, ist sie eine eigene Anforderung mit
-  konfigurierbarem Muster.
+- **Die Prosa-Form-Erkennung** (ältere Zeile statt Block) — nach der Antwort des Issue-Autors
+  kein Zustand des Moduls: sie kommt nur in Plänen vor, die das Verzeichnis „in Arbeit“
+  nicht enthält; ein Plan ohne Block gibt nur den Hinweis „kein Block“ mit dem Plan-Namen.
 - **Andere Tabellen-Auswertungen als die Zählung je Klasse** (Summen aus Zellen,
   mehrere Tabellen) — der Anlass verlangt Zeilen je Klasse; mehr wäre eine neue
   Anforderung.
