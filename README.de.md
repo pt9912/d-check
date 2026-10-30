@@ -114,7 +114,7 @@ Dokuments:
   Ergebnisnotizen beidseitig (`wave-drift`, `wave-preview-exists`,
   `wave-results-missing`, `wave-unregistered`), opt-in. **Register-Deckung**
   (zusätzlich opt-in über `observations.register` **oder** `observations.dir`,
-  mutually exclusive): eine zitierte Beobachtungs-Kennung ohne Nachweis
+  sich gegenseitig ausschließend): eine zitierte Beobachtungs-Kennung ohne Nachweis
   (`observation-unregistered`) — im Tabellen-Modus eine Zeile im Register, im
   Verzeichnis-Modus ein Ordner `<pfad>/observation.md`; gezählt werden Prosa
   und Linktext, ein reines Inline-Code-Beispiel nicht
@@ -305,7 +305,7 @@ Lastenhefts, und beide werden gemessen, nicht behauptet:
   ([`DC-FA-CONF-001`](spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
 - **Dogfooding:** d-check validiert die eigene Doku bei jedem
   Gate-Lauf — mit der [Selbstkonfiguration](.d-check.yml) im
-  Vollausbau (**elf** Module inkl. Referenzmatrix, Span-Artefakten,
+  Vollausbau (**zwölf** Module inkl. Referenzmatrix, Span-Artefakten,
   Host-Pfad-Hygiene, Versions-Pin-Konsistenz, Struktur-Invarianten,
   Diagramm-Kennungen und wortgleichen Zitaten).
 - **Container nativ-identisch:** Befund-Ausgabe und Exit-Code des

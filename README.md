@@ -169,7 +169,7 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   several matches under `sections: one` yield `section-ambiguous`. Every rule may
   **declare its base set** — `tasks-ignore-pattern` removes task items from the
   `max-tasks` count (matched against the **item text behind the checkbox**, so
-  that `^` means „the item starts like this"), `exempt-section-pattern` removes
+  that `^` means "the item starts like this"), `exempt-section-pattern` removes
   **sections** from the rule (matched against the **same** raw heading line as
   `section-pattern`, `#` sequence included). Both only **shrink** the checked
   set, carry no reason code of their own, and without them the finding set is
@@ -302,7 +302,7 @@ spec, and both are measured, not asserted:
   ([`DC-FA-CONF-001`](spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
 - **Dogfooding:** d-check validates its own docs on every
   gate run — with the [self-configuration](.d-check.yml) fully
-  built out (**eleven** modules incl. reference matrix, span artifacts,
+  built out (**twelve** modules incl. reference matrix, span artifacts,
   host-path hygiene, version-pin consistency, structure invariants,
   diagram identifiers and verbatim citations).
 - **Container native-identical:** the image's finding output and exit code

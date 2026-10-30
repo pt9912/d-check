@@ -977,6 +977,9 @@ Drei Grund-Codes, weil sie drei verschiedene Reparaturen verlangen:
 `closure-note-missing` (Abschnitt schreiben), `closure-note-thin` (Substanz
 ergänzen — Satzende-Zeichen **außerhalb** von Code-Blöcken, Schwelle
 `min-sentences`, Default 4) und `closure-note-boilerplate` (Floskel ersetzen).
+Davor steht ein Vorbehalt: passen **mehrere** Überschriften auf
+`heading-pattern`, meldet `closure-note-ambiguous` (an der zweiten) und es wird
+nicht gemessen — die Überschrift eindeutig machen.
 
 **Was als Satz und als Floskel zählt** (seit v0.56.0): Der Abschnitt wird
 **einmal** bereinigt — Code-Blöcke **und** Inline-Code fallen weg —, und alle
@@ -1075,12 +1078,7 @@ docs/plan/adr/README.md:64  …	section-column-missing	keine Tabelle des Abschni
 - **Ohne `cell-min-chars` darf die Zelle leer sein** — null Zeichen liegen
   unter jeder Obergrenze. Wer „gefüllt" meint, muss es sagen.
 - **Eine Zeile, die gar nicht bis zur Spalte reicht, meldet.** Das ist der Fall,
-  den man sonst nie sieht: die vorderen Spalten stehen ja da. Im ADR-Index
-  dieses Repos hat genau das **vier** Zeilen ohne Datum und ohne Bezug
-  aufgedeckt.
-
-**Mehrere Spalten** begrenzen Sie mit mehreren Regeln über denselben Abschnitt
-— das geht, weil die Regel-Identität die benannte Spalte mitträgt.
+  den man sonst nie sieht: die vorderen Spalten stehen ja da.
 
 **Eine Grenze:** gemessen wird die Zelle, **wie sie dasteht**, Markdown-Syntax
 eingeschlossen. Auf eine Spalte voller Links angewandt misst die Bedingung
@@ -1591,7 +1589,7 @@ versions:                      # gepinnte Versions-Verweise gegen die aktuelle V
   #     current-from: harness/conventions.md#baseline
 vcs:                           # git-Diff-Immutabilität (opt-in; braucht .git + Range)
   paths: ["docs/plan/adr/[0-9]*.md"]    # geschützte Datei-Klasse (Glob)
-  immutable-when: '^\*\*Status:\*\* Accepted'        # BASE immutabel ab dieser Zeile (nur ausserhalb von Code-Bloecken)
+  immutable-when: '^\*\*Status:\*\* Accepted'        # BASE immutabel ab dieser Zeile (nur außerhalb von Code-Blöcken)
   exclude-sections: [Geschichte]        # Abschnitte, die nicht zum Core zählen
   status-line: '^\*\*Status:\*\*'       # Kopf-Status-Zeile (aus dem Core gestrippt)
   head-allow: '^\*\*Status:\*\* (Accepted|Superseded by ADR-[0-9]{4})'  # erlaubter Status-Übergang
@@ -1640,8 +1638,10 @@ feinsten Schnitt:
   ihre Referenzen erreichen **kein** Modul. Der gröbste Schnitt.
 - **`exempt-paths`** (ganze Datei, je Modul): nimmt **ganze Dateien** von der Prüfung
   **eines** Moduls aus — `ids` (je Muster), `versions` (je Muster-Quellen-Paar),
-  `structure` (je Regel), `matrix`, `codepaths` und `diagrams` (jeweils modulweit);
-  der Rest wird weiter gescannt. Die übrigen Module haben den Schlüssel nicht.
+  `structure` (je Regel), `matrix`, `codepaths`, `diagrams`, `workflows`,
+  `reviews` und `file` (jeweils modulweit); der Rest wird weiter gescannt.
+  `hostpaths` und `tracked` führen statt dessen `exempt-targets` (Globs über das
+  gemeldete Ziel). Die übrigen Module haben keinen der beiden Schlüssel.
 - **`d-check:ignore`** (eine Zeile): der Marker nimmt **eine einzelne Zeile** aus —
   in `codepaths`, `ids`, `versions` und `diagrams`. Bei `ids` gilt er für nackte
   wie für Inline-Code-Vorkommen, unabhängig von der Link-Politik; bei `versions`
@@ -1654,8 +1654,8 @@ feinsten Schnitt:
   Zeilen und tragen den Marker nicht — `citations` sogar keine der drei
   **feinen** Achsen (`exempt-paths`, `ignore-refs`, Marker), obwohl es
   dieselben Grund-Codes meldet wie das ventil-tragende `codepaths`. Die
-  **groben** Achsen (`scan.ignore`, modul-lokaler `scope`) gelten dagegen für
-  jedes Modul.
+  **grobe** Achse `scan.ignore` gilt dagegen für jedes Modul; ein modul-lokaler
+  `scope` ist kein Ventil, sondern begrenzt die Scan-Menge des einen Moduls.
 - **`ignore-refs`** (Ziel, querschnittlich): nimmt bestimmte **aufgelöste
   Ziel-Pfade** von der Existenz-/Anker-Prüfung aus — **referenz-weit** (datei- und
   zeilen-unabhängig) und geteilt von `links`, `anchors` und `codepaths`.
@@ -1684,11 +1684,11 @@ feinsten Schnitt:
   `mermaid`-Fence versteckt ihn die Diagramm-Sprache (`%% d-check:ignore`).
   **Konservativ:** ein `>` im Kommentar vor dem Marker lässt ihn nicht gelten.
   **Der Preis:** wer den Marker setzt, muss wissen, für welches Modul.
+
 **Im Modul `diagrams` ist der Marker ein Token, kein HTML-Kommentar** — und er
-wirkt an genau **zwei** Orten. In Prosa schreiben Sie ihn als
-`<!-- d-check:ignore -->`; innerhalb eines Diagramm-Fence ist das kein
-Kommentar, sondern Diagramm-Text. Das Modul sucht deshalb die **Zeichenfolge**
-selbst, unabhängig davon, was sie umgibt.
+wirkt an genau **zwei** Orten, beide innerhalb eines Fence. Dort ist ein
+HTML-Kommentar kein Kommentar, sondern Diagramm-Text; das Modul sucht deshalb
+die **Zeichenfolge** selbst, unabhängig davon, was sie umgibt.
 
 **Erster Ort — die Öffnungszeile des Fence.** Der Marker nimmt dort den
 **ganzen** Block aus. Er steht im Infostring, ist also weder HTML- noch
@@ -2215,7 +2215,8 @@ sources:                                     # opt-in; NETZZUGRIFF, zweite Netz-
 ### Das Versions-Register `version.md` aufbauen (für Modul `versions`)
 
 Das Modul `versions` liest die aktuelle Version aus `version.md#aktuell`
-(Schlüssel `current-from`) und prüft damit die gepinnten `ghcr`-Image-Verweise.
+(Schlüssel `current-from`) und prüft damit gepinnte Versions-Verweise, etwa
+`ghcr`-Image-Tags.
 Diese Datei ist zugleich ein **auflösbares Link-Ziel** für Erwähnungen der
 eigenen Releases. Ein eigenes Repo baut sie nach diesem Muster nach — zwei
 Abschnitte und eine Anker-Mechanik:
@@ -2673,12 +2674,11 @@ allein lässt die **leere** Zelle passieren, denn null Zeichen liegen unter
 jeder Schwelle. `cell-min-chars` schließt das, mit eigenem Grund-Code
 `section-cell-undersized` — die Reparatur ist ausfüllen, nicht kürzen.
 
-Zwei Dinge sind benannt, nicht geschlossen: gemessen wird die Zelle, **wie sie
+Eine Sache ist benannt, nicht geschlossen: gemessen wird die Zelle, **wie sie
 dasteht** — eine Zelle aus einem einzigen langen Link ist lang, auch wenn ihr
-sichtbarer Text kurz ist. Und die Bedingung misst **eine** Spalte je Regel; wer
-mehrere begrenzen will, schreibt mehrere Regeln über denselben Abschnitt. Das
-geht, weil die Regel-Identität die benannte Spalte mitträgt — sonst wären zwei
-Befunde derselben Zeile nicht unterscheidbar.
+sichtbarer Text kurz ist. Jede Spalte der Liste wird einzeln gemessen; zwei
+Befunde derselben Zeile bleiben unterscheidbar, weil die Regel-Identität die
+benannte Spalte mitträgt.
 
 Achtens: eine Regel darf ihre **Grundmenge erklären**, und die zwei Schlüssel
 dafür sehen **verschiedene** Zeichenketten. `tasks-ignore-pattern` nimmt
@@ -2809,7 +2809,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `spans`     | opt-in        | ungeschlossene Code-Spans, verschachtelte Links, unbalancierte Fences                    | `span-unclosed`, `span-nested-link`, `fence-unclosed`       |
 | `hostpaths` | opt-in        | host-lokale absolute Pfade und Home-relative Pfade (Tilde vor einem Segment ohne führenden Punkt — `~/.config` u. ä. bleiben als Werkzeug-Konvention still), Maschinen-Layout-Leak. Optional `variables` (Namen von Shell-Variablen): `$HOME/…`, `${HOME}/…` und `"$HOME"/…` gelten dann als Home-Verweis, ohne den Schlüssel unverändert. Ventil `exempt-targets` (Globs über den gemeldeten Pfad, Unix-, Home-relative und Variablen-Funde; kein Zeilen-Marker) | `hostpath-forbidden`                                        |
 | `diagrams`  | opt-in        | Kennungen in Diagramm-Fences (Default `mermaid`) existieren in ihrer `defined-in`-Quelle. **Beide Ventile** wie `ids`/`codepaths`: `exempt-paths` (datei-weit) und der Zeilen-Marker `d-check:ignore` — hier als **Token** statt HTML-Kommentar, und auf der **Öffnungszeile** des Fence für den ganzen Block | `diagram-id-undefined`                                      |
-| `versions`  | opt-in        | gepinnte `ghcr`-Image-Verweise tragen die aktuelle Version (aus `version.md#aktuell`), auch in Fences. **Mehrere Muster-Quellen-Paare** über `versions.patterns` (eigenes Release **und** ein fremder gepinnter Stand); die Kurzform `pin-pattern`/`current-from` **ist** die einelementige Liste, beide Schreibweisen zugleich ⇒ Exit 2. Ausnahmen sind paar-lokal, der Zeilen-Marker ist es nicht | `version-stale`                                             |
+| `versions`  | opt-in        | gepinnte Versions-Verweise (etwa `ghcr`-Image-Tags) tragen die aktuelle Version (aus `version.md#aktuell`), auch in Fences. **Mehrere Muster-Quellen-Paare** über `versions.patterns` (eigenes Release **und** ein fremder gepinnter Stand); die Kurzform `pin-pattern`/`current-from` **ist** die einelementige Liste, beide Schreibweisen zugleich ⇒ Exit 2. Ausnahmen sind paar-lokal, der Zeilen-Marker ist es nicht | `version-stale`                                             |
 | `pins`      | opt-in        | Content-Pin (`<!-- dpin: … -->`): Ziel-Span eines Links unverändert seit dem Verlinken | `link-stale`                                                |
 | `immutable` | opt-in        | Immutabilitäts-Pin (`<!-- immutable: … -->`): normalisierter **Core** einer Datei (ohne Marker-Zeile + `exclude-sections`) unverändert seit dem Pinnen; hermetisch (kein git) | `core-drift`                                                |
 | `vcs`       | opt-in (git)  | git-Diff-Immutabilität: **Core** einer immutablen Datei (`immutable-when`) unverändert über eine Commit-Range (`--range`/`--staged`); liest `.git` read-only (kein git-Binary, kein Netz). `immutable-when` und die Kopf-Status-Zeile gelten nur **außerhalb von Code-Blöcken** — eine Datei, die ihren eigenen Kopf als Beispiel zeigt, wird dadurch nicht immutabel. Mit `ignore-link-targets` ist ein reiner **Pfad-Nachzug** keine Drift: ein Link-Ziel, das in BASE oder HEAD auf eine Datei oder ein Verzeichnis auflöst, wird vor dem Vergleich auf Dateiname und Anker normiert — zieht eine verlinkte Datei um, darf die immutable Datei ihr folgen; ein Ziel auf eine Datei mit anderem Namen oder auf keine existierende, jede Änderung am Linktext oder an der übrigen Zeile bleiben Drift | `core-drift-vcs`                                            |
