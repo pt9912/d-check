@@ -3407,8 +3407,8 @@ reine Arithmetik über dem Plan-Text; nur Prüfung 3 und der Zustand „Messung 
 3. **Block erkennen.** Ein Zaun ist, was der gemeinsame Öffner-Test des Produkts als Zaun
    wertet (drei oder mehr Backticks oder Tilden nach Entfernen von Space und Tab vorn; bei
    Backticks darf der Rest der Zeile keinen Backtick tragen). Ein Block ist ein Zaun, dessen
-   Info-String (getrimmt) `metrics.block` ist; der Schluss-Zaun folgt der gemeinsamen
-   Schluss-Regel. Kein Block ⇒ Zustand *kein Block*. Mehr als ein Block ⇒ Eingabefehler;
+   Info-String (getrimmt) `metrics.block` ist; der Schluss-Zaun gleicht dem Öffner in Zeichen
+   und Mindestlänge (längengleich, wie beim Tabellen-Leser der RTM). Kein Block ⇒ Zustand *kein Block*. Mehr als ein Block ⇒ Eingabefehler;
    ein Block ohne Schluss-Zaun ⇒ Eingabefehler. Zäune anderer Info-Strings werden
    übersprungen und verbergen ihren Inhalt. **Abweichung vom Programm des Anlass-Repos:**
    dort sind höchstens drei Leerzeichen Einrückung erlaubt; das Produkt erlaubt Space und
@@ -3427,18 +3427,18 @@ reine Arithmetik über dem Plan-Text; nur Prüfung 3 und der Zustand „Messung 
    alle Felder aus `estimate-inputs` trägt, aber weder Basis noch Schätzung noch Marke;
    *vollständig*, wenn Pfad, Basis, Schätzung und Marke (und alle Eingaben) stehen. Jede
    andere Kombination ist ein Eingabefehler.
-6. **Tabelle lesen** (nur bei *Marke ausstehend* und *vollständig*). Zäune und
-   Tabellenzeilen erkennt das Modul mit denselben Lesern wie die übrigen Module (ein Zaun
-   ist eine Zeile, die der gemeinsame Öffner-Test als Zaun wertet, nach Entfernen von Space
-   und Tab vorn; Zellen teilt der gemeinsame Zeilen-Teiler: unescapte Pipes außerhalb
-   einzeiliger Code-Spans, `\|` als Zeichen, Anfangs- und Schlussstrich optional). Genau
+6. **Tabelle lesen** (nur bei *Marke ausstehend* und *vollständig*). Zäune erkennt das Modul
+   wie der Tabellen-Leser der RTM: der Öffner-Test des Produkts nach Entfernen von Space und
+   Tab vorn, geschlossen durch ein Zeichen gleicher Art und mindestens gleicher Länge;
+   Zellen teilt der gemeinsame Zeilen-Teiler (unescapte Pipes außerhalb einzeiliger
+   Code-Spans, `\|` als Zeichen, Anfangs- und Schlussstrich optional). Genau
    eine Tabelle außerhalb umzäunter Blöcke, deren Kopf aus genau den Zellen von
    `table.header` besteht (getrimmt, bytegleich): keine ⇒ Eingabefehler, mehr als eine mit
    passendem Kopf ⇒ Eingabefehler; andere Tabellen werden nicht gelesen. Die Trennzeile
    folgt direkt dem Kopf, hat genauso viele Zellen, jede aus `-` mit optionalem `:` an einem
    oder beiden Enden. Datenzeilen sind alle folgenden Zeilen, die der Zeilen-Teiler als
    Tabellenzeile liest; die Tabelle endet an der ersten Zeile, die keine ist. Eine Zeile
-   mit anderer Zellenzahl als der Kopf, eine leere oder doppelte Schlüsselzelle, eine Klasse
+   mit anderer Zellenzahl als der Kopf (auch eine überzählige HTML-Kommentar-Zelle, die der RTM-Leser toleriert), eine leere oder doppelte Schlüsselzelle, eine Klasse
    außerhalb von `table.classes` (Vergleich bytegleich nach Trimmen) und eine Tabelle ohne
    Datenzeile sind Eingabefehler. Gezählt werden Zeilen je Klasse. `\r` unmittelbar vor
    `\n` gehört nicht zur Zeile. **Abweichung vom Programm des Anlass-Repos:** dort ist der
@@ -3463,8 +3463,10 @@ reine Arithmetik über dem Plan-Text; nur Prüfung 3 und der Zustand „Messung 
 9. **Messung.** Über den VCS-Port: die Summe aus Einfügungen und Löschungen zwischen
    Basis und `HEAD` über die Pfade des Blocks, mit Rename-Erkennung **aus**, als
    **literale** Pathspecs (ein Verzeichnis rekursiv; dieselbe Datei über zwei Pfade zählt
-   einmal), abzüglich der Pfade aus `metrics.excluded`. Ein Pfad ohne Treffer trägt 0 bei
-   und erscheint in einem Hinweis (ein Tippfehler im Pfad liefert sonst still 0);
+   einmal), abzüglich der Pfade aus `metrics.excluded`. Ein Pfad trägt 0 bei, wenn er
+   keine Änderung hat. Existiert er **weder an der Basis noch an `HEAD`** als Datei oder
+   Verzeichnis, erscheint er in einem Hinweis (ein Tippfehler im Pfad liefert sonst still
+   0; vor dem ersten Code-Commit trifft der Hinweis auch Pfade, die noch nicht existieren);
    Binärdateien (`-` in `numstat`) zählen 0 und erscheinen ebenfalls in einem Hinweis;
    nicht eingecheckte Änderungen zählt die Messung nicht. Eine Basis, die nicht
    auflöst oder kein Vorfahr von `HEAD` ist, ein nicht lesbares `HEAD` und ein fehlendes
@@ -3482,9 +3484,11 @@ reine Arithmetik über dem Plan-Text; nur Prüfung 3 und der Zustand „Messung 
 12. **Eingabefehler.** Der Lauf bricht beim ersten Eingabefehler ab, in der Reihenfolge der
     Plan-Namen: Exit 2, ein Klartext mit Plan und Ursache auf stderr, **kein** Befund und
     kein Hinweis aus keinem Plan — so verhält sich jeder Fehler eines Moduls, das ein
-    Ergebnis und einen Fehler liefert. Ursachen: Block unvollständig, ungeschlossen
-    oder doppelt, ungültige Zahl, Tabellenfehler (Schritt 6), Basis nicht auflösbar oder kein
-    Vorfahr, `.git` fehlt.
+    Ergebnis und einen Fehler liefert. Ursachen: `plans-dir` fehlt; Block unvollständig,
+    ungeschlossen oder doppelt; Zeile ohne `:`; Ausnahme-Eintrag ohne `|`; ungültige Zahl
+    oder Überlauf; ungültige Kombination der Felder (Schritt 5); Tabellenfehler (Schritt 6);
+    Basis nicht auflösbar oder kein Vorfahr; `HEAD` nicht lesbar; `.git` fehlt. Auch die
+    Befunde aller anderen Module entfallen, denn der Lauf liefert nur den Fehler.
 
 **Nicht Gegenstand:** eine Rename-Erkennung nach git-Art; Kopien-Erkennung; andere
 Messgrößen als die Zeilen-Summe; mehrere Tabellen; das Schreiben von Block oder Marke; die

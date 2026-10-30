@@ -66,10 +66,11 @@ dienen dieser Liste als Bezug):
    `metrics-limit-mismatch`, `metrics-estimate-mismatch`, `metrics-over-limit`,
    `metrics-reason-empty` und `metrics-cut-reason-missing`; Hinweise sind keine Befunde.
 6. **Lesen im Kern:** die Zeilen-Syntax wird im Kern gelesen; **kein Parse-Port**.
-7. **Fence-Behandlung:** eine auf `metrics` begrenzte Lese-Ausnahme neben der geteilten
-   Vorverarbeitung; ein ungeschlossener Fence ist ein Eingabefehler.
+7. **Fence-Behandlung:** keine eigene Ausnahme; das Modul liest die Plan-Dateien selbst und erkennt
+   Zäune mit dem Öffner-Test des Produkts, längengleich geschlossen; ein ungeschlossener Fence
+   ist ein Eingabefehler.
 8. **Zählen am Adapter:** der VCS-Port erhält **eine** Methode für die Zeilen-Summe
-   (Basis, Pfade, ausgenommener Teilbaum); der Kern zählt nicht selbst.
+   (Basis, Pfade, ausgenommene Teilbäume); der Kern zählt nicht selbst.
 9. **Tabelle im Modul:** genau eine Markdown-Tabelle pro Plan, konfigurierbarer Kopf,
    Klassen mit Faktor; Prüfung 2 („Schätzung gleich Tabelle“, nur bei Messung 0) und der
    Hinweis „Marke ausstehend“ gehören zum Modul.
@@ -90,7 +91,7 @@ dienen dieser Liste als Bezug):
 - Positiv: das Programm des Anlass-Repos entfällt; ein weiteres Repo mit anderem Block,
   anderer Formel oder anderer Tabelle braucht nur eine Konfiguration.
 - Negativ: der VCS-Port wächst um eine Methode, und mit ihr jeder Test-Double des Ports;
-  die geteilte Vorverarbeitung erhält eine begrenzte Ausnahme für `metrics`; das Modul
+  das Modul liest die Plan-Dateien selbst, statt die geteilte Vorverarbeitung zu erweitern; es
   liest Pfade und git-Revisionen, die es nicht scannt — dort gilt die Zusage der
   Scan-Menge nicht, und die Anforderung benennt die Grenze.
 - Folgepflicht: die `numstat`-Gleichheit des Adapters wird am Fixture mit allen Randformen

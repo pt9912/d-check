@@ -4199,10 +4199,10 @@ Regel — die Faktoren sind Fachlogik des Repos, das Modul liefert den Mechanism
 
 **Der Block** ist ein Fenced-Block (Backticks oder Tilden) mit dem
 konfigurierten Info-String, genau einer je Plan. Zäune und Tabellenzeilen erkennt das
-Modul mit denselben Lesern wie die übrigen Module; wo das Programm des Anlass-Repos
+Modul mit dem Öffner-Test und dem Zeilen-Teiler des Produkts; wo das Programm des Anlass-Repos
 strenger liest (Einrückung des Zauns höchstens drei Leerzeichen, Anfangsstrich der
 Tabellenzeile Pflicht), gilt die Leseweise des Produkts, und die Abnahme zeigt, ob ein
-Plan davon abhängt. Er trägt eine Zeile je Eintrag
+Plan davon abhängt. Der Block trägt eine Zeile je Eintrag
 `<schluessel>: <wert>`, getrennt am ersten `:`, beide Seiten getrimmt; Pfade
 und Ausnahme-Einträge dürfen mehrfach stehen, jeder andere Schlüssel höchstens
 einmal. Keine Verschachtelung, keine Listen-Syntax, **kein YAML**. Zahlen sind
@@ -4285,11 +4285,12 @@ Inhalt der Befunde und Hinweise.
 - **Negative (Schätzung ≠ Tabelle):** Given eine Schätzung im Block, die von der aus der Tabelle abweicht, when die Messung 0 ist, then Befund `metrics-estimate-mismatch`; bei Messung ≥ 1 nur ein Hinweis.
 - **Negative (Überschreitung):** Given eine Messung über der Marke ohne Ausnahme-Eintrag, when der Lauf erfolgt, then Befund `metrics-over-limit`; mit Eintrag `N` ≥ Messung und Grund kein Befund.
 - **Negative (leerer Grund):** Given ein Ausnahme-Eintrag mit leerem oder nur-Leerraum-Grund, when der Lauf erfolgt, then Befund `metrics-reason-empty`, unabhängig von der Messung.
-- **Negative (Schnittfrage):** Given eine Schätzung über der Schwelle ohne das Pflichtfeld, when der Lauf erfolgt, then Befund `metrics-cut-reason-missing`.
+- **Negative (Schnittfrage):** Given einen Block, dessen `Zähler · Schätzung` die Schwelle übersteigt, ohne das Pflichtfeld, when der Lauf erfolgt, then Befund `metrics-cut-reason-missing`.
 - **Zustände:** Given ein Plan ohne Block, when der Lauf erfolgt, then ein Hinweis und kein Befund; Given ein Block ohne Basis, Schätzung und Marke, then ein Hinweis mit berechneter Schätzung und Marke.
 - **Negative (Eingabefehler, fail-closed):** Given einen Plan mit unvollständigem Block, ungültiger Zahl, fehlender oder mehrdeutiger Tabelle, unbekannter Klasse oder nicht auflösbarer Basis, when der Lauf erfolgt, then Exit 2 mit Klartext und kein Befund aus keinem Plan.
 - **Negative (kein `.git`):** Given ein Repo ohne `.git`, when `metrics` aktiviert läuft, then Exit 2, nicht „0 Befunde“.
-- **Messung:** Given die Randformen Hinzufügen, Löschen, Ändern, leere Datei, Binärdatei, Rename, Pfad außerhalb der Pfade, Zeilenenden-Wechsel, ausgenommener Teilbaum, Pfad ohne Treffer, when die Summe gebildet wird, then sie gleicht `git diff --numstat --no-renames` über denselben Pfaden.
+- **Messung:** Given die Randformen Hinzufügen, Löschen, Ändern, leere Datei, Binärdatei, Rename, Pfad außerhalb der Pfade, Zeilenenden-Wechsel, ausgenommener Teilbaum, Pfad ohne Änderung, when die Summe gebildet wird, then sie gleicht `git diff --numstat --no-renames` über denselben Pfaden.
+- **Hinweis (Pfad):** Given ein Pfad des Blocks, der weder an der Basis noch an `HEAD` existiert, when der Lauf erfolgt, then ein Hinweis mit dem Pfad und der Beitrag 0; Given ein vorhandener, unveränderter Pfad, then kein Hinweis.
 - **Betrieb:** Given das gebaute Image, when der Lauf unter `:ro` und gegen ein Repo mit anderem Eigentümer erfolgt, then dasselbe Ergebnis wie gegen ein eigenes beschreibbares Repo.
 - **Determinismus:** Given dieselbe Eingabe, when der Lauf zweimal erfolgt, then byte-identische Ausgabe in stdout, stderr und Exit-Code.
 - **Default byte-identisch:** Given **kein** `metrics`-Block und kein `--enable metrics`, when `d-check` läuft, then Ausgabe und Exit-Code sind byte-identisch zu einem Lauf ohne dieses Modul.

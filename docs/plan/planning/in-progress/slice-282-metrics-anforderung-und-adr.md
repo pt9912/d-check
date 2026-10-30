@@ -100,9 +100,9 @@ Anforderung). Die Empfehlungen folgen den Angaben des Anlass-Repos:
    Port, drei Slices bleiben); (b) ein Parse-Port nach dem Muster von `WorkflowParser`
    ([`ADR-0072`](../../adr/0072-workflows-modul.md)) wäre nur nötig, wenn die Syntax
    YAML verlangte — nach den Angaben des Anlass-Repos nicht.
-7. **Fence-Behandlung.** Die geteilte Vorverarbeitung entfernt Fenced-Code für alle
-   Module; das Modul braucht eine **auf `metrics` begrenzte** Ausnahme, die den Block
-   liest, ohne das Verhalten anderer Module zu verschieben. Ein **ungeschlossener**
+7. **Fence-Behandlung.** Keine eigene Ausnahme neben der geteilten Vorverarbeitung: das Modul
+   liest die Plan-Dateien selbst und erkennt Zäune mit dem Öffner-Test des Produkts,
+   längengleich geschlossen (wie der Tabellen-Leser der RTM). Ein **ungeschlossener**
    Fence ist ein Eingabefehler (Entscheid 5), nicht still „ohne Block“.
 8. **Wo die Zeilen gezählt werden.** Empfehlung: neue Methode am VCS-Port (der
    Adapter besitzt den Diff; Parameter: Basis, Pfade, ausgenommener Teilbaum). Die
