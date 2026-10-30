@@ -4,7 +4,7 @@
 **Gegenstand:** [welle-93](../plan/planning/welle-93-metrics-modul.md) und ihre drei Slice-Pläne
 [slice-282](../plan/planning/done/welle-93/slice-282-metrics-anforderung-und-adr.md),
 [slice-283](../plan/planning/done/welle-93/slice-283-metrics-modulkern-formel-und-grund.md),
-[slice-284](../plan/planning/open/slice-284-metrics-messung-aus-git.md) (alle uncommittet).
+[slice-284](../plan/planning/next/slice-284-metrics-messung-aus-git.md) (alle uncommittet).
 **Anlass:** GitHub-Issue 13 (opt-in-Modul `metrics`).
 **Datum:** 2026-10-30.
 **Geändert wurde nichts:** kein Plan, keine ADR; dies ist nur das Verdikt.
@@ -74,7 +74,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
 ### F-4 — Port-Erweiterung, Alternativen, Spec-Schärfung fehlen im ADR-Umfang — **V2** (Entscheid 8 in derselben ADR)
 
 - Der ADR-Umfang in [slice-282](../plan/planning/done/welle-93/slice-282-metrics-anforderung-und-adr.md) Z. 116 deckt „Entscheide 1–4". Die neue VCS-Port-Methode
-  ([slice-284](../plan/planning/open/slice-284-metrics-messung-aus-git.md) Z. 69, 102) ist keiner davon. Präzedenz: Port-Erweiterungen stehen in der Modul-ADR
+  ([slice-284](../plan/planning/next/slice-284-metrics-messung-aus-git.md) Z. 69, 102) ist keiner davon. Präzedenz: Port-Erweiterungen stehen in der Modul-ADR
   ([ADR-0027](../plan/adr/0027-commits-traceability-modul.md) Schärft-Feld, [ADR-0030](../plan/adr/0030-tracked-referenz-ziele.md) „Port-Erweiterungs-Präzedenz").
 - Eine Alternative fehlt: Der Kern könnte aus den vorhandenen Methoden `AllPaths`/`FileAt`
   ([vcs.go](../../internal/hexagon/port/driven/vcs.go) Z. 33, 35) selbst zählen; dann braucht der Port keine neue Methode, der Kern aber einen Zeilen-Diff.
