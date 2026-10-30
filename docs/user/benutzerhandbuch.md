@@ -160,7 +160,7 @@ liest weiter dasselbe. Ein Befund ohne Erläuterung ist dreispaltig.
   einen **Backtick** enthält, ist sie **kein** Block-Öffner, sondern Fließtext —
   Links und Kennungen darauf und dahinter werden geprüft. So bleibt ein
   erklärender Satz *über* einem Codeblock, der dessen Sprache in Backticks nennt,
-  sichtbar (bis v0.46.0 verschwand er samt allem Folgenden aus jedem Modul). Für
+  sichtbar. Für
   Tilden-Fences gilt die Ausnahme nicht.
 
 ## 4. Aufgaben
@@ -494,10 +494,9 @@ docs/anleitung.md
 **Hinweise:** Die `Hinweis:`-Zeile trägt die **Erläuterung** des Befunds — bei
 den meisten Modulen eine feste Meldung, bei `structure` der selbst verfasste
 `hint`. Sie ist die Gegengröße zum **Fix-Kandidaten**: jene ist geschrieben,
-dieser abgeleitet. **Bei manchen Modulen wiederholt sie den Grund-Klartext
-fast wörtlich** — im Beispiel oben —, weil beide Texte historisch dieselbe
-Aussage tragen; in der knappen Befund-Zeile, die keinen Klartext hat, trägt
-sie in jedem Fall. `--doctor` ist read-only und gibt nur auf stdout aus. Mit
+dieser abgeleitet. **Bei manchen Modulen deckt sie sich fast wörtlich mit dem
+Grund-Klartext** — im Beispiel oben. Die knappe Befund-Zeile hat keinen
+Klartext; dort ist die Erläuterung die einzige Erklärung. `--doctor` ist read-only und gibt nur auf stdout aus. Mit
 zusätzlichem `--json` wird dieselbe Diagnose **maschinenlesbar**
 ausgegeben (siehe unten). Nicht mit `--repair` kombinierbar (sonst
 Exit-Code 2). Einen Fix-Kandidaten gibt es nur dort, wo er **eindeutig**
@@ -855,8 +854,7 @@ der Sie ansetzen, und die Richtung sagt Ihnen, **welche** Seite Sie anfassen:
 
 Im Zweifel gewinnt die **Rück-Kante**: sie steht dort, wo das Design gepflegt
 wird, und wird beim Ändern mitgeführt. Die RTM-Tabelle ist der Spiegel — sie
-driftet. Die `GG-SPEC-042`-Rück-Kante taucht übrigens nicht auf: sie fällt per <!-- d-check:ignore -->
-`exclude-req` heraus.
+driftet. Die `GG-SPEC-042`-Rück-Kante taucht übrigens nicht auf: sie fällt per `exclude-req` heraus. <!-- d-check:ignore -->
 
 Die RTM oberhalb bleibt unverändert; der Abgleich ist eine **eigene** Ausgabe,
 keine zusätzliche Spalte.
@@ -885,7 +883,9 @@ docker run --rm ghcr.io/pt9912/d-check:v0.88.0 --print-mk > d-check.mk
 Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und dreizehn
 `##`-annotierte Targets (`doc-check`, `doc-trace`, `doc-complete`, `doc-doctor`,
 `doc-repair`, `doc-immutable`, `doc-commits`, `doc-planning`, `doc-tracked`,
-`doc-targets`, `doc-structure`, `doc-usage`, `doc-help`). **Der Kopfkommentar nennt dieses Handbuch in zwei URL-Formen** — das Fragment liegt danach in Ihrem Repo, und der Kopf ist der einzige Ort, an dem die Zeiger dorthin mitfahren: die gerenderte GitHub-Seite zum Anklicken, dazu die rohe `raw.githubusercontent.com`-Form für Werkzeuge und Code-Agenten (kleinere Nutzlast, erhält Markdown-Linkziele). Beide stehen bewusst auf dem **Hauptzweig** statt auf einer Version: so können sie nicht veralten. **Der Preis gehört dazu:** pinnen Sie ein älteres Image, lesen Sie hier über Fähigkeiten, die Ihr Bild noch nicht hat — der Kopf dieses Handbuchs nennt deshalb die Software-Version, zu der es gehört.
+`doc-targets`, `doc-structure`, `doc-usage`, `doc-help`).
+
+**Der Kopfkommentar nennt dieses Handbuch in zwei URL-Formen** — das Fragment liegt danach in Ihrem Repo, und der Kopf ist der einzige Ort, an dem die Zeiger dorthin mitfahren: die gerenderte GitHub-Seite zum Anklicken, dazu die rohe `raw.githubusercontent.com`-Form für Werkzeuge und Code-Agenten (kleinere Nutzlast, erhält Markdown-Linkziele). Beide stehen bewusst auf dem **Hauptzweig** statt auf einer Version: so können sie nicht veralten. **Der Preis gehört dazu:** pinnen Sie ein älteres Image, lesen Sie hier über Fähigkeiten, die Ihr Bild noch nicht hat — der Kopf dieses Handbuchs nennt deshalb die Software-Version, zu der es gehört.
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
@@ -981,7 +981,7 @@ Davor steht ein Vorbehalt: passen **mehrere** Überschriften auf
 `heading-pattern`, meldet `closure-note-ambiguous` (an der zweiten) und es wird
 nicht gemessen — die Überschrift eindeutig machen.
 
-**Was als Satz und als Floskel zählt** (seit v0.56.0): Der Abschnitt wird
+**Was als Satz und als Floskel zählt:** Der Abschnitt wird
 **einmal** bereinigt — Code-Blöcke **und** Inline-Code fallen weg —, und alle
 Bedingungen lesen diesen einen Text. Ein Satzende zählt nur, wenn ihm ein
 Leerzeichen oder das Zeilenende folgt; die Punkte in `0.56.0` und in einem
@@ -1055,7 +1055,7 @@ structure:
 
 ```bash
 docker run --rm --network none -v "$PWD":/repo:ro \
-  ghcr.io/pt9912/d-check:latest --enable structure
+  ghcr.io/pt9912/d-check:v0.88.0 --enable structure
 ```
 
 **Ergebnis:** je zu langer oder zu kurzer Zelle ein Befund — auf **ihrer**
@@ -1106,7 +1106,7 @@ workflows:
 
 ```bash
 docker run --rm --network none -v "$PWD":/repo:ro \
-  ghcr.io/pt9912/d-check:latest --enable workflows
+  ghcr.io/pt9912/d-check:v0.88.0 --enable workflows
 ```
 
 **Ergebnis:** je Referenz ein Befund auf **ihrer** Zeile:
@@ -1247,7 +1247,7 @@ structure:
 
 ```bash
 docker run --rm --network none -v "$PWD":/repo:ro \
-  ghcr.io/pt9912/d-check:latest --enable structure
+  ghcr.io/pt9912/d-check:v0.88.0 --enable structure
 ```
 
 **Ergebnis:** je verletzender Überschrift ein Befund `section-heading-mismatch`
@@ -1297,7 +1297,7 @@ structure:
 
 ```bash
 docker run --rm --network none -v "$PWD":/repo:ro \
-  ghcr.io/pt9912/d-check:latest --enable structure
+  ghcr.io/pt9912/d-check:v0.88.0 --enable structure
 ```
 
 **Ergebnis:** ein Befund `section-tasks-open` **je offenem Haken auf seiner
@@ -1354,7 +1354,7 @@ structure:
 
 ```bash
 docker run --rm --network none -v "$PWD":/repo:ro \
-  ghcr.io/pt9912/d-check:latest --enable structure
+  ghcr.io/pt9912/d-check:v0.88.0 --enable structure
 ```
 
 **Ergebnis:** Trägt der Abschnitt „## 7. Closure-Notiz" die Zeile
@@ -1824,7 +1824,7 @@ fail-closed statt zu einem Befund mit leerem Ziel; und eine Backtick-Spanne
 zwischen `<!--` und dem Marker verschwindet, kann eine Direktive also auch
 **erzeugen**. Die **Ventil**-Direktive `d-check:ignore` folgt derselben Regel,
 aber **nur bei zwei ihrer vier Konsumenten**: bei `codepaths` und `ids` zählt
-sie seit v0.64.0 ebenfalls nur außerhalb von Inline-Code (und muss dort
+sie ebenfalls nur außerhalb von Inline-Code (und muss dort
 zusätzlich in einem HTML-Kommentar stehen), bei `versions` und `diagrams` wird
 sie weiterhin auf der **rohen** Zeile erkannt und wirkt auch aus Backticks
 heraus. Wer den Marker setzt, muss also wissen, für welches Modul — der
@@ -1922,30 +1922,13 @@ Objekte wieder unter dem kanonischen Namen. `git` selbst ist von der
 Namensform nicht betroffen und arbeitet durchgehend normal; nur ein Pack ohne
 gültiges Hash-Suffix oder ohne passenden Index betrifft diese Prüfung noch.
 
-> **Wichtig, wenn Sie ein Image bis `v0.76.0` pinnen.** Bis einschließlich
-> `v0.75.0` **schwieg** dieser Fall vollständig, sobald der unsichtbare Pack
-> nur *einzelne* Objekte verschluckte — und genau solche partiellen Packs
-> hinterlässt `git maintenance`, weil es in Stapeln arbeitet. Eine echte
-> Core-Änderung wurde dann **nicht gemeldet**: `0 Befunde`, Exit 0. **`v0.76.0`
-> behob zwei von vier Ausprägungen** — das unsichtbare **Blob** der Datei
-> selbst und ihr unsichtbares **Verzeichnis-Objekt, sofern die Gegenseite
-> noch einen Vergleichspunkt trug**. **Zwei blieben bis einschließlich
-> `v0.76.0` offen:** ein unsichtbares Verzeichnis-Objekt **ohne** Pendant auf
-> der Gegenseite (das Verzeichnis wurde komplett gelöscht) meldete weiterhin
-> `0 Befunde`/Exit 0, und ein unsichtbarer **HEAD**-Tree meldete
-> **fälschlich** `core-drift-vcs` „gelöscht oder umbenannt" (Exit 1) statt
-> des eigentlichen Umgebungsfehlers. Ursache war durchgehend dieselbe
-> Bibliotheks-Eigenschaft: ein *unlesbares* Objekt wird mit demselben Fehler
-> gemeldet wie *„diese Datei existiert in diesem Stand nicht“* — ein
-> legitimer Zustand, den die Prüfung überspringen muss —, und ein Tree-Diff
-> verwandelt einen nicht ladbaren Unterbaum zusätzlich in ein stilles Ende
-> der Aufzählung, statt einen Fehler zu melden. **Ab `v0.76.1` sind alle
-> vier Ausprägungen behoben:** die geschützte Pfad-Menge wird jetzt direkt
-> gegen beide vollständigen Tree-Stände aufgelöst statt gegen einen Diff, und
-> ein nicht ladbarer Unterbaum bricht die Auflösung selbst ab, bevor
-> irgendein Pfad klassifiziert wird. Solange Sie `v0.76.0` oder älter
-> pinnen, prüfen Sie einmalig mit `ls .git/objects/pack/`, dass jede
-> `.pack`-Datei mit `pack-` beginnt.
+> **Wichtig, wenn Sie ein Image bis `v0.76.0` pinnen.** Dort meldete `vcs`
+> einen unlesbaren Pack-Inhalt teils **nicht**: `0 Befunde`, Exit 0, obwohl der
+> Core geändert war, oder fälschlich `core-drift-vcs` „gelöscht oder
+> umbenannt“. Ab `v0.76.1` ist das behoben (Einzelheiten im
+> [CHANGELOG](../../CHANGELOG.md)). Solange Sie `v0.76.0` oder älter pinnen,
+> prüfen Sie einmalig mit `ls .git/objects/pack/`, dass jede `.pack`-Datei mit
+> `pack-` beginnt.
 
 **Eine leere Range ist kein grüner Lauf.** Löst die Range auf, enthält aber
 keinen einzigen Commit — Basis und Spitze benennen denselben Commit, oder die
@@ -1989,8 +1972,8 @@ sehen dann `Range-Basis "<base>" nicht auflösbar: reference not found` oder
 `commit <sha> nicht lesbar: object not found`, jeweils mit **Exit 2**;
 `git repack -A -d` behebt es.
 
-**Dieses Modul war von dem stillen Fall nie betroffen**, den `vcs` bis
-`v0.75.0` hatte — gemessen an einem unsichtbar gemachten Zwischen-Commit, der
+**Dieses Modul war von dem stillen Fall nie betroffen**, den `vcs` in älteren
+Images hatte — gemessen an einem unsichtbar gemachten Zwischen-Commit, der
 den Lauf mit Exit 2 abbricht. Verlassen Sie sich trotzdem nicht darauf, dass
 ein grüner Lauf des einen etwas über den anderen sagt: Die beiden lesen
 dieselbe Objektdatenbank, treffen darin aber unterschiedliche Objekte.
@@ -2449,8 +2432,7 @@ Link-Suffix oder Text zwischen `)` und der Fortsetzung — dort wird nicht
 expandiert, statt die Absicht zu raten. Klammern **im Linkziel** sind dagegen
 unproblematisch: das Ziel wird klammer-balanciert abgegrenzt, genau wie bei
 `links`/`ids` — `` [`GG-QA-001`](https://x.org/A_(b))..003 `` expandiert. Gilt
-gleichermaßen für `trace.cross-consistency`. (Bis v0.44.0 expandierte eine
-verlinkte Range gar nicht — das erzeugte in `trace.coverage` falsche Waisen.)
+gleichermaßen für `trace.cross-consistency`.
 
 Genau zwei Expansionsformen sind zugesagt: die Range `<FAM>-AAA..BBB` und die
 Aufzählung `<FAM>-AAA/BBB/CCC`. Eine **Komma-Kurzform** (`GG-SCN-001, 007`, auch
@@ -2689,7 +2671,7 @@ wird die **rohe Überschriften-Zeile samt `#`-Folge**, also genau das, was auch
 `section-pattern` sieht. Beide verkleinern nur; ohne sie ist das Verhalten
 byte-identisch.
 
-**Zwei Fallen, und beide sind gemessen — an den 444 DoD-Items dieses Repos.**
+**Zwei Fallen, und beide sind gemessen — an einem realen Bestand von DoD-Items.**
 Die erste: **verankern reicht nicht, das Muster muss auch auf den richtigen
 Text zielen.** Ein freies Substring-Muster nimmt still Punkte mit, die die
 Wendung nur **erwähnen**: das Beispiel-Muster eines Adopters traf 13 Items,
@@ -2791,9 +2773,9 @@ Backtick-Ausfall, nicht den Fence-Ausfall. Wenn diese Regel bei Ihnen über eine
 `fence-unclosed` ist der Sensor, der die offene Fence meldet. Ohne ihn haben Sie
 einen Wächter, den ein einzelnes Zeichen abschaltet.
 
-**Messen Sie, bevor Sie eine Regel aktivieren.** In diesem Repo hat genau das
+**Messen Sie, bevor Sie eine Regel aktivieren.** An einem realen Bestand hat genau das
 eine Regel verhindert, die plausibel klang und falsch war: „abgeschlossener
-Slice ohne offene Task-Boxen“ meldete 32-mal — und jedes Mal zu Recht offen,
+Slice ohne offene Task-Boxen“ meldete vielfach — und jedes Mal zu Recht offen,
 weil die **Welle** den Punkt einlöst, nicht der Slice.
 
 ## 6. Regelmodule
