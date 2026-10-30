@@ -176,14 +176,12 @@ func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, wp driven.WorkflowPar
 	if active["reviews"] {
 		out = append(out, CheckReviews(fsys, cfg.Reviews)...)
 	}
-	if active["mentions"] {
-		mr, err := CheckMentions(fsys, cfg.Mentions, cfg.Ignore)
-		if err != nil {
-			return nil, nil, err
-		}
-		out = append(out, mr.Findings...)
-		notes = append(notes, mr.Note())
+	nf, nn, err := runNoteModules(fsys, cfg, active)
+	if err != nil {
+		return nil, nil, err
 	}
+	out = append(out, nf...)
+	notes = append(notes, nn...)
 	if active["targets"] {
 		tf, err := CheckTargets(fsys, cfg.Targets)
 		if err != nil {
@@ -433,4 +431,29 @@ func ensureDiagramsDefinedInExist(fsys driven.Filesystem, cfg model.DiagramsConf
 		}
 	}
 	return nil
+}
+
+// runNoteModules führt die Module aus, die neben ihren Befunden Hinweise und
+// eine Bezugsmenge für die Zusammenfassung liefern (mentions, metrics) und bei
+// einem Eingabefehler den Lauf beenden.
+func runNoteModules(fsys driven.Filesystem, cfg model.Config, active map[string]bool) ([]model.Finding, []string, error) {
+	var out []model.Finding
+	var notes []string
+	if active["mentions"] {
+		mr, err := CheckMentions(fsys, cfg.Mentions, cfg.Ignore)
+		if err != nil {
+			return nil, nil, err
+		}
+		out = append(out, mr.Findings...)
+		notes = append(notes, mr.Note())
+	}
+	if active["metrics"] {
+		mr, err := CheckMetrics(fsys, cfg.Metrics)
+		if err != nil {
+			return nil, nil, err
+		}
+		out = append(out, mr.Findings...)
+		notes = append(notes, mr.Notes()...)
+	}
+	return out, notes, nil
 }

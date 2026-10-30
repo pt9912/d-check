@@ -195,6 +195,10 @@ Dokuments:
   einer Markdown-Datei zählt und `file` die **rohe** Datei jeder Art.
   Hermetisch, opt-in
   ([`DC-FA-FILE-001`](spec/lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in))
+- `metrics` — Kennzahl eines Planungsdokuments: die im Block eines Plans genannte
+  Obergrenze wird gegen eine konfigurierte, ganzzahlige Formel gehalten, ein
+  Ausnahme-Eintrag braucht einen nicht leeren Grund; opt-in
+  ([`DC-FA-MET-001`](spec/lastenheft.md#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in))
 - `workflows` — Deklarations-Konsistenz der `uses:`-Referenzen von CI-Workflows
   unterhalb eines **konfigurierten** Verzeichnisses (`workflows.dir` — nicht
   verdrahtet, weil CI-System-spezifisch), opt-in. Eine **fremde** Referenz nennt

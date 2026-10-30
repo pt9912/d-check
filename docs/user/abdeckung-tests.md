@@ -49,6 +49,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-MENT-001`](../../spec/lastenheft.md) | `TestDecode_MentionsHalberBlockFailClosed` | [`internal/adapter/driven/configyaml/mentions_test.go`](../../internal/adapter/driven/configyaml/mentions_test.go) |
 | [`DC-FA-MENT-001`](../../spec/lastenheft.md) | `TestDecode_MentionsUnbekannterMatch` | [`internal/adapter/driven/configyaml/mentions_test.go`](../../internal/adapter/driven/configyaml/mentions_test.go) |
 | [`DC-FA-CONF-001`](../../spec/lastenheft.md), [`DC-FA-MENT-001`](../../spec/lastenheft.md) | `TestDecode_MentionsVollblock` | [`internal/adapter/driven/configyaml/mentions_test.go`](../../internal/adapter/driven/configyaml/mentions_test.go) |
+| [`DC-FA-CONF-001`](../../spec/lastenheft.md), [`DC-FA-MET-001`](../../spec/lastenheft.md) | `TestDecode_MetricsVollblock` | [`internal/adapter/driven/configyaml/metrics_test.go`](../../internal/adapter/driven/configyaml/metrics_test.go) |
 | [`DC-FA-XREF-001`](../../spec/lastenheft.md) | `TestDecode_CrossConsistencyFehler` | [`internal/adapter/driven/configyaml/trace_cross_test.go`](../../internal/adapter/driven/configyaml/trace_cross_test.go) |
 | [`DC-FA-XREF-001`](../../spec/lastenheft.md) | `TestDecode_CrossConsistencyHappy` | [`internal/adapter/driven/configyaml/trace_cross_test.go`](../../internal/adapter/driven/configyaml/trace_cross_test.go) |
 | [`DC-QA-02`](../../spec/lastenheft.md) | `TestDecode_CrossConsistencyOhneBlock` | [`internal/adapter/driven/configyaml/trace_cross_test.go`](../../internal/adapter/driven/configyaml/trace_cross_test.go) |
@@ -286,6 +287,8 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-MENT-001`](../../spec/lastenheft.md) | `TestMentionsLeereIstMengeFailClosed` | [`internal/hexagon/core/rules/mentions_test.go`](../../internal/hexagon/core/rules/mentions_test.go) |
 | [`DC-FA-MENT-001`](../../spec/lastenheft.md) | `TestMentionsLeereSollMengeFailClosed` | [`internal/hexagon/core/rules/mentions_test.go`](../../internal/hexagon/core/rules/mentions_test.go) |
 | [`DC-FA-MENT-001`](../../spec/lastenheft.md) | `TestMentionsNoteNenntDieBezugsmenge` | [`internal/hexagon/core/rules/mentions_test.go`](../../internal/hexagon/core/rules/mentions_test.go) |
+| [`DC-QA-02`](../../spec/lastenheft.md) | `TestMetricsDeterminismus` | [`internal/hexagon/core/rules/metrics_test.go`](../../internal/hexagon/core/rules/metrics_test.go) |
+| [`DC-FA-MET-001`](../../spec/lastenheft.md) | `TestMetricsFormelBelegteZahlen` | [`internal/hexagon/core/rules/metrics_test.go`](../../internal/hexagon/core/rules/metrics_test.go) |
 | [`DC-FA-ANCH-001`](../../spec/lastenheft.md), [`DC-FA-PIN-001`](../../spec/lastenheft.md) | `TestPinsAnkerNurImFenceUnaufloesbar` | [`internal/hexagon/core/rules/pins_test.go`](../../internal/hexagon/core/rules/pins_test.go) |
 | [`DC-FA-PIN-001`](../../spec/lastenheft.md) | `TestPinsAnkerOhneSection` | [`internal/hexagon/core/rules/pins_test.go`](../../internal/hexagon/core/rules/pins_test.go) |
 | [`DC-FA-PIN-001`](../../spec/lastenheft.md) | `TestPinsExternInert` | [`internal/hexagon/core/rules/pins_test.go`](../../internal/hexagon/core/rules/pins_test.go) |

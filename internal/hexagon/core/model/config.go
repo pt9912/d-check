@@ -22,7 +22,7 @@ type ResolveFromGroup struct {
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure", "workflows", "reviews", "mentions", "file"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure", "workflows", "reviews", "mentions", "file", "metrics"}
 }
 
 // ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
@@ -87,6 +87,8 @@ type Config struct {
 	// Reviews: Parameter des Moduls reviews (DC-FA-RVW-001).
 	Reviews ReviewsConfig
 	Mentions MentionsConfig
+	// Metrics: Parameter des Moduls metrics (DC-FA-MET-001).
+	Metrics MetricsConfig
 	// File: Regeln des Moduls file (DC-FA-FILE-001) — Zeilen-/Byte-
 	// Obergrenzen ganzer Dateien.
 	File []FileRule
@@ -1217,4 +1219,70 @@ func (c MentionsConfig) EffectiveMatch() string {
 		return MentionsMatchPath
 	}
 	return c.Match
+}
+
+// MetricsConfig sind die Parameter des Moduls metrics (DC-FA-MET-001): der
+// Block eines Plans, seine Feldnamen und die ganzzahlige Formel
+// `Rounding · ⌈SurchargeNumerator · Schätzung / SurchargeDenominator⌉`. Alle
+// Zahlen sind Konfiguration; das Modul trägt keine fachliche Konstante.
+type MetricsConfig struct {
+	// PlansDir ist das Verzeichnis, dessen `slice-*.md` unmittelbar geprüft
+	// werden (nicht rekursiv).
+	PlansDir string
+	// Block ist der Info-String des Fenced-Blocks.
+	Block  string
+	Fields MetricsFields
+	// SurchargeNumerator/SurchargeDenominator bilden den Bruch der Aufrundung;
+	// Rounding ist die Einheit, auf deren Vielfaches aufgerundet wird.
+	SurchargeNumerator   int
+	SurchargeDenominator int
+	Rounding             int
+	// CutThreshold ist die Schwelle für `SurchargeNumerator · Schätzung`;
+	// nur wirksam, wenn CutEnabled gesetzt ist.
+	CutThreshold int
+	CutEnabled   bool
+}
+
+// MetricsFields sind die Feldnamen im Block (DC-FA-MET-001).
+type MetricsFields struct {
+	Path      string
+	Base      string
+	Estimate  string
+	Limit     string
+	Exception string
+	CutReason string
+}
+
+// Default-Feldnamen des Blocks (spec/spezifikation.md §2, metrics.fields.*).
+const (
+	MetricsFieldPath      = "path"
+	MetricsFieldBase      = "base"
+	MetricsFieldEstimate  = "estimate"
+	MetricsFieldLimit     = "limit"
+	MetricsFieldException = "exception"
+	MetricsFieldCutReason = "cut-reason"
+)
+
+// EffectiveFields liefert die Feldnamen mit Defaults für leere Einträge.
+func (c MetricsConfig) EffectiveFields() MetricsFields {
+	f := c.Fields
+	if f.Path == "" {
+		f.Path = MetricsFieldPath
+	}
+	if f.Base == "" {
+		f.Base = MetricsFieldBase
+	}
+	if f.Estimate == "" {
+		f.Estimate = MetricsFieldEstimate
+	}
+	if f.Limit == "" {
+		f.Limit = MetricsFieldLimit
+	}
+	if f.Exception == "" {
+		f.Exception = MetricsFieldException
+	}
+	if f.CutReason == "" {
+		f.CutReason = MetricsFieldCutReason
+	}
+	return f
 }

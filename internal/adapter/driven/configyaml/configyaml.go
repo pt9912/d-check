@@ -826,6 +826,7 @@ type raw struct {
 	Workflows *rawWorkflows `yaml:"workflows"`
 	Reviews   *rawReviews   `yaml:"reviews"`
 	Mentions  *rawMentions  `yaml:"mentions"`
+	Metrics   *rawMetrics   `yaml:"metrics"`
 	File      []rawFile     `yaml:"file"`
 	// Sources ist eine bare Liste `sources[]` (spec/spezifikation.md §2;
 	// KEIN Map mit scope — das Modul nutzt den globalen Scan-Scope).
@@ -972,6 +973,11 @@ func applyRemainingModules(r *raw, cfg *model.Config) error {
 		return mnerr
 	}
 	cfg.Mentions = mn
+	mt, mterr := applyMetrics(r.Metrics)
+	if mterr != nil {
+		return mterr
+	}
+	cfg.Metrics = mt
 	fl, flerr := applyFile(r.File)
 	if flerr != nil {
 		return flerr
@@ -2755,6 +2761,91 @@ func validateHostpathsExemptTargets(globs, vars []string) error {
 		if !strings.HasPrefix(g, "/") && !strings.HasPrefix(g, "~") {
 			return fmt.Errorf("%s: hostpaths.exempt-targets %q beginnt weder mit '/' noch mit '~' (noch mit einer in hostpaths.variables genannten Variablen) — ein gemeldeter Pfad tut immer eins davon, das Glob träfe nie", FileName, g)
 		}
+	}
+	return nil
+}
+
+// rawMetrics trägt die Parameter des Moduls metrics (DC-FA-MET-001): das
+// Plan-Verzeichnis, den Block-Namen, die Feldnamen und die ganzzahlige Formel.
+type rawMetrics struct {
+	PlansDir     string           `yaml:"plans-dir"`
+	Block        string           `yaml:"block"`
+	Fields       rawMetricsFields `yaml:"fields"`
+	Surcharge    rawSurcharge     `yaml:"surcharge"`
+	Rounding     *int             `yaml:"rounding"`
+	CutThreshold *int             `yaml:"cut-threshold"`
+}
+
+type rawMetricsFields struct {
+	Path      string `yaml:"path"`
+	Base      string `yaml:"base"`
+	Estimate  string `yaml:"estimate"`
+	Limit     string `yaml:"limit"`
+	Exception string `yaml:"exception"`
+	CutReason string `yaml:"cut-reason"`
+}
+
+type rawSurcharge struct {
+	Numerator   *int `yaml:"numerator"`
+	Denominator *int `yaml:"denominator"`
+}
+
+// applyMetrics validiert den metrics-Block am Config-Rand (Exit 2): Pflicht
+// sind Plan-Verzeichnis, Block-Name und die drei Zahlen der Aufrundung;
+// Feldnamen müssen verschieden sein.
+func applyMetrics(r *rawMetrics) (model.MetricsConfig, error) {
+	if r == nil {
+		return model.MetricsConfig{}, nil
+	}
+	if err := validateRawMetrics(r); err != nil {
+		return model.MetricsConfig{}, err
+	}
+	cfg := model.MetricsConfig{
+		PlansDir:             strings.TrimSpace(r.PlansDir),
+		Block:                strings.TrimSpace(r.Block),
+		Fields:               model.MetricsFields(r.Fields),
+		SurchargeNumerator:   *r.Surcharge.Numerator,
+		SurchargeDenominator: *r.Surcharge.Denominator,
+		Rounding:             *r.Rounding,
+	}
+	if r.CutThreshold != nil {
+		cfg.CutThreshold, cfg.CutEnabled = *r.CutThreshold, true
+	}
+	if err := distinctMetricsFields(cfg.EffectiveFields()); err != nil {
+		return model.MetricsConfig{}, err
+	}
+	return cfg, nil
+}
+
+// validateRawMetrics prüft die Pflichtschlüssel und Wertebereiche.
+func validateRawMetrics(r *rawMetrics) error {
+	if strings.TrimSpace(r.PlansDir) == "" {
+		return fmt.Errorf("%s: metrics.plans-dir fehlt", FileName)
+	}
+	if strings.TrimSpace(r.Block) == "" {
+		return fmt.Errorf("%s: metrics.block fehlt", FileName)
+	}
+	if r.Surcharge.Numerator == nil || r.Surcharge.Denominator == nil || r.Rounding == nil {
+		return fmt.Errorf("%s: metrics.surcharge.numerator, metrics.surcharge.denominator und metrics.rounding sind Pflicht", FileName)
+	}
+	if *r.Surcharge.Numerator < 0 || *r.Surcharge.Denominator < 1 || *r.Rounding < 1 {
+		return fmt.Errorf("%s: metrics.surcharge.numerator muss >= 0, metrics.surcharge.denominator und metrics.rounding >= 1 sein", FileName)
+	}
+	if r.CutThreshold != nil && *r.CutThreshold < 0 {
+		return fmt.Errorf("%s: metrics.cut-threshold muss >= 0 sein", FileName)
+	}
+	return nil
+}
+
+// distinctMetricsFields verlangt paarweise verschiedene, nicht leere
+// Feldnamen (eine Doppelbelegung machte die Zuordnung im Block mehrdeutig).
+func distinctMetricsFields(f model.MetricsFields) error {
+	seen := map[string]bool{}
+	for _, n := range []string{f.Path, f.Base, f.Estimate, f.Limit, f.Exception, f.CutReason} {
+		if strings.TrimSpace(n) == "" || seen[n] {
+			return fmt.Errorf("%s: metrics.fields.* müssen paarweise verschieden und nicht leer sein (%q)", FileName, n)
+		}
+		seen[n] = true
 	}
 	return nil
 }

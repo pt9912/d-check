@@ -18,7 +18,7 @@ scan:
   # ignore: ["pfad/**"]   # Glob, relativ zur Wurzel (prunt den Abstieg)
 
 modules: [links, anchors]
-# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, citations, structure, workflows, reviews, mentions, file, external, sources
+# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, citations, structure, workflows, reviews, mentions, file, metrics, external, sources
 # (external und sources sind die einzigen Netzwerk-Türen — beide strikt opt-in
 #  (external prüft http(s)-Erreichbarkeit, sources Upstream-Content-Drift); vcs und commits sind
 #  git-basiert und brauchen .git + eine Commit-Range — strikt opt-in; tracked ist
@@ -275,6 +275,16 @@ modules: [links, anchors]
 #   # z. B. [harness/README.md, harness/targets.md] — ein Target gilt als dokumentiert, wenn es in einer davon steht
 #   authority-disjoint: false                    # true ⇒ ein Target, das mehr als eine authority-Datei in der ersten Zelle führt, meldet gate-declared-twice
 #   exempt-targets: []                           # Regelnamen EXAKT (kein Glob, anders als tracked) — Utility-Targets ohne Doku-Pflicht
+
+# --- metrics: Kennzahl eines Planungsdokuments (Obergrenze gegen Formel, Grund eines Ausnahme-Eintrags) — opt-in ---
+#   (Aufruf über --enable metrics. NICHT in modules: oben. Geprüft wird jede Datei slice-*.md unmittelbar im Plan-Verzeichnis.)
+# metrics:
+#   plans-dir: docs/plan/planning/in-progress   # Verzeichnis der Pläne; nicht rekursiv; Pflicht
+#   block: groessenmarke                         # Info-String des umzäunten Blocks; Pflicht
+#   fields: {path: path, base: base, estimate: estimate, limit: limit, exception: exception, cut-reason: cut-reason}   # Feldnamen im Block (Defaults)
+#   surcharge: {numerator: 135, denominator: 10000}   # Bruch der Aufrundung; Pflicht
+#   rounding: 100                                # Einheit, auf deren Vielfaches die Obergrenze aufgerundet wird; Pflicht
+#   cut-threshold: 300000                        # ab numerator · Schätzung > Schwelle ist cut-reason Pflicht; leer ⇒ keine Schwellenregel
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---
 # external:

@@ -195,6 +195,10 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   text of a Markdown file while `file` counts the **raw** file of any kind.
   Hermetic, opt-in
   ([`DC-FA-FILE-001`](spec/lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in))
+- `metrics` — figure of a planning document: the limit stated in a block of a plan
+  is held against a configured, integer formula, and an exception entry needs a
+  non-empty reason; opt-in
+  ([`DC-FA-MET-001`](spec/lastenheft.md#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in))
 - `workflows` — declaration consistency of the `uses:` references of CI
   workflows below a **configured** directory (`workflows.dir` — not hard-wired,
   because the location is CI-system specific), opt-in. A **foreign** reference

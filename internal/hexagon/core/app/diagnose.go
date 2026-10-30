@@ -107,6 +107,7 @@ func AllReasons() []string {
 		rules.ReasonReviewMissing,
 		rules.ReasonArtifactUnmentioned,
 		rules.ReasonFileNoMatch, rules.ReasonFileLinesExceeded, rules.ReasonFileBytesExceeded,
+		rules.ReasonMetricsLimitMismatch, rules.ReasonMetricsReasonEmpty, rules.ReasonMetricsCutReasonMissing,
 	}
 }
 
@@ -189,6 +190,9 @@ func reasonTexts() map[string]string {
 		rules.ReasonFileNoMatch:           "Regel trifft keine Datei (auch nach Abzug von exempt-paths) — oder der Dateibaum ist nicht lesbar (fail-closed)",
 		rules.ReasonFileLinesExceeded:     "Datei hat mehr Zeilen als max-lines erlaubt",
 		rules.ReasonFileBytesExceeded:     "Datei ist größer als max-bytes erlaubt",
+		rules.ReasonMetricsLimitMismatch:          "Obergrenze des Blocks entspricht nicht der Formel über der Schätzung des Blocks",
+		rules.ReasonMetricsReasonEmpty:            "Ausnahme-Eintrag mit leerem Grund — ein Befund unabhängig von der Messung",
+		rules.ReasonMetricsCutReasonMissing:       "Schwellenregel erfüllt, aber das Pflichtfeld fehlt oder ist leer",
 	}
 }
 
