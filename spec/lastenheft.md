@@ -4285,7 +4285,6 @@ ein flacher Klon ohne die Basis endet mit Exit 2. **Die Fachlogik (Formel, Tabel
 Anlass-Repos übernommen, nicht an seinem Repo gemessen;** die Abnahme führt dessen
 Eigentümer mit dem veröffentlichten Image und vergleicht je Plan Exit-Code und
 Inhalt der Befunde und Hinweise.
-Inhalt der Befunde und Hinweise.
 
 **Akzeptanzkriterien:**
 
