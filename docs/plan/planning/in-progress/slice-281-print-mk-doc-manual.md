@@ -64,7 +64,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
       Werkzeugs, durchgereicht von make.
 - [ ] **Anforderung und Spiegel:** Lastenheft 0.109.0 ([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben): vierzehn Targets,
       Akzeptanzkriterien, Out-of-Scope, Historie), Spezifikation (Punkt 5, neuer Punkt,
-      Zählung, Historie), Handbuch §4.16 und `docs/user/operations.md` nennen vierzehn.
+      Zählung, Historie).
 - [ ] **Test:** `TestCLI281_PrintMK_ManualTarget` ist rot ohne das Target (Rot-Beleg), grün mit.
 - [ ] `make gates` grün.
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
@@ -84,12 +84,20 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `internal/adapter/driving/cli/cli_acceptance_test.go` | update | `TestCLI281_PrintMK_ManualTarget` neben dem `doc-usage`-Test |
 | `spec/lastenheft.md` | update | [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben), 0.109.0, Historie |
 | `spec/spezifikation.md` | update | [`DC-FA-CLI-010.a`](../../../../spec/spezifikation.md#dc-fa-cli-010a--makefile-fragment) Punkt 5, neuer Punkt, Zählung, Historie |
-| `docs/user/benutzerhandbuch.md` | update | §4.16: Zahl, Aufzählung, Fragment-Beispiel, Hinweis-Absatz (Kopf und §11 bleiben Release-Prep) |
-| `docs/user/operations.md` | update | Zeile `--print-mk`: Zahl und Aufzählung |
+| `docs/user/benutzerhandbuch.md` | Release-Prep | §4.16 (Zahl, Aufzählung, Beispiel, Hinweis-Absatz) und Kopf/§11 — siehe Plan-Änderung |
+| `docs/user/operations.md` | Release-Prep | Zeile `--print-mk` — siehe Plan-Änderung |
 | `docs/user/abdeckung-tests.md` | regenerieren | `make abdeckung` nach dem neuen Test |
 
 Kein ADR: derselbe Zuschnitt wie die Erweiterung um `doc-usage` (eine Anforderungs-Änderung
 in [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben), keine neue Architekturentscheidung; keine ADR trägt `doc-usage`).
+
+**Plan-Änderung vor dem Code (2026-10-30, Schritt 15):** Handbuch (§4.16, Kopf, §11) und
+`docs/user/operations.md` reisen nicht im Feature-Commit, sondern in der Release-Prep —
+[`AGENTS.md`](../../../../AGENTS.md) §5 Regel 17 hält Handbuch-Kopf und -Pflege am Release fest, und der
+Feature-Commit fasst Handbuch und READMEs nicht an. Der Wortlaut liegt vor (am gebauten Image
+gelaufen, Exit 0/2, Begriff mit Leerzeichen, Begriff mit `"` bricht die Shell) und wird dort
+eingespielt. Zwischen Feature-Commit und Release-Prep nennen die Nutzer-Dokumente noch dreizehn
+Targets — der Zustand des letzten Releases, bis der nächste erscheint.
 
 **Spiegel vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025), Schritt 17;
 Zählung: `grep -rniE 'dreizehn|thirteen|doc-usage' .` über das Repo ohne `.git`, Frozen-Klassen
