@@ -2,7 +2,7 @@
 
 **Rolle:** Verifier (Modul 11) · **Datum:** 2026-10-30 · **Stand:** `18f5412d`
 **Gegenstand:** DoD (§2) und Plan (§1 Abgrenzung, §3 Plan-Tabelle samt Plan-Änderung `8dcc6c17`) von
-`docs/plan/planning/in-progress/slice-284-metrics-messung-aus-git.md`.
+`docs/plan/planning/done/welle-93/slice-284-metrics-messung-aus-git.md`.
 **Methode:** Sensoren selbst gefahren, Erwartung am Host mit `git` nachgebaut, Image `d-check:latest`
 frisch gebaut (`make build`), Wegwerf-Repos unter dem Scratchpad (`.../scratchpad/verify284/`), nicht im Repo.
 
