@@ -77,7 +77,7 @@ Anforderung). Die Empfehlungen folgen den Angaben des Anlass-Repos:
 4. **Was `git diff --numstat` hier heißt.** Einfügungen plus Löschungen je Datei,
    **Rename-Erkennung aus** (wie `--no-renames`: Löschung plus Einfügung); Pfade als
    **literale** Pathspecs (keine Glob-Muster, ein Verzeichnis zählt rekursiv, ein Pfad
-   ohne Treffer trägt 0 bei, dieselbe Datei über zwei Pfade zählt einmal);
+   ohne Änderung trägt 0 bei, ein Pfad, der weder an der Basis noch an HEAD existiert, gibt einen Hinweis, dieselbe Datei über zwei Pfade zählt einmal);
    Binärdateien (`-` in `numstat`) zählen 0 mit Hinweis; ein konfigurierter Teilbaum
    ist immer ausgenommen; nicht eingecheckte Änderungen zählt die Messung nicht. Die
    Messung läuft über den VCS-Port ohne git-Binary — die Gleichheit mit dem Kommando
@@ -164,35 +164,35 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] **Lastenheft:** die Anforderung des Moduls mit Beschreibung (inkl. der
+- [x] **Lastenheft:** die Anforderung des Moduls mit Beschreibung (inkl. der
       §3.8-Grenze), Out-of-Scope, Akzeptanzkriterien, Bereichskürzel in §3, Version und
       Historie-Zeile ([`MR-032`](../../../../harness/conventions.md#mr-032)); die neun Entscheide aus §1 sind gesetzt.
       **Ohne** Modulsatz in [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl) und ohne Glossar-Zeile (§1).
-- [ ] **Spezifikation:** Schema `metrics.*` (§2), Block-Syntax, Formel samt
+- [x] **Spezifikation:** Schema `metrics.*` (§2), Block-Syntax, Formel samt
       Rundungsregel, Messsemantik der Summe, die Grund-Codes **im Verfahren** (§1) — die
       Zeilen der Tabelle in §4 und der `--doctor`-Klartext kommen mit der Umsetzung des
       jeweiligen Codes, weil `TestAllReasonsDeckungGegenSpezifikationGrundCodes` die Tabelle
       gegen `AllReasons()` hält; dazu die Schärfung von `spec/architecture.md`
       ([`ARC-005`](../../../../spec/architecture.md), [`ARC-010`](../../../../spec/architecture.md), Fehlerzeile) für den Zuwachs am VCS-Port (Entscheid 8).
-- [ ] **ADR** mit Alternativen-Tabelle zu den Entscheiden 1–9, Re-Evaluierungs-Trigger,
+- [x] **ADR** mit Alternativen-Tabelle zu den Entscheiden 1–9, Re-Evaluierungs-Trigger,
       `Schärft:`-Feld; ADR-Index nachgezogen ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeilen 4/5).
       **Status `Proposed` bis zur Closure von [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle)** — dort wird die `numstat`-Zusage
       belegt oder korrigiert; erst danach `Accepted`. Sonst bräuchte eine Korrektur
       eine Folge-ADR ([`AGENTS.md`](../../../../AGENTS.md) §3.5).
-- [ ] Bestands-Gegenprobe an den Angaben des Anlass-Repos dokumentiert (§3): Block,
+- [x] Bestands-Gegenprobe an den Angaben des Anlass-Repos dokumentiert (§3): Block,
       Formel, Zustände und Messregeln aus dem Issue-Kommentar vom 2026-10-30 sind in der
       Anforderung belegt, die Prüfvorlage steht als Tabelle in der Closure-Notiz. Das
       Repo selbst ist **nicht gelesen**; die Anforderung kennzeichnet, was aus
       Angaben stammt und nicht am Repo gemessen ist (§3.8).
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Doku-Update: Benutzerhandbuch und `operations.md` **nicht** (Release-Prep, §1).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
+- [x] Doku-Update: Benutzerhandbuch und `operations.md` **nicht** (Release-Prep, §1).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
 ## 3. Plan (vor Code)
 
@@ -271,14 +271,14 @@ dasteht.
 - Die Fachlogik des Anlass-Repos passt nicht in die zweistufige Formel samt
   Schwellenregel und das Tabellenformat (etwa wenn weitere Pläne ein anderes Format tragen); eine zu enge
   Anforderung zwingt das Anlass-Repo, sein Programm zu behalten, und das Modul wäre
-  ohne Konsumenten — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  ohne Konsumenten — **Ausgang:** weiter offen — die Zahlen und das Format stammen aus Angaben, nicht aus einer Messung am Anlass-Repo; die Paritäts-Probe des Eigentümers entscheidet ([`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md))
 - Die Anforderung beschreibt die Messung per `numstat`-Gleichheit, bevor der Adapter
   steht; ein Unterschied zwischen reiner-Go-Diff und git-Kommando (Zeilenenden,
   Binärdateien, große Dateien) würde sie nachträglich ändern. Die Zusage ist
-  deshalb als noch nicht belegt gekennzeichnet — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  deshalb als noch nicht belegt gekennzeichnet — **Ausgang:** weiter offen — die Gleichheit mit `numstat` belegt erst die Messung am Fixture; die ADR bleibt bis dahin `Proposed` (Folge: [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle))
 - Die Angaben sind anonymisiert und vom Eigentümer selbst zusammengestellt; Stand und
   Pläne des Anlass-Repos ändern sich bis zur Paritäts-Probe, und die Tabelle misst
-  dann einen alten Stand oder eine Auswahl — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  dann einen alten Stand oder eine Auswahl — **Ausgang:** weiter offen — die Rückmeldung des Eigentümers an der veröffentlichten Version steht im Closure-Trigger der Welle
 
 ## 7. Closure-Notiz
 
@@ -294,7 +294,48 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-Wird bei der Closure gefüllt.
+- **Geliefert:** die Anforderung [`DC-FA-MET-001`](../../../../spec/lastenheft.md#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in)
+  (Lastenheft 0.110.0), das Verfahren [`DC-FA-MET-001.a`](../../../../spec/spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics) mit Schema `metrics.*` in der Spezifikation, die
+  Schärfung von [`ARC-005`](../../../../spec/architecture.md), [`ARC-010`](../../../../spec/architecture.md) und der Fehlerzeile in der Architektur und die ADR
+  [`ADR-0112`](../../adr/0112-metrics-modul.md) (`Proposed`). Modulsatz in
+  [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl) und Glossar fehlen absichtlich: der Spiegel-Test hält sie gegen
+  `ValidModules()`, das Modul ist noch nicht registriert.
+- **Bestands-Gegenprobe (Quelle: Angaben des Issue-Autors, nicht das Repo):** Schätzung → Marke nach
+  `100 · ⌈135 · S / 10000⌉`, Schwelle `135 · S > 300000`; alle Paare von Hand und vom Reviewer wie vom Verifier nachgerechnet.
+
+  | Fall | Schätzung | Marke | Schwellenregel |
+  |---|---|---|---|
+  | durchgerechnetes Beispiel | 6790 | 9200 | ja |
+  | Slice A | 5036 | 6800 | ja |
+  | Slice B (erwarteter Produktcode 1500) | 5430 | 7400 | ja |
+  | Slice C (erwarteter Produktcode 2000) | 9215 | 12500 | ja |
+  | Plan mit Messpunkt 5342 | 4670 | 6400 | ja |
+  | Grenzfall | 2000 | 2700 | nein |
+  | Grenzfall | 2001 | 2800 | nein |
+  | Grenzfall | 2222 | 3000 | nein |
+  | Grenzfall | 2223 | 3100 | ja |
+
+  Slices B und C waren erst unstimmig (der Autor gab den Produktcode am Ende statt des erwarteten an); die
+  Rückfrage im Issue klärte es. Die 16 Überschreitungen der Prosa-Zeit haben kein Urteil des Programms und sind
+  keine Prüfvorlage.
+- **Was anders lief als geplant:** (1) Der Autor kehrte im Verlauf Entscheid 9 um: die Tabellenzählung gehört ins
+  Modul, daher der neue Slice [`slice-285`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle). (2) `TestAllReasonsDeckungGegenSpezifikationGrundCodes` hält die
+  Grund-Code-Tabelle der Spezifikation gegen den Code; die Zeilen kommen mit der Umsetzung der Slices
+  283, 284 und 285 (Plan-Änderung vor dem Inhalt). (3) Review R1 (6 MEDIUM) und R2 (3 MEDIUM) fanden vor allem
+  Leseweisen, die der Text „wie die übrigen Module“ nannte, ohne dass es eine gemeinsame gab.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle. Benannte Spec-Lücke: Zäune und Tabellenzeilen haben im
+  Produkt zwei Leser-Familien (siehe Register); die Spezifikation von `metrics` legt die RTM-Familie fest.
+- **Beobachtungs-Register (`../observations/`):**
+  [`module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md)
+  bekommt einen weiteren Beleg (Pfad ohne Treffer zählt still 0, Review R1 F-4); neu angelegt
+  [`gemeinsame-leser-sind-zwei-familien`](../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md) (1×).
+- **Folge-Slices:** [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle), [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) und [`slice-285`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) in `open/`.
+- **Plan-Schärfung (V-2 der Verifikation):** der Hinweis zum Pfad ohne Treffer steht jetzt in §1 Entscheid 4.
+- **Risiken aus §6:** alle drei weiter offen (siehe §6), jedes mit Verweis. Trigger-Audit: kein Carveout, kein
+  bootstrap-aware Gate, keine bestehende ADR mit eingetretenem Trigger (die neue [`ADR-0112`](../../adr/0112-metrics-modul.md) bleibt `Proposed`), keine
+  Hard Rule mit eingetretenem Trigger, keine Schwelle gesenkt.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — die genannten Slices liegen in `open/`;
+  (c) Register — die zitierten Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
@@ -331,6 +372,10 @@ git-Revisionen, die es nicht scannt; die Grenze steht in der Anforderung, §1) u
 (17×, gemischt — die Gegenprobe stützt sich auf die Angaben des Anlass-Repos, nicht auf den Eigenbestand,
 der keinen Block trägt; die Anforderung sagt, was am Fremdbestand gemessen ist und
 was nur behauptet). Der Zähler folgt aus den Dateien der Closure.
+
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+`make nightly-state` am 2026-10-30: `upstream-drift` grün (jüngster Lauf 2026-10-30T06:41:15Z), `image-scan`
+grün (2026-10-30T10:04:41Z). Nichts zu lesen, nichts ausstehend.
 
 ### Sub-Area: `*` (Default)
 
