@@ -195,9 +195,12 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   text of a Markdown file while `file` counts the **raw** file of any kind.
   Hermetic, opt-in
   ([`DC-FA-FILE-001`](spec/lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in))
-- `metrics` — figure of a planning document: the limit stated in a block of a plan
-  is held against a configured, integer formula, and an exception entry needs a
-  non-empty reason; opt-in
+- `metrics` — figure of a planning document: the limit stated in the block of
+  a plan (paths, base, estimate, limit, `key: value` lines) is held against a
+  configured, integer formula, the line sum from git (`numstat` without rename
+  detection, read-only, no git binary) against the limit, and an exception
+  entry needs a non-empty reason; the estimate is counted from a table of the
+  plan. Input errors and a missing `.git` are exit 2; opt-in
   ([`DC-FA-MET-001`](spec/lastenheft.md#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in))
 - `workflows` — declaration consistency of the `uses:` references of CI
   workflows below a **configured** directory (`workflows.dir` — not hard-wired,
@@ -326,7 +329,7 @@ works for both registries)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.89.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.90.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

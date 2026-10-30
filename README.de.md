@@ -195,9 +195,13 @@ Dokuments:
   einer Markdown-Datei zählt und `file` die **rohe** Datei jeder Art.
   Hermetisch, opt-in
   ([`DC-FA-FILE-001`](spec/lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in))
-- `metrics` — Kennzahl eines Planungsdokuments: die im Block eines Plans genannte
-  Obergrenze wird gegen eine konfigurierte, ganzzahlige Formel gehalten, ein
-  Ausnahme-Eintrag braucht einen nicht leeren Grund; opt-in
+- `metrics` — Kennzahl eines Planungsdokuments: die Marke im Block eines Plans
+  (Pfade, Basis, Schätzung, Marke, `schluessel: wert`-Zeilen) wird gegen eine
+  konfigurierte, ganzzahlige Formel gehalten, die Zeilen-Summe aus git
+  (`numstat` ohne Rename-Erkennung, lesend, ohne git-Binary) gegen die Marke,
+  und ein Ausnahme-Eintrag braucht einen nicht leeren Grund; die Schätzung
+  zählt das Modul aus einer Tabelle des Plans. Eingabefehler und fehlendes
+  `.git` sind Exit 2; opt-in
   ([`DC-FA-MET-001`](spec/lastenheft.md#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in))
 - `workflows` — Deklarations-Konsistenz der `uses:`-Referenzen von CI-Workflows
   unterhalb eines **konfigurierten** Verzeichnisses (`workflows.dir` — nicht
@@ -329,7 +333,7 @@ zusätzlich nach Docker Hub gespiegelt als
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.89.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.90.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

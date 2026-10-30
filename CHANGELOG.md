@@ -4,6 +4,30 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.90.0] — 2026-10-30
+
+### Added
+
+- **Neues Modul `metrics`: Kennzahl eines Planungsdokuments gegen Messung aus git**
+  ([`DC-FA-MET-001`](spec/lastenheft.md#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in),
+  Lastenheft 0.110.3, opt-in über `--enable metrics`). Ein Plan trägt einen umzäunten Block
+  (`schluessel: wert`, kein YAML) mit Pfaden, Basis, Schätzung und Marke und eine Tabelle; das
+  Modul hält die Marke gegen die konfigurierte, ganzzahlige Formel
+  (`rounding · ⌈numerator · Schätzung / denominator⌉`, Schwellenregel für ein Pflichtfeld), die
+  Zeilen-Summe aus git (Einfügungen plus Löschungen wie `git diff --numstat --no-renames`, ohne
+  git-Binary, lesend, netzlos) gegen die Marke und jeden Ausnahme-Eintrag `<N> | <Grund>` auf
+  einen nicht leeren Grund; die Schätzung zählt es aus der Tabelle des Plans (Zeilen je Klasse,
+  konfigurierbarer Kopf). Fünf Grund-Codes: `metrics-limit-mismatch`, `metrics-estimate-mismatch`,
+  `metrics-over-limit`, `metrics-reason-empty`, `metrics-cut-reason-missing`. Ein
+  Eingabefehler eines Plans (Block, Zahl, Tabelle, Basis) und ein fehlendes `.git` sind Exit 2;
+  Hinweise (kein Block, Marke ausstehend mit berechneten Zahlen, nicht gezählte Dateien, Pfade ohne
+  Vorkommen) tragen den Exit nicht. Der VCS-Port erhält dafür die Methode `LineChanges`. Neue
+  Schlüssel `metrics.*` (Pflicht: `plans-dir`, `block`, `surcharge`, `rounding`, `table`);
+  `--print-config` führt sie. Ohne `metrics`-Konfiguration ist der Lauf byte-identisch zu v0.89.0
+  (`make blackbox-probe`). Grenzen der Gleichheit mit `numstat` (Diff-Heuristik der Bibliothek bei
+  verschobenen Blöcken, `.gitattributes`, Submodule, flache Klone) stehen in der Anforderung.
+  Anlass: GitHub-Issue 13. Handbuch §4.26.
+
 ## [0.89.0] — 2026-10-30
 
 ### Added
