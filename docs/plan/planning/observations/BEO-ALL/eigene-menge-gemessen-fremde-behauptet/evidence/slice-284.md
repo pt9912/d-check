@@ -1,0 +1,2 @@
+**Vorgang:** slice-284
+**Fund:** Die Binär-Erkennung des Zeilen-Zählers wurde aus dem Namen der Bibliotheks-Methode `IsBinary` des Patches übernommen, ohne ihr Verhalten zu lesen; sie bedeutet dort „Patch ohne Chunks“ und meldete eine neue oder gelöschte leere Datei als Binärdatei (Review R1 F-1). Behoben durch die Datei-Prüfung von git (NUL in den ersten 8000 Bytes) und Test mit leerer Datei neu und gelöscht.
