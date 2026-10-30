@@ -64,16 +64,16 @@ Anforderung). Die Empfehlungen folgen den Angaben des Anlass-Repos:
    mehrere Pläne mit je eigener Basis. Eine Basis, die nicht auflöst oder kein
    Vorfahr von `HEAD` ist, ist ein Eingabefehler (Exit 2).
 3. **Form der Formel.** **Ganzzahlig** ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus), kein Gleitkomma, kein
-   Ausdrucks-Parser): `E = Konstante + Σ Faktor · Feld` über Zahlenfelder des Blocks,
-   dann die Obergrenze `Einheit · ⌈Zähler · E / Nenner⌉` (genau eine Aufrundung auf ein
-   Vielfaches der Einheit). Im Anlass-Repo ist `E` das Block-Feld `schaetzung`
-   (Faktor 1, Konstante 0): die Schätzung aus der Tabelle des Plans trägt der Planner
-   in den Block ein, das Modul liest sie nur (Entscheid 9). Dazu eine
-   **Schwellenregel**: ab einer konfigurierten Schwelle für `Zähler · E` ist ein
-   weiteres Feld Pflicht. Die Werte (im Anlass-Repo 135/10000, Einheit 100, Schwelle
-   300000) sind Konfiguration, nicht Code. Die Formel ändert sich nie mit einem
-   Zustand. Felder des Blocks, die die Konfiguration nicht nennt (`produktcode`,
-   `fakes`), werden ignoriert.
+   Ausdrucks-Parser), zwei Stufen. Schätzung: `S = Σ Klassenfaktor · Zeilen der Klasse
+   + Σ Feldfaktor · Feld` (Zeilen aus der Tabelle des Plans, Entscheid 9; Felder des
+   Blocks). Obergrenze: `Einheit · ⌈Zähler · S / Nenner⌉` (genau eine Aufrundung auf ein
+   Vielfaches der Einheit). Prüfung 1 rechnet die Obergrenze aus dem Block-Feld
+   `schaetzung`, Prüfung 2 hält dieses Feld gegen die berechnete Schätzung. Dazu eine
+   **Schwellenregel**: ab einer konfigurierten Schwelle für `Zähler · S` ist ein weiteres
+   Feld Pflicht. Die Werte (im Anlass-Repo 85/80 je Klasse, 200 für `fakes`, 1 für
+   `produktcode`, 135/10000, Einheit 100, Schwelle 300000) sind Konfiguration, nicht
+   Code. Die Formel ändert sich nie mit einem Zustand. Felder des Blocks, die die
+   Konfiguration nicht nennt, werden ignoriert.
 4. **Was `git diff --numstat` hier heißt.** Einfügungen plus Löschungen je Datei,
    **Rename-Erkennung aus** (wie `--no-renames`: Löschung plus Einfügung); Pfade als
    **literale** Pathspecs (keine Glob-Muster, ein Verzeichnis zählt rekursiv, ein Pfad
@@ -110,14 +110,17 @@ Anforderung). Die Empfehlungen folgen den Angaben des Anlass-Repos:
    Port-Zuwachs, aber einen Zeilen-Diff im Kern; die
    ADR verwirft eine der beiden mit Begründung, und `spec/architecture.md`
    ([`ARC-005`](../../../../spec/architecture.md), [`ARC-010`](../../../../spec/architecture.md), Fehlerzeile) wird in diesem Slice entsprechend geschärft.
-9. **Eingabe aus einer Tabelle des Plans.** Das Programm des Anlass-Repos zählt die
-   Eingaben der Schätzung zusätzlich aus einer Markdown-Tabelle desselben Plans und
-   prüft vor dem ersten Code-Commit „Schätzung gleich Tabelle“ sowie den Hinweis
-   „Marke ausstehend“. **Gesetzt: nicht in diesem Modul** (Issue-Autor, Kommentar vom
-   2026-10-30) — das Issue nennt die Eingaben des Blocks; eine Tabellenzählung mit
-   konfigurierbarem Tabellenformat wäre eine eigene, spätere Anforderung. Die
-   Abweichung zur Parität ist benannt: das Modul fällt Prüfung 2 und den Hinweis
-   nicht; das Programm bleibt dafür im Anlass-Repo, bis es sie gibt.
+9. **Eingabe aus einer Tabelle des Plans.** Die Eingaben der Schätzung zählt das Modul
+   aus **genau einer** Markdown-Tabelle des Plans außerhalb umzäunter Blöcke:
+   konfigurierbarer Kopf (Zellen bytegleich), Schlüsselspalte (eindeutig, nicht leer),
+   Klassenspalte mit konfigurierten Klassen samt Faktor; gezählt werden Zeilen je Klasse.
+   **Gesetzt: im Modul** (Issue-Autor, Kommentar vom 2026-10-30, 14:49) — samt Prüfung 2
+   „Schätzung gleich Tabelle“ (nur solange die Messung 0 ist, danach Hinweis) und dem
+   Hinweis „Marke ausstehend“ mit berechneter Schätzung und Marke. Tabellenfehler sind
+   Eingabefehler (Exit 2): Tabelle fehlt, mehrdeutig, Trennzeile fehlt, Zeile mit falscher
+   Zellenzahl, `Nr.` leer oder doppelt, Klasse unbekannt, Tabelle ohne Zeilen. Es gibt
+   keine Arbeitsteilung mit dem Programm des Anlass-Repos; es entfällt nach der
+   Abnahme. Schnitt: [`slice-285`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle), nach der Messung, weil Prüfung 2 sie braucht.
 
 **Die Frage aus [`AGENTS.md`](../../../../AGENTS.md) §3.8 wird in der Anforderung beantwortet, nicht erst im Code:**
 das Modul liest Eingaben, die es nie scannt — die Pfade des Blocks (außerhalb
@@ -230,7 +233,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 **Start** (`next` → `in-progress`): welle-93 ist offen, das WIP-Limit ist frei, und
 der Auftraggeber hat die offenen Entscheide aus [`welle-93`](../welle-93-metrics-modul.md) §5
 beantwortet oder die Empfehlungen aus §1 (Entscheide 1–9) bestätigt — Entscheide 5
-und 9 hat der Issue-Autor im Kommentar vom 2026-10-30 bestätigt —, **und** die
+und 9 hat der Issue-Autor im Kommentar vom 2026-10-30 (14:49) gesetzt —, **und** die
 Angaben des Anlass-Repos liegen im Issue vor (erledigt, Kommentar vom 2026-10-30).
 Der Übergang landet auf dem Hauptzweig, vor der Arbeit.
 
@@ -239,8 +242,8 @@ Der Übergang landet auf dem Hauptzweig, vor der Arbeit.
 - `in-progress` → `next` (zu groß, zurück zur Zerlegung): die Gegenprobe zeigt eine
   Fachlogik jenseits der Formel mit einer Aufrundung und der Schwellenregel (Verzweigung
   nach Zustand, mehrere Messgrößen) — dann gehört die Formel-Sprache in einen eigenen Slice vor diesem.
-  Ebenso, wenn der Auftraggeber Entscheid 9 anders setzt (Tabellenzählung im Modul):
-  dann ist die Tabellen-Eingabe ein eigener Slice, oder wenn die Block-Form doch YAML
+  Ebenso, wenn das Tabellenformat des Anlass-Repos sich nicht konfigurierbar ausdrücken lässt:
+  dann gehört die Tabellen-Sprache in einen eigenen Slice vor [`slice-285`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle), oder wenn die Block-Form doch YAML
   verlangt und Entscheid 6 auf den Parse-Port fällt.
 - `in-progress` → `open` (blockiert — Carveout?): der Auftraggeber entscheidet die
   Basis (Entscheid 2) so, dass sie nicht aus dem Plan stammt, oder die Angaben des
@@ -264,7 +267,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 dasteht.
 
 - Die Fachlogik des Anlass-Repos passt nicht in die zweistufige Formel samt
-  Schwellenregel (etwa wenn Entscheid 9 die Tabellenprüfung doch verlangt); eine zu enge
+  Schwellenregel und das Tabellenformat (etwa wenn weitere Pläne ein anderes Format tragen); eine zu enge
   Anforderung zwingt das Anlass-Repo, sein Programm zu behalten, und das Modul wäre
   ohne Konsumenten — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
 - Die Anforderung beschreibt die Messung per `numstat`-Gleichheit, bevor der Adapter

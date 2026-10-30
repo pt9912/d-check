@@ -47,10 +47,11 @@ mit leerem Grund als Befund — rein arithmetisch, ohne git, einzeln lieferbar.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
-- **Die Eingabe aus einer Tabelle des Plans und die Prosa-Form-Erkennung** — beides
-  nutzt das Programm des Anlass-Repos, keines ist in der Anforderung des Issues
-  (Entscheid 9 der ADR: eigene Anforderung, falls gewünscht); die Parität ist an dieser
-  Stelle benannt eingeschränkt.
+- **Die Tabellenzählung (Schätzung aus der Tabelle, Prüfung 2, Hinweis „Marke ausstehend“)**
+  — Folge-Slice: [`slice-285`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) trägt sie, weil Prüfung 2 den Zustand „Messung 0 / ≥ 1“
+  aus der Messung braucht. Hier ist `schaetzung` ein Zahlenfeld des Blocks, kein Ergebnis
+  einer Tabelle. Die Prosa-Form-Erkennung ist im Issue offen (Rückfrage) und nicht Teil
+  dieses Slice.
 - **Die Messung aus git und der Vergleich mit der Obergrenze** — Schicht-Abgrenzung
   und Folge-Slice: [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) trägt VCS-Port, Adapter und den Vergleich;
   dieser Slice bleibt hermetisch (kein `.git` nötig), damit seine Hälfte ohne die andere

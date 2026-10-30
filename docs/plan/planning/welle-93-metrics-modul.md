@@ -62,9 +62,9 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     bisheriges Programm — Plan für Plan verglichen, nicht als Summe. Die Probe fährt der
     **Eigentümer des Anlass-Repos** mit dem veröffentlichten Image und meldet das
     Ergebnis im Issue (Zusage im Kommentar vom 2026-10-30); das Repo ist für diese
-    Planung nicht lesbar. Bekannte Abweichung: die Tabellenprüfung des Programms
-    (Entscheid 9 der ADR) und der Hinweis „Marke ausstehend“ fallen im Modul weg; der
-    Eigentümer nennt je Plan, welche Prüfung das Modul nicht fällt. Weicht ein
+    Planung nicht lesbar. Verglichen werden je Plan Exit-Code und Inhalt der Befunde und
+    Hinweise (welche Prüfung, welche Zahlen), nicht der Wortlaut; es gibt keine
+    Arbeitsteilung mit dem Programm, es entfällt nach der Abnahme ersatzlos. Weicht ein
     Urteil ab, ist die Abweichung benannt und entweder in der Anforderung
     verankert oder behoben. Dieser Lauf braucht die Pläne aus dem Anlass-Repo; sie
     stellt der Auftraggeber bereit (siehe §5). **Beobachtbar** wird er durch die
@@ -89,6 +89,7 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 | [`slice-282`](open/slice-282-metrics-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR für das Modul `metrics`; Bestands-Gegenprobe | neue Anforderung des Moduls (Kennung vergibt der Slice), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
 | [`slice-283`](open/slice-283-metrics-modulkern-formel-und-grund.md) | Modulkern: Block lesen, Obergrenze gegen Formel, leerer Grund (hermetisch) | die Anforderung aus [`slice-282`](open/slice-282-metrics-anforderung-und-adr.md) |
 | [`slice-284`](open/slice-284-metrics-messung-aus-git.md) | Messung aus git: Port, Adapter und Prüfung gegen die Obergrenze | die Anforderung aus [`slice-282`](open/slice-282-metrics-anforderung-und-adr.md), [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) (Port-Vorbild) |
+| [`slice-285`](open/slice-285-metrics-tabellenzaehlung-und-schaetzung.md) | Tabellenzählung: Schätzung aus der Tabelle des Plans, Prüfung 2, Hinweis „Marke ausstehend“ | die Anforderung aus [`slice-282`](open/slice-282-metrics-anforderung-und-adr.md) (Entscheid 9) |
 
 ## 5. Abhängigkeiten
 
@@ -101,15 +102,15 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   [`slice-282`](open/slice-282-metrics-anforderung-und-adr.md) (die Anforderung
   und die offenen Entscheide stehen, bevor Code entsteht), dann
   [`slice-283`](open/slice-283-metrics-modulkern-formel-und-grund.md), dann
-  [`slice-284`](open/slice-284-metrics-messung-aus-git.md). Alle drei schreiben eine
+  [`slice-284`](open/slice-284-metrics-messung-aus-git.md), dann [`slice-285`](open/slice-285-metrics-tabellenzaehlung-und-schaetzung.md) (Prüfung 2 braucht die Messung). Alle vier schreiben eine
   Fassung ins Lastenheft oder die Spezifikation; das WIP-Limit 1 hält sie
   ohnehin nacheinander.
 - **Offene Entscheide des Auftraggebers, die [`slice-282`](open/slice-282-metrics-anforderung-und-adr.md)
   vor dem Schreiben der Anforderung braucht** (das Issue legt sie nicht fest):
   neun, darunter die Syntax des Blocks im Plan, woher die Basis `<basis>` stammt, die
   Formel-Form, wo der Block gelesen wird (der Kern trägt keine YAML-Bibliothek) und
-  wo die Zeilen gezählt werden, und ob die Tabellenzählung des Anlass-Repos ins Modul
-  gehört. Der Slice benennt sie mit Empfehlung; ohne Entscheid
+  wo die Zeilen gezählt werden, und wie die Tabellenzählung des Anlass-Repos im Modul
+  konfiguriert wird. Der Slice benennt sie mit Empfehlung; ohne Entscheid
   beginnt kein Code. Fällt Entscheid 6 auf den Parse-Port, wird die Block-Lexik ein
   eigener Slice vor [`slice-283`](open/slice-283-metrics-modulkern-formel-und-grund.md), und die Slice-Tabelle in §4 wächst.
 - **Die Angaben und die Rückmeldung des Anlass-Repos:** das Repo ist nicht lesbar. Die
@@ -118,7 +119,8 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   Image und meldet je Plan im Issue. Ohne diese Rückmeldung ist die Probe nicht
   fahrbar, und die Welle schließt nicht mit einer Behauptung, sondern bleibt offen.
   Die Rückfrage zu den Slices B und C ist beantwortet (erwarteter Produktcode in der
-  Schätzung); sie gehen als Testfälle ein.
+  Schätzung); sie gehen als Testfälle ein. Die Tabellenzählung ist Teil der Anforderung
+  (Kommentar vom 2026-10-30, 14:49).
 
 ## 6. Out-of-Scope für diese Welle
 
