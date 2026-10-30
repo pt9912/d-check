@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.110.0
+**Version:** 0.110.1
 
 **Status:** Draft
 
@@ -4359,6 +4359,7 @@ Prosa-Form** statt des Blocks — falls gewünscht, eine eigene Anforderung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.110.1 | 2026-10-30 | Registrierung des Moduls `metrics` (Nachzug zu 0.110.0, keine Verhaltensänderung der Anforderung): der Modulsatz in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) und das Glossar nennen `metrics`, sobald es registriert ist. Dieselbe Änderung schreibt die Leseweise des Plan-Verzeichnisses fest: ein Plan, der ein Symlink ist, ist ein Eingabefehler (Exit 2), `scan.ignore` und die Skip-Liste gelten dafür nicht | — |
 | 0.110.0 | 2026-10-30 | Neue Anforderung [`DC-FA-MET-001`](#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in) — **Kennzahl eines Planungsdokuments gegen Messung aus git** (Modul `metrics`, opt-in) samt neuem Bereichskürzel `MET` in §3: pro Plan mit einem maschinenlesbaren Block hält d-check die Obergrenze gegen die konfigurierte Formel, die Zeilen-Summe aus `git diff --numstat` gegen die Obergrenze und einen Ausnahme-Eintrag auf einen nicht leeren Grund; die Tabelle des Plans liefert die Schätzung. **Anlass ist ein GitHub-Issue** eines Repos, das diese Prüfung mit einem eigenen Programm von rund 5300 Zeilen fährt. **Die Fachlogik (Block, Formel, Tabellenformat, Messregeln) stammt aus den anonymisierten Angaben des Issue-Autors, nicht aus einer Messung am Anlass-Repo** — es ist nicht lesbar; die Abnahme führt dessen Eigentümer mit dem veröffentlichten Image. Die Modul-Aufzählung in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) und das Glossar nennen `metrics` erst, wenn das Modul registriert ist. Begründung in begleitender ADR | GitHub-Issue 13 |
 | 0.109.0 | 2026-10-30 | Change Request (Auftraggeber): [`DC-FA-CLI-010`](#dc-fa-cli-010--makefile-fragment-ausgeben) (`--print-mk`-Fragment) um ein **vierzehntes** Target erweitert — `doc-manual` exponiert `--manual` aus [`DC-FA-CLI-013`](#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen) als Target (Begriff aus der Variablen `MANUAL`, Recipe-Echo unterdrückt, Abschnitte auf stdout, leerer Begriff ⇒ Exit 2 des Werkzeugs), ohne Modul-Wahl. Out-of-Scope: Begriffe mit `"`, `$` oder Backtick (Shell-Quoting von make). Happy Path, Boundary und Out-of-Scope nachgezogen. Anlass: Frage des Auftraggebers, ob `d-check.mk` ein `manual`-Target habe | — |
 | 0.108.0 | 2026-10-29 | [`DC-FA-HOST-001`](#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in): Neuer opt-in-Schlüssel `hostpaths.variables` (Liste von Shell-Variablen-Namen): `$NAME/…`, `${NAME}/…` und `"$NAME"/…` gelten dann als Home-Verweis, mit der Punkt-Segment-Regel der Tilde. `hostpaths.exempt-targets` akzeptiert `$`-Globs mit gelisteter Variable; ein `$`-Glob ohne sie ist Exit 2. Ohne den Schlüssel ist der Befundsatz byte-identisch. Der Out-of-Scope-Satz zu Variablen-Formen gilt nur noch außerhalb der Liste. Anlass: Feldmeldung eines Adopters | — |
