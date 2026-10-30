@@ -67,8 +67,8 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] **Config-Schlüssel und Zustand:** `metrics.estimate-inputs` (Feld → Faktor, Faktor ohne Feld ⇒ Exit 2) und `metrics.table.*` kommen in den Config-Rand; der Zustand *Marke ausstehend* verlangt alle Felder aus `estimate-inputs` und nennt im Hinweis die berechnete Schätzung und Marke.
-- [ ] **Tabellen-Leser und Konfiguration:** genau eine Tabelle pro Plan außerhalb
+- [x] **Config-Schlüssel und Zustand:** `metrics.estimate-inputs` (Feld → Faktor, Faktor ohne Feld ⇒ Exit 2) und `metrics.table.*` kommen in den Config-Rand; der Zustand *Marke ausstehend* verlangt alle Felder aus `estimate-inputs` und nennt im Hinweis die berechnete Schätzung und Marke.
+- [x] **Tabellen-Leser und Konfiguration:** genau eine Tabelle pro Plan außerhalb
       umzäunter Blöcke; Kopf, Schlüsselspalte, Klassenspalte und Klassen samt Faktor sind
       Konfiguration; Trennzeile, Zellen (`\|`, fehlender Schlussstrich, CRLF),
       Tabellenende und Zählung je Klasse nach der Anforderung. Eingabefehler (Exit 2,
@@ -76,25 +76,25 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       Zellenzahl · `Nr.` leer oder doppelt · Klasse unbekannt · Tabelle ohne Zeilen.
       Config-Rand (leere Klassenliste, Klasse ohne Faktor, Schlüsselspalte nicht im Kopf)
       → Exit 2. Negativliste (§3) getestet.
-- [ ] **Schätzung und Prüfung 2:** `S = Σ Klassenfaktor · Zeilen + Σ Feldfaktor · Feld`
+- [x] **Schätzung und Prüfung 2:** `S = Σ Klassenfaktor · Zeilen + Σ Feldfaktor · Feld`
       (ganzzahlig); solange die Messung 0 ist, meldet ein Unterschied zu `schaetzung` im
       Block den Befund „Schätzung gleich Tabelle“ verfehlt, bei Messung ≥ 1 nur einen
       Hinweis. Die belegten Zahlen der Anforderung (Slices A, B, C und das durchgerechnete
       Beispiel) sind Testfälle.
-- [ ] **Hinweis „Marke ausstehend“:** ein Block mit Pfad und Eingaben, aber ohne Basis,
+- [x] **Hinweis „Marke ausstehend“:** ein Block mit Pfad und Eingaben, aber ohne Basis,
       Schätzung und Marke, gibt die berechnete Schätzung und Marke als Hinweis (kein
       Befund, Exit unverändert).
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Doku-Update nur, wo ein Test es hält; Handbuch-Kopf und `CHANGELOG.md` **nicht**
-- [ ] Grund-Code `metrics-estimate-mismatch`: Zeile in der Tabelle von `spec/spezifikation.md` §4, Eintrag in `AllReasons()` und `--doctor`-Klartext (`TestAllReasonsDeckungGegenSpezifikationGrundCodes`).
+- [x] Doku-Update nur, wo ein Test es hält; Handbuch-Kopf und `CHANGELOG.md` **nicht**
+- [x] Grund-Code `metrics-estimate-mismatch`: Zeile in der Tabelle von `spec/spezifikation.md` §4, Eintrag in `AllReasons()` und `--doctor`-Klartext (`TestAllReasonsDeckungGegenSpezifikationGrundCodes`).
       (Release-Prep, §1).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
 ## 3. Plan (vor Code)
 
@@ -111,6 +111,7 @@ Aussagen-Berührung steht hier gar nicht.
 | `internal/adapter/driven/configyaml/configyaml.go` | update | `metrics.tabelle.*` und Klassen lesen und validieren |
 | `internal/adapter/driving/cli/config_template.go` | update | Gerüst führt das Tabellenformat (Spiegel-Test) |
 | `metrics_test.go` im Regel-Paket · `configyaml_test.go` | update | Happy/Boundary/Negative nach der Anforderung; Negativliste unten |
+| `spec/lastenheft.md` | update | Fassungsstand 0.110.3 und Historie; die Abweichungen der Leseweise (Strich im Code-Span, Spalte 0, Zitat/Liste/Kommentar) sind vollständig benannt (Review R1) |
 | `spec/spezifikation.md` | update | Zeile `metrics-estimate-mismatch` in der Tabelle von §4, Tabellenende bei Anfangsstrich, Historie |
 | `internal/hexagon/core/app/diagnose.go` | update | Grund-Code in `AllReasons()` samt Klartext |
 | `tools/image-test.sh` | update | Fall (7): Schätzung aus der Tabelle am gebauten Image (Befund bei Messung 0, Hinweis danach); Fall (6) bekommt das Tabellenformat in der Konfiguration |
@@ -166,11 +167,11 @@ dasteht.
 
 - Die Tabellen-Erkennung liest einen Zaun oder eine Zeile anders als der
   Markdown-Leser des Repos; eine Tabelle verschwindet still oder wird mehrdeutig —
-  **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  **Ausgang:** weiter offen — die Abweichungen der Leseweise vom Programm des Anlass-Repos sind in der Anforderung benannt; ob ein Plan davon abhängt, zeigt die Paritäts-Probe ([`BEO-ALL/gemeinsame-leser-sind-zwei-familien`](../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md))
 - Das Tabellenformat ist repo-spezifisch; ein zweiter Konsument bräuchte ein anderes
-  Format, das die Konfiguration nicht ausdrückt — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  Format, das die Konfiguration nicht ausdrückt — **Ausgang:** weiter offen — die Konfiguration drückt Kopf, Schlüssel- und Klassenspalte und Faktoren aus; ein zweites Format wäre eine neue Anforderung, kein Befund dieses Slice ([`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md))
 - Die Paritäts-Probe vergleicht Exit-Code und Inhalt der Befunde und Hinweise, nicht den
-  Wortlaut; eine Abweichung im Inhalt zeigt sich erst beim Eigentümer — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  Wortlaut; eine Abweichung im Inhalt zeigt sich erst beim Eigentümer — **Ausgang:** weiter offen — der Vergleich liegt beim Eigentümer des Anlass-Repos nach dem Release ([`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md))
 
 ## 7. Closure-Notiz
 
@@ -186,7 +187,38 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-Wird bei der Closure gefüllt.
+- **Geliefert:** der Tabellen-Leser (`rules/metrics_table.go`), die Schätzung aus Klassenfaktor mal Zeilen und Feldfaktor mal
+  Feld, Prüfung 2 (`metrics-estimate-mismatch` nur bei Messung 0, danach ein Hinweis), der Hinweis „Marke ausstehend“ mit
+  den berechneten Zahlen, `metrics.estimate-inputs` und `metrics.table.*` am Config-Rand, das Gerüst und der Fall (7) in
+  `tools/image-test.sh`.
+- **Gemessen:** `make gates` grün (Coverage 94,80 %). Am Image rechnete der Verifier die Beispiele aus dem Issue nach: Slice A
+  (5036, Marke 6800), B (5430, 7400), C (9215, 12500) ergeben Exit 0; mit falscher Schätzung (5570 bzw. 9017) Exit 1 mit
+  `metrics-estimate-mismatch`; bei Messung ≥ 1 nur ein Hinweis. `make blackbox-probe REF=v0.89.0`: 20 Vergleiche
+  byte-identisch. Bewusstes Brechen: ohne Klassen-Check, ohne Spalte-0-Prüfung und ohne Überlauf-Prüfung der Schätzung wird je
+  ein benannter Test rot (`TestMetricsTabellenfehler`, `TestMetricsTabellenGrenzen`, `TestMetricsSchaetzungUeberlaufUndNull`).
+- **Was anders lief als geplant:** (1) Der Issue-Autor kehrte Entscheid 9 um (Tabellenzählung im Modul) — daher dieser
+  Slice. (2) Mein erster Entwurf las einen Satz mit einem Strich als Tabellenzeile; die Regel „Zeile ohne Anfangsstrich
+  beendet die Tabelle“ kam aus dem Format des Anlass-Repos, dann aus Review R1 die Spalte 0. (3) Das Fix-Commit wollte den
+  Wortlaut „längengleich“ in der bereits `Accepted`-ADR berichtigen; `make adr-check` lehnte das zu Recht ab. Die
+  Spezifikation trägt die richtige Formulierung (mindestens gleiche Länge), die ADR behält den ungenauen Wortlaut. (4) Die
+  Plan-Tabelle nannte `spec/lastenheft.md` nicht (Zeile im Nachgang, Review R1).
+- **[`MR-066`](../../../../harness/conventions.md#mr-066) — Rückführung nicht gezogen:** die DoD führt vier Liefer-Punkte (Config-Schlüssel, Tabellen-Leser,
+  Schätzung samt Prüfung 2, Hinweis) statt höchstens drei. Grund: der Hinweis nutzt dieselbe Schätzung wie Prüfung 2, der
+  Leser trägt ohne die Schätzung nichts; eine Zerlegung ergäbe Slices ohne eigenen Lieferwert. Ersatz-Form der Prüfung:
+  Review und Verifikation lasen Leser und Schätzung getrennt, der Verifier fuhr das Image mit den Beispielen des Issues. Ein
+  zweiter Review-Durchgang über das Fix-Commit entfiel: es setzt genau die Befunde um (Spalte 0, Tests, Benennung), der
+  Verifier hat Spalte 0 und Klassen-Check gebrochen und rot gesehen.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
+- **Beobachtungs-Register (`../observations/`):**
+  [`gemeinsame-leser-sind-zwei-familien`](../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md)
+  bekommt einen zweiten Beleg (Beschreibung desselben Lesers an zwei Stellen verschieden, Review R1 F-5).
+- **Folge-Slices:** keiner. Der Abschluss der Welle (Ergebnis-Notiz, `make fullbuild`) und die Release-Prep sind eigene
+  Vorgänge.
+- **Risiken aus §6:** alle drei weiter offen (mit Verweis). Trigger-Audit: kein Carveout, kein bootstrap-aware Gate, keine ADR
+  mit eingetretenem Trigger ([`ADR-0112`](../../adr/0112-metrics-modul.md) bleibt `Accepted`), keine Hard Rule mit eingetretenem Trigger, keine
+  Schwelle gesenkt.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — keiner genannt; (c) Register — die zitierten
+  Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
