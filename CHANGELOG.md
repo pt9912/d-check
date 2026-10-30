@@ -4,6 +4,32 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.89.0] — 2026-10-30
+
+### Added
+
+- **`--print-mk` trägt ein vierzehntes Target: `doc-manual`**
+  ([`DC-FA-CLI-010`](spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben),
+  [`DC-FA-CLI-013`](spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen),
+  Lastenheft 0.109.0). `make doc-manual MANUAL=<begriff>` ruft das gepinnte Image mit
+  `--manual "<begriff>"` und gibt die Abschnitte von Benutzerhandbuch und Spezifikation auf
+  stdout aus (Recipe-Echo unterdrückt, ohne `--enable`/`--disable`). `MANUAL` ist nicht
+  vorbelegt: ohne Wert endet das Target mit dem Exit 2 des Werkzeugs. Ein Begriff mit
+  Leerzeichen bleibt einer; `"`, `$` und Backtick im Begriff gehören dem Shell-Quoting von
+  `make` und sind nicht zugesagt. Wer `d-check.mk` eingebunden hat, erzeugt es mit
+  `d-check --print-mk > d-check.mk` neu, um das Target zu bekommen. Anlass: Frage des
+  Auftraggebers.
+
+### Changed (Doku)
+
+- Benutzerhandbuch und READMEs korrigiert, ohne Software-Änderung: der Widerspruch zu
+  mehreren Spalten der Bedingung `table.column` (eine Liste unter einem Selektor), die
+  Aufzählung der Module mit `exempt-paths`, der Marker im Modul `diagrams`, der Grund-Code
+  `closure-note-ambiguous` in §4.17, die Beschreibung des Moduls `versions`, die Modulzahl
+  im Dogfooding-Absatz der READMEs (zwölf statt elf) und einige Tippfehler. Chronik und
+  Repo-Messwerte stehen nicht mehr im Fließtext des Handbuchs; die Beispiele pinnen die
+  Version statt `:latest`.
+
 ## [0.88.0] — 2026-10-30
 
 ### Changed
