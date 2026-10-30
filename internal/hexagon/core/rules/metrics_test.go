@@ -16,17 +16,25 @@ func mtCfg() model.MetricsConfig {
 		PlansDir: "plans", Block: "groessenmarke",
 		SurchargeNumerator: 135, SurchargeDenominator: 10000, Rounding: 100,
 		CutThreshold: 300000, CutEnabled: true,
+		Table: model.MetricsTable{
+			Header:    []string{"Nr.", "Zusage", "Fänger", "Mutation", "Klasse"},
+			KeyColumn: "Nr.", ClassColumn: "Klasse",
+			Classes: map[string]int{"x": 1000, "nebenläufig": 85, "andere": 80},
+		},
 	}
 }
 
+// mtTable ist die Tabelle eines Plans: eine Zeile der Klasse x (Faktor 1000).
+const mtTable = "\n| Nr. | Zusage | Fänger | Mutation | Klasse |\n|---|---|---|---|---|\n| 1 | a | b | c | x |\n"
+
 // mtPlan baut einen Plan mit einem Block; body ist der Block-Inhalt.
 func mtPlan(body string) string {
-	return "# Plan\n\n```groessenmarke\n" + body + "```\n\nText.\n"
+	return "# Plan\n\n```groessenmarke\n" + body + "```\n\nText.\n" + mtTable
 }
 
 func mtRun(t *testing.T, files map[string]string, cfg model.MetricsConfig) (MetricsResult, error) {
 	t.Helper()
-	return CheckMetrics(coretest.NewMemFS(files), &fakeVCS{}, cfg)
+	return CheckMetrics(coretest.NewMemFS(files), &fakeVCS{lineStat: driven.LineStat{Lines: 1}}, cfg)
 }
 
 func mtOne(t *testing.T, content string) (MetricsResult, error) {
@@ -48,7 +56,6 @@ func TestMetricsFormelBelegteZahlen(t *testing.T) {
 		{"6790", "9200", true}, {"5036", "6800", true}, {"5430", "7400", true},
 		{"9215", "12500", true}, {"4670", "6400", true},
 		{"2000", "2700", false}, {"2001", "2800", false}, {"2222", "3000", false}, {"2223", "3100", true},
-		{"0", "0", false},
 	}
 	for _, c := range cases {
 		extra := ""
@@ -240,11 +247,11 @@ func TestMetricsZaeune(t *testing.T) {
 	if err != nil || res.WithBlock != 0 {
 		t.Fatalf("Block im fremden Zaun ist kein Block: %v / %+v", err, res)
 	}
-	tilde := "~~~groessenmarke\n" + mtComplete("1000", "1400", "") + "~~~\n"
+	tilde := "~~~groessenmarke\n" + mtComplete("1000", "1400", "") + "~~~\n" + mtTable
 	if res, err = mtOne(t, tilde); err != nil || res.WithBlock != 1 || len(res.Findings) != 0 {
 		t.Fatalf("Tilden-Block: %v / %+v", err, res)
 	}
-	indented := "    ```groessenmarke\n" + mtComplete("1000", "1500", "") + "    ```\n"
+	indented := "    ```groessenmarke\n" + mtComplete("1000", "1500", "") + "    ```\n" + mtTable
 	if res, err = mtOne(t, indented); err != nil || len(res.Findings) != 1 {
 		t.Fatalf("eingerückter Block: %v / %+v", err, res)
 	}
@@ -252,7 +259,7 @@ func TestMetricsZaeune(t *testing.T) {
 	if _, err = mtOne(t, long); err == nil {
 		t.Fatal("eine kürzere Zaun-Zeile schließt nicht; sie ist Block-Inhalt ohne ':' und damit ein Fehler")
 	}
-	longOK := "````groessenmarke\n" + mtComplete("1000", "1400", "") + "````\n"
+	longOK := "````groessenmarke\n" + mtComplete("1000", "1400", "") + "````\n" + mtTable
 	if res, err = mtOne(t, longOK); err != nil || res.WithBlock != 1 {
 		t.Fatalf("längerer Zaun: %v / %+v", err, res)
 	}
@@ -445,5 +452,136 @@ func TestMetricsMessungFailClosed(t *testing.T) {
 	pending := map[string]string{"plans/slice-1.md": mtPlan("path: src/\n")}
 	if _, err := CheckMetrics(coretest.NewMemFS(pending), nil, mtCfg()); err != nil {
 		t.Fatalf("Marke ausstehend misst nicht: %v", err)
+	}
+}
+
+const mtHead = "| Nr. | Zusage | Fänger | Mutation | Klasse |\n|---|---|---|---|---|\n"
+
+// mtRows baut Datenzeilen `| n | a | b | c | klasse |` aus Klassen.
+func mtRows(classes ...string) string {
+	var sb strings.Builder
+	for i, c := range classes {
+		fmt.Fprintf(&sb, "| %d | a | b | c | %s |\n", i+1, c)
+	}
+	return sb.String()
+}
+
+func mtWithTable(body, table string) string {
+	return "# Plan\n\n```groessenmarke\n" + body + "```\n\n" + table
+}
+
+// Die Zählung je Klasse: Schätzung = Klassenfaktor · Zeilen + Feldfaktor · Feld;
+// Prüfung 2 hält die Schätzung des Blocks gegen sie -- als Befund nur bei
+// Messung 0, danach als Hinweis.
+func TestMetricsSchaetzungAusTabelle(t *testing.T) {
+	cfg := mtCfg()
+	cfg.EstimateInputs = map[string]int{"fakes": 200, "produktcode": 1}
+	table := mtHead + mtRows("nebenläufig", "andere", "andere", "nebenläufig", "andere")
+	// 85·2 + 80·3 + 200·1 + 1700 = 2310
+	body := func(est string) string {
+		return "path: src/\nbase: 9a0efa5\nestimate: " + est + "\nlimit: 3200\nfakes: 1\nproduktcode: 1700\ncut-reason: x\n"
+	}
+	run := func(est string, lines int) (MetricsResult, error) {
+		v := &fakeVCS{lineStat: driven.LineStat{Lines: lines}}
+		return CheckMetrics(coretest.NewMemFS(map[string]string{"plans/slice-1.md": mtWithTable(body(est), table)}), v, cfg)
+	}
+	if r, err := run("2310", 0); err != nil || len(r.Findings) != 0 {
+		t.Fatalf("Schätzung stimmt: %v / %+v", err, r.Findings)
+	}
+	r, err := run("2311", 0)
+	if err != nil || len(r.Findings) != 1 || r.Findings[0].Reason != ReasonMetricsEstimateMismatch {
+		t.Fatalf("Schätzung weicht bei Messung 0 ab: %v / %+v", err, r.Findings)
+	}
+	if f := r.Findings[0]; f.Line != 6 || f.Target != "estimate" {
+		t.Fatalf("Befund-Felder falsch: %+v", f)
+	}
+	r, err = run("2311", 5)
+	if err != nil || len(r.Findings) != 0 || !strings.Contains(strings.Join(r.Notes(), "\n"), "estimate 2311 weicht von der Tabelle ab (erwartet 2310; Messung 5, nur ein Hinweis)") {
+		t.Fatalf("bei Messung ≥ 1 nur ein Hinweis: %v / %+v / %v", err, r.Findings, r.Notes())
+	}
+}
+
+// Marke ausstehend: der Hinweis nennt die berechnete Schätzung und Marke; eine
+// fehlende Eingabe des Blocks ist ein Fehler.
+func TestMetricsMarkeAusstehendMitZahlen(t *testing.T) {
+	cfg := mtCfg()
+	cfg.EstimateInputs = map[string]int{"fakes": 200}
+	table := mtHead + mtRows("andere", "andere")
+	files := func(body string) map[string]string {
+		return map[string]string{"plans/slice-1.md": mtWithTable(body, table)}
+	}
+	r, err := CheckMetrics(coretest.NewMemFS(files("path: src/\nfakes: 2\n")), nil, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// 80·2 + 200·2 = 560 ⇒ Marke 100 · ⌈135 · 560 / 10000⌉ = 800
+	if got := strings.Join(r.Notes(), "\n"); !strings.Contains(got, "Marke ausstehend (estimate 560, limit 800)") {
+		t.Fatalf("Hinweis mit Zahlen fehlt: %q", got)
+	}
+	if _, err := CheckMetrics(coretest.NewMemFS(files("path: src/\n")), nil, cfg); err == nil {
+		t.Fatal("fehlendes Eingabe-Feld muss ein Fehler sein")
+	}
+	if _, err := CheckMetrics(coretest.NewMemFS(files("path: src/\nfakes: 2\nfakes: 3\n")), nil, cfg); err == nil {
+		t.Fatal("doppeltes Eingabe-Feld muss ein Fehler sein")
+	}
+	if _, err := CheckMetrics(coretest.NewMemFS(files("path: src/\nfakes: zwei\n")), nil, cfg); err == nil {
+		t.Fatal("Eingabe-Feld ohne Zahl muss ein Fehler sein")
+	}
+}
+
+// Negativliste der Tabellen-Erkennung: jeder Tabellenfehler ist ein
+// Eingabefehler des Plans.
+func TestMetricsTabellenfehler(t *testing.T) {
+	body := mtComplete("1000", "1400", "")
+	cases := map[string]string{
+		"Tabelle fehlt":              mtWithTable(body, "Kein Tabelle hier.\n"),
+		"Tabelle mehrdeutig":         mtWithTable(body, mtHead+mtRows("x")+"\nText\n\n"+mtHead+mtRows("x")),
+		"Trennzeile fehlt":           mtWithTable(body, "| Nr. | Zusage | Fänger | Mutation | Klasse |\n| 1 | a | b | c | x |\n"),
+		"Trennzeile falsche Zellen":  mtWithTable(body, "| Nr. | Zusage | Fänger | Mutation | Klasse |\n|---|---|---|\n| 1 | a | b | c | x |\n"),
+		"Trennzeile ohne Strich":     mtWithTable(body, "| Nr. | Zusage | Fänger | Mutation | Klasse |\n|---|---|---|---|::|\n| 1 | a | b | c | x |\n"),
+		"Zeile mit vier Zellen":      mtWithTable(body, mtHead+"| 1 | a | b | x |\n"),
+		"Zeile mit sechs Zellen":     mtWithTable(body, mtHead+"| 1 | a | b | c | x | y |\n"),
+		"Nr. leer":                   mtWithTable(body, mtHead+"|  | a | b | c | x |\n"),
+		"Nr. doppelt":                mtWithTable(body, mtHead+"| 1 | a | b | c | x |\n| 1 | a | b | c | x |\n"),
+		"Klasse unbekannt":           mtWithTable(body, mtHead+"| 1 | a | b | c | y |\n"),
+		"Klasse falsch geschrieben":  mtWithTable(body, mtHead+"| 1 | a | b | c | X |\n"),
+		"Klasse leer":                mtWithTable(body, mtHead+"| 1 | a | b | c |  |\n"),
+		"Tabelle ohne Zeilen":        mtWithTable(body, mtHead),
+		"Tabelle nur im Zaun":        mtWithTable(body, "```\n"+mtHead+mtRows("x")+"```\n"),
+		"ungeschützter Strich im Span": mtWithTable(body, mtHead+"| 1 | `a|b` | b | c | x | y |\n"),
+	}
+	for name, content := range cases {
+		res, err := mtOne(t, content)
+		if err == nil {
+			t.Fatalf("%s: erwartet Fehler, got %+v", name, res)
+		}
+		if !strings.Contains(err.Error(), "plans/slice-1.md") || len(res.Findings) != 0 {
+			t.Fatalf("%s: Fehler nennt den Plan nicht oder Befunde erscheinen: %v / %+v", name, err, res.Findings)
+		}
+	}
+}
+
+// Tolerante Formen, die der gemeinsame Zeilen-Teiler liest: Schlussstrich
+// fehlt, kein Anfangsstrich, `\|` in einer Zelle, CRLF, Trennzeile mit
+// Doppelpunkten, eine andere Tabelle mit ähnlichem Kopf wird nicht gelesen.
+func TestMetricsTabellenFormen(t *testing.T) {
+	body := mtComplete("1000", "1400", "")
+	other := "| Nr. | Zusage | Klasse |\n|---|---|---|\n| 1 | a | zzz |\n\n"
+	forms := map[string]string{
+		"ohne Schlussstrich":     mtHead + "| 1 | a | b | c | x\n",
+		"ohne Anfangsstrich":     "Nr. | Zusage | Fänger | Mutation | Klasse\n---|---|---|---|---\n1 | a | b | c | x\n",
+		"Strich in Zelle":        mtHead + "| 1 | a \\| a | b | c | x |\n",
+		"Doppelpunkte":           "| Nr. | Zusage | Fänger | Mutation | Klasse |\n|:--|:-:|--:|---|:---:|\n| 1 | a | b | c | x |\n",
+		"andere Tabelle davor":   other + mtHead + "| 1 | a | b | c | x |\n",
+		"CRLF":                   strings.ReplaceAll(mtHead+"| 1 | a | b | c | x |\n", "\n", "\r\n"),
+		"Tabelle endet an Text":  mtHead + "| 1 | a | b | c | x |\nText mit | Strich\n| 2 | a | b | c | y |\n",
+		"Tabelle endet am Zaun":  mtHead + "| 1 | a | b | c | x |\n```\n| 2 | a | b | c | y |\n```\n",
+		"Leerzeile beendet":      mtHead + "| 1 | a | b | c | x |\n\n| 2 | a | b | c | y |\n",
+	}
+	for name, table := range forms {
+		res, err := mtOne(t, mtWithTable(body, table))
+		if err != nil || len(res.Findings) != 0 {
+			t.Fatalf("%s: erwartet befundfrei (Schätzung 1000 = 1 Zeile x), got %v / %+v", name, err, res.Findings)
+		}
 	}
 }

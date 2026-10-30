@@ -285,6 +285,12 @@ modules: [links, anchors]
 #   surcharge: {numerator: 135, denominator: 10000}   # Bruch der Aufrundung; Pflicht
 #   rounding: 100                                # Einheit, auf deren Vielfaches die Obergrenze aufgerundet wird; Pflicht
 #   cut-threshold: 300000                        # ab numerator · Schätzung > Schwelle ist cut-reason Pflicht; leer ⇒ keine Schwellenregel
+#   estimate-inputs: {fakes: 200, produktcode: 1}   # Zahlenfelder des Blocks mit Faktor; gehen in die Schätzung ein
+#   table:                                       # die eine Tabelle des Plans, aus der die Zeilen je Klasse gezählt werden; Pflicht
+#     header: ["Nr.", "Zusage", "Klasse"]        # Kopfzellen, bytegleich
+#     key-column: "Nr."                          # eindeutige Schlüsselspalte
+#     class-column: "Klasse"                     # Klassenspalte
+#     classes: {a: 85, b: 80}                    # zulässige Klassen mit Faktor je Zeile
 #   excluded: []                                 # literale Pfade, die die Messung immer ausnimmt (kein Glob)
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---

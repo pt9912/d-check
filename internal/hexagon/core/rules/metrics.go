@@ -29,6 +29,7 @@ const (
 	ReasonMetricsReasonEmpty      = "metrics-reason-empty"
 	ReasonMetricsCutReasonMissing = "metrics-cut-reason-missing"
 	ReasonMetricsOverLimit        = "metrics-over-limit"
+	ReasonMetricsEstimateMismatch = "metrics-estimate-mismatch"
 )
 
 // MetricsResult traegt die Befunde, die Hinweise (keine Befunde) und die
@@ -71,6 +72,7 @@ type metricsBlock struct {
 	cutReason    string
 	hasCutReason bool
 	exceptions   []metricsException
+	inputs       map[string]int
 }
 
 // CheckMetrics ist das Regelmodul metrics (hermetischer Teil). Der
@@ -136,7 +138,7 @@ func checkMetricsPlan(fsys driven.Filesystem, vcs driven.VCS, plan string, cfg m
 		return err
 	}
 	res.Plans++
-	blk, err := parseMetricsBlock(string(content), cfg.Block, f)
+	blk, err := parseMetricsBlock(string(content), cfg.Block, f, cfg.EstimateInputs)
 	if err != nil {
 		return err
 	}
@@ -145,7 +147,11 @@ func checkMetricsPlan(fsys driven.Filesystem, vcs driven.VCS, plan string, cfg m
 		return nil
 	}
 	res.WithBlock++
-	fs, hints, err := checkMetricsBlock(plan, blk, vcs, cfg, f)
+	counts, err := readMetricsTable(string(content), cfg.Table)
+	if err != nil {
+		return err
+	}
+	fs, hints, err := checkMetricsBlock(plan, blk, counts, vcs, cfg, f)
 	if err != nil {
 		return err
 	}
@@ -191,7 +197,7 @@ func nextFence(lines []string, from int) (fenceSpan, bool) {
 
 // parseMetricsBlock liest den einen Block eines Plans. nil ohne Fehler heisst
 // "kein Block". Zaeune anderer Info-Strings verbergen ihren Inhalt.
-func parseMetricsBlock(content, block string, f model.MetricsFields) (*metricsBlock, error) {
+func parseMetricsBlock(content, block string, f model.MetricsFields, inputs map[string]int) (*metricsBlock, error) {
 	lines := strings.Split(content, "\n")
 	var found *metricsBlock
 	from := 0
@@ -210,7 +216,7 @@ func parseMetricsBlock(content, block string, f model.MetricsFields) (*metricsBl
 		if !sp.closed {
 			return nil, fmt.Errorf("block %q ab zeile %d ist nicht geschlossen", block, sp.open+1)
 		}
-		blk, err := readMetricsFields(sp.body, sp.open+2, f)
+		blk, err := readMetricsFields(sp.body, sp.open+2, f, inputs)
 		if err != nil {
 			return nil, err
 		}
@@ -221,8 +227,8 @@ func parseMetricsBlock(content, block string, f model.MetricsFields) (*metricsBl
 
 // readMetricsFields liest die Zeilen `<schluessel>: <wert>` des Blocks;
 // first ist die Plan-Zeile der ersten Block-Zeile.
-func readMetricsFields(body []string, first int, f model.MetricsFields) (*metricsBlock, error) {
-	b := &metricsBlock{}
+func readMetricsFields(body []string, first int, f model.MetricsFields, inputs map[string]int) (*metricsBlock, error) {
+	b := &metricsBlock{inputs: map[string]int{}}
 	seen := map[string]bool{}
 	for k, raw := range body {
 		line := first + k
@@ -235,11 +241,12 @@ func readMetricsFields(body []string, first int, f model.MetricsFields) (*metric
 			return nil, fmt.Errorf("zeile %d: kein ':' in %q", line, s)
 		}
 		key, val = strings.TrimSpace(key), strings.TrimSpace(val)
-		if seen[key] && isMetricsSingleKey(key, f) {
+		_, isInput := inputs[key]
+		if seen[key] && (isInput || isMetricsSingleKey(key, f)) {
 			return nil, fmt.Errorf("zeile %d: schlüssel %q steht mehrfach", line, key)
 		}
 		seen[key] = true
-		if err := b.set(key, val, line, f); err != nil {
+		if err := b.setField(key, val, line, f, isInput); err != nil {
 			return nil, err
 		}
 	}
@@ -355,12 +362,25 @@ func validMetricsBase(s string) bool {
 	return true
 }
 
-// checkMetricsBlock wendet die Pruefungen 1, 4 und 5 an; die Zustaende folgen
-// aus den vorhandenen Feldern.
-func checkMetricsBlock(plan string, b *metricsBlock, vcs driven.VCS, cfg model.MetricsConfig, f model.MetricsFields) ([]model.Finding, []string, error) {
-	hint, done, err := metricsState(plan, b, f)
-	if err != nil || done {
-		return nil, hint, err
+// checkMetricsBlock wendet die Pruefungen an; die Zustaende folgen aus den
+// vorhandenen Feldern. Die Schaetzung aus Tabelle und Block-Feldern wird immer
+// berechnet: sie ist der Hinweis im Zustand "Marke ausstehend" und die
+// Vergleichsgroesse der Pruefung 2.
+func checkMetricsBlock(plan string, b *metricsBlock, counts map[string]int, vcs driven.VCS, cfg model.MetricsConfig, f model.MetricsFields) ([]model.Finding, []string, error) {
+	pending, err := metricsState(b, cfg, f)
+	if err != nil {
+		return nil, nil, err
+	}
+	est, err := metricsEstimate(counts, b, cfg)
+	if err != nil {
+		return nil, nil, err
+	}
+	if pending {
+		limit, lerr := metricsLimit(est, cfg)
+		if lerr != nil {
+			return nil, nil, lerr
+		}
+		return nil, []string{fmt.Sprintf("metrics: %s: Marke ausstehend (%s %d, %s %d)", plan, f.Estimate, est, f.Limit, limit)}, nil
 	}
 	out, err := checkMetricsLimit(plan, b, cfg, f)
 	if err != nil {
@@ -372,27 +392,33 @@ func checkMetricsBlock(plan string, b *metricsBlock, vcs driven.VCS, cfg model.M
 		return nil, nil, err
 	}
 	out = append(out, cut...)
-	mf, hints, err := checkMetricsMeasure(plan, b, vcs, cfg, f)
+	mf, hints, err := checkMetricsMeasure(plan, b, est, vcs, cfg, f)
 	if err != nil {
 		return nil, nil, err
 	}
 	return append(out, mf...), hints, nil
 }
 
-// metricsState bestimmt den Zustand: done heisst "Marke ausstehend" (nur ein
-// Hinweis), ein Fehler eine ungueltige Feld-Kombination.
-func metricsState(plan string, b *metricsBlock, f model.MetricsFields) ([]string, bool, error) {
+// metricsState bestimmt den Zustand: pending heisst "Marke ausstehend" (Pfad
+// und alle Eingaben, aber weder Basis noch Schaetzung noch Marke); ein Fehler
+// eine ungueltige Feld-Kombination oder eine fehlende Eingabe.
+func metricsState(b *metricsBlock, cfg model.MetricsConfig, f model.MetricsFields) (bool, error) {
 	if len(b.paths) == 0 {
-		return nil, false, fmt.Errorf("block ab zeile %d ohne pfad (%s)", b.startLine, f.Path)
+		return false, fmt.Errorf("block ab zeile %d ohne pfad (%s)", b.startLine, f.Path)
+	}
+	for _, name := range sortedKeys(cfg.EstimateInputs) {
+		if _, ok := b.inputs[name]; !ok {
+			return false, fmt.Errorf("block ab zeile %d: eingabe-feld %q fehlt", b.startLine, name)
+		}
 	}
 	hasBase := b.base != ""
 	if !hasBase && !b.hasEstimate && !b.hasLimit {
-		return []string{fmt.Sprintf("metrics: %s: Marke ausstehend", plan)}, true, nil
+		return true, nil
 	}
 	if !hasBase || !b.hasEstimate || !b.hasLimit {
-		return nil, false, fmt.Errorf("block ab zeile %d: %s, %s und %s stehen nur zusammen oder gar nicht", b.startLine, f.Base, f.Estimate, f.Limit)
+		return false, fmt.Errorf("block ab zeile %d: %s, %s und %s stehen nur zusammen oder gar nicht", b.startLine, f.Base, f.Estimate, f.Limit)
 	}
-	return nil, false, nil
+	return false, nil
 }
 
 // checkMetricsLimit ist Pruefung 1: die Marke entspricht der Formel.
@@ -473,12 +499,13 @@ func metricsLimit(estimate int, cfg model.MetricsConfig) (int, error) {
 	return cfg.Rounding * q, nil
 }
 
-// checkMetricsMeasure ist Pruefung 3 samt Hinweisen: die Messung aus git
+// checkMetricsMeasure ist Pruefung 3 und 2 samt Hinweisen: die Messung aus git
 // (Zeilen-Summe zwischen Basis und HEAD ueber die Pfade des Blocks) liegt auf
-// oder unter der Marke, oder ein Ausnahme-Eintrag mit N >= Messung deckt sie.
-// Ein Ausnahme-Eintrag mit leerem Grund deckt trotzdem (er ist selbst ein
-// Befund der Pruefung 4).
-func checkMetricsMeasure(plan string, b *metricsBlock, vcs driven.VCS, cfg model.MetricsConfig, f model.MetricsFields) ([]model.Finding, []string, error) {
+// oder unter der Marke, oder ein Ausnahme-Eintrag mit N >= Messung deckt sie
+// (ein Eintrag mit leerem Grund deckt trotzdem; er ist selbst ein Befund der
+// Pruefung 4). Pruefung 2: die Schaetzung des Blocks entspricht der aus der
+// Tabelle -- als Befund nur solange die Messung 0 ist, danach als Hinweis.
+func checkMetricsMeasure(plan string, b *metricsBlock, est int, vcs driven.VCS, cfg model.MetricsConfig, f model.MetricsFields) ([]model.Finding, []string, error) {
 	if vcs == nil {
 		return nil, nil, fmt.Errorf("das Modul metrics braucht den git-Port (.git) fuer die Messung (DC-FA-MET-001, fail-closed)")
 	}
@@ -487,14 +514,26 @@ func checkMetricsMeasure(plan string, b *metricsBlock, vcs driven.VCS, cfg model
 		return nil, nil, err
 	}
 	hints := metricsMeasureHints(plan, b, stat, f)
-	if stat.Lines <= b.limit || metricsCovered(b, stat.Lines) {
-		return nil, hints, nil
+	var out []model.Finding
+	if b.estimate != est {
+		if stat.Lines == 0 {
+			out = append(out, model.Finding{
+				File: plan, Line: b.estimateLine, Rule: "metrics", Target: f.Estimate,
+				Reason:  ReasonMetricsEstimateMismatch,
+				Message: fmt.Sprintf("%s %d entspricht nicht der Tabelle (erwartet %d)", f.Estimate, b.estimate, est),
+			})
+		} else {
+			hints = append(hints, fmt.Sprintf("metrics: %s: %s %d weicht von der Tabelle ab (erwartet %d; Messung %d, nur ein Hinweis)", plan, f.Estimate, b.estimate, est, stat.Lines))
+		}
 	}
-	return []model.Finding{{
-		File: plan, Line: b.limitLine, Rule: "metrics", Target: f.Limit,
-		Reason:  ReasonMetricsOverLimit,
-		Message: fmt.Sprintf("Messung %d liegt ueber %s %d und kein Ausnahme-Eintrag deckt sie", stat.Lines, f.Limit, b.limit),
-	}}, hints, nil
+	if stat.Lines > b.limit && !metricsCovered(b, stat.Lines) {
+		out = append(out, model.Finding{
+			File: plan, Line: b.limitLine, Rule: "metrics", Target: f.Limit,
+			Reason:  ReasonMetricsOverLimit,
+			Message: fmt.Sprintf("Messung %d liegt ueber %s %d und kein Ausnahme-Eintrag deckt sie", stat.Lines, f.Limit, b.limit),
+		})
+	}
+	return out, hints, nil
 }
 
 // metricsCovered meldet, ob ein Ausnahme-Eintrag mit N >= Messung die
@@ -523,4 +562,18 @@ func metricsMeasureHints(plan string, b *metricsBlock, stat driven.LineStat, f m
 		hints = append(hints, fmt.Sprintf("metrics: %s: %s ohne Überschreitung (Messung %d, %s %d)", plan, f.Exception, stat.Lines, f.Limit, b.limit))
 	}
 	return hints
+}
+
+// setField ordnet einen Schluessel zu: ein Eingabe-Feld der Schaetzung ist eine
+// Zahl, alles andere regelt set.
+func (b *metricsBlock) setField(key, val string, line int, f model.MetricsFields, isInput bool) error {
+	if !isInput {
+		return b.set(key, val, line, f)
+	}
+	n, err := metricsNumberAt(key, val, line)
+	if err != nil {
+		return err
+	}
+	b.inputs[key] = n
+	return nil
 }

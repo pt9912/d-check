@@ -17,6 +17,7 @@
 #                 byte-identisch (DC-FA-CLI-013).
 #   (6) metrics:  Messung aus git im Container unter :ro, mit fremdem Benutzer
 #                 und ohne .git (DC-FA-MET-001).
+#   (7) metrics:  Schätzung aus der Tabelle des Plans (DC-FA-MET-001).
 #
 # „Nativ" in einem Docker-only-Repo: das statische Binary wird aus dem
 # Runtime-Image extrahiert (docker cp) und direkt ausgeführt — kein
@@ -173,6 +174,7 @@ metrics:
   block: groessenmarke
   surcharge: {numerator: 135, denominator: 10000}
   rounding: 100
+  table: {header: ["Nr.", "Klasse"], key-column: "Nr.", class-column: "Klasse", classes: {x: 1000}}
 YML
 printf 'a\nb\n' > "$mfx/src/x.txt"
 git -C "$mfx" init -q .
@@ -180,7 +182,7 @@ git -C "$mfx" add -A
 git -C "$mfx" -c user.name=t -c user.email=t@example.invalid commit -q -m base
 base="$(git -C "$mfx" rev-parse --short=7 HEAD)"
 seq 1 1600 > "$mfx/src/x.txt"
-printf '# Plan\n\n```groessenmarke\npath: src/\nbase: %s\nestimate: 1000\nlimit: 1400\n```\n' "$base" > "$mfx/plans/slice-1.md"
+printf '# Plan\n\n```groessenmarke\npath: src/\nbase: %s\nestimate: 1000\nlimit: 1400\n```\n\n| Nr. | Klasse |\n|---|---|\n| 1 | x |\n' "$base" > "$mfx/plans/slice-1.md"
 git -C "$mfx" add -A
 git -C "$mfx" -c user.name=t -c user.email=t@example.invalid commit -q -m head
 chmod -R a+rX "$mfx"
@@ -195,5 +197,35 @@ docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none -v "$mfx":/repo:ro "$REF"
   > "$WORK/m2.out" 2> "$WORK/m2.err" || mx=$?
 [ "$mx" -eq 2 ] || fail "metrics ohne .git: Exit $mx, want 2"
 echo "image-test: (6) metrics — Messung unter :ro und fremdem Benutzer, Exit 1; ohne .git Exit 2"
+
+# --- (7) metrics: Schätzung aus der Tabelle — Befund bei Messung 0, Hinweis danach ---
+# abdeckung: DC-FA-MET-001
+tfx="$WORK/tablefix"
+mkdir -p "$tfx/src" "$tfx/plans"
+cp "$WORK/metricsfix/.d-check.yml" "$tfx/.d-check.yml"
+printf 'a\n' > "$tfx/src/x.txt"
+git -C "$tfx" init -q .
+git -C "$tfx" add -A
+git -C "$tfx" -c user.name=t -c user.email=t@example.invalid commit -q -m base
+tbase="$(git -C "$tfx" rev-parse --short=7 HEAD)"
+printf '# P1\n\n```groessenmarke\npath: src/\nbase: %s\nestimate: 999\nlimit: 1400\n```\n\n| Nr. | Klasse |\n|---|---|\n| 1 | x |\n' "$tbase" > "$tfx/plans/slice-1.md"
+printf '# P2\n\n```groessenmarke\npath: src/\n```\n\n| Nr. | Klasse |\n|---|---|\n| 1 | x |\n' > "$tfx/plans/slice-2.md"
+git -C "$tfx" add -A
+git -C "$tfx" -c user.name=t -c user.email=t@example.invalid commit -q -m plans
+tx=0
+docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none -v "$tfx":/repo:ro "$REF" --enable metrics \
+  > "$WORK/t.out" 2> "$WORK/t.err" || tx=$?
+[ "$tx" -eq 1 ] || fail "metrics Tabelle: Exit $tx bei Messung 0, want 1 ($(cat "$WORK/t.err"))"
+grep -q 'metrics-estimate-mismatch' "$WORK/t.out" || fail "metrics Tabelle: metrics-estimate-mismatch fehlt: $(cat "$WORK/t.out")"
+grep -q 'Marke ausstehend (estimate 1000, limit 1400)' "$WORK/t.err" || fail "metrics Tabelle: Hinweis mit Zahlen fehlt: $(cat "$WORK/t.err")"
+printf 'a\nb\n' > "$tfx/src/x.txt"
+git -C "$tfx" add -A
+git -C "$tfx" -c user.name=t -c user.email=t@example.invalid commit -q -m code
+tx=0
+docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none -v "$tfx":/repo:ro "$REF" --enable metrics \
+  > "$WORK/t2.out" 2> "$WORK/t2.err" || tx=$?
+[ "$tx" -eq 0 ] || fail "metrics Tabelle: Exit $tx bei Messung >= 1, want 0 ($(cat "$WORK/t2.out"))"
+grep -q 'weicht von der Tabelle ab' "$WORK/t2.err" || fail "metrics Tabelle: Hinweis bei Messung >= 1 fehlt: $(cat "$WORK/t2.err")"
+echo "image-test: (7) metrics — Schätzung aus der Tabelle: Befund bei Messung 0, Hinweis bei Messung >= 1"
 
 echo "image-test: OK — Akzeptanzkriterien erfüllt (DC-FA-DIST-001, DC-FA-CLI-007, DC-FA-CLI-008, DC-FA-CLI-013, DC-FA-MET-001)"

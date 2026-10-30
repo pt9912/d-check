@@ -1241,6 +1241,12 @@ type MetricsConfig struct {
 	// nur wirksam, wenn CutEnabled gesetzt ist.
 	CutThreshold int
 	CutEnabled   bool
+	// EstimateInputs sind Zahlenfelder des Blocks mit ihrem Faktor; sie gehen in
+	// die Schätzung ein (DC-FA-MET-001).
+	EstimateInputs map[string]int
+	// Table beschreibt die eine Tabelle des Plans, aus der die Zeilen je Klasse
+	// gezählt werden.
+	Table MetricsTable
 	// Excluded sind literale Pfade, die die Messung immer ausnimmt.
 	Excluded []string
 }
@@ -1312,4 +1318,15 @@ func ValidLiteralPath(p string) error {
 
 func isBadPathRune(r rune) bool {
 	return r < 0x20 || r == 0x7f || r == '*' || r == '?' || r == '['
+}
+
+// MetricsTable beschreibt die Tabelle eines Plans (DC-FA-MET-001): Header ist
+// die Folge der Kopfzellen (bytegleich), KeyColumn die eindeutige
+// Schlüsselspalte, ClassColumn die Klassenspalte, Classes die zulässigen
+// Klassen mit ihrem Faktor je Zeile.
+type MetricsTable struct {
+	Header      []string
+	KeyColumn   string
+	ClassColumn string
+	Classes     map[string]int
 }

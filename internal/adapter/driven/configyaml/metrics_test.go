@@ -13,7 +13,9 @@ const mtYAML = "metrics:\n" +
 	"  fields: {path: pfad, base: basis, estimate: schaetzung, limit: marke, exception: ueberschreitung, cut-reason: schnitt-grund}\n" +
 	"  surcharge: {numerator: 135, denominator: 10000}\n" +
 	"  rounding: 100\n" +
-	"  cut-threshold: 300000\n"
+	"  cut-threshold: 300000\n" +
+	"  estimate-inputs: {fakes: 200, produktcode: 1}\n" +
+	"  table: {header: [\"Nr.\", \"Zusage\", \"Klasse\"], key-column: \"Nr.\", class-column: Klasse, classes: {a: 85, b: 80}}\n"
 
 // Der Voll-Block wird gelesen (DC-FA-MET-001, DC-FA-CONF-001).
 func TestDecode_MetricsVollblock(t *testing.T) {
@@ -28,6 +30,9 @@ func TestDecode_MetricsVollblock(t *testing.T) {
 	if m.SurchargeNumerator != 135 || m.SurchargeDenominator != 10000 || m.Rounding != 100 {
 		t.Fatalf("Formel nicht gelesen: %+v", m)
 	}
+	if m.EstimateInputs["fakes"] != 200 || m.EstimateInputs["produktcode"] != 1 || m.Table.KeyColumn != "Nr." || m.Table.ClassColumn != "Klasse" || m.Table.Classes["a"] != 85 || len(m.Table.Header) != 3 {
+		t.Fatalf("Eingaben oder Tabelle nicht gelesen: %+v", m)
+	}
 	if !m.CutEnabled || m.CutThreshold != 300000 {
 		t.Fatalf("Schwelle nicht gelesen: %+v", m)
 	}
@@ -38,7 +43,7 @@ func TestDecode_MetricsVollblock(t *testing.T) {
 
 // Ohne Schwelle ist die Schwellenregel aus; Feldnamen fallen auf die Defaults.
 func TestDecode_MetricsOhneSchwelleMitDefaults(t *testing.T) {
-	cfg, err := configyaml.Decode([]byte("metrics:\n  plans-dir: p\n  block: b\n  surcharge: {numerator: 1, denominator: 1}\n  rounding: 1\n"))
+	cfg, err := configyaml.Decode([]byte("metrics:\n  plans-dir: p\n  block: b\n  surcharge: {numerator: 1, denominator: 1}\n  rounding: 1\n  table: {header: [N, K], key-column: N, class-column: K, classes: {a: 1}}\n"))
 	if err != nil {
 		t.Fatalf("unerwarteter Fehler: %v", err)
 	}
@@ -84,6 +89,16 @@ func TestDecode_MetricsRand(t *testing.T) {
 		"excluded absolut":                 mtYAML + "  excluded: [/a]\n",
 		"excluded mit ..":                  mtYAML + "  excluded: [a/../b]\n",
 		"excluded mit Punkt":               mtYAML + "  excluded: [./a]\n",
+		"table fehlt":                      base("  table: {header: [\"Nr.\", \"Zusage\", \"Klasse\"], key-column: \"Nr.\", class-column: Klasse, classes: {a: 85, b: 80}}\n", ""),
+		"Kopfzelle doppelt":                base("header: [\"Nr.\", \"Zusage\", \"Klasse\"]", "header: [\"Nr.\", \"Nr.\", \"Klasse\"]"),
+		"key-column nicht im Kopf":         base("key-column: \"Nr.\"", "key-column: Fehlt"),
+		"class-column gleich key-column":   base("class-column: Klasse", "class-column: \"Nr.\""),
+		"classes leer":                     base("classes: {a: 85, b: 80}", "classes: {}"),
+		"Klassenfaktor fehlt":              base("classes: {a: 85, b: 80}", "classes: {a: , b: 80}"),
+		"Klassenfaktor negativ":            base("a: 85", "a: -1"),
+		"Eingabefaktor fehlt":              base("fakes: 200", "fakes: "),
+		"Eingabefaktor negativ":            base("fakes: 200", "fakes: -2"),
+		"Eingabe kollidiert mit Feldname":  base("fakes: 200", "marke: 200"),
 		"excluded leer":                    mtYAML + "  excluded: [\"\"]\n",
 	}
 	for name, doc := range cases {

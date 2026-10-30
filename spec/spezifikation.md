@@ -3438,7 +3438,10 @@ reine Arithmetik über dem Plan-Text; nur Prüfung 3 und der Zustand „Messung 
    passendem Kopf ⇒ Eingabefehler; andere Tabellen werden nicht gelesen. Die Trennzeile
    folgt direkt dem Kopf, hat genauso viele Zellen, jede aus `-` mit optionalem `:` an einem
    oder beiden Enden. Datenzeilen sind alle folgenden Zeilen, die der Zeilen-Teiler als
-   Tabellenzeile liest; die Tabelle endet an der ersten Zeile, die keine ist. Eine Zeile
+   Tabellenzeile liest; die Tabelle endet an der ersten Zeile, die keine ist. Beginnt die
+   Kopfzeile mit einem Anfangsstrich, beginnt auch jede Datenzeile mit einem (eine Zeile ohne
+   beendet die Tabelle, wie ein Satz mit einem Strich in der Mitte); ohne Anfangsstrich im Kopf
+   gilt jede Zeile mit einem Zelltrenner. Eine Zeile
    mit anderer Zellenzahl als der Kopf (auch eine überzählige HTML-Kommentar-Zelle, die der RTM-Leser toleriert), eine leere oder doppelte Schlüsselzelle, eine Klasse
    außerhalb von `table.classes` (Vergleich bytegleich nach Trimmen) und eine Tabelle ohne
    Datenzeile sind Eingabefehler. Gezählt werden Zeilen je Klasse. `\r` unmittelbar vor
@@ -3957,6 +3960,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-105` | `metrics-reason-empty` | metrics | ein Ausnahme-Eintrag trägt einen leeren oder nur aus Leerraum bestehenden Grund, unabhängig von der Messung (Prüfung 4). |
 | `SPEC-106` | `metrics-cut-reason-missing` | metrics | die Schwellenregel ist erfüllt, das Pflichtfeld fehlt oder ist leer (Prüfung 5). |
 | `SPEC-107` | `metrics-over-limit` | metrics | die Messung aus git liegt über der Obergrenze, und kein Ausnahme-Eintrag mit `N` ≥ Messung deckt sie (Prüfung 3). |
+| `SPEC-108` | `metrics-estimate-mismatch` | metrics | die Schätzung des Blocks entspricht nicht der aus der Tabelle des Plans — nur solange die Messung 0 ist; danach ein Hinweis (Prüfung 2). |
 | `SPEC-084` | `file-no-match` | file | eine Regel trifft keine Datei (auch nach Abzug von `exempt-paths`) — oder der Dateibaum ist nicht lesbar (ein Befund je Regel, kein Sammel-Befund); `line` = 1, `target` = die Regel-Identität (`files`-Glob) |
 | `SPEC-085` | `file-lines-exceeded` | file | eine Datei hat mehr Zeilen, als `max-lines` erlaubt — roh gezählt wie `wc -l` plus eine unvollständige Schlusszeile, **nicht** der von `structure` bereinigte Text; `line` = 1 |
 | `SPEC-086` | `file-bytes-exceeded` | file | eine Datei ist größer, als `max-bytes` erlaubt — die rohe Byte-Länge, **kein** bereinigter Text: Fenced-Code und Inline-Code zählen mit; `line` = 1 |
@@ -4017,6 +4021,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-30 | §[`DC-FA-MET-001.a`](spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics) Schritte 5 bis 8: die Tabelle des Plans, die Schätzung aus Klassenfaktor mal Zeilen und Feldfaktor mal Feld, Prüfung 2 (`metrics-estimate-mismatch`, `SPEC-108`) und der Hinweis „Marke ausstehend“ mit den berechneten Zahlen sind umgesetzt; ein Tabellenende ohne Anfangsstrich-Zeile gilt, wenn der Kopf einen Anfangsstrich trägt; Config-Schlüssel `metrics.estimate-inputs` und `metrics.table.*` sind Pflicht-/Wertebereichs-geprüft |
 | 2026-10-30 | §[`DC-FA-MET-001.a`](spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics) Schritt 9: die Messung ist umgesetzt (Grund-Code `metrics-over-limit`, `SPEC-107`); die Binär-Erkennung folgt der Datei-Prüfung von git (NUL in den ersten 8000 Bytes auf einer Seite), ein Submodul trägt 0 bei, ein Pfad mit leerem oder `.`-Segment ist ein Config- bzw. Eingabefehler; die CLI verlangt `.git`, sobald das Modul aktiv ist |
 | 2026-10-30 | §[`DC-FA-MET-001.a`](spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics): die Grund-Codes `metrics-limit-mismatch`, `metrics-reason-empty` und `metrics-cut-reason-missing` stehen jetzt in der Tabelle von §4 (`SPEC-104` bis `SPEC-106`); ein Plan als Symlink ist ein Eingabefehler (Schritte 2 und 12). Das Schema `metrics.*` in §2 gilt für das fertige Modul: die Schlüssel `estimate-inputs`, `table.*` und `excluded` kommen mit der Umsetzung der Messung und der Tabelle |
 | 2026-10-30 | Neues Modul-Verfahren §[`DC-FA-MET-001.a`](spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics) samt Schema-Zeilen `metrics.*` in §2; die Grund-Codes stehen im Verfahren und kommen mit ihrer Umsetzung in die Tabelle von §4. Block, Formel, Tabellenformat und Messregeln stammen aus den Angaben des Anlass-Repos, nicht aus einer Messung an ihm; die Gleichheit der Zeilen-Summe mit `git diff --numstat --no-renames` ist noch nicht am Fixture belegt |

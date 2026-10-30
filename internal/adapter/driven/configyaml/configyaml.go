@@ -2775,6 +2775,8 @@ type rawMetrics struct {
 	Rounding     *int             `yaml:"rounding"`
 	CutThreshold *int             `yaml:"cut-threshold"`
 	Excluded     []string         `yaml:"excluded"`
+	Inputs       map[string]*int  `yaml:"estimate-inputs"`
+	Table        rawMetricsTable  `yaml:"table"`
 }
 
 type rawMetricsFields struct {
@@ -2784,6 +2786,13 @@ type rawMetricsFields struct {
 	Limit     string `yaml:"limit"`
 	Exception string `yaml:"exception"`
 	CutReason string `yaml:"cut-reason"`
+}
+
+type rawMetricsTable struct {
+	Header      []string        `yaml:"header"`
+	KeyColumn   string          `yaml:"key-column"`
+	ClassColumn string          `yaml:"class-column"`
+	Classes     map[string]*int `yaml:"classes"`
 }
 
 type rawSurcharge struct {
@@ -2809,11 +2818,16 @@ func applyMetrics(r *rawMetrics) (model.MetricsConfig, error) {
 		SurchargeDenominator: *r.Surcharge.Denominator,
 		Rounding:             *r.Rounding,
 		Excluded:             r.Excluded,
+		EstimateInputs:       factorsOf(r.Inputs),
+		Table: model.MetricsTable{
+			Header: r.Table.Header, KeyColumn: strings.TrimSpace(r.Table.KeyColumn),
+			ClassColumn: strings.TrimSpace(r.Table.ClassColumn), Classes: factorsOf(r.Table.Classes),
+		},
 	}
 	if r.CutThreshold != nil {
 		cfg.CutThreshold, cfg.CutEnabled = *r.CutThreshold, true
 	}
-	if err := distinctMetricsFields(cfg.EffectiveFields()); err != nil {
+	if err := distinctMetricsFields(cfg.EffectiveFields(), cfg.EstimateInputs); err != nil {
 		return model.MetricsConfig{}, err
 	}
 	return cfg, nil
@@ -2833,6 +2847,9 @@ func validateRawMetrics(r *rawMetrics) error {
 	if *r.Surcharge.Numerator < 0 || *r.Surcharge.Denominator < 1 || *r.Rounding < 1 {
 		return fmt.Errorf("%s: metrics.surcharge.numerator muss >= 0, metrics.surcharge.denominator und metrics.rounding >= 1 sein", FileName)
 	}
+	if err := validateMetricsTable(r); err != nil {
+		return err
+	}
 	return validateMetricsOptional(r)
 }
 
@@ -2851,14 +2868,84 @@ func validateMetricsOptional(r *rawMetrics) error {
 }
 
 // distinctMetricsFields verlangt paarweise verschiedene, nicht leere
-// Feldnamen (eine Doppelbelegung machte die Zuordnung im Block mehrdeutig).
-func distinctMetricsFields(f model.MetricsFields) error {
+// Feldnamen und Eingabe-Felder, die keinen Feldnamen überdecken (eine
+// Doppelbelegung machte die Zuordnung im Block mehrdeutig).
+func distinctMetricsFields(f model.MetricsFields, inputs map[string]int) error {
 	seen := map[string]bool{}
 	for _, n := range []string{f.Path, f.Base, f.Estimate, f.Limit, f.Exception, f.CutReason} {
 		if strings.TrimSpace(n) == "" || seen[n] {
 			return fmt.Errorf("%s: metrics.fields.* müssen paarweise verschieden und nicht leer sein (%q)", FileName, n)
 		}
 		seen[n] = true
+	}
+	for n := range inputs {
+		if seen[n] {
+			return fmt.Errorf("%s: metrics.estimate-inputs.%s kollidiert mit einem Feldnamen des Blocks", FileName, n)
+		}
+	}
+	return nil
+}
+
+// factorsOf löst eine Abbildung Name → Faktor auf; die Validierung hat
+// sichergestellt, dass kein Faktor fehlt.
+func factorsOf(in map[string]*int) map[string]int {
+	if len(in) == 0 {
+		return nil
+	}
+	out := make(map[string]int, len(in))
+	for k, v := range in {
+		out[k] = *v
+	}
+	return out
+}
+
+// validateMetricsTable prüft das Tabellenformat und die Faktoren (Exit 2):
+// Kopf, Schlüssel- und Klassenspalte (im Kopf, verschieden), eine nicht leere
+// Klassenliste, jeder Faktor gesetzt und >= 0.
+func validateMetricsTable(r *rawMetrics) error {
+	t := r.Table
+	if len(t.Header) == 0 || strings.TrimSpace(t.KeyColumn) == "" || strings.TrimSpace(t.ClassColumn) == "" || len(t.Classes) == 0 {
+		return fmt.Errorf("%s: metrics.table.header, .key-column, .class-column und .classes sind Pflicht", FileName)
+	}
+	if err := validateTableHeader(t); err != nil {
+		return err
+	}
+	for name, f := range t.Classes {
+		if err := validFactor("metrics.table.classes."+name, f); err != nil {
+			return err
+		}
+	}
+	for name, f := range r.Inputs {
+		if strings.TrimSpace(name) == "" {
+			return fmt.Errorf("%s: metrics.estimate-inputs: Feldname ist leer", FileName)
+		}
+		if err := validFactor("metrics.estimate-inputs."+name, f); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// validateTableHeader verlangt verschiedene Kopfzellen und Spalten, die im Kopf
+// stehen.
+func validateTableHeader(t rawMetricsTable) error {
+	seen := map[string]bool{}
+	for _, c := range t.Header {
+		if seen[c] {
+			return fmt.Errorf("%s: metrics.table.header: Zelle %q steht doppelt", FileName, c)
+		}
+		seen[c] = true
+	}
+	key, class := strings.TrimSpace(t.KeyColumn), strings.TrimSpace(t.ClassColumn)
+	if !seen[key] || !seen[class] || key == class {
+		return fmt.Errorf("%s: metrics.table.key-column und .class-column müssen verschiedene Zellen des Kopfs sein", FileName)
+	}
+	return nil
+}
+
+func validFactor(what string, f *int) error {
+	if f == nil || *f < 0 {
+		return fmt.Errorf("%s: %s braucht einen Faktor >= 0", FileName, what)
 	}
 	return nil
 }
