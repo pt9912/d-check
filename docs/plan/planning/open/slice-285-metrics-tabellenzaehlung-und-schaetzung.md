@@ -67,6 +67,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
+- [ ] **Config-Schlüssel und Zustand:** `metrics.estimate-inputs` (Feld → Faktor, Faktor ohne Feld ⇒ Exit 2) und `metrics.table.*` kommen in den Config-Rand; der Zustand *Marke ausstehend* verlangt alle Felder aus `estimate-inputs` und nennt im Hinweis die berechnete Schätzung und Marke.
 - [ ] **Tabellen-Leser und Konfiguration:** genau eine Tabelle pro Plan außerhalb
       umzäunter Blöcke; Kopf, Schlüsselspalte, Klassenspalte und Klassen samt Faktor sind
       Konfiguration; Trennzeile, Zellen (`\|`, fehlender Schlussstrich, CRLF),

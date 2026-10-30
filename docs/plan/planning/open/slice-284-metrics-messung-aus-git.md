@@ -78,6 +78,7 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       ist `metrics-over-limit`; Messung auf der Grenze und darunter ist grün;
       Ausnahme **mit** Grund unterdrückt den Befund, Ausnahme **ohne** Grund bleibt der
       Befund aus [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle); Test referenziert, Negativliste (§3) getestet.
+- [ ] **Config-Schlüssel `metrics.excluded`:** Pfade (literal, ohne Glob, `..`, führenden `/`, Steuerzeichen) kommen in den Config-Rand; Verstöße ⇒ Exit 2.
 - [ ] **Fail-closed und Betrieb:** ohne `.git` Exit 2 (nicht „0 Befunde“); eine Basis,
       die nicht auflöst, ist Exit 2 mit Klartext; der Lauf bleibt unter `:ro` und gegen
       ein Repo mit anderem Eigentümer lauffähig — am gebauten Image belegt

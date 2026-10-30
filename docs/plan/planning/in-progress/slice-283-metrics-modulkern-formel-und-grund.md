@@ -47,6 +47,11 @@ mit leerem Grund als Befund — rein arithmetisch, ohne git, einzeln lieferbar.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
+- **Die Config-Schlüssel `estimate-inputs`, `table.*` und `excluded`** — das Schema der Spezifikation
+  kommt stückweise: `excluded` mit der Messung ([`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle)), `estimate-inputs` und `table.*` mit der
+  Tabelle ([`slice-285`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle)). Bis dahin kennt der Config-Rand sie nicht (unbekannter Schlüssel, Exit 2);
+  der Hinweis „Marke ausstehend“ nennt hier noch keine Zahlen und prüft nicht auf die Eingaben der
+  Schätzung.
 - **Die Tabellenzählung (Schätzung aus der Tabelle, Prüfung 2, Hinweis „Marke ausstehend“)**
   — Folge-Slice: [`slice-285`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) trägt sie, weil Prüfung 2 den Zustand „Messung 0 / ≥ 1“
   aus der Messung braucht. Hier ist `schaetzung` ein Zahlenfeld des Blocks, kein Ergebnis
