@@ -115,7 +115,11 @@ func listMetricsPlans(fsys driven.Filesystem, dir string) ([]string, error) {
 	}
 	var names []string
 	for _, e := range entries {
-		if ok, _ := path.Match("slice-*.md", e.Name); ok && e.Kind == driven.KindFile {
+		ok, _ := path.Match("slice-*.md", e.Name)
+		if ok && e.Kind == driven.KindSymlink {
+			return nil, fmt.Errorf("metrics: %s/%s ist ein Symlink -- ein Plan ist eine Datei, kein Verweis (DC-FA-MET-001, fail-closed)", dir, e.Name)
+		}
+		if ok && e.Kind == driven.KindFile {
 			names = append(names, e.Name)
 		}
 	}

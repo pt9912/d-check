@@ -3400,7 +3400,8 @@ reine Arithmetik über dem Plan-Text; nur Prüfung 3 und der Zustand „Messung 
    einem Pfad in `excluded` mit Glob-Zeichen, `..`, führendem `/` oder Steuerzeichen.
    Ohne Block bleibt die Konfiguration leer.
 2. **Plan-Suche.** Geprüft wird jede Datei `slice-*.md` **unmittelbar** in
-   `metrics.plans-dir` (nicht rekursiv), nach Namen sortiert. Ein fehlendes
+   `metrics.plans-dir` (nicht rekursiv), nach Namen sortiert; ein solcher Eintrag, der ein
+   Symlink ist, ist ein Eingabefehler (ein Plan ist eine Datei, kein Verweis). Ein fehlendes
    Verzeichnis ist **Exit 2**; ein vorhandenes ohne Treffer ist ein grüner Lauf mit dem
    Hinweis „kein Plan“. `plans-dir` wird nicht auf `scan.roots` beschränkt; `scan.ignore`
    und die Skip-Liste gelten für dieses ausdrücklich benannte Verzeichnis nicht.
@@ -3485,7 +3486,7 @@ reine Arithmetik über dem Plan-Text; nur Prüfung 3 und der Zustand „Messung 
     Plan-Namen: Exit 2, ein Klartext mit Plan und Ursache auf stderr, **kein** Befund und
     kein Hinweis aus keinem Plan — so verhält sich jeder Fehler eines Moduls, das ein
     Ergebnis und einen Fehler liefert. Ursachen: `plans-dir` fehlt; Block unvollständig,
-    ungeschlossen oder doppelt; Zeile ohne `:`; Ausnahme-Eintrag ohne `|`; ungültige Zahl
+    ungeschlossen oder doppelt; Zeile ohne `:`; Plan als Symlink; Ausnahme-Eintrag ohne `|`; ungültige Zahl
     oder Überlauf; ungültige Kombination der Felder (Schritt 5); Tabellenfehler (Schritt 6);
     Basis nicht auflösbar oder kein Vorfahr; `HEAD` nicht lesbar; `.git` fehlt. Auch die
     Befunde aller anderen Module entfallen, denn der Lauf liefert nur den Fehler.

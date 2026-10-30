@@ -8,8 +8,7 @@ import (
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
 )
 
-// mtCfg ist die Konfiguration des Anlass-Repos laut Angaben des Issues:
-// Zuschlag 135/10000, Einheit 100, Schwelle 300000 (DC-FA-MET-001).
+// mtCfg: Zuschlag 135/10000, Einheit 100, Schwelle 300000 (DC-FA-MET-001).
 func mtCfg() model.MetricsConfig {
 	return model.MetricsConfig{
 		PlansDir: "plans", Block: "groessenmarke",
@@ -301,5 +300,65 @@ func TestMetricsDeterminismus(t *testing.T) {
 	b, _ := mtRun(t, files, mtCfg())
 	if strings.Join(a.Notes(), "|") != strings.Join(b.Notes(), "|") || len(a.Findings) != len(b.Findings) {
 		t.Fatal("zwei Läufe weichen ab")
+	}
+}
+
+// Ein Plan, der ein Symlink ist, wird nicht still übergangen (fail-closed).
+func TestMetricsPlanSymlinkIstEinFehler(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{"plans/slice-1.md": "x\n"})
+	fs.AddSymlink("plans/slice-1.md")
+	if _, err := CheckMetrics(fs, mtCfg()); err == nil || !strings.Contains(err.Error(), "Symlink") {
+		t.Fatalf("erwartet Symlink-Fehler, got %v", err)
+	}
+}
+
+// Die Schwelle gilt strikt: genau auf der Schwelle ist kein Befund, einen
+// Schritt darüber schon.
+func TestMetricsSchwelleGenauAufDerGrenze(t *testing.T) {
+	cfg := mtCfg()
+	cfg.CutThreshold = 135 * 2000
+	r, err := mtRun(t, map[string]string{"plans/slice-1.md": mtPlan(mtComplete("2000", "2700", ""))}, cfg)
+	if err != nil || len(r.Findings) != 0 {
+		t.Fatalf("auf der Schwelle kein Befund, got %v / %+v", err, r.Findings)
+	}
+	r, err = mtRun(t, map[string]string{"plans/slice-1.md": mtPlan(mtComplete("2001", "2800", ""))}, cfg)
+	if err != nil || len(r.Findings) != 1 || r.Findings[0].Reason != ReasonMetricsCutReasonMissing {
+		t.Fatalf("über der Schwelle ein Befund, got %v / %+v", err, r.Findings)
+	}
+}
+
+// Jeder Schlüssel, der höchstens einmal stehen darf, wird als Duplikat
+// erkannt; Pfad und Ausnahme-Eintrag dürfen wiederholt werden.
+func TestMetricsDuplikatePruefungJeSchluessel(t *testing.T) {
+	for _, dup := range []string{"base: 9a0efa5\n", "limit: 1400\n", "estimate: 1000\n", "cut-reason: x\ncut-reason: y\n"} {
+		if _, err := mtOne(t, mtPlan(mtComplete("1000", "1400", "cut-reason: x\n")+dup)); err == nil {
+			t.Fatalf("Duplikat %q muss ein Fehler sein", dup)
+		}
+	}
+	body := mtComplete("1000", "1400", "path: more/\nexception: 2000 | a\nexception: 3000 | b\n")
+	if r, err := mtOne(t, mtPlan(body)); err != nil || len(r.Findings) != 0 {
+		t.Fatalf("Pfad und Ausnahme dürfen mehrfach stehen: %v / %+v", err, r.Findings)
+	}
+}
+
+// Eine negative Zahl und ein Vorzeichen sind Eingabefehler.
+func TestMetricsNegativeZahl(t *testing.T) {
+	for _, n := range []string{"-5", "+5"} {
+		if _, err := mtOne(t, mtPlan(mtComplete(n, "100", ""))); err == nil {
+			t.Fatalf("Zahl %q muss ein Fehler sein", n)
+		}
+	}
+}
+
+// Zitat-Ebene und Backtick-Zaun mit Backtick im Info-String sind keine Zäune
+// des Blocks (der gemeinsame Öffner-Test des Produkts entscheidet).
+func TestMetricsZaunAbgrenzung(t *testing.T) {
+	quoted := "> ```groessenmarke\n> path: x\n> ```\n"
+	if r, err := mtOne(t, quoted); err != nil || r.WithBlock != 0 {
+		t.Fatalf("Zitat-Ebene ist kein Block: %v / %+v", err, r)
+	}
+	inline := "```groessenmarke `x`\npath: x\n```\n"
+	if r, err := mtOne(t, inline); err != nil || r.WithBlock != 0 {
+		t.Fatalf("Backtick im Info-String öffnet keinen Zaun: %v / %+v", err, r)
 	}
 }

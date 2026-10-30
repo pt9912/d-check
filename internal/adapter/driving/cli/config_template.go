@@ -277,7 +277,7 @@ modules: [links, anchors]
 #   exempt-targets: []                           # Regelnamen EXAKT (kein Glob, anders als tracked) — Utility-Targets ohne Doku-Pflicht
 
 # --- metrics: Kennzahl eines Planungsdokuments (Obergrenze gegen Formel, Grund eines Ausnahme-Eintrags) — opt-in ---
-#   (Aufruf über --enable metrics. NICHT in modules: oben. Geprüft wird jede Datei slice-*.md unmittelbar im Plan-Verzeichnis.)
+#   (Aufruf über --enable metrics. NICHT in modules: oben. Geprüft wird jede Datei slice-*.md unmittelbar im Plan-Verzeichnis; weder scan.roots noch scan.ignore gelten dafür.)
 # metrics:
 #   plans-dir: docs/plan/planning/in-progress   # Verzeichnis der Pläne; nicht rekursiv; Pflicht
 #   block: groessenmarke                         # Info-String des umzäunten Blocks; Pflicht
