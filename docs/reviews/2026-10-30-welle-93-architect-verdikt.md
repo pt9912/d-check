@@ -3,7 +3,7 @@
 **Rolle:** Architect (Modul 8), frischer Kontext, **vor** Code.
 **Gegenstand:** [welle-93](../plan/planning/welle-93-metrics-modul.md) und ihre drei Slice-Pläne
 [slice-282](../plan/planning/done/welle-93/slice-282-metrics-anforderung-und-adr.md),
-[slice-283](../plan/planning/next/slice-283-metrics-modulkern-formel-und-grund.md),
+[slice-283](../plan/planning/in-progress/slice-283-metrics-modulkern-formel-und-grund.md),
 [slice-284](../plan/planning/open/slice-284-metrics-messung-aus-git.md) (alle uncommittet).
 **Anlass:** GitHub-Issue 13 (opt-in-Modul `metrics`).
 **Datum:** 2026-10-30.
@@ -32,7 +32,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
   Modul (verwaist?)", Z. 108–160 die sieben Fundorte).
 - [slice-282](../plan/planning/done/welle-93/slice-282-metrics-anforderung-und-adr.md) Z. 140 trägt `metrics` in die
   Glossar-Zeile „Regelmodul" ein, aber die Registrierung in `ValidModules()` liegt erst in
-  [slice-283](../plan/planning/next/slice-283-metrics-modulkern-formel-und-grund.md) Z. 72. Ab slice-282 wäre
+  [slice-283](../plan/planning/in-progress/slice-283-metrics-modulkern-formel-und-grund.md) Z. 72. Ab slice-282 wäre
   `TestModulRegistrySpiegel_LastenheftGlossar` rot (verwaister Eintrag). Der zweite Lastenheft-Fundort, der Modulsatz in
   [`DC-FA-CLI-002`](../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl) (Lastenheft Z. 111), fehlt im
   Plan 282 ganz.
@@ -102,7 +102,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
 ### F-6 — ADR-Status über drei Slices ungeregelt — **V1**
 
 - slice-284 Z. 22 verspricht, die `numstat`-Gleichheit „belegt oder korrigiert" zu haben; slice-282/283 nennen die ADR „aktive Entscheidungsgrundlage"
-  ([slice-283](../plan/planning/next/slice-283-metrics-modulkern-formel-und-grund.md) Z. 18). Wann sie `Accepted` wird, sagt kein Plan.
+  ([slice-283](../plan/planning/in-progress/slice-283-metrics-modulkern-formel-und-grund.md) Z. 18). Wann sie `Accepted` wird, sagt kein Plan.
 - Eine `Accepted`-ADR wird nicht inhaltlich geändert ([AGENTS.md](../../AGENTS.md) §3.5, [ADR-0016](../plan/adr/0016-adr-immutable-gate.md)): Fällt die Gleichheit in
   slice-284 anders aus als in Entscheid 4 gesetzt, wäre nach vorzeitigem `Accepted` eine Folge-ADR mit `supersedes` nötig, wo ein Edit am Entwurf genügt hätte.
   Bestandsmuster: Annahme mit der Closure des **umsetzenden** Slice ([ADR-0030](../plan/adr/0030-tracked-referenz-ziele.md) Geschichte, [ADR-0024](../plan/adr/0024-vcs-immutable-gate.md) Geschichte).
