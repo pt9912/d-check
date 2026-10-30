@@ -548,7 +548,6 @@ func TestMetricsTabellenfehler(t *testing.T) {
 		"Klasse leer":                mtWithTable(body, mtHead+"| 1 | a | b | c |  |\n"),
 		"Tabelle ohne Zeilen":        mtWithTable(body, mtHead),
 		"Tabelle nur im Zaun":        mtWithTable(body, "```\n"+mtHead+mtRows("x")+"```\n"),
-		"ungeschützter Strich im Span": mtWithTable(body, mtHead+"| 1 | `a|b` | b | c | x | y |\n"),
 	}
 	for name, content := range cases {
 		res, err := mtOne(t, content)
@@ -583,5 +582,66 @@ func TestMetricsTabellenFormen(t *testing.T) {
 		if err != nil || len(res.Findings) != 0 {
 			t.Fatalf("%s: erwartet befundfrei (Schätzung 1000 = 1 Zeile x), got %v / %+v", name, err, res.Findings)
 		}
+	}
+}
+
+// Ein `|` im Code-Span gehört zur Zelle (wie bei den übrigen Tabellen-Lesern).
+func TestMetricsStrichImCodeSpanIstEineZelle(t *testing.T) {
+	table := mtHead + "| 1 | `a|b` | b | c | x |\n"
+	if r, err := mtOne(t, mtWithTable(mtComplete("1000", "1400", ""), table)); err != nil || len(r.Findings) != 0 {
+		t.Fatalf("Strich im Span: %v / %+v", err, r.Findings)
+	}
+}
+
+// Grenzen der Tabellen-Erkennung: Tilden- und eingerückte Zäune verbergen die
+// Tabelle, ein Backtick im Info-String ist kein Zaun, Einrückung und Zitat
+// machen den Kopf zu keiner Tabelle, ein Zitat unter der Tabelle beendet sie.
+func TestMetricsTabellenGrenzen(t *testing.T) {
+	body := mtComplete("1000", "1400", "")
+	mustFail := map[string]string{
+		"Tilden-Zaun":         "~~~\n" + mtHead + mtRows("x") + "~~~\n",
+		"Zaun eingerückt":     "   ```\n" + mtHead + mtRows("x") + "   ```\n",
+		"Kopf eingerückt":     "  | Nr. | Zusage | Fänger | Mutation | Klasse |\n  |---|---|---|---|---|\n  | 1 | a | b | c | x |\n",
+		"Kopf im Zitat":       "> " + mtHead + "> | 1 | a | b | c | x |\n",
+		"HTML-Kommentar-Zelle": mtHead + "| 1 | a | b | c | x | <!-- k --> |\n",
+		"nebenlaeufig":        mtHead + "| 1 | a | b | c | nebenlaeufig |\n",
+	}
+	for name, table := range mustFail {
+		if _, err := mtOne(t, mtWithTable(body, table)); err == nil {
+			t.Fatalf("%s: erwartet Fehler", name)
+		}
+	}
+	mustPass := map[string]string{
+		"Backtick im Info-String": "```x`\n" + mtHead + mtRows("x"),
+		"Zitat beendet Tabelle":   mtHead + mtRows("x") + "> zitat | mit strich\n",
+		"Leerraum hinter Strich":  mtHead + "| 1 | a | b | c | x |   \n",
+	}
+	for name, table := range mustPass {
+		if r, err := mtOne(t, mtWithTable(body, table)); err != nil || len(r.Findings) != 0 {
+			t.Fatalf("%s: erwartet befundfrei, got %v / %+v", name, err, r.Findings)
+		}
+	}
+}
+
+// Überlauf der Schätzung (Produkt und Summe) ist ein Eingabefehler; Schätzung 0
+// ist erlaubt.
+func TestMetricsSchaetzungUeberlaufUndNull(t *testing.T) {
+	cfg := mtCfg()
+	huge := 1 << 62
+	cfg.Table.Classes = map[string]int{"x": huge, "y": huge}
+	run := func(table string) error {
+		_, err := CheckMetrics(coretest.NewMemFS(map[string]string{"plans/slice-1.md": mtWithTable(mtComplete("1", "1", ""), table)}), &fakeVCS{}, cfg)
+		return err
+	}
+	if err := run(mtHead + mtRows("x", "x", "x", "x")); err == nil {
+		t.Fatal("Produkt Faktor · Zeilen läuft über, erwartet Fehler")
+	}
+	if err := run(mtHead + mtRows("x", "y", "y")); err == nil {
+		t.Fatal("Summe läuft über, erwartet Fehler")
+	}
+	cfg.Table.Classes = map[string]int{"x": 0}
+	r, err := CheckMetrics(coretest.NewMemFS(map[string]string{"plans/slice-1.md": mtWithTable(mtComplete("0", "0", ""), mtHead+mtRows("x"))}), &fakeVCS{}, cfg)
+	if err != nil || len(r.Findings) != 0 {
+		t.Fatalf("Schätzung 0: %v / %+v", err, r.Findings)
 	}
 }

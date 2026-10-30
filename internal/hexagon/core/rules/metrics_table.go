@@ -3,8 +3,10 @@ package rules
 // Tabelle des Plans (DC-FA-MET-001): genau eine Markdown-Tabelle außerhalb
 // umzäunter Blöcke mit konfiguriertem Kopf; gezählt werden die Zeilen je
 // Klasse. Zäune erkennt der Leser wie der Tabellen-Leser der RTM (Öffner-Test
-// des Produkts nach Entfernen von Space und Tab vorn, längengleich
-// geschlossen), Zellen teilt der gemeinsame Zeilen-Teiler SplitPipeTableLine.
+// des Produkts nach Entfernen von Space und Tab vorn, geschlossen mit
+// mindestens gleicher Länge), Zellen teilt der gemeinsame Zeilen-Teiler
+// SplitPipeTableLine. Kopf und Datenzeilen beginnen an Spalte 0; Einrückung,
+// Zitat-Zeichen und Listen machen eine Zeile zu keiner Tabellenzeile.
 // Ein Tabellenfehler ist ein Eingabefehler des Plans.
 
 import (
@@ -65,7 +67,7 @@ func metricsOutsideFence(raw []string) []metricsLine {
 func metricsTableStarts(lines []metricsLine, header []string) []int {
 	var starts []int
 	for i, l := range lines {
-		if !l.outside {
+		if !l.outside || !atColumnZero(l.text) {
 			continue
 		}
 		cells, ok := SplitPipeTableLine(l.text)
@@ -100,7 +102,7 @@ func countMetricsRows(lines []metricsLine, head int, t model.MetricsTable) (map[
 	n := 0
 	leading := strings.HasPrefix(lines[head].text, "|")
 	for i := head + 2; i < len(lines) && lines[i].outside; i++ {
-		if leading && !strings.HasPrefix(lines[i].text, "|") {
+		if !atColumnZero(lines[i].text) || leading && !strings.HasPrefix(lines[i].text, "|") {
 			break
 		}
 		cells, ok := SplitPipeTableLine(lines[i].text)
@@ -202,4 +204,10 @@ func sortedKeys(m map[string]int) []string {
 	}
 	sort.Strings(keys)
 	return keys
+}
+
+// atColumnZero meldet, ob die Zeile nicht mit Leerraum oder einem Zitat-Zeichen
+// beginnt.
+func atColumnZero(text string) bool {
+	return text != "" && text[0] != ' ' && text[0] != '\t' && text[0] != '>'
 }

@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.110.2
+**Version:** 0.110.3
 
 **Status:** Draft
 
@@ -4201,7 +4201,9 @@ Regel — die Faktoren sind Fachlogik des Repos, das Modul liefert den Mechanism
 konfigurierten Info-String, genau einer je Plan. Zäune und Tabellenzeilen erkennt das
 Modul mit dem Öffner-Test und dem Zeilen-Teiler des Produkts; wo das Programm des Anlass-Repos
 strenger liest (Einrückung des Zauns höchstens drei Leerzeichen, Anfangsstrich der
-Tabellenzeile Pflicht), gilt die Leseweise des Produkts, und die Abnahme zeigt, ob ein
+Tabellenzeile Pflicht, ein Strich im Code-Span ist ein Fehler), gilt die Leseweise des
+Produkts (ein Strich im Code-Span gehört zur Zelle; Kopf und Datenzeilen beginnen an Spalte 0,
+Tabellen in Zitat, Liste oder HTML-Kommentar werden nicht gelesen), und die Abnahme zeigt, ob ein
 Plan davon abhängt. Der Block trägt eine Zeile je Eintrag
 `<schluessel>: <wert>`, getrennt am ersten `:`, beide Seiten getrimmt; Pfade
 und Ausnahme-Einträge dürfen mehrfach stehen, jeder andere Schlüssel höchstens
@@ -4368,6 +4370,7 @@ Prosa-Form** statt des Blocks — falls gewünscht, eine eigene Anforderung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.110.3 | 2026-10-30 | [`DC-FA-MET-001`](#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in): die Tabellenzählung ist umgesetzt; die Abweichungen der Leseweise vom Programm des Anlass-Repos sind vollständig benannt — ein Strich im Code-Span gehört zur Zelle (dort ein Fehler), Kopf und Datenzeilen beginnen an Spalte 0, Tabellen in Zitat, Liste oder HTML-Kommentar werden nicht gelesen | — |
 | 0.110.2 | 2026-10-30 | [`DC-FA-MET-001`](#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in): die Zeilen-Summe ist am Fixture belegt (Randformen und Summe aus `git diff --numstat --no-renames`); die Zusage nennt jetzt ihre Grenzen — Diff-Heuristik der Bibliothek bei verschobenen Blöcken, `.gitattributes` und `core.bigFileThreshold` nicht ausgewertet, Submodul trägt 0 bei, Dateinamen mit Glob-Zeichen nicht angebbar, mehrdeutiger Kurz-Hash, flacher Klon ohne Basis ⇒ Exit 2 | — |
 | 0.110.1 | 2026-10-30 | Registrierung des Moduls `metrics` (Nachzug zu 0.110.0, keine Verhaltensänderung der Anforderung): der Modulsatz in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) und das Glossar nennen `metrics`, sobald es registriert ist. Dieselbe Änderung schreibt die Leseweise des Plan-Verzeichnisses fest: ein Plan, der ein Symlink ist, ist ein Eingabefehler (Exit 2), `scan.ignore` und die Skip-Liste gelten dafür nicht | — |
 | 0.110.0 | 2026-10-30 | Neue Anforderung [`DC-FA-MET-001`](#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in) — **Kennzahl eines Planungsdokuments gegen Messung aus git** (Modul `metrics`, opt-in) samt neuem Bereichskürzel `MET` in §3: pro Plan mit einem maschinenlesbaren Block hält d-check die Obergrenze gegen die konfigurierte Formel, die Zeilen-Summe aus `git diff --numstat` gegen die Obergrenze und einen Ausnahme-Eintrag auf einen nicht leeren Grund; die Tabelle des Plans liefert die Schätzung. **Anlass ist ein GitHub-Issue** eines Repos, das diese Prüfung mit einem eigenen Programm von rund 5300 Zeilen fährt. **Die Fachlogik (Block, Formel, Tabellenformat, Messregeln) stammt aus den anonymisierten Angaben des Issue-Autors, nicht aus einer Messung am Anlass-Repo** — es ist nicht lesbar; die Abnahme führt dessen Eigentümer mit dem veröffentlichten Image. Die Modul-Aufzählung in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) und das Glossar nennen `metrics` erst, wenn das Modul registriert ist. Begründung in begleitender ADR | GitHub-Issue 13 |

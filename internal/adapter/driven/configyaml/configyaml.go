@@ -2820,7 +2820,7 @@ func applyMetrics(r *rawMetrics) (model.MetricsConfig, error) {
 		Excluded:             r.Excluded,
 		EstimateInputs:       factorsOf(r.Inputs),
 		Table: model.MetricsTable{
-			Header: r.Table.Header, KeyColumn: strings.TrimSpace(r.Table.KeyColumn),
+			Header: trimAll(r.Table.Header), KeyColumn: strings.TrimSpace(r.Table.KeyColumn),
 			ClassColumn: strings.TrimSpace(r.Table.ClassColumn), Classes: factorsOf(r.Table.Classes),
 		},
 	}
@@ -2894,7 +2894,7 @@ func factorsOf(in map[string]*int) map[string]int {
 	}
 	out := make(map[string]int, len(in))
 	for k, v := range in {
-		out[k] = *v
+		out[strings.TrimSpace(k)] = *v
 	}
 	return out
 }
@@ -2910,12 +2910,14 @@ func validateMetricsTable(r *rawMetrics) error {
 	if err := validateTableHeader(t); err != nil {
 		return err
 	}
-	for name, f := range t.Classes {
+	for _, name := range sortedNames(t.Classes) {
+		f := t.Classes[name]
 		if err := validFactor("metrics.table.classes."+name, f); err != nil {
 			return err
 		}
 	}
-	for name, f := range r.Inputs {
+	for _, name := range sortedNames(r.Inputs) {
+		f := r.Inputs[name]
 		if strings.TrimSpace(name) == "" {
 			return fmt.Errorf("%s: metrics.estimate-inputs: Feldname ist leer", FileName)
 		}
@@ -2930,7 +2932,7 @@ func validateMetricsTable(r *rawMetrics) error {
 // stehen.
 func validateTableHeader(t rawMetricsTable) error {
 	seen := map[string]bool{}
-	for _, c := range t.Header {
+	for _, c := range trimAll(t.Header) {
 		if seen[c] {
 			return fmt.Errorf("%s: metrics.table.header: Zelle %q steht doppelt", FileName, c)
 		}
@@ -2948,4 +2950,24 @@ func validFactor(what string, f *int) error {
 		return fmt.Errorf("%s: %s braucht einen Faktor >= 0", FileName, what)
 	}
 	return nil
+}
+
+// trimAll liefert die Zellen ohne Randleerraum.
+func trimAll(in []string) []string {
+	out := make([]string, len(in))
+	for i, s := range in {
+		out[i] = strings.TrimSpace(s)
+	}
+	return out
+}
+
+// sortedNames liefert die Schlüssel in fester Reihenfolge, damit
+// Fehlermeldungen deterministisch bleiben (DC-QA-02).
+func sortedNames(m map[string]*int) []string {
+	names := make([]string, 0, len(m))
+	for k := range m {
+		names = append(names, k)
+	}
+	sort.Strings(names)
+	return names
 }

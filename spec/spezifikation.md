@@ -3409,7 +3409,7 @@ reine Arithmetik über dem Plan-Text; nur Prüfung 3 und der Zustand „Messung 
    wertet (drei oder mehr Backticks oder Tilden nach Entfernen von Space und Tab vorn; bei
    Backticks darf der Rest der Zeile keinen Backtick tragen). Ein Block ist ein Zaun, dessen
    Info-String (getrimmt) `metrics.block` ist; der Schluss-Zaun gleicht dem Öffner in Zeichen
-   und Mindestlänge (längengleich, wie beim Tabellen-Leser der RTM). Kein Block ⇒ Zustand *kein Block*. Mehr als ein Block ⇒ Eingabefehler;
+   und Mindestlänge (mindestens gleiche Länge, wie beim Tabellen-Leser der RTM). Kein Block ⇒ Zustand *kein Block*. Mehr als ein Block ⇒ Eingabefehler;
    ein Block ohne Schluss-Zaun ⇒ Eingabefehler. Zäune anderer Info-Strings werden
    übersprungen und verbergen ihren Inhalt. **Abweichung vom Programm des Anlass-Repos:**
    dort sind höchstens drei Leerzeichen Einrückung erlaubt; das Produkt erlaubt Space und
@@ -3428,11 +3428,11 @@ reine Arithmetik über dem Plan-Text; nur Prüfung 3 und der Zustand „Messung 
    alle Felder aus `estimate-inputs` trägt, aber weder Basis noch Schätzung noch Marke;
    *vollständig*, wenn Pfad, Basis, Schätzung und Marke (und alle Eingaben) stehen. Jede
    andere Kombination ist ein Eingabefehler.
-6. **Tabelle lesen** (nur bei *Marke ausstehend* und *vollständig*). Zäune erkennt das Modul
+6. **Tabelle lesen** (bei jedem Plan mit Block, also bei *Marke ausstehend* und *vollständig*; eine fehlende Tabelle ist ein Eingabefehler, bevor der Zustand entscheidet). Zäune erkennt das Modul
    wie der Tabellen-Leser der RTM: der Öffner-Test des Produkts nach Entfernen von Space und
    Tab vorn, geschlossen durch ein Zeichen gleicher Art und mindestens gleicher Länge;
    Zellen teilt der gemeinsame Zeilen-Teiler (unescapte Pipes außerhalb einzeiliger
-   Code-Spans, `\|` als Zeichen, Anfangs- und Schlussstrich optional). Genau
+   Code-Spans, `\|` als Zeichen, Anfangs- und Schlussstrich optional; ein `|` im Code-Span gehört zur Zelle). Kopf und Datenzeilen beginnen an Spalte 0: Einrückung, ein Zitat-`>` oder eine Liste machen eine Zeile zu keiner Tabellenzeile. Genau
    eine Tabelle außerhalb umzäunter Blöcke, deren Kopf aus genau den Zellen von
    `table.header` besteht (getrimmt, bytegleich): keine ⇒ Eingabefehler, mehr als eine mit
    passendem Kopf ⇒ Eingabefehler; andere Tabellen werden nicht gelesen. Die Trennzeile

@@ -118,3 +118,15 @@ func TestDecode_MetricsExcluded(t *testing.T) {
 		t.Fatalf("excluded nicht gelesen: %v", got)
 	}
 }
+
+// Kopfzellen, Klassen und Eingabe-Namen werden am Config-Rand getrimmt.
+func TestDecode_MetricsTabelleGetrimmt(t *testing.T) {
+	doc := strings.Replace(mtYAML, `header: ["Nr.", "Zusage", "Klasse"]`, `header: [" Nr. ", "Zusage ", " Klasse"]`, 1)
+	cfg, err := configyaml.Decode([]byte(doc))
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	if h := cfg.Metrics.Table.Header; h[0] != "Nr." || h[1] != "Zusage" || h[2] != "Klasse" {
+		t.Fatalf("Kopf nicht getrimmt: %q", h)
+	}
+}

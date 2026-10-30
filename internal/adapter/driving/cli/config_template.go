@@ -285,7 +285,7 @@ modules: [links, anchors]
 #   surcharge: {numerator: 135, denominator: 10000}   # Bruch der Aufrundung; Pflicht
 #   rounding: 100                                # Einheit, auf deren Vielfaches die Obergrenze aufgerundet wird; Pflicht
 #   cut-threshold: 300000                        # ab numerator · Schätzung > Schwelle ist cut-reason Pflicht; leer ⇒ keine Schwellenregel
-#   estimate-inputs: {fakes: 200, produktcode: 1}   # Zahlenfelder des Blocks mit Faktor; gehen in die Schätzung ein
+#   estimate-inputs: {fakes: 200, produktcode: 1}   # Zahlenfelder des Blocks mit Faktor; gehen in die Schätzung ein; jedes steht in jedem Block (Pflicht)
 #   table:                                       # die eine Tabelle des Plans, aus der die Zeilen je Klasse gezählt werden; Pflicht
 #     header: ["Nr.", "Zusage", "Klasse"]        # Kopfzellen, bytegleich
 #     key-column: "Nr."                          # eindeutige Schlüsselspalte
