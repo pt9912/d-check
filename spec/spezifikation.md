@@ -3811,7 +3811,7 @@ Exit 2 ohne Prüfung
 | `metrics.plans-dir` | string | leer (aus) | Verzeichnis der Pläne; geprüft wird jede Datei `slice-*.md` **unmittelbar** darin (nicht rekursiv). **Pflicht**, sobald ein `metrics`-Block steht; ein fehlendes Verzeichnis ist Exit 2. Nicht auf `scan.roots` beschränkt. |
 | `metrics.block` | string | leer (aus) | Info-String des Fenced-Blocks. **Pflicht.** |
 | `metrics.fields.path` · `.base` · `.estimate` · `.limit` · `.exception` · `.cut-reason` | string | `path` · `base` · `estimate` · `limit` · `exception` · `cut-reason` | Feldnamen im Block: Pfad (wiederholbar), Basis, Schätzung, Obergrenze, Ausnahme-Eintrag (wiederholbar), Pflichtfeld der Schwellenregel. Verschieden voneinander. |
-| `metrics.estimate-inputs` | Abbildung Feldname → Faktor | leer | Zahlenfelder des Blocks, die mit ihrem Faktor in die Schätzung eingehen. |
+| `metrics.estimate-inputs` | Abbildung Feldname → Faktor | leer | Zahlenfelder des Blocks, die mit ihrem Faktor in die Schätzung eingehen; jedes steht in jedem Block (Pflicht), ein Faktor ohne Wert oder < 0 ist Exit 2. |
 | `metrics.table.header` | string[] | leer (aus) | Zellen des Tabellenkopfs, bytegleich und in dieser Reihenfolge. **Pflicht.** |
 | `metrics.table.key-column` · `.class-column` | string | leer | Kopfzelle der Schlüsselspalte (nicht leer, eindeutig) bzw. der Klassenspalte; beide stehen im Kopf. **Pflicht.** |
 | `metrics.table.classes` | Abbildung Klasse → Faktor | leer | zulässige Werte der Klassenspalte mit dem Faktor je Zeile; jede andere Zelle ist ein Eingabefehler. **Pflicht**, nicht leer. |
