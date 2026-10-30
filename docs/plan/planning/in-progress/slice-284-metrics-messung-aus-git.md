@@ -226,6 +226,10 @@ Pfade liegen außerhalb der Scan-Menge, §6). Erreicht eine der beiden ersten mi
 Slice ihr zweites Auftreten, wird das in §7 benannt; die dritte Evidenz wäre eine Lücke
 und brauchte einen eigenen Slice. Der Zähler folgt aus den Dateien der Closure.
 
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+`make nightly-state` am 2026-10-30: `upstream-drift` grün (jüngster Lauf 2026-10-30T06:41:15Z), `image-scan`
+grün (2026-10-30T10:04:41Z). Nichts zu lesen, nichts ausstehend.
+
 ### Sub-Area: `*` (Default)
 
 Alle berührten Sub-Areas GF.
