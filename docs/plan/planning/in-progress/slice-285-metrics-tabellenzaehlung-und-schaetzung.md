@@ -222,6 +222,10 @@ Anwendung; die Tabellen-Erkennung ist eine neue Erkennungsform) und
 Plan, den das Modul liest; die Grenze steht in der Anforderung). Der Zähler folgt aus
 den Dateien der Closure.
 
+**Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
+`make nightly-state` am 2026-10-30: `upstream-drift` grün (jüngster Lauf 2026-10-30T06:41:15Z), `image-scan`
+grün (2026-10-30T10:04:41Z). Nichts zu lesen, nichts ausstehend.
+
 ### Sub-Area: `*` (Default)
 
 Alle berührten Sub-Areas GF.

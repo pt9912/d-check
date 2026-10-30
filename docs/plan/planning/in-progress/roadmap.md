@@ -34,8 +34,6 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 
 - [`welle-93-metrics-modul`](../welle-93-metrics-modul.md)
 
-Nichts in Arbeit.
-
 ## Nächste Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
