@@ -111,7 +111,10 @@ Aussagen-Berührung steht hier gar nicht.
 | `internal/adapter/driven/configyaml/configyaml.go` | update | `metrics.tabelle.*` und Klassen lesen und validieren |
 | `internal/adapter/driving/cli/config_template.go` | update | Gerüst führt das Tabellenformat (Spiegel-Test) |
 | `metrics_test.go` im Regel-Paket · `configyaml_test.go` | update | Happy/Boundary/Negative nach der Anforderung; Negativliste unten |
-| `spec/lastenheft.md` · `spec/spezifikation.md` | update | nur Fassungsstand und Historie |
+| `spec/spezifikation.md` | update | Zeile `metrics-estimate-mismatch` in der Tabelle von §4, Tabellenende bei Anfangsstrich, Historie |
+| `internal/hexagon/core/app/diagnose.go` | update | Grund-Code in `AllReasons()` samt Klartext |
+| `tools/image-test.sh` | update | Fall (7): Schätzung aus der Tabelle am gebauten Image (Befund bei Messung 0, Hinweis danach); Fall (6) bekommt das Tabellenformat in der Konfiguration |
+| `docs/user/abdeckung-e2e.md` | update | Abdeckung per `make abdeckung` |
 
 **Negativliste der Tabellen-Erkennung (Schritt 19, vor dem Code-Commit zu testen):**
 Tabelle mit ähnlichem Kopf, aber anderer Zellenzahl · zweite Tabelle mit passendem Kopf
