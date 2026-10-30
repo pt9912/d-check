@@ -7,6 +7,9 @@ import (
 	"strings"
 	"testing"
 
+	gogit "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
+
 	gitadapter "github.com/pt9912/d-check/internal/adapter/driven/git"
 )
 
@@ -25,6 +28,9 @@ func linesFixture(t *testing.T) (dir, first, second string) {
 	put(t, dir, "src/bin.dat", "AB\x00CD\n")
 	put(t, dir, "other/o.txt", "o1\no2\n")
 	put(t, dir, "docs/vertraege/v.txt", "v1\nv2\n")
+	put(t, dir, "src/gone-empty.txt", "")
+	put(t, dir, "src/crlf.txt", "a\r\nb\r\nc")
+	put(t, dir, "src/mode.sh", "echo\n")
 	first = snapshot(t, wt, "base")
 
 	put(t, dir, "src/a.txt", "l1\nL2\nl3\nl4\nl5\nl6\n")
@@ -40,14 +46,25 @@ func linesFixture(t *testing.T) (dir, first, second string) {
 	put(t, dir, "src/bin.dat", "AB\x00EF\x00\n")
 	put(t, dir, "other/o.txt", "o1\nO22\n")
 	put(t, dir, "docs/vertraege/v.txt", "v1\nV22\n")
+	put(t, dir, "src/größe leer.txt", "")
+	if _, err := wt.Remove("src/gone-empty.txt"); err != nil {
+		t.Fatal(err)
+	}
+	put(t, dir, "src/crlf.txt", "a\r\nB\r\nc\r\nd\r\n")
+	put(t, dir, "src/ü ber.txt", "u1\nu2\n")
+	if err := os.Chmod(filepath.Join(dir, "src/mode.sh"), 0o755); err != nil {
+		t.Fatal(err)
+	}
 	second = snapshot(t, wt, "head")
 	return dir, first, second
 }
 
 // Die Zeilen-Summe gleicht `git diff --numstat --no-renames` über dieselben
-// Pfade. Die erwartete Summe 20 stammt aus dem Kommando am gleichen Inhalt:
+// Pfade. Die erwartete Summe 27 ist die Summe des Kommandos am gleichen Inhalt:
 // a.txt 2+1, added.txt 4+0, bin.dat binär, del.txt 0+3, empty.txt 1+0,
-// new.txt 5+0, old.txt 0+4 (Rename-Erkennung aus).
+// new.txt 5+0, old.txt 0+4 (Rename-Erkennung aus), crlf.txt 3+2 (CRLF, ohne
+// Schluss-Umbruch), „ü ber.txt“ 2+0; leere Datei neu und gelöscht, ein reiner
+// Moduswechsel und die Binärdatei tragen 0 bei.
 func TestLineChanges_GleichNumstat(t *testing.T) {
 	dir, first, second := linesFixture(t)
 	a, err := gitadapter.Open(dir)
@@ -58,8 +75,8 @@ func TestLineChanges_GleichNumstat(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if stat.Lines != 20 {
-		t.Fatalf("Summe = %d, erwartet 20 (git diff --numstat --no-renames)", stat.Lines)
+	if stat.Lines != 27 {
+		t.Fatalf("Summe = %d, erwartet 27 (git diff --numstat --no-renames)", stat.Lines)
 	}
 	if !reflect.DeepEqual(stat.Binary, []string{"src/bin.dat"}) {
 		t.Fatalf("Binärdateien = %v", stat.Binary)
@@ -85,9 +102,11 @@ func TestLineChanges_LiteralePfade(t *testing.T) {
 		}
 	}
 	one, _ := a.LineChanges(first, second, []string{"src/a.txt"}, nil)
-	twice, _ := a.LineChanges(first, second, []string{"src/a.txt", "src/"}, []string{"src/added.txt", "src/del.txt", "src/empty.txt", "src/new.txt", "src/old.txt"})
-	if one.Lines != 3 || twice.Lines != 3 {
-		t.Fatalf("a.txt zählt einmal (3): %d / %d", one.Lines, twice.Lines)
+	dup, _ := a.LineChanges(first, second, []string{"src/a.txt", "src/a.txt"}, nil)
+	under, _ := a.LineChanges(first, second, []string{"src/"}, nil)
+	both, _ := a.LineChanges(first, second, []string{"src/a.txt", "src/"}, nil)
+	if one.Lines != 3 || dup.Lines != 3 || both.Lines != under.Lines {
+		t.Fatalf("dieselbe Datei zählt einmal: Datei %d, doppelt %d, Verzeichnis %d, beides %d", one.Lines, dup.Lines, under.Lines, both.Lines)
 	}
 	same, _ := a.LineChanges(first, second, []string{"src/same.txt"}, nil)
 	if same.Lines != 0 || len(same.Missing) != 0 {
@@ -106,17 +125,44 @@ func TestLineChanges_BasisFailClosed(t *testing.T) {
 	if st, err := a.LineChanges(second, second, []string{"src/"}, nil); err != nil || st.Lines != 0 {
 		t.Fatalf("Basis gleich HEAD: %+v, %v", st, err)
 	}
-	if st, err := a.LineChanges(first[:7], second, []string{"src/"}, []string{"docs/"}); err != nil || st.Lines != 20 {
+	if st, err := a.LineChanges(first[:7], second, []string{"src/"}, []string{"docs/"}); err != nil || st.Lines != 27 {
 		t.Fatalf("Kurz-Hash: %+v, %v", st, err)
 	}
 	if _, err := a.LineChanges("0000000000000000000000000000000000000000", second, []string{"src/"}, nil); err == nil {
 		t.Fatal("unauflösbare Basis ⇒ Fehler")
 	}
 	_, err = a.LineChanges(second, first, []string{"src/"}, nil)
-	if err == nil || !strings.Contains(err.Error(), "kein Vorfahr") {
+	if err == nil || !strings.Contains(err.Error(), "kein vorfahr") {
 		t.Fatalf("Basis ist kein Vorfahr ⇒ Fehler, got %v", err)
 	}
 	if _, err := a.LineChanges(first, "nicht-vorhanden", []string{"src/"}, nil); err == nil {
 		t.Fatal("unauflösbare Spitze ⇒ Fehler")
+	}
+}
+
+// Eine Basis auf einem Geschwister-Zweig ist kein Vorfahr der Spitze, auch
+// wenn beide denselben Elternteil haben.
+func TestLineChanges_BasisAufGeschwisterZweig(t *testing.T) {
+	dir, first, second := linesFixture(t)
+	repo, err := gogit.PlainOpen(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wt, err := repo.Worktree()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := wt.Checkout(&gogit.CheckoutOptions{Hash: plumbing.NewHash(first), Branch: plumbing.NewBranchReferenceName("side"), Create: true}); err != nil {
+		t.Fatal(err)
+	}
+	put(t, dir, "side.txt", "s\n")
+	side := snapshot(t, wt, "side")
+	a, err := gitadapter.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = a.LineChanges(side, second, []string{"src/"}, nil)
+	if err == nil || !strings.Contains(err.Error(), "kein vorfahr") {
+		t.Fatalf("Geschwister-Zweig ⇒ kein Vorfahr, got %v", err)
 	}
 }

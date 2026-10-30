@@ -83,6 +83,7 @@ func TestDecode_MetricsRand(t *testing.T) {
 		"excluded mit Glob":                mtYAML + "  excluded: [\"a/*\"]\n",
 		"excluded absolut":                 mtYAML + "  excluded: [/a]\n",
 		"excluded mit ..":                  mtYAML + "  excluded: [a/../b]\n",
+		"excluded mit Punkt":               mtYAML + "  excluded: [./a]\n",
 		"excluded leer":                    mtYAML + "  excluded: [\"\"]\n",
 	}
 	for name, doc := range cases {

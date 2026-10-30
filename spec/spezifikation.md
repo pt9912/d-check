@@ -3468,12 +3468,14 @@ reine Arithmetik über dem Plan-Text; nur Prüfung 3 und der Zustand „Messung 
    keine Änderung hat. Existiert er **weder an der Basis noch an `HEAD`** als Datei oder
    Verzeichnis, erscheint er in einem Hinweis (ein Tippfehler im Pfad liefert sonst still
    0; vor dem ersten Code-Commit trifft der Hinweis auch Pfade, die noch nicht existieren);
-   Binärdateien (`-` in `numstat`) zählen 0 und erscheinen ebenfalls in einem Hinweis;
+   Binärdateien (`-` in `numstat`) und Submodule zählen 0 und erscheinen ebenfalls in einem
+   Hinweis; die Grenzen der Gleichheit mit `numstat` nennt die Anforderung;
    nicht eingecheckte Änderungen zählt die Messung nicht. Eine Basis, die nicht
    auflöst oder kein Vorfahr von `HEAD` ist, ein nicht lesbares `HEAD` und ein fehlendes
    `.git` sind **Exit 2** (fail-closed, wie `vcs` und `commits`). Messung 0 gilt als
    „vor dem ersten Code-Commit“, Messung ≥ 1 als „im Code“ — ein Stellvertreter für den
-   Zustand des Plans, kein Beleg.
+   Zustand des Plans, kein Beleg. Die CLI verlangt `.git`, sobald das Modul aktiv ist, auch
+   wenn kein Plan einen vollständigen Block trägt.
 10. **Befund.** `file` = der Plan-Pfad, `line` = die Zeile des betroffenen Feldes im Plan
     (bei `metrics-over-limit` die Zeile der Marke; bei `metrics-cut-reason-missing` die
     Zeile der Schätzung, weil das fehlende Feld keine Zeile hat), `target` = der Feldname.
@@ -4015,6 +4017,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-30 | §[`DC-FA-MET-001.a`](spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics) Schritt 9: die Messung ist umgesetzt (Grund-Code `metrics-over-limit`, `SPEC-107`); die Binär-Erkennung folgt der Datei-Prüfung von git (NUL in den ersten 8000 Bytes auf einer Seite), ein Submodul trägt 0 bei, ein Pfad mit leerem oder `.`-Segment ist ein Config- bzw. Eingabefehler; die CLI verlangt `.git`, sobald das Modul aktiv ist |
 | 2026-10-30 | §[`DC-FA-MET-001.a`](spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics): die Grund-Codes `metrics-limit-mismatch`, `metrics-reason-empty` und `metrics-cut-reason-missing` stehen jetzt in der Tabelle von §4 (`SPEC-104` bis `SPEC-106`); ein Plan als Symlink ist ein Eingabefehler (Schritte 2 und 12). Das Schema `metrics.*` in §2 gilt für das fertige Modul: die Schlüssel `estimate-inputs`, `table.*` und `excluded` kommen mit der Umsetzung der Messung und der Tabelle |
 | 2026-10-30 | Neues Modul-Verfahren §[`DC-FA-MET-001.a`](spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics) samt Schema-Zeilen `metrics.*` in §2; die Grund-Codes stehen im Verfahren und kommen mit ihrer Umsetzung in die Tabelle von §4. Block, Formel, Tabellenformat und Messregeln stammen aus den Angaben des Anlass-Repos, nicht aus einer Messung an ihm; die Gleichheit der Zeilen-Summe mit `git diff --numstat --no-renames` ist noch nicht am Fixture belegt |
 | 2026-10-30 | §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) Punkt 5 um das **vierzehnte** Target `doc-manual` erweitert ([`DC-FA-CLI-010`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 0.109.0, Change Request des Auftraggebers): Zahl, Aufzählungspunkt und die Zählung am erzeugten Fragment (sechs der vierzehn tragen eine Fokus-Liste, acht nicht). Es exponiert `--manual` aus [`DC-FA-CLI-013`](lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen) als **Modus**-Target; der Begriff kommt aus `MANUAL`, das nicht vorbelegt ist. Kein neues Verhalten des Werkzeugs, kein Grund-Code, keine Schema-Zeile — dieselbe Bauform wie `doc-usage` | — |

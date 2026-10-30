@@ -514,7 +514,7 @@ func metricsCovered(b *metricsBlock, measured int) bool {
 func metricsMeasureHints(plan string, b *metricsBlock, stat driven.LineStat, f model.MetricsFields) []string {
 	var hints []string
 	if n := len(stat.Binary); n > 0 {
-		hints = append(hints, fmt.Sprintf("metrics: %s: %d Binärdatei(en) nicht gezählt", plan, n))
+		hints = append(hints, fmt.Sprintf("metrics: %s: %d Datei(en) nicht gezählt (Binärdatei oder Submodul)", plan, n))
 	}
 	for _, p := range stat.Missing {
 		hints = append(hints, fmt.Sprintf("metrics: %s: Pfad %s existiert weder an der Basis noch an HEAD", plan, p))

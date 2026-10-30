@@ -1299,9 +1299,9 @@ func ValidLiteralPath(p string) error {
 	if strings.HasPrefix(p, "/") {
 		return fmt.Errorf("pfad %q beginnt mit '/'", p)
 	}
-	for _, seg := range strings.Split(p, "/") {
-		if seg == ".." {
-			return fmt.Errorf("pfad %q enthält '..'", p)
+	for _, seg := range strings.Split(strings.TrimSuffix(p, "/"), "/") {
+		if seg == "" || seg == "." || seg == ".." {
+			return fmt.Errorf("pfad %q enthält ein leeres, '.'- oder '..'-segment", p)
 		}
 	}
 	if strings.IndexFunc(p, isBadPathRune) >= 0 {

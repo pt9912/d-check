@@ -374,11 +374,11 @@ func (a *Adapter) LineChanges(base, head string, paths, excluded []string) (driv
 		if !underAny(name, paths) || underAny(name, excluded) {
 			continue
 		}
-		n, binary, err := changeLines(ch)
+		n, uncounted, err := changeLines(ch)
 		if err != nil {
 			return stat, fmt.Errorf("änderung an %s nicht lesbar: %w", name, err)
 		}
-		if binary {
+		if uncounted {
 			stat.Binary = append(stat.Binary, name)
 		}
 		stat.Lines += n
@@ -399,12 +399,12 @@ func (a *Adapter) rangeTrees(base, head string) (*object.Tree, *object.Tree, err
 	if err != nil {
 		return nil, nil, fmt.Errorf("spitze %q nicht auflösbar: %w", head, err)
 	}
-	anc, err := a.ancestors(*headHash)
+	ok, err := a.isAncestor(*baseHash, *headHash)
 	if err != nil {
-		return nil, nil, fmt.Errorf("vorfahren von %q nicht lesbar: %w", head, err)
+		return nil, nil, fmt.Errorf("historie von %q nicht lesbar (flacher klon ohne die basis?): %w", head, err)
 	}
-	if !anc[*baseHash] {
-		return nil, nil, fmt.Errorf("basis %q ist kein Vorfahr von %q", base, head)
+	if !ok {
+		return nil, nil, fmt.Errorf("basis %q ist kein vorfahr von %q", base, head)
 	}
 	baseTree, err := a.treeAt(base)
 	if err != nil {
@@ -426,22 +426,42 @@ func changeName(ch *object.Change) string {
 	return ch.From.Name
 }
 
-// changeLines zählt Einfügungen plus Löschungen einer Änderung; binary meldet
-// eine Binärdatei (sie trägt 0 bei).
-func changeLines(ch *object.Change) (lines int, binary bool, err error) {
-	patch, err := ch.Patch()
+// changeLines zählt Einfügungen plus Löschungen einer Änderung; uncounted
+// meldet eine Datei, die nicht zählbar ist (Binärdatei mit NUL in den ersten
+// 8000 Bytes auf einer der beiden Seiten wie bei git, oder ein Submodul) und
+// 0 beiträgt. Eine hinzugefügte oder gelöschte leere Datei ist zählbar.
+func changeLines(ch *object.Change) (lines int, uncounted bool, err error) {
+	if isSubmodule(ch.From.TreeEntry) || isSubmodule(ch.To.TreeEntry) {
+		return 0, true, nil
+	}
+	from, to, err := ch.Files()
 	if err != nil {
 		return 0, false, err
 	}
-	for _, fp := range patch.FilePatches() {
-		if fp.IsBinary() {
+	for _, f := range []*object.File{from, to} {
+		if f == nil {
+			continue
+		}
+		bin, berr := f.IsBinary()
+		if berr != nil {
+			return 0, false, berr
+		}
+		if bin {
 			return 0, true, nil
 		}
+	}
+	patch, err := ch.Patch()
+	if err != nil {
+		return 0, false, err
 	}
 	for _, st := range patch.Stats() {
 		lines += st.Addition + st.Deletion
 	}
 	return lines, false, nil
+}
+
+func isSubmodule(e object.TreeEntry) bool {
+	return e.Mode == filemode.Submodule
 }
 
 // underAny meldet, ob name unter einem der literalen Pfade liegt: gleich oder
@@ -475,4 +495,29 @@ func missingPaths(paths []string, trees ...*object.Tree) []string {
 	}
 	sort.Strings(out)
 	return out
+}
+
+// isAncestor meldet, ob base von head aus erreichbar ist (einschließlich
+// Gleichheit); die Suche endet beim Fund. Ein nicht lesbarer Commit auf dem Weg
+// ist ein Fehler.
+func (a *Adapter) isAncestor(base, head plumbing.Hash) (bool, error) {
+	seen := map[plumbing.Hash]bool{}
+	stack := []plumbing.Hash{head}
+	for len(stack) > 0 {
+		cur := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		if cur == base {
+			return true, nil
+		}
+		if seen[cur] {
+			continue
+		}
+		seen[cur] = true
+		c, err := a.repo.CommitObject(cur)
+		if err != nil {
+			return false, err
+		}
+		stack = append(stack, c.ParentHashes...)
+	}
+	return false, nil
 }

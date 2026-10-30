@@ -190,6 +190,8 @@ func TestMetricsEingabefehler(t *testing.T) {
 		"Basis mit Großbuchstaben":  mtPlan("path: a\nbase: 9A0EFA5\nestimate: 1\nlimit: 100\n"),
 		"Pfad mit Glob":             mtPlan("path: src/*\n"),
 		"Pfad mit ..":               mtPlan("path: ../x\n"),
+		"Pfad mit Punkt-Segment":    mtPlan("path: ./src\n"),
+		"Pfad mit leerem Segment":   mtPlan("path: src//x\n"),
 		"Pfad absolut":              mtPlan("path: /x\n"),
 		"Pfad mit Steuerzeichen":    mtPlan("path: a\tb\x01\n"),
 		"Pfad leer":                 mtPlan("path:\n"),
@@ -422,7 +424,7 @@ func TestMetricsMessungArgumenteUndHinweise(t *testing.T) {
 		t.Fatalf("Aufruf falsch: %+v", c)
 	}
 	notes := strings.Join(r.Notes(), "\n")
-	for _, want := range []string{"2 Binärdatei(en) nicht gezählt", "Pfad src/tippfehler existiert weder an der Basis noch an HEAD", "exception ohne Überschreitung (Messung 10, limit 1400)"} {
+	for _, want := range []string{"2 Datei(en) nicht gezählt (Binärdatei oder Submodul)", "Pfad src/tippfehler existiert weder an der Basis noch an HEAD", "exception ohne Überschreitung (Messung 10, limit 1400)"} {
 		if !strings.Contains(notes, want) {
 			t.Fatalf("Hinweis %q fehlt in %q", want, notes)
 		}

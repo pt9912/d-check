@@ -93,7 +93,8 @@ dienen dieser Liste als Bezug):
 - Negativ: der VCS-Port wächst um eine Methode, und mit ihr jeder Test-Double des Ports;
   das Modul liest die Plan-Dateien selbst, statt die geteilte Vorverarbeitung zu erweitern; es
   liest Pfade und git-Revisionen, die es nicht scannt — dort gilt die Zusage der
-  Scan-Menge nicht, und die Anforderung benennt die Grenze.
+  Scan-Menge nicht, und die Anforderung benennt die Grenze. Der Zeilen-Diff ist der der
+  reinen-Go-Bibliothek, nicht der des git-Binarys; die Anforderung nennt, wo er abweichen kann.
 - Folgepflicht: die `numstat`-Gleichheit des Adapters wird am Fixture mit allen Randformen
   belegt, **bevor** diese ADR `Accepted` wird; die Paritäts-Probe liegt beim Eigentümer
   des Anlass-Repos und ist Teil des Wellen-Abschlusses.
