@@ -1,0 +1,2 @@
+**Vorgang:** slice-285
+**Fund:** Die Beschreibung des Tabellen-Lesers nannte den Zaun-Schluss „längengleich“, der gemeinsame Test schließt aber mit mindestens gleicher Länge, und Schritt 3 und 6 der Spezifikation beschrieben denselben Leser verschieden (Review R1 F-5); die Anfangsstrich-Regel las den Rohtext, während der Kopf über den trimmenden Zeilen-Teiler erkannt wurde (F-1). Berichtigt auf Spalte 0 und „mindestens gleiche Länge“.
