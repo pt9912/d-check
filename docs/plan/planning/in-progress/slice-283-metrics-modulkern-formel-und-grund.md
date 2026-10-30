@@ -86,15 +86,15 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] **Registrierung und Konfiguration:** das Modul steht in `model.ValidModules()`,
-      `metrics.*` wird gelesen und validiert (Config-Rand: leere Formel, unbekanntes Feld,
-      Faktor ohne Eingabe, Teiler 0 → Exit 2), das Gerüst (`--print-config`) führt den Block; der
+- [x] **Registrierung und Konfiguration:** das Modul steht in `model.ValidModules()`,
+      `metrics.*` wird gelesen und validiert (Config-Rand: fehlende Pflichtschlüssel, Wertebereiche,
+      Teiler 0, doppelte Feldnamen, unbekannter Schlüssel → Exit 2), das Gerüst (`--print-config`) führt den Block; der
       Spiegel-Test (`registry_mirror_test.go`) ist grün, weil alle von ihm gehaltenen Orte
       (§1) `metrics` nennen. `gate_consistency_test.go` bleibt unverändert: das Modul
       steht nicht in der `modules:`-Liste von `.d-check.yml`, die dritte Richtung des
       Tests greift nicht; ob `metrics` später in `forbiddenInNetless()` gehört (es
       braucht `.git`), entscheidet die Aufnahme in diese Liste.
-- [ ] **Prüfung „Obergrenze = Formel“:** pro Plan mit Block wird aus dem Schätzungs-Feld (`E = Konstante + Σ Faktor · Feld`)
+- [x] **Prüfung „Obergrenze = Formel“:** pro Plan mit Block wird aus dem Schätzungs-Feld (`E = Konstante + Σ Faktor · Feld`)
       die Obergrenze mit genau einer ganzzahligen Aufrundung berechnet und gegen die
       genannte verglichen (`metrics-limit-mismatch`); die Schwellenregel meldet ein
       fehlendes Pflichtfeld (`metrics-cut-reason-missing`). Ein formal ungültiger Block
@@ -103,21 +103,21 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       Test referenziert, Negativliste (§3) getestet; die Testfälle sind die belegten
       Zahlen der Anforderung (E = 6790 ⇒ 9200; Grenzfälle E = 2000 ⇒ 2700, 2001 ⇒ 2800,
       2222 ⇒ 3000, 2223 ⇒ 3100 samt Schwellenregel; 5036 ⇒ 6800; 5430 ⇒ 7400; 9215 ⇒ 12500; 4670 ⇒ 6400); unbekannte Block-Felder werden ignoriert.
-- [ ] **Prüfung „Eintrag mit leerem Grund“:** ein Ausnahme-Eintrag `<N> | <Grund>` mit
+- [x] **Prüfung „Eintrag mit leerem Grund“:** ein Ausnahme-Eintrag `<N> | <Grund>` mit
       leerem oder nur-Leerraum-Grund ist ein Befund (`metrics-reason-empty`),
       **unabhängig** von einer Messung; Plan-Suche nur unmittelbar im konfigurierten
       Verzeichnis (`slice-*.md`, ohne Datei grün); Test referenziert.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Doku-Update für die Spiegel, die ein Test hält (§1, nur die Aufzählung);
-- [ ] Grund-Codes dieses Slice (`metrics-limit-mismatch`, `metrics-reason-empty`, `metrics-cut-reason-missing`): Zeile in der Tabelle von `spec/spezifikation.md` §4, Eintrag in `AllReasons()` und `--doctor`-Klartext (`TestAllReasonsDeckungGegenSpezifikationGrundCodes`); `internal/hexagon/core/model/finding.go` und `internal/hexagon/core/app/diagnose.go` (`AllReasons()`) kommen in die Plan-Tabelle (§3).
+- [x] Doku-Update für die Spiegel, die ein Test hält (§1, nur die Aufzählung);
+- [x] Grund-Codes dieses Slice (`metrics-limit-mismatch`, `metrics-reason-empty`, `metrics-cut-reason-missing`): Zeile in der Tabelle von `spec/spezifikation.md` §4, Eintrag in `AllReasons()` und `--doctor`-Klartext (`TestAllReasonsDeckungGegenSpezifikationGrundCodes`); `internal/hexagon/core/model/finding.go` und `internal/hexagon/core/app/diagnose.go` (`AllReasons()`) kommen in die Plan-Tabelle (§3).
       `CHANGELOG.md`, Handbuch-Kopf und Digest-Pins **nicht** (Release-Prep).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
 ## 3. Plan (vor Code)
 
@@ -203,12 +203,12 @@ dasteht.
 
 - Die Block-Lexik liest einen Fence, den der Markdown-Leser des Repos anders begrenzt
   (Einrückung, Fence in Fence, Tilde-Fence); ein Block verschwindet still und der Plan
-  gilt als „ohne Block“ — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  gilt als „ohne Block“ — **Ausgang:** weiter offen — die Spezifikation legt die Leseweise der RTM-Leser fest (Zaun nach Space und Tab vorn); ob Pläne des Anlass-Repos davon abhängen, zeigt die Paritäts-Probe ([`BEO-ALL/gemeinsame-leser-sind-zwei-familien`](../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md))
 - Das Modul liest die Pläne unterhalb des konfigurierten Verzeichnisses, aber das
   Verzeichnis kann außerhalb der Scan-Wurzeln liegen; die Zusage der Scan-Menge
-  ([`AGENTS.md`](../../../../AGENTS.md) §3.8) gilt dort nicht — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  ([`AGENTS.md`](../../../../AGENTS.md) §3.8) gilt dort nicht — **Ausgang:** weiter offen — die Grenze steht in Anforderung, Spezifikation, Handbuch, Gerüst und Code; die Messung des Verzeichnisses selbst bleibt eine Zusage der Anforderung ([`BEO-ALL/module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md))
 - Ein Plan ohne Block gilt als „nicht gemessen“ und meldet nur einen Hinweis; wer den Block
-  vergisst, umgeht die Marke vollständig — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  vergisst, umgeht die Marke vollständig — **Ausgang:** entfallen — der Hinweis „kein Block“ nennt den Plan und steht in der Zusammenfassung; der Issue-Autor bestätigt für Pläne ohne Block dasselbe Urteil (grün, nicht gemessen, Exit 0) wie sein bisheriges Programm
 
 ## 7. Closure-Notiz
 
@@ -224,7 +224,34 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-Wird bei der Closure gefüllt.
+- **Geliefert:** das Modul `metrics` in `ValidModules()`, `metrics.*` am Config-Rand, das Gerüst, die Regel
+  (`rules/metrics.go`: Block lesen, Zustand bestimmen, Marke gegen Formel, Schwellenregel, leerer Grund,
+  Plan-Suche, Eingabefehler als Exit 2), die drei Grund-Code-Zeilen samt Klartext und die Spiegel-Aufzählung
+  in Lastenheft, `operations.md`, beiden READMEs und der Handbuch-Tabelle.
+- **Gemessen:** `make gates` grün (Coverage 94,80 %). Am gebauten Image mit `--network none` und `:ro`: falsche
+  Marke, leerer Grund und fehlendes Pflichtfeld ergeben je einen Befund mit Exit 1, eine Block-Zeile ohne `:` Exit 2,
+  korrekte Pläne Exit 0. `make blackbox-probe REF=v0.89.0`: 20 Vergleiche byte-identisch zum Vorher-Image.
+  Bewusstes Brechen durch den Verifier: Duplikat-Prüfung und Schwellen-Vergleich ausgebaut, je ein benannter Test rot.
+- **Was anders lief als geplant:** (1) Das Config-Schema kommt stückweise (Plan-Änderung vorab): `excluded` mit der
+  Messung, `estimate-inputs` und `table.*` mit der Tabelle; ein Zwischenstand wird nicht released. (2) Die Grund-Code-Zeilen
+  der Spezifikation kamen erst hier, weil `TestAllReasonsDeckungGegenSpezifikationGrundCodes` sie an den Code bindet.
+  (3) Zwei meiner Testfälle lagen über der Schwellenregel und lieferten einen zweiten Befund; die belegten Zahlen
+  2222 und 2223 fangen die Mutation `<=` zu `<` nicht, erst ein Test mit Schwelle genau auf der Grenze (Review R1 F-3).
+- **[`MR-066`](../../../../harness/conventions.md#mr-066) — Rückführung nicht gezogen:** der Slice lag mit 15 Dateien in vier Schichten über der Ein-Sitzungs-Grenze.
+  Grund: Registrierung, Gerüst und Spiegel sind mechanisch und bilden das Modul nicht ohne den Kern ab; die Zerlegung hätte
+  einen Slice ergeben, dessen Gates ohne den Kern rot sind (Spiegel-Test, Grund-Code-Test). Ersatz-Form der Prüfung: der
+  Review R1 las die Regel und die Spiegel getrennt (Teil Regel: `rules/metrics.go`, `run.go`, Tests; Teil Rand: Config-Leser,
+  Gerüst, Klartext, Spiegel), der Verifier fuhr das Image und zwei Mutationen. Ein Re-Review der Fix-Commits entfiel,
+  weil der Fix genau die Befunde umsetzt (keine neue Zusage, kein neuer Mechanismus).
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
+- **Beobachtungs-Register (`../observations/`):** keine Beobachtung angefallen, die ein Beleg wäre. Benannt, nicht gezählt: zwei Gleichheits-Mutationen
+  blieben ohne Test, bis Review und Verifikation sie fanden (Review R1 F-3); die Negativliste (Schritt 19) war angewandt.
+- **Folge-Slices:** [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) und [`slice-285`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) in `open/`.
+- **Risiken aus §6:** zwei weiter offen (mit Verweis), eines entfallen (mit Grund). Trigger-Audit: kein Carveout, kein
+  bootstrap-aware Gate, keine ADR mit eingetretenem Trigger ([`ADR-0112`](../../adr/0112-metrics-modul.md) bleibt `Proposed`), keine Hard Rule mit
+  eingetretenem Trigger, keine Schwelle gesenkt.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — die genannten Slices liegen in `open/`;
+  (c) Register — die zitierten Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
