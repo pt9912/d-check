@@ -89,7 +89,7 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 | [`slice-282`](done/welle-93/slice-282-metrics-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR für das Modul `metrics`; Bestands-Gegenprobe | neue Anforderung des Moduls (Kennung vergibt der Slice), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
 | [`slice-283`](done/welle-93/slice-283-metrics-modulkern-formel-und-grund.md) | Modulkern: Block lesen, Obergrenze gegen Formel, leerer Grund (hermetisch) | die Anforderung aus [`slice-282`](done/welle-93/slice-282-metrics-anforderung-und-adr.md) |
 | [`slice-284`](done/welle-93/slice-284-metrics-messung-aus-git.md) | Messung aus git: Port, Adapter und Prüfung gegen die Obergrenze | die Anforderung aus [`slice-282`](done/welle-93/slice-282-metrics-anforderung-und-adr.md), [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) (Port-Vorbild) |
-| [`slice-285`](open/slice-285-metrics-tabellenzaehlung-und-schaetzung.md) | Tabellenzählung: Schätzung aus der Tabelle des Plans, Prüfung 2, Hinweis „Marke ausstehend“ | die Anforderung aus [`slice-282`](done/welle-93/slice-282-metrics-anforderung-und-adr.md) (Entscheid 9) |
+| [`slice-285`](next/slice-285-metrics-tabellenzaehlung-und-schaetzung.md) | Tabellenzählung: Schätzung aus der Tabelle des Plans, Prüfung 2, Hinweis „Marke ausstehend“ | die Anforderung aus [`slice-282`](done/welle-93/slice-282-metrics-anforderung-und-adr.md) (Entscheid 9) |
 
 ## 5. Abhängigkeiten
 
@@ -102,7 +102,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   [`slice-282`](done/welle-93/slice-282-metrics-anforderung-und-adr.md) (die Anforderung
   und die offenen Entscheide stehen, bevor Code entsteht), dann
   [`slice-283`](done/welle-93/slice-283-metrics-modulkern-formel-und-grund.md), dann
-  [`slice-284`](done/welle-93/slice-284-metrics-messung-aus-git.md), dann [`slice-285`](open/slice-285-metrics-tabellenzaehlung-und-schaetzung.md) (Prüfung 2 braucht die Messung). Alle vier schreiben eine
+  [`slice-284`](done/welle-93/slice-284-metrics-messung-aus-git.md), dann [`slice-285`](next/slice-285-metrics-tabellenzaehlung-und-schaetzung.md) (Prüfung 2 braucht die Messung). Alle vier schreiben eine
   Fassung ins Lastenheft oder die Spezifikation; das WIP-Limit 1 hält sie
   ohnehin nacheinander.
 - **Offene Entscheide des Auftraggebers, die [`slice-282`](done/welle-93/slice-282-metrics-anforderung-und-adr.md)
