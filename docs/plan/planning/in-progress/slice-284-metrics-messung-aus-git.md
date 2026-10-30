@@ -67,32 +67,32 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] **Port und Adapter** (Entscheid 8 der ADR; bei Entscheid für das Zählen im Kern
+- [x] **Port und Adapter** (Entscheid 8 der ADR; bei Entscheid für das Zählen im Kern
       entfällt die Port-Methode, und die Zeilen-Zählung steht im Regel-Paket): der VCS-Port trägt eine Methode für die Zeilen-Summe (literale Pfade, ausgenommener Teilbaum) über
       Pfade zwischen zwei Ständen; der reine-Go-Adapter implementiert sie ohne
       git-Binary. **Gleichheit mit `git diff --numstat` (bzw. `--no-renames`, je
       Entscheid 4) ist an einem Fixture mit allen Randformen belegt** — Hinzufügen,
       Löschen, Ändern, leere Datei, Binärdatei, Rename, Pfad außerhalb der Pathspec,
       Zeilenenden-Wechsel — nicht behauptet.
-- [ ] **Prüfung „Messung ≤ Obergrenze“:** Messung über der Obergrenze ohne Ausnahme
+- [x] **Prüfung „Messung ≤ Obergrenze“:** Messung über der Obergrenze ohne Ausnahme
       ist `metrics-over-limit`; Messung auf der Grenze und darunter ist grün;
       Ausnahme **mit** Grund unterdrückt den Befund, Ausnahme **ohne** Grund bleibt der
       Befund aus [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle); Test referenziert, Negativliste (§3) getestet.
-- [ ] **Config-Schlüssel `metrics.excluded`:** Pfade (literal, ohne Glob, `..`, führenden `/`, Steuerzeichen) kommen in den Config-Rand; Verstöße ⇒ Exit 2.
-- [ ] **Fail-closed und Betrieb:** ohne `.git` Exit 2 (nicht „0 Befunde“); eine Basis,
+- [x] **Config-Schlüssel `metrics.excluded`:** Pfade (literal, ohne Glob, `..`, führenden `/`, Steuerzeichen) kommen in den Config-Rand; Verstöße ⇒ Exit 2.
+- [x] **Fail-closed und Betrieb:** ohne `.git` Exit 2 (nicht „0 Befunde“); eine Basis,
       die nicht auflöst, ist Exit 2 mit Klartext; der Lauf bleibt unter `:ro` und gegen
       ein Repo mit anderem Eigentümer lauffähig — am gebauten Image belegt
       (`make image-test`-Fall in `tools/image-test.sh`).
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Doku-Update: Benutzerhandbuch und `operations.md` **nicht** (Release-Prep, §1).
-- [ ] Grund-Code `metrics-over-limit`: Zeile in der Tabelle von `spec/spezifikation.md` §4, Eintrag in `AllReasons()` und `--doctor`-Klartext (`TestAllReasonsDeckungGegenSpezifikationGrundCodes`).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
+- [x] Doku-Update: Benutzerhandbuch und `operations.md` **nicht** (Release-Prep, §1).
+- [x] Grund-Code `metrics-over-limit`: Zeile in der Tabelle von `spec/spezifikation.md` §4, Eintrag in `AllReasons()` und `--doctor`-Klartext (`TestAllReasonsDeckungGegenSpezifikationGrundCodes`).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
 ## 3. Plan (vor Code)
 
@@ -115,7 +115,8 @@ Aussagen-Berührung steht hier gar nicht.
 | `internal/hexagon/core/model/config.go` · `internal/adapter/driven/configyaml/configyaml.go` · `internal/adapter/driving/cli/config_template.go` | update | `metrics.excluded` am Config-Rand (`model.ValidLiteralPath`), Gerüst-Zeile |
 | `internal/hexagon/core/app/diagnose.go` | update | Grund-Code `metrics-over-limit` in `AllReasons()` samt Klartext |
 | `internal/adapter/driven/git/git_lines_test.go` · `internal/adapter/driven/configyaml/metrics_test.go` | neu · update | Fixture-Gleichheit mit `git diff --numstat` in eigener Datei neben `git_test.go`; Config-Test für `excluded` |
-| `spec/spezifikation.md` · `docs/user/abdeckung-tests.md` | update | Zeile `metrics-over-limit` in der Tabelle von §4, Abdeckung per `make abdeckung` |
+| `spec/spezifikation.md` · `spec/lastenheft.md` · `docs/plan/adr/0112-metrics-modul.md` · `docs/user/abdeckung-e2e.md` | update | Zeile `metrics-over-limit` (§4), Grenzen der Gleichheit (Lastenheft 0.110.2, ADR-Konsequenz), Abdeckung per `make abdeckung` (der Beleg ist `tools/image-test.sh`, daher die E2E-Datei) |
+| `internal/hexagon/core/model/config.go` (`ValidLiteralPath`) | update | der Pfad-Prüfer aus dem Modulkern wandert ins Modell und wird strenger: leere und `.`-Segmente sind Fehler, ein Schrägstrich am Ende ist erlaubt |
 
 **Negativliste der Messung (Schritt 19, vor dem Code-Commit zu testen):** Pfad im Block
 existiert weder an der Basis noch an `HEAD` (Messung 0, kein Fehler — Entscheid in der
@@ -167,12 +168,12 @@ dasteht.
 
 - Der reine-Go-Diff zählt anders als `git diff --numstat` (Zeilenenden, Binärerkennung,
   Diff-Algorithmus bei verschobenen Blöcken); die Summe wäre dann stabil, aber nicht die,
-  die das Anlass-Repo bisher gemessen hat — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  die das Anlass-Repo bisher gemessen hat — **Ausgang:** weiter offen — gleich an dem Fixture (Summe 27) und an elf weiteren Formen des Verifiers; die Heuristik-Grenze bei verschobenen Blöcken steht in der Anforderung, die Paritäts-Probe des Eigentümers entscheidet ([`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md))
 - Die Messung liest `.git` und Pfade außerhalb der Scan-Wurzeln; die Zusage der
   Scan-Menge ([`AGENTS.md`](../../../../AGENTS.md) §3.8) gilt dort nicht, und ein nicht
-  auflösbarer Pfad kann still 0 ergeben — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  auflösbarer Pfad kann still 0 ergeben — **Ausgang:** entfallen — ein Pfad, der weder an der Basis noch an HEAD existiert, erscheint in einem Hinweis (gemessen am Image: Hinweis "Pfad ... existiert weder an der Basis noch an HEAD"); ein vorhandener, unveränderter Pfad trägt zu Recht 0 bei
 - Große Diffs über viele Pfade kosten Laufzeit; [`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance) gilt für das Modul nur, soweit
-  es aktiviert ist — **Ausgang:** wird bei der Closure gesetzt (eingetreten / entfallen / weiter offen)
+  es aktiviert ist — **Ausgang:** weiter offen — Laufzeit großer Diffs ist nicht gemessen; der Eigentümer fährt die Paritäts-Probe an echten Plänen ([`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md))
 
 ## 7. Closure-Notiz
 
@@ -188,7 +189,38 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-Wird bei der Closure gefüllt.
+- **Geliefert:** die Port-Methode `LineChanges` und ihr go-git-Adapter, die Prüfung gegen die Obergrenze
+  (`metrics-over-limit`, Ausnahme-Eintrag mit `N` ≥ Messung, Hinweise zu nicht gezählten Dateien, Pfaden ohne
+  Vorkommen und Einträgen ohne Überschreitung), `metrics.excluded` am Config-Rand, die Verdrahtung in
+  `resolveVCS` und `runNoteModules`, der Fall (6) in `tools/image-test.sh`.
+- **Gemessen:** die Zeilen-Summe gleicht `git diff --numstat --no-renames` am Fixture (27; der Verifier baute das Repo am
+  Host nach und prüfte zusätzlich elf eigene Formen, darunter verschobene Blöcke und zufällige Dateien — keine Abweichung).
+  Am gebauten Image: Fall (6) von `make image-test` unter `:ro` und `--user 12345:12345` (Exit 1 mit `metrics-over-limit`),
+  ohne `.git` Exit 2, unauflösbare Basis Exit 2. `make blackbox-probe REF=v0.89.0`: 20 Vergleiche byte-identisch.
+  Bewusstes Brechen durch den Verifier: ohne Segmentgrenze rot (`TestLineChanges_LiteralePfade`), ohne Ausschluss rot
+  (`TestLineChanges_GleichNumstat`, 29 statt 27).
+- **Was anders lief als geplant:** (1) Die Binär-Erkennung der Bibliothek bedeutet „Patch ohne Chunks“ und hielt eine leere
+  neue Datei für binär; ich hatte den Namen der Methode für ihr Verhalten genommen (Review R1 F-1, ins Register). (2) Die
+  Plan-Tabelle nannte einige geänderte Dateien nicht (Plan-Änderung vorab, eine Zeile im Nachgang für `ValidLiteralPath`,
+  `spec/lastenheft.md` und die ADR). (3) Das Fix-Commit schrieb eine Zeile doppelt ins Lastenheft; der Verifier fand sie, kein Gate
+  sieht doppelte Zeilen.
+- **[`MR-066`](../../../../harness/conventions.md#mr-066) — Rückführung nicht gezogen:** die DoD führt vier Liefer-Punkte (Port und Adapter,
+  Prüfung, Config-Schlüssel, Fail-closed und Betrieb) statt höchstens drei. Grund: Config-Schlüssel und Betrieb sind je eine Zeile
+  Nachweis um die Messung herum und tragen ohne sie nichts; eine Zerlegung ergäbe Slices ohne eigenen Lieferwert. Ersatz-Form
+  der Prüfung: Review und Verifikation lasen Adapter und Regel getrennt, der Verifier fuhr das Image und zwei Mutationen.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle. Gemessen, nicht neu: semgrep meldet 3 Regel-Timeouts in
+  `configyaml.go` bei 0 Funden; ob das älter ist als dieser Slice, ist nicht gegen den Vorzustand geprüft (weiter offen, kein
+  Gate-Befund).
+- **Beobachtungs-Register (`../observations/`):**
+  [`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+  bekommt einen Beleg (Bibliotheks-Methode nach dem Namen statt nach dem Verhalten übernommen).
+- **Folge-Slices:** [`slice-285`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) in `open/`.
+- **ADR:** [`ADR-0112`](../../adr/0112-metrics-modul.md) wechselt auf `Accepted`, weil die Zeilen-Summe am Fixture belegt ist (der
+  Auslöser aus dem Plan von slice-282); Prüfung 2 und die Paritäts-Probe ändern keinen der neun Entscheide.
+- **Risiken aus §6:** zwei weiter offen (mit Verweis), eines entfallen (mit Grund). Trigger-Audit: kein Carveout, kein
+  bootstrap-aware Gate, keine ADR mit eingetretenem Trigger, keine Hard Rule mit eingetretenem Trigger, keine Schwelle gesenkt.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — `slice-285` liegt in `open/`; (c) Register — die
+  zitierte Beobachtung existiert und trägt Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
