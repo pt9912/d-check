@@ -63,14 +63,17 @@ Anforderung). Die Empfehlungen folgen den Angaben des Anlass-Repos:
    `0-9a-f`), `HEAD` ist fest. Nicht `--range` auf der Kommandozeile: ein Lauf prüft
    mehrere Pläne mit je eigener Basis. Eine Basis, die nicht auflöst oder kein
    Vorfahr von `HEAD` ist, ist ein Eingabefehler (Exit 2).
-3. **Form der Formel.** Zwei Stufen, **ganzzahlig** ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus), kein Gleitkomma,
-   kein Ausdrucks-Parser): die Schätzung ist linear, `S = Konstante + Σ Faktor ·
-   Eingabe`; die Obergrenze ist `Einheit · ⌈Zähler · S / Nenner⌉` (genau eine
-   Aufrundung auf ein Vielfaches der Einheit). Dazu eine **Schwellenregel**: ab einer
-   konfigurierten Schwelle für `Zähler · S` ist ein weiteres Feld Pflicht. Die Werte
-   (im Anlass-Repo 85/80/200/1, 135/10000, Einheit 100, Schwelle 300000) sind
-   Konfiguration, nicht Code. Die Formel ändert sich nie mit einem Zustand; Zustände
-   entscheiden nur, welche Prüfungen laufen.
+3. **Form der Formel.** **Ganzzahlig** ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus), kein Gleitkomma, kein
+   Ausdrucks-Parser): `E = Konstante + Σ Faktor · Feld` über Zahlenfelder des Blocks,
+   dann die Obergrenze `Einheit · ⌈Zähler · E / Nenner⌉` (genau eine Aufrundung auf ein
+   Vielfaches der Einheit). Im Anlass-Repo ist `E` das Block-Feld `schaetzung`
+   (Faktor 1, Konstante 0): die Schätzung aus der Tabelle des Plans trägt der Planner
+   in den Block ein, das Modul liest sie nur (Entscheid 9). Dazu eine
+   **Schwellenregel**: ab einer konfigurierten Schwelle für `Zähler · E` ist ein
+   weiteres Feld Pflicht. Die Werte (im Anlass-Repo 135/10000, Einheit 100, Schwelle
+   300000) sind Konfiguration, nicht Code. Die Formel ändert sich nie mit einem
+   Zustand. Felder des Blocks, die die Konfiguration nicht nennt (`produktcode`,
+   `fakes`), werden ignoriert.
 4. **Was `git diff --numstat` hier heißt.** Einfügungen plus Löschungen je Datei,
    **Rename-Erkennung aus** (wie `--no-renames`: Löschung plus Einfügung); Pfade als
    **literale** Pathspecs (keine Glob-Muster, ein Verzeichnis zählt rekursiv, ein Pfad
@@ -109,10 +112,12 @@ Anforderung). Die Empfehlungen folgen den Angaben des Anlass-Repos:
    ([`ARC-005`](../../../../spec/architecture.md), [`ARC-010`](../../../../spec/architecture.md), Fehlerzeile) wird in diesem Slice entsprechend geschärft.
 9. **Eingabe aus einer Tabelle des Plans.** Das Programm des Anlass-Repos zählt die
    Eingaben der Schätzung zusätzlich aus einer Markdown-Tabelle desselben Plans und
-   prüft vor dem ersten Code-Commit „Schätzung gleich Tabelle“. Empfehlung: **nicht in
-   diesem Modul** — das Issue nennt die Eingaben des Blocks; die Tabellenprüfung wäre
-   eine eigene Anforderung. Die Abweichung zur Parität ist benannt: das Modul fällt
-   Prüfung 2 des Programms nicht, die übrigen Urteile je Plan sind gleich.
+   prüft vor dem ersten Code-Commit „Schätzung gleich Tabelle“ sowie den Hinweis
+   „Marke ausstehend“. **Gesetzt: nicht in diesem Modul** (Issue-Autor, Kommentar vom
+   2026-10-30) — das Issue nennt die Eingaben des Blocks; eine Tabellenzählung mit
+   konfigurierbarem Tabellenformat wäre eine eigene, spätere Anforderung. Die
+   Abweichung zur Parität ist benannt: das Modul fällt Prüfung 2 und den Hinweis
+   nicht; das Programm bleibt dafür im Anlass-Repo, bis es sie gibt.
 
 **Die Frage aus [`AGENTS.md`](../../../../AGENTS.md) §3.8 wird in der Anforderung beantwortet, nicht erst im Code:**
 das Modul liest Eingaben, die es nie scannt — die Pfade des Blocks (außerhalb
@@ -204,12 +209,12 @@ Aussagen-Berührung steht hier gar nicht.
   Feldnamen, Formel, Zustände, Messregeln. Ergebnis ist eine Tabelle Plan → Eingaben →
   Marke → Messung → Urteil, die der Slice-Closure-Notiz anhängt; sie ist zugleich die
   Vorlage für die Testfälle von [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) und die Paritäts-Probe in
-  [`welle-93`](../welle-93-metrics-modul.md) §3. **Belegt sind** das durchgerechnete
-  Beispiel (S = 6790 ⇒ Marke 9200), die Grenzfälle (S = 2000, 2001, 2222, 2223), der
-  Slice A (S = 5036 ⇒ 6800) und der Plan mit S = 4670 ⇒ 6400. **Nicht aus den
-  genannten Zahlen reproduzierbar** sind die Slices B und C (Tabellenzeilen und
-  Fakes ergeben nicht die genannte Schätzung); sie bleiben Rückfrage im Issue und
-  gehen nicht als Testfall ein. Die 16 Überschreitungen der Prosa-Zeit haben kein
+  [`welle-93`](../welle-93-metrics-modul.md) §3. **Belegt sind** (Schätzung ⇒ Marke) das durchgerechnete
+  Beispiel (6790 ⇒ 9200), die Grenzfälle (2000 ⇒ 2700, 2001 ⇒ 2800, 2222 ⇒ 3000,
+  2223 ⇒ 3100 mit Schnittfrage), die Slices A (5036 ⇒ 6800), B (5430 ⇒ 7400) und
+  C (9215 ⇒ 12500) und der Plan mit 4670 ⇒ 6400. B und C rechnen mit dem vor dem Code
+  erwarteten Produktcode (1500, 2000), nicht mit dem Wert am Ende — die Rückfrage im
+  Issue ist beantwortet. Die 16 Überschreitungen der Prosa-Zeit haben kein
   Urteil des Programms und sind keine Prüfvorlage.
 - Der eigene Bestand dieses Repos trägt keinen solchen Block; die Probe „kein Block ⇒
   kein Befund“ folgt in [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle).
@@ -225,21 +230,21 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 **Start** (`next` → `in-progress`): welle-93 ist offen, das WIP-Limit ist frei, und
 der Auftraggeber hat die offenen Entscheide aus [`welle-93`](../welle-93-metrics-modul.md) §5
 beantwortet oder die Empfehlungen aus §1 (Entscheide 1–9) bestätigt — Entscheide 5
-und 9 sind gegenüber der ersten Fassung neu und noch nicht bestätigt —, **und** die
+und 9 hat der Issue-Autor im Kommentar vom 2026-10-30 bestätigt —, **und** die
 Angaben des Anlass-Repos liegen im Issue vor (erledigt, Kommentar vom 2026-10-30).
 Der Übergang landet auf dem Hauptzweig, vor der Arbeit.
 
 **Rückführungen — vorab benennen, nicht erst im Nachhinein begründen:**
 
 - `in-progress` → `next` (zu groß, zurück zur Zerlegung): die Gegenprobe zeigt eine
-  Fachlogik jenseits der zweistufigen Formel (Verzweigung nach Zustand, mehrere
-  Messgrößen) — dann gehört die Formel-Sprache in einen eigenen Slice vor diesem.
+  Fachlogik jenseits der Formel mit einer Aufrundung und der Schwellenregel (Verzweigung
+  nach Zustand, mehrere Messgrößen) — dann gehört die Formel-Sprache in einen eigenen Slice vor diesem.
   Ebenso, wenn der Auftraggeber Entscheid 9 anders setzt (Tabellenzählung im Modul):
   dann ist die Tabellen-Eingabe ein eigener Slice, oder wenn die Block-Form doch YAML
   verlangt und Entscheid 6 auf den Parse-Port fällt.
 - `in-progress` → `open` (blockiert — Carveout?): der Auftraggeber entscheidet die
   Basis (Entscheid 2) so, dass sie nicht aus dem Plan stammt, oder die Angaben des
-  Anlass-Repos erweisen sich als widersprüchlich (Rückfrage zu den Slices B und C).
+  Anlass-Repos erweisen sich bei der Ausarbeitung als widersprüchlich.
 
 ## 5. Closure-Trigger
 

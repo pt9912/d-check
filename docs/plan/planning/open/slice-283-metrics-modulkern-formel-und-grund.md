@@ -41,7 +41,7 @@ zusammen mit der Begründungs-Pflicht je Punkt.
 
 **Ziel:** Bei aktiviertem Modul `metrics` liest d-check aus jedem Plan unter dem
 konfigurierten Verzeichnis den Block, hält die darin genannte Obergrenze gegen die
-konfigurierte Formel über den Eingaben des Blocks (lineare Schätzung, eine
+konfigurierte Formel über den Zahlenfeldern des Blocks (eine
 Aufrundung, Schwellenregel) und meldet einen Ausnahme-Eintrag
 mit leerem Grund als Befund — rein arithmetisch, ohne git, einzeln lieferbar.
 
@@ -87,15 +87,15 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       steht nicht in der `modules:`-Liste von `.d-check.yml`, die dritte Richtung des
       Tests greift nicht; ob `metrics` später in `forbiddenInNetless()` gehört (es
       braucht `.git`), entscheidet die Aufnahme in diese Liste.
-- [ ] **Prüfung „Obergrenze = Formel“:** pro Plan mit Block wird die Schätzung linear
-      und die Obergrenze mit genau einer ganzzahligen Aufrundung berechnet und gegen die
+- [ ] **Prüfung „Obergrenze = Formel“:** pro Plan mit Block wird aus dem Schätzungs-Feld (`E = Konstante + Σ Faktor · Feld`)
+      die Obergrenze mit genau einer ganzzahligen Aufrundung berechnet und gegen die
       genannte verglichen (`metrics-limit-mismatch`); die Schwellenregel meldet ein
       fehlendes Pflichtfeld (`metrics-cut-reason-missing`). Ein formal ungültiger Block
       (unvollständig, Zahl ungültig, Fence ungeschlossen) ist ein **Eingabefehler**:
       Exit 2 mit Klartext, kein Befund, und er schließt jeden Befund desselben Plans aus.
       Test referenziert, Negativliste (§3) getestet; die Testfälle sind die belegten
-      Zahlen der Anforderung (S = 6790 ⇒ 9200; Grenzfälle S = 2000 ⇒ 2700, 2001 ⇒ 2800,
-      2222 ⇒ 3000, 2223 ⇒ 3100 samt Schwellenregel; S = 5036 ⇒ 6800; S = 4670 ⇒ 6400).
+      Zahlen der Anforderung (E = 6790 ⇒ 9200; Grenzfälle E = 2000 ⇒ 2700, 2001 ⇒ 2800,
+      2222 ⇒ 3000, 2223 ⇒ 3100 samt Schwellenregel; 5036 ⇒ 6800; 5430 ⇒ 7400; 9215 ⇒ 12500; 4670 ⇒ 6400); unbekannte Block-Felder werden ignoriert.
 - [ ] **Prüfung „Eintrag mit leerem Grund“:** ein Ausnahme-Eintrag `<N> | <Grund>` mit
       leerem oder nur-Leerraum-Grund ist ein Befund (`metrics-reason-empty`),
       **unabhängig** von einer Messung; Plan-Suche nur unmittelbar im konfigurierten
@@ -120,7 +120,7 @@ Aussagen-Berührung steht hier gar nicht.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `metrics.go` im Regel-Paket | neu | Block aus dem Plan-Text lesen (Fence mit konfiguriertem Info-String, Zeilen-Syntax ohne YAML, auf `metrics` begrenzte Fence-Ausnahme — Entscheide 6/7 der ADR), Formel ganzzahlig auswerten (lineare Schätzung, eine Aufrundung, Schwellenregel), Befunde `metrics-limit-mismatch`, `metrics-cut-reason-missing`, `metrics-reason-empty`; Eingabefehler als Exit 2 |
+| `metrics.go` im Regel-Paket | neu | Block aus dem Plan-Text lesen (Fence mit konfiguriertem Info-String, Zeilen-Syntax ohne YAML, auf `metrics` begrenzte Fence-Ausnahme — Entscheide 6/7 der ADR), Formel ganzzahlig auswerten (Summe über Block-Felder, eine Aufrundung, Schwellenregel), Befunde `metrics-limit-mismatch`, `metrics-cut-reason-missing`, `metrics-reason-empty`; Eingabefehler als Exit 2 |
 | `internal/hexagon/core/rules/run.go` | update | Modul in die Regel-Kette einhängen |
 | `internal/hexagon/core/model/config.go` | update | `MetricsConfig`, Eintrag in `ValidModules()` |
 | `internal/adapter/driven/configyaml/configyaml.go` | update | `metrics.*` lesen und validieren |
@@ -146,7 +146,7 @@ Target (kein `make`-Ziel in diesem Slice; Gate-Index unverändert).
 **Negativliste der Block-Erkennung (Schritt 19, vor dem Code-Commit zu testen):**
 Block mit anderem Info-String · zwei Blöcke im selben Plan · Block in einer
 Einrückung/Zitat-Ebene · Block im Fenced-Block eines Fensters (Fence in Fence) ·
-Block ohne Schluss-Fence (⇒ Eingabefehler Exit 2, nicht „ohne Block“) · Backtick- und Tilde-Fence · zwei Blöcke im Plan (Eingabefehler) · mehrfacher Schlüssel, der nur einmal stehen darf · Zahl mit führender Null oder Tausendertrennung · Schwellenregel genau auf der Schwelle (S = 2222 ohne, S = 2223 mit Pflichtfeld) · Ausnahme-Eintrag mit N kleiner als die Messung · Pflichtfeld fehlt · Pflichtfeld doppelt · Eingabe negativ
+Block ohne Schluss-Fence (⇒ Eingabefehler Exit 2, nicht „ohne Block“) · Backtick- und Tilde-Fence · zwei Blöcke im Plan (Eingabefehler) · mehrfacher Schlüssel, der nur einmal stehen darf · Zahl mit führender Null oder Tausendertrennung · Schwellenregel genau auf der Schwelle (E = 2222 ohne, E = 2223 mit Pflichtfeld) · Ausnahme-Eintrag mit N kleiner als die Messung · Pflichtfeld fehlt · Pflichtfeld doppelt · Eingabe negativ
 oder nicht ganzzahlig · Überlauf der Ganzzahl-Arithmetik · Grund nur aus Leerraum ·
 Plan ohne Block (kein Befund, kein Abbruch) · Plan außerhalb des konfigurierten
 Verzeichnisses. Dazu der Lauf über den eigenen Bestand: mit aktiviertem Modul und

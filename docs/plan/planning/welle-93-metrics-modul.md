@@ -63,7 +63,8 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     **Eigentümer des Anlass-Repos** mit dem veröffentlichten Image und meldet das
     Ergebnis im Issue (Zusage im Kommentar vom 2026-10-30); das Repo ist für diese
     Planung nicht lesbar. Bekannte Abweichung: die Tabellenprüfung des Programms
-    (Entscheid 9 der ADR) fällt das Modul nicht. Weicht ein
+    (Entscheid 9 der ADR) und der Hinweis „Marke ausstehend“ fallen im Modul weg; der
+    Eigentümer nennt je Plan, welche Prüfung das Modul nicht fällt. Weicht ein
     Urteil ab, ist die Abweichung benannt und entweder in der Anforderung
     verankert oder behoben. Dieser Lauf braucht die Pläne aus dem Anlass-Repo; sie
     stellt der Auftraggeber bereit (siehe §5). **Beobachtbar** wird er durch die
@@ -116,8 +117,8 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   2026-10-30, erledigt); die Paritäts-Probe fährt der Eigentümer mit dem veröffentlichten
   Image und meldet je Plan im Issue. Ohne diese Rückmeldung ist die Probe nicht
   fahrbar, und die Welle schließt nicht mit einer Behauptung, sondern bleibt offen.
-  Offen im Issue: die Slices B und C der Angaben lassen sich aus den genannten Zahlen
-  nicht nachrechnen.
+  Die Rückfrage zu den Slices B und C ist beantwortet (erwarteter Produktcode in der
+  Schätzung); sie gehen als Testfälle ein.
 
 ## 6. Out-of-Scope für diese Welle
 
