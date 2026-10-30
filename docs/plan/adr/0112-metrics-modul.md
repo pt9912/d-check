@@ -1,6 +1,6 @@
 # ADR-0112: Das Modul `metrics` hält Kennzahl, Tabelle und git-Messung eines Plans in einem Modul
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-10-30
 
@@ -120,6 +120,7 @@ benannten Randformen erklärt.
 | Datum | Ereignis | Verweis |
 |---|---|---|
 | 2026-10-30 | Proposed | slice-282 <!-- d-check:status-provenance --> |
+| 2026-10-30 | Accepted: die Zeilen-Summe ist am Fixture belegt | slice-284 <!-- d-check:status-provenance --> |
 
 Nach `Accepted` wird diese Datei **nicht mehr inhaltlich überschrieben**.
 Spätere Korrekturen oder Schärfungen entstehen als neue ADR mit
