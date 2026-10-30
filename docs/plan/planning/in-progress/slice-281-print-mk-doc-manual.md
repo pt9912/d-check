@@ -56,25 +56,25 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 
 ## 2. Definition of Done
 
-- [ ] **Fragment:** `d-check --print-mk` erzeugt das Target `doc-manual` mit `##`-Annotation,
+- [x] **Fragment:** `d-check --print-mk` erzeugt das Target `doc-manual` mit `##`-Annotation,
       Recipe `@docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) --manual
       "$(MANUAL)"` (Echo unterdrückt, die Ausgabe ist die Nutzlast), ohne `--enable`/`--disable`.
-- [ ] **Lauf:** `make doc-manual MANUAL=planning` gegen ein eingebundenes Fragment gibt
+- [x] **Lauf:** `make doc-manual MANUAL=planning` gegen ein eingebundenes Fragment gibt
       auf stdout die Abschnitte beider Dokumente aus (Exit 0); ohne `MANUAL` Exit 2 des
       Werkzeugs, durchgereicht von make.
-- [ ] **Anforderung und Spiegel:** Lastenheft 0.109.0 ([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben): vierzehn Targets,
+- [x] **Anforderung und Spiegel:** Lastenheft 0.109.0 ([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben): vierzehn Targets,
       Akzeptanzkriterien, Out-of-Scope, Historie), Spezifikation (Punkt 5, neuer Punkt,
       Zählung, Historie).
-- [ ] **Test:** `TestCLI281_PrintMK_ManualTarget` ist rot ohne das Target (Rot-Beleg), grün mit.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] **Test:** `TestCLI281_PrintMK_ManualTarget` ist rot ohne das Target (Rot-Beleg), grün mit.
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8, kein
       Self-Review; Verifikation.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — oder
       „keine Beobachtung angefallen" in §7 notiert.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind hier geprüft.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind hier geprüft.
 
 ## 3. Plan (vor Code)
 
@@ -150,13 +150,37 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 - **Ein Begriff mit Leerzeichen oder Sonderzeichen zerfällt in der Shell.** Das Recipe setzt
   `"$(MANUAL)"` in Anführungszeichen; ein Begriff mit `"` oder `$` bleibt eine Grenze von make
-  und Shell. — **Ausgang:** offen bis zur Messung (Lauf mit `MANUAL="Schritt 1"`).
+  und Shell. — **Ausgang:** entfallen — gemessen: `MANUAL="Closure-Notizen auf Substanz"` liefert Exit 0 und 5049 Byte (ein Begriff mit Leerzeichen bleibt einer); `MANUAL="Schritt 1"` kommt als ein Argument an und endet mit Exit 2, weil keine Überschrift so heißt. Ein `"` im Begriff bricht die Shell (`Unterminated quoted string`) — das ist keine Überraschung, sondern die im Lastenheft benannte Out-of-Scope-Grenze.
 - **Der leere Fall wird von make als gesetzt gelesen.** `--manual ""` muss Exit 2 liefern, nicht
-  den Hilfetext. — **Ausgang:** offen bis zur Messung (Lauf ohne `MANUAL`).
+  den Hilfetext. — **Ausgang:** entfallen — gemessen: ohne `MANUAL` meldet das Werkzeug `--manual braucht einen Begriff`, make endet mit Exit 2, stdout bleibt leer.
 
 ## 7. Closure-Notiz
 
-Noch offen — wird bei der Closure geschrieben.
+- **Was hat funktioniert:** Das Target ist die kleinste Form: ein Recipe-Eintrag nach dem Vorbild von
+  `doc-usage`, am gebauten Image gelaufen statt aus der Beschreibung abgeleitet — vierzehn `.PHONY`-Targets,
+  sechs mit `--disable` (heute gezählt, nicht aus dem Lastenheft übernommen). Der Rot-Beleg kam zweifach:
+  der Test war rot ohne das Target (`d-check.mk ohne doc-manual-Target`), und der Verifier nahm testweise die
+  Anführungszeichen um `$(MANUAL)` weg und sah den Test aus genau diesem Grund rot werden. Die Spiegel standen
+  vor dem Editieren im Plan (Schritt 17); danach blieb keine alte Zahl außerhalb der deklarierten Ausnahme stehen.
+- **Was ging anders als geplant:** Der Plan wies Handbuch und `operations.md` dem Feature-Commit zu, gegen
+  [`AGENTS.md`](../../../../AGENTS.md) §5 Regel 17 (Pflege des Handbuchs am Release). Ich habe es vor dem ersten Commit
+  bemerkt, den Wortlaut als Patch zurückgelegt und die Abweichung als Plan-Änderung vor dem Code notiert. Der Review
+  fand weder Befund noch Folgearbeit (nur drei INFO, zwei davon Testkommentare, behoben). Der Verifier-LOW zum Begriff mit
+  Leerzeichen war gemessen, aber noch nicht im Plan notiert; §6 trägt die Messung jetzt.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle.
+- **Beobachtungs-Register (`../observations/`):** keine Beobachtung angefallen, die ein Beleg wäre. Die
+  Fehlzuordnung der Handbuch-Dateien im Plan wurde vor dem Commit selbst bemerkt und ist einmalig:
+  benannt, nicht gezählt. Schritt 17 wurde diesmal befolgt
+  ([`guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/state.md)
+  bleibt bei 4×, verkörpert).
+- **Folge-Slices:** keiner. Die Release-Prep v0.89.0 ist ein eigener Vorgang nach der Closure: Handbuch §4.16,
+  Kopf und §11 sowie `operations.md` Zeile 41 (Wortlaut liegt als Patch vor), dazu CHANGELOG, `version.md`
+  und die Pins.
+- **Risiken aus §6:** beide entfallen (siehe §6). Trigger-Audit: kein Carveout, kein bootstrap-aware Gate, keine ADR
+  und keine Hard Rule mit eingetretenem Trigger; keine Schwelle gesenkt (§3.6). Nachtlauf-Stand
+  ([`MR-053`](../../../../harness/conventions.md#mr-053)): wie in §8.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — keiner genannt; (c) Register — die
+  zitierte Beobachtung existiert und trägt Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
