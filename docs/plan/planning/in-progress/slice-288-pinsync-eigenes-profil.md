@@ -101,6 +101,17 @@ Aussagen-Berührung steht hier gar nicht.
 beide Dateien tragen kein CRLF (`grep -c $'\r'` ⇒ 0). Der Implementer zählt vor dem Eintrag
 erneut — der Stand kann sich bis dahin bewegt haben.
 
+**Plan-Nachtrag vor dem Code (2026-10-31).** Bestandsmessung wiederholt: 1 / 1 / 1 / 1 Treffer, kein
+CR (`grep -c $'\r'` ⇒ 0 in beiden Dateien); die Zeilen sind `Dockerfile:31`, `Dockerfile:32`,
+`Makefile:13`, `Makefile:14`. Das Makefile schreibt `?=` mit ausgerichteten Leerzeichen, die
+Ausdrücke dafür tragen `\s*`. Zwei Dateien stehen zusätzlich in der Änderungsliste, weil die
+Modulliste von `.d-check.yml` Spiegel hat (Hinweis in der Datei selbst, gezählt mit
+`grep -rln 'disable citations\|"citations"' .` außerhalb von Plan, Reviews und Baseline): die
+Variable `FOCUS_DISABLE` im `Makefile` (sonst liefe `pinsync` in jedem fokussierten Gate mit) und
+`netlessDocModules()` im Test von `internal/adapter/driven/configyaml/gate_consistency_test.go`
+(die Messmethode für [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)). Die übrigen Treffer (`configyaml.go`, `config.go`, `run.go`,
+`citations.go`) sind Modul-Code von `citations` und tragen keine Liste der Default-Module.
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
