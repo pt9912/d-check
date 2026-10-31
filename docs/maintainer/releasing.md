@@ -104,6 +104,12 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
      einer neuen CLI-Option die Optionen-Tabelle ergänzen. Kein Gate prüft
      diese Enumerationen — die Modul-Liste blieb so von v0.25 bis v0.37 still
      bei acht Modulen stehen.
+   - **Docker-Hub-Übersicht**
+     ([`packaging/dockerhub/overview.md`](../../packaging/dockerhub/overview.md)) — bei
+     einem neuen Modul die Zahl und die Aufzählung im Abschnitt *Modules*; gezählt wird
+     gegen die `Verfügbar:`-Zeile von `d-check --print-config`. Kein Gate prüft sie, und
+     die Release-Pipeline setzt die Seite unverändert auf Docker Hub: die Zahl stand bei
+     „21“, als das Image 25 Module kannte.
 5. **`make ci`** lokal grün fahren (Pre-Tag-De-Risk, „grün = Boden"), erst dann
    taggen. **Auf macOS** siehe den eigenen Absatz direkt darunter — `image-test`
    braucht dort einen Umweg.
