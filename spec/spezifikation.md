@@ -3563,6 +3563,14 @@ einer Quelle; eine Quelle ohne Datei.
 Datei sonst eine Stelle außerhalb des Repos sein dürfte, die kein Scan sieht. Die Pfad-Prüfung
 ist die von `metrics.excluded` (`ValidLiteralPath`). `Kind` unterscheidet Symlink, Verzeichnis,
 Datei und fehlend und prüft mit `Lstat`.
+Zwei Quellen derselben Datei mit verschiedenem, aber gleichwertigem Ausdruck (etwa mit und
+ohne angehängtes ` *`) bestehen die Prüfung auf „dieselbe Stelle“ — sie ist syntaktisch, über
+Datei und Ausdruck — und vergleichen dieselbe Zeile mit sich selbst: der Lauf ist grün, und
+geprüft wurde eine Stelle. Eine Quelle, die eine FIFO, eine Gerätedatei oder ein Socket ist,
+meldet `Kind` als Datei (jede Art außer Symlink und Verzeichnis); `ReadFile` öffnet sie
+blockierend, der Lauf hängt, statt mit Exit 2 zu enden. Ein ungültiger `pinsync`-Block ist
+Exit 2 auch ohne aktives Modul (Schritt 1, am Konfigurations-Rand); sonst bleibt der Block bei
+nicht aktivem Modul inert, ohne Lesen und ohne Zeile in den Hinweisen.
 
 ---
 
@@ -4093,6 +4101,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-31 | §[`DC-FA-PSYNC-001.a`](spezifikation.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync) Grenzen: der Selbstvergleich zweier gleichwertiger Ausdrücke derselben Datei, die FIFO/Gerätedatei/Socket als Quelle und das Verhalten eines ungültigen Blocks bei nicht aktivem Modul sind benannt |
 | 2026-10-31 | §4: die Grund-Codes `pinsync-mismatch` (`SPEC-109`), `pinsync-no-match` (`SPEC-110`) und `pinsync-ambiguous` (`SPEC-111`) stehen in der Tabelle, weil das Modul `pinsync` sie nun liefert; das Verfahren in §[`DC-FA-PSYNC-001.a`](spezifikation.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync) ist unverändert |
 | 2026-10-31 | §[`DC-FA-PSYNC-001.a`](spezifikation.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync) neu: Verfahren des opt-in-Moduls `pinsync` (Config-Prüfung vor dem Lauf, Segment-Prüfung auf Symlinks, zeilenweises Lesen, Treffer mit nicht leerer Fanggruppe, Vergleich gegen die erste Quelle mit genau einem Treffer, Bezugsmenge), das Schema `pinsync.*` in §2 und die Grund-Codes `pinsync-mismatch`, `pinsync-no-match` und `pinsync-ambiguous` im Verfahren. Das Schema gilt für das fertige Modul; die Codes stehen in der Tabelle von §4, sobald das Modul sie liefert |
 | 2026-10-30 | §[`DC-FA-MET-001.a`](spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics) Schritte 5 bis 8: die Tabelle des Plans, die Schätzung aus Klassenfaktor mal Zeilen und Feldfaktor mal Feld, Prüfung 2 (`metrics-estimate-mismatch`, `SPEC-108`) und der Hinweis „Marke ausstehend“ mit den berechneten Zahlen sind umgesetzt; ein Tabellenende ohne Anfangsstrich-Zeile gilt, wenn der Kopf einen Anfangsstrich trägt; Config-Schlüssel `metrics.estimate-inputs` und `metrics.table.*` sind Pflicht-/Wertebereichs-geprüft |

@@ -1651,7 +1651,11 @@ pinsync: 1 Pin(s) geprüft, 2 Quelle(n) gelesen
 
 **Was das Modul nicht sagt:** ob der Ausdruck die **richtige** Stelle meint — ein Treffer in
 einer Kommentarzeile mit dem passenden Wortlaut ist ein Treffer; „genau ein Treffer" fängt nur
-die Doppeldeutigkeit. Die Bezugsmenge sagt, was gelesen wurde, nicht, dass jeder Pin des Repos
+die Doppeldeutigkeit. Die Prüfung „dieselbe Stelle zweimal“ ist syntaktisch (gleiche Datei
+**und** gleicher Ausdruck): zwei verschiedene, aber gleichwertige Ausdrücke derselben Datei
+vergleichen dieselbe Zeile mit sich selbst, der Lauf ist grün und geprüft wurde eine Stelle.
+Eine FIFO, eine Gerätedatei oder ein Socket als Quelle weist das Modul nicht ab — der Lauf
+hängt beim Lesen, statt mit Exit 2 zu enden. Die Bezugsmenge sagt, was gelesen wurde, nicht, dass jeder Pin des Repos
 erfasst ist.
 
 ## 5. Konfiguration

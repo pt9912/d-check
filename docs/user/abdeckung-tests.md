@@ -140,6 +140,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-CLI-001`](../../spec/lastenheft.md), [`DC-FA-CLI-010`](../../spec/lastenheft.md) | `TestCLI185_PrintMK_UsageTarget` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CLI-006`](../../spec/lastenheft.md) | `TestCLI234_RB_AbwesendByteGleich` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CLI-010`](../../spec/lastenheft.md), [`DC-FA-CLI-013`](../../spec/lastenheft.md) | `TestCLI281_PrintMK_ManualTarget` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestCLIPinsyncEnable` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CODE-001`](../../spec/lastenheft.md) | `TestCODE001` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CONF-001`](../../spec/lastenheft.md) | `TestCONF001_IDTargetFehlt` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CONF-001`](../../spec/lastenheft.md) | `TestCONF001_IDTargetVerlaesstWurzel` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
@@ -151,6 +152,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-ID-001`](../../spec/lastenheft.md) | `TestID001` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-LINK-002`](../../spec/lastenheft.md) | `TestLINK002_Symlinks` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-MTX-001`](../../spec/lastenheft.md) | `TestMTX001` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPrintConfigPinsyncBlockIstGueltig` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-QA-02`](../../spec/lastenheft.md) | `TestQA02_Determinismus` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-SCAN-001`](../../spec/lastenheft.md) | `TestSCAN001` | [`internal/adapter/driving/cli/cli_acceptance_test.go`](../../internal/adapter/driving/cli/cli_acceptance_test.go) |
 | [`DC-FA-CONF-001`](../../spec/lastenheft.md) | `TestConfigPath_UngueltigesSchema` | [`internal/adapter/driving/cli/cli_config_path_test.go`](../../internal/adapter/driving/cli/cli_config_path_test.go) |
@@ -315,7 +317,9 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncGenauEineFanggruppeAkzeptiert` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
 | [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncGleicheDateiAnderesPatternIstErlaubt` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
 | [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncGleicherWertKeinBefund` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncGleichwertigeAusdruckeSindKeinSchutz` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
 | [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncKeinTrefferLeereGruppeLeereDatei` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncKindFehlerIstEingabefehler` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
 | [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncKommentarUndFromZeileSindTreffer` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
 | [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncLaeufeSindGleich` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
 | [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncLesefehlerIstEingabefehler` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |

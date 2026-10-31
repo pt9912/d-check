@@ -198,7 +198,7 @@ func reasonTexts() map[string]string {
 		rules.ReasonMetricsOverLimit:              "Messung aus git liegt über der Obergrenze, und kein Ausnahme-Eintrag mit N ≥ Messung deckt sie",
 		rules.ReasonMetricsEstimateMismatch:       "Schätzung des Blocks entspricht nicht der aus der Tabelle des Plans — nur solange die Messung 0 ist",
 		rules.ReasonPinsyncMismatch:               "Eine Quelle des Pins fängt einen anderen Wert als die erste Quelle mit genau einem Treffer",
-		rules.ReasonPinsyncNoMatch:                "Der Ausdruck einer Quelle trifft in ihrer Datei keine Zeile mit nicht leerem Wert (die Zeile 1 ist ein Vertrags-Platzhalter)",
+		rules.ReasonPinsyncNoMatch:                "Der Ausdruck einer Quelle trifft in ihrer Datei keine Zeile mit nicht leerem Wert (die Zeilenangabe 1 ist nur eine Konvention und keine Fundstelle)",
 		rules.ReasonPinsyncAmbiguous:              "Der Ausdruck einer Quelle trifft mehr als eine Zeile ihrer Datei; die Meldung nennt alle Zeilen",
 	}
 }

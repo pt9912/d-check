@@ -3356,3 +3356,53 @@ func TestCLI009_Trace_NamensSlice(t *testing.T) {
 		t.Fatalf("beide Anforderungen gedeckt, Exit = %d, stderr = %q", code, stderr)
 	}
 }
+
+// DC-FA-PSYNC-001: der auskommentierte pinsync-Block der Vorlage ergibt,
+// entkommentiert, einen gültigen Block.
+func TestPrintConfigPinsyncBlockIstGueltig(t *testing.T) {
+	_, stdout, _ := run(t, "--print-config")
+	var block []string
+	in := false
+	for _, l := range strings.Split(stdout, "\n") {
+		switch {
+		case l == "# pinsync:":
+			in = true
+			block = append(block, "pinsync:")
+		case in && strings.HasPrefix(l, "#   "):
+			block = append(block, strings.TrimPrefix(l, "# "))
+		case in:
+			in = false
+		}
+	}
+	if len(block) < 5 {
+		t.Fatalf("pinsync-Block der Vorlage fehlt oder ist zu kurz: %q", block)
+	}
+	cfg, err := configyaml.Decode([]byte(strings.Join(block, "\n") + "\n"))
+	if err != nil || len(cfg.Pinsync.Pins) != 1 || len(cfg.Pinsync.Pins[0].Sources) != 2 {
+		t.Fatalf("Beispiel der Vorlage ist kein gültiger Block: err=%v cfg=%+v", err, cfg.Pinsync)
+	}
+}
+
+// DC-FA-PSYNC-001: --enable pinsync meldet ungleiche Werte (Exit 1) mit der
+// Bezugsmenge, einen Eingabefehler als Exit 2.
+func TestCLIPinsyncEnable(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "README.md", "x")
+	write(t, root, "A.txt", "V=1\n")
+	write(t, root, "B.txt", "V=2\n")
+	write(t, root, ".d-check.yml", "pinsync:\n  pins:\n    - name: v\n      sources:\n        - {file: A.txt, pattern: '^V=(\\d)'}\n        - {file: B.txt, pattern: '^V=(\\d)'}\n")
+	code, stdout, stderr := run(t, "--enable", "pinsync", "--json", root)
+	if code != 1 || !strings.Contains(stdout, "pinsync-mismatch") || !strings.Contains(stdout, "pinsync: 1 Pin(s) geprüft, 2 Quelle(n) gelesen") {
+		t.Fatalf("Exit=%d stdout=%s stderr=%s", code, stdout, stderr)
+	}
+	write(t, root, "B.txt", "V=1\n")
+	if code, _, stderr := run(t, "--enable", "pinsync", root); code != 0 {
+		t.Fatalf("gleiche Werte: Exit=%d stderr=%s", code, stderr)
+	}
+	if err := os.Remove(filepath.Join(root, "B.txt")); err != nil {
+		t.Fatal(err)
+	}
+	if code, _, stderr := run(t, "--enable", "pinsync", root); code != 2 || !strings.Contains(stderr, "pinsync") {
+		t.Fatalf("fehlende Quelle: Exit=%d stderr=%s", code, stderr)
+	}
+}

@@ -178,7 +178,7 @@ func TestPinsyncMehrdeutigUndMehrfachVorkommenInEinerZeile(t *testing.T) {
 
 // Randformen des Lesens: CRLF, letzte Zeile ohne Zeilenende, leere Datei (DC-FA-PSYNC-001).
 func TestPinsyncZeilenRandformen(t *testing.T) {
-	pin := psPin("p", psSrc("a", `v=(\S+)`), psSrc("b", `v=(\S+)`))
+	pin := psPin("p", psSrc("a", `v=(.+)`), psSrc("b", `v=(.+)`))
 	cases := map[string]string{
 		"CRLF":                  "x\r\nv=1\r\ny\r\n",
 		"ohne Schlusszeilenende": "x\nv=1",
@@ -187,7 +187,7 @@ func TestPinsyncZeilenRandformen(t *testing.T) {
 	for name, content := range cases {
 		t.Run(name, func(t *testing.T) {
 			r := psMust(t, map[string]string{"a": "v=1\n", "b": content}, psCfg(pin))
-			psWant(t, r) // ein \r gehört nicht zum Wert
+			psWant(t, r) // ein \r gehört nicht zum Wert; `.+` fängt es ohne das Abschneiden mit
 		})
 	}
 	// Mit `$` verankert: das \r am Zeilenende stört nicht.
@@ -373,6 +373,7 @@ type failKindFS struct{ driven.Filesystem }
 
 func (failKindFS) Kind(string) (driven.EntryKind, error) { return driven.KindMissing, fmt.Errorf("not a directory") }
 
+// Ein Fehler von Kind (etwa ENOTDIR) ist ein Eingabefehler mit Ursache (DC-FA-PSYNC-001).
 func TestPinsyncKindFehlerIstEingabefehler(t *testing.T) {
 	fs := failKindFS{coretest.NewMemFS(map[string]string{"a": "v=1\n", "b": "v=1\n"})}
 	pin := psPin("p", psSrc("a", `v=(\d)`), psSrc("b", `v=(\d)`))
@@ -441,13 +442,24 @@ func TestPinsyncAktivOhnePinIstExitZwei(t *testing.T) {
 	}
 }
 
-// Das Modul schreibt nie und ändert die Eingabe nicht: ein zweiter Lauf auf
-// demselben Baum liefert dieselben Befunde (DC-FA-PSYNC-001).
+// Zwei Läufe auf demselben Baum liefern dieselben Befunde (DC-FA-PSYNC-001).
 func TestPinsyncLaeufeSindGleich(t *testing.T) {
 	fs := coretest.NewMemFS(psGoFiles("ARG GO_VERSION=1.0\n", "GO_VERSION := 2.0\n"))
 	a, _ := CheckPinsync(fs, psCfg(psGo()))
 	b, _ := CheckPinsync(fs, psCfg(psGo()))
 	if fmt.Sprint(a) != fmt.Sprint(b) || len(a.Findings) != 1 {
 		t.Fatalf("Läufe verschieden: %v / %v", a, b)
+	}
+}
+
+// Grenze: zwei verschiedene, aber gleichwertige Ausdrücke derselben Datei
+// vergleichen dieselbe Zeile mit sich selbst -- grün, eine Stelle geprüft
+// (DC-FA-PSYNC-001).
+func TestPinsyncGleichwertigeAusdruckeSindKeinSchutz(t *testing.T) {
+	pin := psPin("p", psSrc("a", `^V=(\S+)`), psSrc("a", `^V=(\S+) *`))
+	r := psMust(t, map[string]string{"a": "V=1\n"}, psCfg(pin))
+	psWant(t, r)
+	if r.Sources != 2 {
+		t.Fatalf("Quellen: %d", r.Sources)
 	}
 }

@@ -136,6 +136,11 @@ verschärft — ein abschließender `/` ist ein Eingabefehler der Konfiguration 
 wird am Rand geprüft, auch wenn das Modul nicht aktiv ist (wie `metrics`); nur die leere
 Pin-Liste ist erst im aktiven Modul ein Fehler.
 
+**Plan-Änderung nach Review R1 (2026-10-31):** zusätzlich `internal/adapter/driving/cli/cli_acceptance_test.go`
+(update: Test des Vorlagen-Blocks und `--enable pinsync` am CLI) und `spec/spezifikation.md`
+(Grenzen und Historie fortgeschrieben); `internal/hexagon/core/app/diagnose.go` ändert den Text von
+`pinsync-no-match`. Keine neue Datei, kein neuer Mechanismus.
+
 **Aus Review und Verifikation von `slice-286` mitgegeben** (jedes braucht einen Test oder eine
 Entscheidung im Code, bevor der Slice schließt): (1) der abschließende Schrägstrich —
 `Dockerfile/` passiert `ValidLiteralPath`, `Kind` meldet dann ENOTDIR (Exit 2); die Anforderung
