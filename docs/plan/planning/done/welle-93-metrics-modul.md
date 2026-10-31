@@ -25,8 +25,8 @@ konfigurierte Formel über den Eingaben des Blocks, (2) die Messung aus git
 (`git diff --numstat`-Summe über die Pfade des Blocks) gegen die Obergrenze und
 (3) einen Ausnahme-Eintrag auf einen nicht leeren Grund (GitHub-Issue 13). Der
 Lauf bleibt netzlos, schreibt nicht ins geprüfte Repo und braucht kein
-git-Binary im Image — wie [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
-und [`DC-FA-COMMITS-001`](../../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in).
+git-Binary im Image — wie [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
+und [`DC-FA-COMMITS-001`](../../../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in).
 
 ## 2. Trigger (Welle startet)
 
@@ -86,10 +86,10 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [`slice-282`](done/welle-93/slice-282-metrics-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR für das Modul `metrics`; Bestands-Gegenprobe | neue Anforderung des Moduls (Kennung vergibt der Slice), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
-| [`slice-283`](done/welle-93/slice-283-metrics-modulkern-formel-und-grund.md) | Modulkern: Block lesen, Obergrenze gegen Formel, leerer Grund (hermetisch) | die Anforderung aus [`slice-282`](done/welle-93/slice-282-metrics-anforderung-und-adr.md) |
-| [`slice-284`](done/welle-93/slice-284-metrics-messung-aus-git.md) | Messung aus git: Port, Adapter und Prüfung gegen die Obergrenze | die Anforderung aus [`slice-282`](done/welle-93/slice-282-metrics-anforderung-und-adr.md), [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) (Port-Vorbild) |
-| [`slice-285`](done/welle-93/slice-285-metrics-tabellenzaehlung-und-schaetzung.md) | Tabellenzählung: Schätzung aus der Tabelle des Plans, Prüfung 2, Hinweis „Marke ausstehend“ | die Anforderung aus [`slice-282`](done/welle-93/slice-282-metrics-anforderung-und-adr.md) (Entscheid 9) |
+| [`slice-282`](welle-93/slice-282-metrics-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR für das Modul `metrics`; Bestands-Gegenprobe | neue Anforderung des Moduls (Kennung vergibt der Slice), [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
+| [`slice-283`](welle-93/slice-283-metrics-modulkern-formel-und-grund.md) | Modulkern: Block lesen, Obergrenze gegen Formel, leerer Grund (hermetisch) | die Anforderung aus [`slice-282`](welle-93/slice-282-metrics-anforderung-und-adr.md) |
+| [`slice-284`](welle-93/slice-284-metrics-messung-aus-git.md) | Messung aus git: Port, Adapter und Prüfung gegen die Obergrenze | die Anforderung aus [`slice-282`](welle-93/slice-282-metrics-anforderung-und-adr.md), [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) (Port-Vorbild) |
+| [`slice-285`](welle-93/slice-285-metrics-tabellenzaehlung-und-schaetzung.md) | Tabellenzählung: Schätzung aus der Tabelle des Plans, Prüfung 2, Hinweis „Marke ausstehend“ | die Anforderung aus [`slice-282`](welle-93/slice-282-metrics-anforderung-und-adr.md) (Entscheid 9) |
 
 ## 5. Abhängigkeiten
 
@@ -99,20 +99,20 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 - Blockiert: keine Welle.
 - Wird blockiert von: keiner.
 - **Reihenfolge der Slices ist fachlich bindend:** erst
-  [`slice-282`](done/welle-93/slice-282-metrics-anforderung-und-adr.md) (die Anforderung
+  [`slice-282`](welle-93/slice-282-metrics-anforderung-und-adr.md) (die Anforderung
   und die offenen Entscheide stehen, bevor Code entsteht), dann
-  [`slice-283`](done/welle-93/slice-283-metrics-modulkern-formel-und-grund.md), dann
-  [`slice-284`](done/welle-93/slice-284-metrics-messung-aus-git.md), dann [`slice-285`](done/welle-93/slice-285-metrics-tabellenzaehlung-und-schaetzung.md) (Prüfung 2 braucht die Messung). Alle vier schreiben eine
+  [`slice-283`](welle-93/slice-283-metrics-modulkern-formel-und-grund.md), dann
+  [`slice-284`](welle-93/slice-284-metrics-messung-aus-git.md), dann [`slice-285`](welle-93/slice-285-metrics-tabellenzaehlung-und-schaetzung.md) (Prüfung 2 braucht die Messung). Alle vier schreiben eine
   Fassung ins Lastenheft oder die Spezifikation; das WIP-Limit 1 hält sie
   ohnehin nacheinander.
-- **Offene Entscheide des Auftraggebers, die [`slice-282`](done/welle-93/slice-282-metrics-anforderung-und-adr.md)
+- **Offene Entscheide des Auftraggebers, die [`slice-282`](welle-93/slice-282-metrics-anforderung-und-adr.md)
   vor dem Schreiben der Anforderung braucht** (das Issue legt sie nicht fest):
   neun, darunter die Syntax des Blocks im Plan, woher die Basis `<basis>` stammt, die
   Formel-Form, wo der Block gelesen wird (der Kern trägt keine YAML-Bibliothek) und
   wo die Zeilen gezählt werden, und wie die Tabellenzählung des Anlass-Repos im Modul
   konfiguriert wird. Der Slice benennt sie mit Empfehlung; ohne Entscheid
   beginnt kein Code. Fällt Entscheid 6 auf den Parse-Port, wird die Block-Lexik ein
-  eigener Slice vor [`slice-283`](done/welle-93/slice-283-metrics-modulkern-formel-und-grund.md), und die Slice-Tabelle in §4 wächst.
+  eigener Slice vor [`slice-283`](welle-93/slice-283-metrics-modulkern-formel-und-grund.md), und die Slice-Tabelle in §4 wächst.
 - **Die Angaben und die Rückmeldung des Anlass-Repos:** das Repo ist nicht lesbar. Die
   Gegenprobe stützt sich auf die anonymisierten Angaben im Issue (Kommentar vom
   2026-10-30, erledigt); die Paritäts-Probe fährt der Eigentümer mit dem veröffentlichten
@@ -131,7 +131,7 @@ der Closure-Trigger unerreichbar wird.
 
 - **Release, Tag, Release-Prep und die Antwort an das Issue** (CHANGELOG,
   READMEs, Handbuch-Kopf, Digest-Pins, Schließen von Issue 13): eigener Vorgang
-  nach der Welle ([`AGENTS.md`](../../../AGENTS.md) §5 Zeile 17) und eine Handlung
+  nach der Welle ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 17) und eine Handlung
   des Auftraggebers. Die Welle liefert Code, Spec und Handbuch-Inhalt, keine
   Distribution; der Closure-Trigger hängt deshalb nicht an einer Antwort, die vor
   dem Release falsch wäre.
@@ -146,7 +146,7 @@ der Closure-Trigger unerreichbar wird.
   Zyklomatik): das Issue verlangt Einfügungen plus Löschungen. Eine weitere Größe
   wäre eine neue Anforderung mit eigener Gegenprobe, kein Schalter dieses Moduls.
 - **Schreibende Wege** (den Block fortschreiben, die Obergrenze eintragen):
-  [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
+  [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
   schließt sie aus; ein Vorschlag wäre Ausgabe, nie Schreiben.
 
 ## 7. Closure-Notiz
@@ -156,5 +156,5 @@ Regeln dieser Sektion: Baseline-Regelwerk `grundlagen-traceability.md`
 beiden Zeiger unten sind so zu schreiben, wie sie vom Ruheort `done/` auflösen,
 nicht vom Schreibort.
 
-Ergebnis: bei der Closure — Zeiger auf `welle-93-results.md`, Geschwister im Ruheort `done/`.
-Zähler: bei der Closure — Zeiger aufs Beobachtungs-Register, eine Ebene über dem Ruheort.
+Ergebnis: [`welle-93-results.md`](welle-93-results.md), Geschwister im Ruheort `done/`.
+Zähler: [Beobachtungs-Register](../observations/), eine Ebene über dem Ruheort.

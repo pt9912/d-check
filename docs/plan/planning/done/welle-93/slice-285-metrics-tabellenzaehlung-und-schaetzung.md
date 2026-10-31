@@ -11,13 +11,13 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 
 **Welle:** welle-93
 
-**Bezug:** die Anforderung des Moduls `metrics` aus [`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) (die Hälfte „Schätzung aus der
+**Bezug:** die Anforderung des Moduls `metrics` aus [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) (die Hälfte „Schätzung aus der
 Tabelle“),
 [`DC-QA-02`](../../../../../spec/lastenheft.md#dc-qa-02--determinismus) (gleiche Tabelle ⇒ gleiche Zählung),
 [`DC-QA-03`](../../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) (lesend, hermetisch). Die ADR aus
-[`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) ist die aktive Entscheidungsgrundlage (Entscheid 9).
+[`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) ist die aktive Entscheidungsgrundlage (Entscheid 9).
 
-**Berührte Spec-Stellen:** die in [`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) angelegten Stellen (Anforderung,
+**Berührte Spec-Stellen:** die in [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) angelegten Stellen (Anforderung,
 Schema `metrics.*` für das Tabellenformat, Eingabefehler, Hinweise) — gelesen, nicht
 verändert, außer dem Fassungsstand der Historie.
 Der Verweis zeigt **aufwärts**: Die Spec nennt diesen Slice nie
@@ -49,7 +49,7 @@ berechneten Schätzung und Marke. Tabellenfehler sind Eingabefehler (Exit 2).
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Block, Marke gegen Formel, leerer Grund, Messung** — Bestand von
-  [`slice-283`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) und [`slice-284`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle), davor `done/`: Prüfung 2 braucht den Zustand
+  [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) und [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle), davor `done/`: Prüfung 2 braucht den Zustand
   „Messung 0 / ≥ 1“ aus der Messung; dieser Slice nimmt ihn als gegeben.
 - **Die Prosa-Form-Erkennung** (ältere Zeile statt Block) — nach der Antwort des Issue-Autors
   kein Zustand des Moduls: sie kommt nur in Plänen vor, die das Verzeichnis „in Arbeit“
@@ -134,7 +134,7 @@ Modul und ohne Block **kein** Befund, gegen das Vorher-Image byte-gleich.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
-**Start** (`next` → `in-progress`): [`slice-284`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) liegt in `done/` (Messung und der
+**Start** (`next` → `in-progress`): [`slice-284`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) liegt in `done/` (Messung und der
 Zustand „Messung 0 / ≥ 1“ stehen), und welle-93 ist offen. Der Übergang landet auf dem
 Hauptzweig, vor der Arbeit.
 

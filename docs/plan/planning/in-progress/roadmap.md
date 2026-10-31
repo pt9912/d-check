@@ -32,8 +32,6 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
-- [`welle-93-metrics-modul`](../welle-93-metrics-modul.md)
-
 Nichts in Arbeit.
 
 ## Nächste Wellen
@@ -93,6 +91,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 
 | Welle | Abschluss | Closure-Notiz |
 |---|---|---|
+| welle-93-metrics-modul | 2026-10-31 | [`welle-93-results.md`](../done/welle-93-results.md) |
 | welle-92-namens-slices-und-home-variablen | 2026-10-29 | [`welle-92-results.md`](../done/welle-92-results.md) |
 | welle-91-adoption-ai-harness-init | 2026-09-29 | [`welle-91-results.md`](../done/welle-91-results.md) |
 | welle-90-eigenstaendige-review-archivierung | 2026-09-04 | [`welle-90-results.md`](../done/welle-90-results.md) |

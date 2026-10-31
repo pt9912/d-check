@@ -11,13 +11,13 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 
 **Welle:** welle-93
 
-**Bezug:** die Anforderung des Moduls `metrics` aus [`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) (die Hälfte „Messung gegen die Obergrenze“),
+**Bezug:** die Anforderung des Moduls `metrics` aus [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) (die Hälfte „Messung gegen die Obergrenze“),
 [`DC-FA-VCS-001`](../../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) und
 [`DC-FA-COMMITS-001`](../../../../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in) (Port-Vorbild, Fail-closed-Haltung),
 [`DC-QA-02`](../../../../../spec/lastenheft.md#dc-qa-02--determinismus) (gleiche Historie ⇒ gleiche Summe),
 [`DC-QA-03`](../../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) (lesend, netzlos, `:ro`).
 
-**Berührte Spec-Stellen:** die in [`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) angelegten Stellen (Anforderung,
+**Berührte Spec-Stellen:** die in [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) angelegten Stellen (Anforderung,
 Messsemantik der Summe, Grund-Codes `metrics-over-limit` und Fail-closed-Fall) — gelesen;
 die Zusage der `numstat`-Gleichheit wird hier belegt oder korrigiert.
 Der Verweis zeigt **aufwärts**: Die Spec nennt diesen Slice nie
@@ -48,10 +48,10 @@ der Lauf mit Exit 2.
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Block-Lexik, Formel, Config-Leser, leerer Grund** — Bestand dieses Moduls aus
-  [`slice-283`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle), davor `done/`; dieser Slice nimmt seine Ausgabe (Obergrenze, Pfade, Basis,
+  [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle), davor `done/`; dieser Slice nimmt seine Ausgabe (Obergrenze, Pfade, Basis,
   Ausnahme) als gegeben und ändert sie nicht.
 - **Eine Rename-Erkennung nach git-Art, Binärdatei-Gewichtung, Kopien-Erkennung** —
-  der Entscheid steht in der Anforderung ([`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle), Entscheid 4); eine andere Semantik wäre eine
+  der Entscheid steht in der Anforderung ([`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle), Entscheid 4); eine andere Semantik wäre eine
   Änderung der Anforderung, nicht dieses Slice.
 - **Weitere VCS-Port-Methoden und eine Änderung der bestehenden** — der Port wächst um
   genau eine Methode; die Verträge von `vcs`/`commits` bleiben byte-gleich (Schicht-
@@ -77,7 +77,7 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 - [x] **Prüfung „Messung ≤ Obergrenze“:** Messung über der Obergrenze ohne Ausnahme
       ist `metrics-over-limit`; Messung auf der Grenze und darunter ist grün;
       Ausnahme **mit** Grund unterdrückt den Befund, Ausnahme **ohne** Grund bleibt der
-      Befund aus [`slice-283`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle); Test referenziert, Negativliste (§3) getestet.
+      Befund aus [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle); Test referenziert, Negativliste (§3) getestet.
 - [x] **Config-Schlüssel `metrics.excluded`:** Pfade (literal, ohne Glob, `..`, führenden `/`, Steuerzeichen) kommen in den Config-Rand; Verstöße ⇒ Exit 2.
 - [x] **Fail-closed und Betrieb:** ohne `.git` Exit 2 (nicht „0 Befunde“); eine Basis,
       die nicht auflöst, ist Exit 2 mit Klartext; der Lauf bleibt unter `:ro` und gegen
@@ -132,7 +132,7 @@ frisch erzeugtes Fixture-Repo, dessen Index „racily clean“ ist ([`BEO-ALL/ra
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
-**Start** (`next` → `in-progress`): [`slice-283`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) liegt in `done/` (Obergrenze, Pfade,
+**Start** (`next` → `in-progress`): [`slice-283`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) liegt in `done/` (Obergrenze, Pfade,
 Basis und Ausnahme sind als Ausgabe des Kerns vorhanden), und welle-93 ist offen. Der
 Übergang landet auf dem Hauptzweig, vor der Arbeit.
 
@@ -155,7 +155,7 @@ DoD vollständig, `make gates` grün, Review-Report liegt vor, und am gebauten I
 liefert das Fixture-Repo (Plan mit Block, Basis-Commit, Änderungen über und unter der
 Grenze) die erwarteten Befunde — unter `:ro` und mit fremdem Eigentümer des Repos —
 während der Lauf ohne `metrics`-Konfiguration gegen das Vorher-Image byte-gleich ist.
-Die ADR aus [`slice-282`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) geht von `Proposed` auf `Accepted`; ist die `numstat`-Zusage
+Die ADR aus [`slice-282`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) geht von `Proposed` auf `Accepted`; ist die `numstat`-Zusage
 zu korrigieren, geschieht das vorher, solange die ADR noch nicht `Accepted` ist.
 Dazu die Closure-Notiz mit Lerneintrag.
 
@@ -214,7 +214,7 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 - **Beobachtungs-Register (`../../observations/`):**
   [`eigene-menge-gemessen-fremde-behauptet`](../../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
   bekommt einen Beleg (Bibliotheks-Methode nach dem Namen statt nach dem Verhalten übernommen).
-- **Folge-Slices:** [`slice-285`](../../welle-93-metrics-modul.md#4-slices-in-dieser-welle) in `open/`.
+- **Folge-Slices:** [`slice-285`](../welle-93-metrics-modul.md#4-slices-in-dieser-welle) in `open/`.
 - **ADR:** [`ADR-0112`](../../../adr/0112-metrics-modul.md) wechselt auf `Accepted`, weil die Zeilen-Summe am Fixture belegt ist (der
   Auslöser aus dem Plan von slice-282); Prüfung 2 und die Paritäts-Probe ändern keinen der neun Entscheide.
 - **Risiken aus §6:** zwei weiter offen (mit Verweis), eines entfallen (mit Grund). Trigger-Audit: kein Carveout, kein
