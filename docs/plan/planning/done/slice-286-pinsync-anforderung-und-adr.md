@@ -9,7 +9,7 @@ aus `open/` oder `next/` nach `done/` — §7 nennt in der Zeile `Gegenstand:`
 Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 (§Ein Slice, dessen Gegenstand ein anderer übernimmt).
 
-**Welle:** [`welle-94-pinsync-modul`](../welle-94-pinsync-modul.md).
+**Welle:** [`welle-94-pinsync-modul`](welle-94-pinsync-modul.md).
 
 **Bezug:** neue Anforderung des Moduls `pinsync` (die Kennung vergibt dieser Slice
 beim Schreiben ins Lastenheft; Empfehlung: Bereichs-Kürzel `PSYNC`, Nummer 001),
@@ -264,8 +264,8 @@ wurde).
   [`erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/observation.md),
   [`pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md) und
   [`spec-randbedingung-ohne-test`](../observations/BEO-ALL/spec-randbedingung-ohne-test/observation.md).
-- **Folge-Slices:** [`slice-287`](../welle-94-pinsync-modul.md#4-slices-in-dieser-welle) und
-  [`slice-288`](../welle-94-pinsync-modul.md#4-slices-in-dieser-welle) — beide liegen in `open/`.
+- **Folge-Slices:** [`slice-287`](welle-94-pinsync-modul.md#4-slices-in-dieser-welle) und
+  [`slice-288`](welle-94-pinsync-modul.md#4-slices-in-dieser-welle) — beide liegen in `open/`.
   Mitgegeben an `slice-287`: der abschließende Schrägstrich (`Dockerfile/` passiert
   `ValidLiteralPath`; `Kind` meldet ENOTDIR, Exit 2, Test), Kriterien für drei oder mehr Quellen,
   Pin ohne Namen und Lesefehler außer „fehlend“.

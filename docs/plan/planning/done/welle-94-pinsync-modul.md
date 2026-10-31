@@ -80,9 +80,9 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [`slice-286`](done/slice-286-pinsync-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR für das Modul `pinsync`; Entscheide festschreiben | neue Anforderung des Moduls (Kennung vergibt der Slice), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
-| [`slice-287`](done/slice-287-pinsync-modulkern.md) | Modulkern: Konfiguration lesen, Quellen fangen, Werte vergleichen, Grund-Codes | die Anforderung aus [`slice-286`](done/slice-286-pinsync-anforderung-und-adr.md) |
-| [`slice-288`](done/slice-288-pinsync-eigenes-profil.md) | Eigenes Profil: die zwei Doppel-Pins von `Dockerfile` und `Makefile` im Gate, beidseitig belegt | die Anforderung aus [`slice-286`](done/slice-286-pinsync-anforderung-und-adr.md) |
+| [`slice-286`](slice-286-pinsync-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR für das Modul `pinsync`; Entscheide festschreiben | neue Anforderung des Moduls (Kennung vergibt der Slice), [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
+| [`slice-287`](slice-287-pinsync-modulkern.md) | Modulkern: Konfiguration lesen, Quellen fangen, Werte vergleichen, Grund-Codes | die Anforderung aus [`slice-286`](slice-286-pinsync-anforderung-und-adr.md) |
+| [`slice-288`](slice-288-pinsync-eigenes-profil.md) | Eigenes Profil: die zwei Doppel-Pins von `Dockerfile` und `Makefile` im Gate, beidseitig belegt | die Anforderung aus [`slice-286`](slice-286-pinsync-anforderung-und-adr.md) |
 
 ## 5. Abhängigkeiten
 
@@ -92,19 +92,19 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 - Blockiert: keine Welle.
 - Wird blockiert von: keiner.
 - **Reihenfolge der Slices ist fachlich bindend:** erst
-  [`slice-286`](done/slice-286-pinsync-anforderung-und-adr.md) (die Anforderung und
+  [`slice-286`](slice-286-pinsync-anforderung-und-adr.md) (die Anforderung und
   die Entscheide stehen, bevor Code entsteht), dann
-  [`slice-287`](done/slice-287-pinsync-modulkern.md), dann
-  [`slice-288`](done/slice-288-pinsync-eigenes-profil.md) (braucht das fertige
+  [`slice-287`](slice-287-pinsync-modulkern.md), dann
+  [`slice-288`](slice-288-pinsync-eigenes-profil.md) (braucht das fertige
   Modul im Image). Das WIP-Limit 1 hält sie ohnehin nacheinander.
-- **Entscheide, die [`slice-286`](done/slice-286-pinsync-anforderung-und-adr.md)
+- **Entscheide, die [`slice-286`](slice-286-pinsync-anforderung-und-adr.md)
   vor dem Schreiben der Anforderung festschreibt** (das Issue legt sie nicht fest;
   der Slice benennt sie mit Empfehlung, ohne Entscheid beginnt kein Code): Modulname
   und Kürzel (Name im Issue „offen"), Leseweise der Ausdrücke (zeilenweise,
   RE2-Dialekt, `\r` am Zeilenende), was „genau ein Treffer" zählt (Zeilen mit
   Treffer), ob ein Pin mit nur einer Quelle ein Konfigurationsfehler ist, die
   Pfad-Eingrenzung der Quelldateien (Eingaben außerhalb der Scan-Menge,
-  [`AGENTS.md`](../../../AGENTS.md) §3.8) und die Grund-Codes.
+  [`AGENTS.md`](../../../../AGENTS.md) §3.8) und die Grund-Codes.
 - **Entschieden mit dem Auftraggeber (2026-10-31):** kein Schalter `strip-prefix`
   (der Ausdruck lässt das `v` vor der Fanggruppe stehen), nur Gleichheit, kein Netz.
 
@@ -117,7 +117,7 @@ der Closure-Trigger unerreichbar wird.
 
 - **Release, Tag, Release-Prep und die Antwort an das Issue** (CHANGELOG,
   READMEs, Handbuch-Kopf, Digest-Pins, Schließen von Issue 14): eigener Vorgang
-  nach der Welle ([`AGENTS.md`](../../../AGENTS.md) §5 Zeile 17) und eine Handlung
+  nach der Welle ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 17) und eine Handlung
   des Auftraggebers.
 - **Aktualitätsprüfung gegen eine Netz-Quelle** (ist `1.27.3` die neueste
   Go-Version?): ein anderes Modul mit Netzzugriff; die Nachtlauf-Targets
@@ -126,11 +126,11 @@ der Closure-Trigger unerreichbar wird.
   Ausdruck trägt sie, ein zweiter Mechanismus wäre eine zweite Stelle für dieselbe
   Entscheidung.
 - **Schreibende Wege** (den Wert in der zweiten Datei angleichen): ein Vorschlag
-  wäre Ausgabe, nie Schreiben ([`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+  wäre Ausgabe, nie Schreiben ([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 - **Die übrigen Spiegel einer Pin-Hebung** (Release-URLs, Prosa-Pins,
   zitierende Verweise des Baseline-Pins): ein anderer Gegenstand als Wertgleichheit
   zwischen zwei Dateien; das Register führt ihn als
-  [`BEO-ALL/pin-bump-mirrors-ungated`](observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md),
+  [`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md),
   und diese Welle löst ihn nicht auf.
 - **Pins in Digest-Form** (`@sha256:…` im `Dockerfile`): der Ausdruck kann sie
   fangen, aber welche Digests zusammengehören, ist Fachwissen des Repos; das eigene
@@ -143,5 +143,5 @@ Regeln dieser Sektion: Baseline-Regelwerk `grundlagen-traceability.md`
 beiden Zeiger unten sind so zu schreiben, wie sie vom Ruheort `done/` auflösen,
 nicht vom Schreibort.
 
-Ergebnis: entsteht bei der Closure als `welle-94-results.md`, Geschwister im Ruheort `done/`.
-Zähler: das Beobachtungs-Register, eine Ebene über dem Ruheort.
+Ergebnis: [`welle-94-results.md`](welle-94-results.md), Geschwister im Ruheort `done/`.
+Zähler: [Beobachtungs-Register](../observations/), eine Ebene über dem Ruheort.

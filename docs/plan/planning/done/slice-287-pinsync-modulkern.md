@@ -9,7 +9,7 @@ aus `open/` oder `next/` nach `done/` — §7 nennt in der Zeile `Gegenstand:`
 Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 (§Ein Slice, dessen Gegenstand ein anderer übernimmt).
 
-**Welle:** [`welle-94-pinsync-modul`](../welle-94-pinsync-modul.md).
+**Welle:** [`welle-94-pinsync-modul`](welle-94-pinsync-modul.md).
 
 **Bezug:** die Anforderung aus `slice-286`
 (Kennung steht nach deren Closure fest),
@@ -200,7 +200,7 @@ dasteht.
   gebauten Images mit `--network none`, `:ro`-Mount und fremdem Benutzer (4242:4242): gleiche
   Werte Exit 0, ungleiche Exit 1 mit `pinsync-mismatch`. Der Beleg im Gate `image-test` (der keinen
   `pinsync`-Teil hat) gehört zum Selbstlauf von
-  [`slice-288`](../welle-94-pinsync-modul.md#4-slices-in-dieser-welle).
+  [`slice-288`](welle-94-pinsync-modul.md#4-slices-in-dieser-welle).
 ## 7. Closure-Notiz
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
@@ -242,7 +242,7 @@ wurde).
   (jede Randbedingung hat einen Test, Verifikation bestätigt),
   [`module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md) und
   [`erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/observation.md).
-- **Folge-Slices:** [`slice-288`](../welle-94-pinsync-modul.md#4-slices-in-dieser-welle) — liegt in `open/`.
+- **Folge-Slices:** [`slice-288`](welle-94-pinsync-modul.md#4-slices-in-dieser-welle) — liegt in `open/`.
 - **Risiken aus §6:** alle drei entfallen, jedes mit Begründung (siehe §6). Trigger-Audit: kein
   Carveout, kein bootstrap-aware Gate, keine Schwelle gesenkt; keine neue ADR; keine Hard Rule mit
   eingetretenem Trigger.
