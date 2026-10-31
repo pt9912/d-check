@@ -80,9 +80,9 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [`slice-286`](in-progress/slice-286-pinsync-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR für das Modul `pinsync`; Entscheide festschreiben | neue Anforderung des Moduls (Kennung vergibt der Slice), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
-| [`slice-287`](open/slice-287-pinsync-modulkern.md) | Modulkern: Konfiguration lesen, Quellen fangen, Werte vergleichen, Grund-Codes | die Anforderung aus [`slice-286`](in-progress/slice-286-pinsync-anforderung-und-adr.md) |
-| [`slice-288`](open/slice-288-pinsync-eigenes-profil.md) | Eigenes Profil: die zwei Doppel-Pins von `Dockerfile` und `Makefile` im Gate, beidseitig belegt | die Anforderung aus [`slice-286`](in-progress/slice-286-pinsync-anforderung-und-adr.md) |
+| [`slice-286`](done/slice-286-pinsync-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR für das Modul `pinsync`; Entscheide festschreiben | neue Anforderung des Moduls (Kennung vergibt der Slice), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
+| [`slice-287`](open/slice-287-pinsync-modulkern.md) | Modulkern: Konfiguration lesen, Quellen fangen, Werte vergleichen, Grund-Codes | die Anforderung aus [`slice-286`](done/slice-286-pinsync-anforderung-und-adr.md) |
+| [`slice-288`](open/slice-288-pinsync-eigenes-profil.md) | Eigenes Profil: die zwei Doppel-Pins von `Dockerfile` und `Makefile` im Gate, beidseitig belegt | die Anforderung aus [`slice-286`](done/slice-286-pinsync-anforderung-und-adr.md) |
 
 ## 5. Abhängigkeiten
 
@@ -92,12 +92,12 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 - Blockiert: keine Welle.
 - Wird blockiert von: keiner.
 - **Reihenfolge der Slices ist fachlich bindend:** erst
-  [`slice-286`](in-progress/slice-286-pinsync-anforderung-und-adr.md) (die Anforderung und
+  [`slice-286`](done/slice-286-pinsync-anforderung-und-adr.md) (die Anforderung und
   die Entscheide stehen, bevor Code entsteht), dann
   [`slice-287`](open/slice-287-pinsync-modulkern.md), dann
   [`slice-288`](open/slice-288-pinsync-eigenes-profil.md) (braucht das fertige
   Modul im Image). Das WIP-Limit 1 hält sie ohnehin nacheinander.
-- **Entscheide, die [`slice-286`](in-progress/slice-286-pinsync-anforderung-und-adr.md)
+- **Entscheide, die [`slice-286`](done/slice-286-pinsync-anforderung-und-adr.md)
   vor dem Schreiben der Anforderung festschreibt** (das Issue legt sie nicht fest;
   der Slice benennt sie mit Empfehlung, ohne Entscheid beginnt kein Code): Modulname
   und Kürzel (Name im Issue „offen"), Leseweise der Ausdrücke (zeilenweise,
