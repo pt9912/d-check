@@ -96,8 +96,9 @@ Aussagen-Berührung steht hier gar nicht.
 | ADR im Verzeichnis `docs/plan/adr/` (nächste freie Nummer, Titel „pinsync-modul“) | neu | Entscheidung samt Alternativen |
 | `docs/plan/adr/README.md` | update | ADR-Index ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 4) |
 
-**Festzuschreibende Entscheide** (Empfehlung zuerst; der Auftraggeber bestätigt oder
-ändert, bevor die Anforderung entsteht):
+**Festzuschreibende Entscheide** — vom Auftraggeber am 2026-10-31 mit den
+Empfehlungen bestätigt (unverändert 1–9); Punkt 6 hält die Symlink-Regel erst nach dem
+Lesen des Codes fest:
 
 1. **Name und Kürzel:** Modul `pinsync`, Bereichs-Kürzel `PSYNC` (`PIN` und `VER` sind
    belegt: Content-Pin und Versions-Pin-Konsistenz gegen `version.md`).
