@@ -827,6 +827,7 @@ type raw struct {
 	Reviews   *rawReviews   `yaml:"reviews"`
 	Mentions  *rawMentions  `yaml:"mentions"`
 	Metrics   *rawMetrics   `yaml:"metrics"`
+	Pinsync   *rawPinsync   `yaml:"pinsync"`
 	File      []rawFile     `yaml:"file"`
 	// Sources ist eine bare Liste `sources[]` (spec/spezifikation.md §2;
 	// KEIN Map mit scope — das Modul nutzt den globalen Scan-Scope).
@@ -978,6 +979,11 @@ func applyRemainingModules(r *raw, cfg *model.Config) error {
 		return mterr
 	}
 	cfg.Metrics = mt
+	ps, pserr := applyPinsync(r.Pinsync)
+	if pserr != nil {
+		return pserr
+	}
+	cfg.Pinsync = ps
 	fl, flerr := applyFile(r.File)
 	if flerr != nil {
 		return flerr
@@ -2970,4 +2976,40 @@ func sortedNames(m map[string]*int) []string {
 	}
 	sort.Strings(names)
 	return names
+}
+
+// rawPinsync trägt die Pins des Moduls pinsync (DC-FA-PSYNC-001).
+type rawPinsync struct {
+	Pins []rawPinsyncPin `yaml:"pins"`
+}
+
+type rawPinsyncPin struct {
+	Name    string             `yaml:"name"`
+	Sources []rawPinsyncSource `yaml:"sources"`
+}
+
+type rawPinsyncSource struct {
+	File    string `yaml:"file"`
+	Pattern string `yaml:"pattern"`
+}
+
+// applyPinsync liest den pinsync-Block und prüft ihn am Config-Rand (Exit 2):
+// Namen, Quellenzahl, Pfade, Ausdrücke. Die leere Pin-Liste prüft erst der Lauf
+// des aktiven Moduls.
+func applyPinsync(r *rawPinsync) (model.PinsyncConfig, error) {
+	if r == nil {
+		return model.PinsyncConfig{}, nil
+	}
+	var cfg model.PinsyncConfig
+	for _, p := range r.Pins {
+		pin := model.PinsyncPin{Name: p.Name}
+		for _, s := range p.Sources {
+			pin.Sources = append(pin.Sources, model.PinsyncSource{File: s.File, Pattern: s.Pattern})
+		}
+		cfg.Pins = append(cfg.Pins, pin)
+	}
+	if err := cfg.Validate(); err != nil {
+		return model.PinsyncConfig{}, fmt.Errorf("%s: pinsync: %v", FileName, err)
+	}
+	return cfg, nil
 }

@@ -434,7 +434,7 @@ func ensureDiagramsDefinedInExist(fsys driven.Filesystem, cfg model.DiagramsConf
 }
 
 // runNoteModules führt die Module aus, die neben ihren Befunden Hinweise und
-// eine Bezugsmenge für die Zusammenfassung liefern (mentions, metrics) und bei
+// eine Bezugsmenge für die Zusammenfassung liefern (mentions, metrics, pinsync) und bei
 // einem Eingabefehler den Lauf beenden.
 func runNoteModules(fsys driven.Filesystem, vcs driven.VCS, cfg model.Config, active map[string]bool) ([]model.Finding, []string, error) {
 	var out []model.Finding
@@ -454,6 +454,14 @@ func runNoteModules(fsys driven.Filesystem, vcs driven.VCS, cfg model.Config, ac
 		}
 		out = append(out, mr.Findings...)
 		notes = append(notes, mr.Notes()...)
+	}
+	if active["pinsync"] {
+		pr, err := CheckPinsync(fsys, cfg.Pinsync)
+		if err != nil {
+			return nil, nil, err
+		}
+		out = append(out, pr.Findings...)
+		notes = append(notes, pr.Note())
 	}
 	return out, notes, nil
 }

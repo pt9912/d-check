@@ -22,7 +22,7 @@ type ResolveFromGroup struct {
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure", "workflows", "reviews", "mentions", "file", "metrics"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure", "workflows", "reviews", "mentions", "file", "metrics", "pinsync"}
 }
 
 // ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
@@ -89,6 +89,8 @@ type Config struct {
 	Mentions MentionsConfig
 	// Metrics: Parameter des Moduls metrics (DC-FA-MET-001).
 	Metrics MetricsConfig
+	// Pinsync: Parameter des Moduls pinsync (DC-FA-PSYNC-001).
+	Pinsync PinsyncConfig
 	// File: Regeln des Moduls file (DC-FA-FILE-001) — Zeilen-/Byte-
 	// Obergrenzen ganzer Dateien.
 	File []FileRule
@@ -1329,4 +1331,93 @@ type MetricsTable struct {
 	KeyColumn   string
 	ClassColumn string
 	Classes     map[string]int
+}
+
+// PinsyncConfig sind die Pins des Moduls pinsync (DC-FA-PSYNC-001): benannte
+// Werte, die an mehreren Dateistellen gleich sein müssen.
+type PinsyncConfig struct {
+	Pins []PinsyncPin
+}
+
+// PinsyncPin ist ein benannter Wert mit seinen Quellen in
+// Konfigurations-Reihenfolge.
+type PinsyncPin struct {
+	Name    string
+	Sources []PinsyncSource
+}
+
+// PinsyncSource ist eine Quelle: ein literaler, Wurzel-relativer Dateipfad und
+// ein RE2-Ausdruck mit genau einer Fanggruppe.
+type PinsyncSource struct {
+	File    string
+	Pattern string
+}
+
+// SortedPins liefert die Pins aufsteigend nach Name (bytegleich); gleiche
+// Namen behalten ihre Konfigurations-Reihenfolge.
+func (c PinsyncConfig) SortedPins() []PinsyncPin {
+	out := append([]PinsyncPin(nil), c.Pins...)
+	sort.SliceStable(out, func(i, j int) bool { return out[i].Name < out[j].Name })
+	return out
+}
+
+// CompilePinsyncPattern übersetzt den Ausdruck einer Quelle und verlangt genau
+// eine Fanggruppe (benannte zählen, nicht fangende nicht).
+func CompilePinsyncPattern(pattern string) (*regexp.Regexp, error) {
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return nil, fmt.Errorf("ausdruck %q ist kein gültiges RE2: %v", pattern, err)
+	}
+	if n := re.NumSubexp(); n != 1 {
+		return nil, fmt.Errorf("ausdruck %q trägt %d Fanggruppen, verlangt ist genau eine", pattern, n)
+	}
+	return re, nil
+}
+
+// Validate prüft die Pins in Prüf-Reihenfolge (Pins nach Name, Quellen in
+// Konfigurations-Reihenfolge) und liefert den ersten Eingabefehler. Ein
+// abschließender '/' im Pfad ist hier ein Fehler, weil eine Quelle eine Datei
+// ist. Die leere Pin-Liste prüft der Lauf des aktiven Moduls, nicht diese
+// Funktion.
+func (c PinsyncConfig) Validate() error {
+	seen := map[string]bool{}
+	for _, p := range c.SortedPins() {
+		if p.Name == "" {
+			return fmt.Errorf("ein Pin trägt keinen Namen")
+		}
+		if seen[p.Name] {
+			return fmt.Errorf("pin %q: der Name kommt mehrfach vor", p.Name)
+		}
+		seen[p.Name] = true
+		if err := p.validate(); err != nil {
+			return fmt.Errorf("pin %q: %v", p.Name, err)
+		}
+	}
+	return nil
+}
+
+func (p PinsyncPin) validate() error {
+	if len(p.Sources) < 2 {
+		return fmt.Errorf("%d Quelle(n), verlangt sind mindestens zwei", len(p.Sources))
+	}
+	combos := map[PinsyncSource]bool{}
+	for i, s := range p.Sources {
+		if s.File == "" || s.Pattern == "" {
+			return fmt.Errorf("quelle %d: file und pattern sind Pflicht", i+1)
+		}
+		if err := ValidLiteralPath(s.File); err != nil {
+			return fmt.Errorf("quelle %d: %v", i+1, err)
+		}
+		if strings.HasSuffix(s.File, "/") {
+			return fmt.Errorf("quelle %d: pfad %q endet auf '/', eine quelle ist eine datei", i+1, s.File)
+		}
+		if _, err := CompilePinsyncPattern(s.Pattern); err != nil {
+			return fmt.Errorf("quelle %d (%s): %v", i+1, s.File, err)
+		}
+		if combos[s] {
+			return fmt.Errorf("quelle %d: %s mit demselben ausdruck steht schon im pin (eine stelle gegen sich selbst)", i+1, s.File)
+		}
+		combos[s] = true
+	}
+	return nil
 }

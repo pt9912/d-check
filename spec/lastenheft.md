@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.111.0
+**Version:** 0.111.1
 
 **Status:** Draft
 
@@ -110,7 +110,7 @@ verweist für das Konfigurations-Format auf
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
 `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`, `reviews`, `mentions`, `file`, `metrics`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
+`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`, `reviews`, `mentions`, `file`, `metrics`, `pinsync`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -4457,7 +4457,7 @@ Dateien.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`, `reviews`, `mentions`, `file`, `metrics`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`, `reviews`, `mentions`, `file`, `metrics`, `pinsync`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -4471,6 +4471,7 @@ Dateien.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.111.1 | 2026-10-31 | Registrierung des Moduls `pinsync` (Nachzug zu 0.111.0, keine Verhaltensänderung der Anforderung): der Modulsatz in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) und das Glossar nennen `pinsync`, sobald es registriert ist | — |
 | 0.111.0 | 2026-10-31 | Neue Anforderung [`DC-FA-PSYNC-001`](#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in) — **Gleichheit eines Wertes an mehreren Stellen** (Modul `pinsync`, opt-in) samt neuem Bereichskürzel `PSYNC` in §3: pro benanntem Pin mindestens zwei Quellen (Datei und regulärer Ausdruck mit genau einer Fanggruppe), gelesen zeilenweise; Befund bei ungleichen Werten, bei keinem und bei mehr als einem Treffer. Ein Pin mit nur einer Quelle, ein Ausdruck ohne genau eine Fanggruppe, eine fehlende Quelle und ein Symlink als Quelle sind Eingabefehler (Exit 2). Kein Schalter `strip-prefix`, keine Aktualitätsprüfung, kein Netz. Die Quelldateien liegen außerhalb der Scan-Menge; die Grenze steht in der Anforderung. Die Modul-Aufzählung in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) und das Glossar nennen `pinsync` erst, wenn das Modul registriert ist. Begründung in begleitender ADR | GitHub-Issue 14 |
 | 0.110.3 | 2026-10-30 | [`DC-FA-MET-001`](#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in): die Tabellenzählung ist umgesetzt; die Abweichungen der Leseweise vom Programm des Anlass-Repos sind vollständig benannt — ein Strich im Code-Span gehört zur Zelle (dort ein Fehler), Kopf und Datenzeilen beginnen an Spalte 0, Tabellen in Zitat, Liste oder HTML-Kommentar werden nicht gelesen | — |
 | 0.110.2 | 2026-10-30 | [`DC-FA-MET-001`](#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in): die Zeilen-Summe ist am Fixture belegt (Randformen und Summe aus `git diff --numstat --no-renames`); die Zusage nennt jetzt ihre Grenzen — Diff-Heuristik der Bibliothek bei verschobenen Blöcken, `.gitattributes` und `core.bigFileThreshold` nicht ausgewertet, Submodul trägt 0 bei, Dateinamen mit Glob-Zeichen nicht angebbar, mehrdeutiger Kurz-Hash, flacher Klon ohne Basis ⇒ Exit 2 | — |

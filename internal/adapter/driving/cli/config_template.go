@@ -18,7 +18,7 @@ scan:
   # ignore: ["pfad/**"]   # Glob, relativ zur Wurzel (prunt den Abstieg)
 
 modules: [links, anchors]
-# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, citations, structure, workflows, reviews, mentions, file, metrics, external, sources
+# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, citations, structure, workflows, reviews, mentions, file, metrics, pinsync, external, sources
 # (external und sources sind die einzigen Netzwerk-Türen — beide strikt opt-in
 #  (external prüft http(s)-Erreichbarkeit, sources Upstream-Content-Drift); vcs und commits sind
 #  git-basiert und brauchen .git + eine Commit-Range — strikt opt-in; tracked ist
@@ -292,6 +292,17 @@ modules: [links, anchors]
 #     class-column: "Klasse"                     # Klassenspalte
 #     classes: {a: 85, b: 80}                    # zulässige Klassen mit Faktor je Zeile
 #   excluded: []                                 # literale Pfade, die die Messung immer ausnimmt (kein Glob)
+
+# --- pinsync: ein Wert an mehreren Stellen gleich — opt-in ---
+#   (Aufruf über --enable pinsync. NICHT in modules: oben. Jede Quelle ist eine ausdrücklich
+#    benannte Datei, nicht auf scan.roots beschränkt; ein Symlink als Quelle ist Exit 2.
+#    Gelesen wird zeilenweise; der Ausdruck trägt genau eine Fanggruppe, ein führendes v steuert er selbst.)
+# pinsync:
+#   pins:                                        # Pflicht, sobald das Modul aktiv ist
+#     - name: go-version                         # eindeutig über alle Pins
+#       sources:                                 # mindestens zwei
+#         - {file: Dockerfile, pattern: '^ARG GO_VERSION=v?(\S+)'}
+#         - {file: Makefile, pattern: '^GO_VERSION\s*[:?]?=\s*v?(\S+)'}
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---
 # external:

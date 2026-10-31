@@ -50,6 +50,9 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-MENT-001`](../../spec/lastenheft.md) | `TestDecode_MentionsUnbekannterMatch` | [`internal/adapter/driven/configyaml/mentions_test.go`](../../internal/adapter/driven/configyaml/mentions_test.go) |
 | [`DC-FA-CONF-001`](../../spec/lastenheft.md), [`DC-FA-MENT-001`](../../spec/lastenheft.md) | `TestDecode_MentionsVollblock` | [`internal/adapter/driven/configyaml/mentions_test.go`](../../internal/adapter/driven/configyaml/mentions_test.go) |
 | [`DC-FA-CONF-001`](../../spec/lastenheft.md), [`DC-FA-MET-001`](../../spec/lastenheft.md) | `TestDecode_MetricsVollblock` | [`internal/adapter/driven/configyaml/metrics_test.go`](../../internal/adapter/driven/configyaml/metrics_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestDecode_PinsyncEingabefehler` | [`internal/adapter/driven/configyaml/pinsync_test.go`](../../internal/adapter/driven/configyaml/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestDecode_PinsyncOhneBlockUndLeerePinListe` | [`internal/adapter/driven/configyaml/pinsync_test.go`](../../internal/adapter/driven/configyaml/pinsync_test.go) |
+| [`DC-FA-CONF-001`](../../spec/lastenheft.md), [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestDecode_PinsyncVollblock` | [`internal/adapter/driven/configyaml/pinsync_test.go`](../../internal/adapter/driven/configyaml/pinsync_test.go) |
 | [`DC-FA-XREF-001`](../../spec/lastenheft.md) | `TestDecode_CrossConsistencyFehler` | [`internal/adapter/driven/configyaml/trace_cross_test.go`](../../internal/adapter/driven/configyaml/trace_cross_test.go) |
 | [`DC-FA-XREF-001`](../../spec/lastenheft.md) | `TestDecode_CrossConsistencyHappy` | [`internal/adapter/driven/configyaml/trace_cross_test.go`](../../internal/adapter/driven/configyaml/trace_cross_test.go) |
 | [`DC-QA-02`](../../spec/lastenheft.md) | `TestDecode_CrossConsistencyOhneBlock` | [`internal/adapter/driven/configyaml/trace_cross_test.go`](../../internal/adapter/driven/configyaml/trace_cross_test.go) |
@@ -302,6 +305,29 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-CONF-002`](../../spec/lastenheft.md), [`DC-FA-PIN-001`](../../spec/lastenheft.md) | `TestPinsScope` | [`internal/hexagon/core/rules/pins_test.go`](../../internal/hexagon/core/rules/pins_test.go) |
 | [`DC-FA-PIN-001`](../../spec/lastenheft.md) | `TestPinsStale` | [`internal/hexagon/core/rules/pins_test.go`](../../internal/hexagon/core/rules/pins_test.go) |
 | [`DC-FA-PIN-001`](../../spec/lastenheft.md) | `TestPinsZielWeg` | [`internal/hexagon/core/rules/pins_test.go`](../../internal/hexagon/core/rules/pins_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncAktivOhnePinIstExitZwei` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncBezugIstErsteQuelleMitGenauEinemTreffer` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncBlockBeiInaktivemModulIstInert` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncDreiQuellenMehrereAbweichungen` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncEingabefehlerBeimLesen` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncEingabefehlerDerKonfiguration` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncFehlerReihenfolge` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncGenauEineFanggruppeAkzeptiert` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncGleicheDateiAnderesPatternIstErlaubt` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncGleicherWertKeinBefund` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncKeinTrefferLeereGruppeLeereDatei` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncKommentarUndFromZeileSindTreffer` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncLaeufeSindGleich` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncLesefehlerIstEingabefehler` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncMehrdeutigUndMehrfachVorkommenInEinerZeile` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncMismatchNenntBeideWerteUndDateien` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncNoteNenntDieBezugsmenge` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncQuellenAusserhalbDerScanMenge` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-QA-02`](../../spec/lastenheft.md) | `TestPinsyncReihenfolgeDeterminismus` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncVPraefixAusserhalbUndInnerhalbDerGruppe` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncWenigerAlsZweiGenauEinTreffer` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncZeilenRandformen` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
+| [`DC-FA-PSYNC-001`](../../spec/lastenheft.md) | `TestPinsyncZweiAusdruckeDerselbenDateiAufDerselbenZeile` | [`internal/hexagon/core/rules/pinsync_test.go`](../../internal/hexagon/core/rules/pinsync_test.go) |
 | [`DC-QA-02`](../../spec/lastenheft.md) | `TestClosureDeterministischeReihenfolge` | [`internal/hexagon/core/rules/planning_closure_test.go`](../../internal/hexagon/core/rules/planning_closure_test.go) |
 | [`DC-QA-02`](../../spec/lastenheft.md) | `TestClosureInertOhneDir` | [`internal/hexagon/core/rules/planning_closure_test.go`](../../internal/hexagon/core/rules/planning_closure_test.go) |
 | [`DC-FA-PLAN-001`](../../spec/lastenheft.md) | `TestPlanningBlockEndetAnGeteilterAbschnittsgrenze` | [`internal/hexagon/core/rules/planning_test.go`](../../internal/hexagon/core/rules/planning_test.go) |
