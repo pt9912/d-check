@@ -65,27 +65,27 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] Die Konfiguration des Moduls wird gelesen und am Rand geprüft: jeder
+- [x] Die Konfiguration des Moduls wird gelesen und am Rand geprüft: jeder
       Eingabefehler der Anforderung (fehlende oder unlesbare Datei, ungültiger
       Ausdruck, Anzahl der Fanggruppen, Pin mit weniger als zwei Quellen, doppelter
       Pin-Name, Pfad mit `..`/absolut/Glob, unbekannter Schlüssel) endet mit Exit 2 und
       hat einen Test; `--print-config` und die Vorlage tragen den Block.
-- [ ] Die Prüfung fängt je Quelle den Wert zeilenweise und meldet die drei Befund-Klassen
+- [x] Die Prüfung fängt je Quelle den Wert zeilenweise und meldet die drei Befund-Klassen
       mit den Grund-Codes der Spezifikation in der festgelegten Reihenfolge; jede
       Randbedingung der Anforderung hat einen Test, **mit** den Negativfällen aus
       `slice-286` §3.
-- [ ] Das Modul ist registriert (Modulliste, `--enable`, Spiegel-Deckungstests,
+- [x] Das Modul ist registriert (Modulliste, `--enable`, Spiegel-Deckungstests,
       `gate-consistency`-Test) und im Benutzerhandbuch beschrieben, mit dem
       `v?`-Muster als Beispiel.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Doku-Update für die Modul-Aufzählungen, soweit ein öffentlicher Vertrag berührt ist.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure.
+- [x] Doku-Update für die Modul-Aufzählungen, soweit ein öffentlicher Vertrag berührt ist.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure.
 
 ## 3. Plan (vor Code)
 
@@ -190,16 +190,17 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 dasteht.
 
 - Das Lesen der Quelldateien läuft im Kern am Dateisystem vorbei am Port (§3.8, Hexagon) —
-  **Ausgang:** *entfallen*, wenn der Kern die Datei über den vorhandenen Lese-Port bekommt
-  (so liest `targets` seine Makefiles); *eingetreten* (neuer Port ⇒ Rückführung nach
-  `next`), wenn dieser Port die Quelle nicht liefert.
-- Ein Ausdruck mit Rückwärts-Verweis oder Lookaround ist in RE2 ungültig — **Ausgang:**
-  *entfallen*, die Anforderung macht ihn zum Eingabefehler (Exit 2), der Test belegt die
-  Meldung.
-- Die Zusage „kein Schreiben“ unter `:ro` — **Ausgang:** *entfallen* mit Beleg aus dem
-  `image-test`-Lauf unter `:ro` in `slice-288`;
-  der Kern selbst öffnet nur lesend.
-
+  **Ausgang:** entfallen: der Kern liest über den vorhandenen Port (`Kind` je Pfad-Präfix, `ReadFile`),
+  es kam kein neuer Port dazu; der Verifier hat die Verdrahtung gegen den Quelltext gezählt.
+- Ein Ausdruck mit Rückwärts-Verweis oder Lookaround ist in RE2 ungültig — **Ausgang:** entfallen:
+  die Anforderung macht ihn zum Eingabefehler (Exit 2); `TestPinsyncEingabefehlerDerKonfiguration`
+  prüft Rückwärts-Verweis und Lookahead mit der Meldung, die Verifikation hat den Test gebrochen und rot gesehen.
+- Die Zusage „kein Schreiben“ unter `:ro` — **Ausgang:** entfallen: der Kern ruft nur `Kind` und
+  `ReadFile` auf (kein exec, kein Netz, Quelltext); der Betrieb ist belegt durch einen Lauf des
+  gebauten Images mit `--network none`, `:ro`-Mount und fremdem Benutzer (4242:4242): gleiche
+  Werte Exit 0, ungleiche Exit 1 mit `pinsync-mismatch`. Der Beleg im Gate `image-test` (der keinen
+  `pinsync`-Teil hat) gehört zum Selbstlauf von
+  [`slice-288`](../welle-94-pinsync-modul.md#4-slices-in-dieser-welle).
 ## 7. Closure-Notiz
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
@@ -208,7 +209,45 @@ formulieren) · `grundlagen-traceability.md` §Herkunfts-Anker für Steering-Loo
 (das Feld `liegt in` steht **nur**, wenn mit diesem Slice wirklich etwas verkörpert
 wurde).
 
-Entsteht bei der Closure.
+- **Geliefert:** das Modul `pinsync` end-to-end — Konfigurationsblock mit Prüfung am Rand (Exit 2),
+  zeilenweises Fangen je Quelle, Vergleich gegen die erste Quelle mit genau einem Treffer, die drei
+  Grund-Codes (Zeilen in §4 der Spezifikation), Registrierung in allen Aufzählungen
+  ([`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl), Glossar, READMEs, Handbuch-Tabelle, `operations.md`, `--print-config`) und der
+  Handbuch-Abschnitt 4.27 mit dem `v?`-Muster. Lastenheft 0.111.1, ADR unverändert.
+- **Was funktioniert hat:** Das Vorbild `metrics` (Commit mit Kern, Config, Registrierung) lieferte die
+  Liste der Spiegel vorab; die Aufzählungs-Suche über ein Bestandsmodul stand im Plan-Nachtrag, und
+  Reviewer und Verifier zählten sie unabhängig nach. Die Brech-Tests des Verifiers (über 30
+  Mutationen) zeigten, welche Teilfälle trennscharf sind — der CRLF-Teilfall war es zuerst nicht.
+- **Was anders lief als geplant:** (1) Der abschließende Schrägstrich wird für dieses Modul am
+  Konfigurations-Rand abgewiesen, `ValidLiteralPath` blieb unverändert (`metrics` darf Verzeichnisse
+  nennen). (2) Ein ungültiger `pinsync`-Block ist auch ohne aktives Modul Exit 2 (wie `metrics`); die
+  Spezifikation nennt es jetzt, das Lastenheft nicht. (3) Der Review
+  ([Report](../../../reviews/2026-10-31-slice-287-code-r1.md): 1 LOW, 7 INFO) fand die Grenze „zwei
+  gleichwertige Ausdrücke derselben Datei“, die schon als INFO im Review von `slice-286` stand und
+  dort nicht aufgenommen wurde — sie steht jetzt im Handbuch und in den Grenzen der Spezifikation.
+  (4) Der Fix beschränkte sich auf die Befunde (Dokumentation, Test-Trennschärfe, ein
+  `--doctor`-Text, zwei Tests); eine zweite Review-Runde war nicht nötig. Die Verifikation
+  ([Report](../../../reviews/2026-10-31-slice-287-verifikation.md)) fand keine DoD-Verletzung; ihr
+  Vermerk V-2 (kein Test für den unbekannten Schlüssel) trifft nicht zu — `TestDecode_PinsyncEingabefehler`
+  führt `extra` und `flag`.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle; gezählt, nicht verkörpert. Benannte Grenze
+  (Spezifikation und Handbuch, nicht im Lastenheft): eine FIFO, Gerätedatei oder ein Socket als
+  Quelle lässt den Lauf beim Lesen hängen, statt mit Exit 2 zu enden.
+- **Beobachtungs-Register (`../observations/`):** kein neuer Beleg. Zitiert:
+  [`modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
+  (die Spiegeltests haben das neue Modul gefangen: rot gemessen, dann grün),
+  [`gemeinsame-leser-sind-zwei-familien`](../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md)
+  (der Zeilen-Leser des Moduls folgt dem Verfahren, kein dritter Beleg laut Review F-7),
+  [`spec-randbedingung-ohne-test`](../observations/BEO-ALL/spec-randbedingung-ohne-test/observation.md)
+  (jede Randbedingung hat einen Test, Verifikation bestätigt),
+  [`module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md) und
+  [`erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/observation.md).
+- **Folge-Slices:** [`slice-288`](../welle-94-pinsync-modul.md#4-slices-in-dieser-welle) — liegt in `open/`.
+- **Risiken aus §6:** alle drei entfallen, jedes mit Begründung (siehe §6). Trigger-Audit: kein
+  Carveout, kein bootstrap-aware Gate, keine Schwelle gesenkt; keine neue ADR; keine Hard Rule mit
+  eingetretenem Trigger.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — `slice-288` liegt in `open/`;
+  (c) Register — die zitierten Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
