@@ -102,6 +102,8 @@ Aussagen-Berührung steht hier gar nicht.
 | `internal/hexagon/core/rules/run.go` | update | Modul im Lauf verdrahten |
 | `internal/adapter/driving/cli/` (Vorlage, `--enable`) | update | `--print-config`, Modulliste |
 | `docs/user/benutzerhandbuch.md`, `docs/user/operations.md` | update | Abschnitt des Moduls, Modul-Aufzählungen |
+| `spec/spezifikation.md` §4 | update | drei neue Zeilen (`pinsync-mismatch`, `pinsync-no-match`, `pinsync-ambiguous`) kommen **mit** dem Code, weil der Lockstep-Test die Tabelle gegen `AllReasons()` hält (in `slice-286` am ersten Lauf rot gemessen) |
+| `spec/lastenheft.md` (Modul-Aufzählung der Regelmodul-Auswahl, Glossar) | update | nennt `pinsync` erst, wenn das Modul registriert ist (Vermerk in der Historie-Zeile der Anforderung); Version und Historie nach der Änderungsregel für das Lastenheft |
 | Testdateien neben den genannten Dateien | neu / update | Happy/Boundary/Negative je Randbedingung der Anforderung; Spiegel-Deckung; `gate-consistency` |
 
 Der Implementer erweitert die Liste im ersten Lauf, einschließlich einer Zeile je Testdatei

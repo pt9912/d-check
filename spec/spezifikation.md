@@ -3500,6 +3500,70 @@ reine Arithmetik über dem Plan-Text; nur Prüfung 3 und der Zustand „Messung 
 Messgrößen als die Zeilen-Summe; mehrere Tabellen; das Schreiben von Block oder Marke; die
 Erkennung einer Prosa-Form statt des Blocks; Pläne außerhalb von `plans-dir`.
 
+### DC-FA-PSYNC-001.a — Gleichheit eines Wertes an mehreren Stellen (`pinsync`)
+
+Verfeinert [`DC-FA-PSYNC-001`](lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in).
+Das Modul ist **opt-in** (`--enable pinsync`) und **hermetisch**: es liest Dateien über den
+Filesystem-Port, ohne git, ohne Netz, ohne ein Programm auszuführen und ohne zu schreiben.
+
+1. **Config.** **Exit 2** vor dem Lauf, wenn das Modul aktiv ist und `pinsync.pins` leer ist;
+   bei einem Pin ohne Namen oder mit einem Namen, den ein anderer Pin schon trägt; bei einem
+   Pin mit weniger als zwei Quellen; bei einer Quelle ohne `file` oder ohne `pattern`; bei einem
+   `file`, das leer ist, mit `/` beginnt, ein leeres, `.`- oder `..`-Segment hat oder ein Glob-
+   oder Steuerzeichen trägt (dieselbe Pfad-Prüfung wie `metrics.excluded`); bei zwei Quellen
+   eines Pins mit gleichem `file` **und** gleichem `pattern`; bei einem `pattern`, das RE2 nicht
+   übersetzt, oder das nicht genau eine Fanggruppe trägt (die Zahl der Fanggruppen ist die der
+   Klammerpaare, die fangen — benannte zählen, nicht fangende `(?:…)` nicht). Ohne Block bleibt
+   die Konfiguration leer.
+2. **Reihenfolge der Prüfung.** Pins nach Namen (bytegleich aufsteigend), Quellen eines Pins in
+   der Reihenfolge der Konfiguration. Die Config-Prüfung (Schritt 1) läuft für **alle** Pins vor
+   dem ersten Lesen einer Quelle.
+3. **Quelle lesen.** Jedes Segment des Pfades (von der Scan-Wurzel aus, Segment für Segment) wird
+   mit `Kind` geprüft: fehlt eines (auch ein Datei-Segment mitten im Pfad, das `Kind` als Fehler meldet), ist das letzte ein Verzeichnis oder ist eines ein Symlink ⇒
+   **Exit 2**. Die Datei wird dann als Ganzes gelesen; ein Lesefehler ist **Exit 2**. Die Quelle
+   unterliegt weder `scan.roots` noch `scan.ignore` noch der Skip-Liste und braucht keine
+   Markdown-Endung. Eine Kodierung wird nicht geprüft; ungültige UTF-8-Folgen werden vom
+   Ausdruck wie jedes andere Byte behandelt.
+4. **Zeilen.** Der Inhalt wird am Zeilenumbruch `\n` geteilt; ein einzelnes `\r` am Ende einer
+   Zeile wird abgeschnitten; ein Inhalt, der mit `\n` endet, hat keine leere Schlusszeile. Die
+   Zeilennummern zählen ab 1.
+5. **Treffer.** Der Ausdruck läuft gegen jede Zeile einzeln, **nicht verankert**, soweit er sich
+   nicht selbst verankert. Es zählt die **erste** Passung der Zeile (die am weitesten links
+   beginnende); weitere Vorkommen in derselben Zeile bleiben unbeachtet. Die Zeile **trifft**,
+   wenn diese Passung eine nicht leere Fanggruppe hat (eine nicht beteiligte Gruppe gilt als
+   leer; passt der Ausdruck nur mit leerer Gruppe, trifft die Zeile nicht). Der Wert der Zeile
+   ist der Text der Gruppe.
+6. **Ergebnis je Quelle.** Keine treffende Zeile ⇒ Befund `pinsync-no-match` (Zeile 1). Mehr als
+   eine ⇒ Befund `pinsync-ambiguous` (Zeile der ersten treffenden; die Meldung nennt alle
+   Zeilennummern). Genau eine ⇒ die Quelle hat einen Wert und eine Zeile.
+7. **Vergleich.** Über die Quellen eines Pins mit genau einem Treffer, byte-genau. Der Wert der
+   **ersten** solchen Quelle in Konfigurations-Reihenfolge ist der Bezug; jede weitere Quelle mit
+   abweichendem Wert ⇒ Befund `pinsync-mismatch` an ihrer Zeile. Die Meldung nennt den Pin und
+   alle Quellen des Pins mit ihrem Wert (`<file>=<wert>`, bei einer Quelle ohne genau einen Treffer
+   `<file>=?`). Hat ein Pin weniger als zwei Quellen mit genau einem Treffer, entfällt der
+   Vergleich — es gibt dann keine Quelle, deren Wert ungleich sein könnte; der Befund der
+   anderen Quelle steht.
+8. **Befund.** `file` = der Pfad der Quelle, `line` wie in Schritt 6 und 7, `target` = der
+   Pin-Name. Befunde zählen für Exit 1. Das Modul liefert sie in der Reihenfolge der Schritte 2
+   und 6 bis 7; die Ausgabe sortiert wie bei jedem Modul.
+9. **Bezugsmenge in der Zusammenfassung.** Der Lauf trägt eine Zeile bei:
+   `pinsync: <P> Pin(s) geprüft, <S> Quelle(n) gelesen`, mit `P` der Zahl der Pins und `S`
+   der Zahl der gelesenen Quellen. Sie erscheint im Default-Modus auf stderr und unter
+   `--json`/`--yaml` in `summary.notes`.
+10. **Eingabefehler.** Der Lauf bricht beim ersten Eingabefehler ab: Exit 2, ein Klartext mit
+    Pin, Quelle und Ursache auf stderr, **kein** Befund — auch die Befunde aller anderen Module
+    entfallen, denn der Lauf liefert nur den Fehler. Ursachen: Schritt 1 und Schritt 3.
+
+**Nicht Gegenstand:** ein mehrzeiliger Ausdruck oder Wert; eine Normalisierung der Werte
+(Präfix, Groß-/Kleinschreibung, Versions-Semantik); die Aktualität eines Wertes; das Schreiben
+einer Quelle; eine Quelle ohne Datei.
+
+**Grenzen, am Gegenstand gelesen.** Das Modul `targets` liest eine wörtlich eingetragene Datei
+über `ReadFile` und folgt einem Symlink dabei still; `pinsync` übernimmt das nicht, weil die
+Datei sonst eine Stelle außerhalb des Repos sein dürfte, die kein Scan sieht. Die Pfad-Prüfung
+ist die von `metrics.excluded` (`ValidLiteralPath`). `Kind` unterscheidet Symlink, Verzeichnis,
+Datei und fehlend und prüft mit `Lstat`.
+
 ---
 
 
@@ -3819,6 +3883,11 @@ Exit 2 ohne Prüfung
 | `metrics.rounding` | ganze Zahl ≥ 1 | leer | Einheit, auf deren Vielfaches die Obergrenze aufgerundet wird. **Pflicht.** |
 | `metrics.cut-threshold` | ganze Zahl ≥ 0 | leer (aus) | Schwelle für `numerator · Schätzung`; darüber ist das Feld `cut-reason` Pflicht. Leer: keine Schwellenregel. |
 | `metrics.excluded` | string[] | leer | Pfade (literal), die die Messung immer ausnimmt, auch wenn ein Pfad des Blocks sie enthält. |
+| `pinsync.pins` | Liste von Pins | leer (aus) | Die zu vergleichenden Werte. **Pflicht**, sobald das Modul aktiv ist (leer ⇒ Exit 2). |
+| `pinsync.pins[].name` | string | leer | Name des Pins; nicht leer, eindeutig über alle Pins. Er steht als `target` im Befund. |
+| `pinsync.pins[].sources` | Liste | leer | Quellen des Pins; **mindestens zwei** (sonst Exit 2). Die Reihenfolge ist die der Befunde und bestimmt den Bezug des Vergleichs. |
+| `pinsync.pins[].sources[].file` | string | leer | Pfad der Quelle, relativ zur Scan-Wurzel; literal (kein Glob, kein `..`, nicht absolut). Nicht auf `scan.roots` beschränkt. Kein Symlink, auch nicht in einem Verzeichnis-Segment (Exit 2). |
+| `pinsync.pins[].sources[].pattern` | string | leer | RE2-Ausdruck mit **genau einer** Fanggruppe; läuft je Zeile. Zwei Quellen eines Pins dürfen nicht dasselbe `file` **und** dasselbe `pattern` tragen. |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien **oder Glob-Muster** (Eintrag mit `*`/`?`/`[`, `matchGlob`, `**` erlaubt), aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Richtungen 1 und 2 inert (Schritt 5a läuft unabhängig); eine fehlende/unlesbare Datei, ein Glob ohne Treffer oder ein ungültiges Glob ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
@@ -4021,6 +4090,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-10-31 | §[`DC-FA-PSYNC-001.a`](spezifikation.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync) neu: Verfahren des opt-in-Moduls `pinsync` (Config-Prüfung vor dem Lauf, Segment-Prüfung auf Symlinks, zeilenweises Lesen, Treffer mit nicht leerer Fanggruppe, Vergleich gegen die erste Quelle mit genau einem Treffer, Bezugsmenge), das Schema `pinsync.*` in §2 und die Grund-Codes `pinsync-mismatch`, `pinsync-no-match` und `pinsync-ambiguous` im Verfahren. Das Schema gilt für das fertige Modul; die Codes stehen in der Tabelle von §4, sobald das Modul sie liefert |
 | 2026-10-30 | §[`DC-FA-MET-001.a`](spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics) Schritte 5 bis 8: die Tabelle des Plans, die Schätzung aus Klassenfaktor mal Zeilen und Feldfaktor mal Feld, Prüfung 2 (`metrics-estimate-mismatch`, `SPEC-108`) und der Hinweis „Marke ausstehend“ mit den berechneten Zahlen sind umgesetzt; ein Tabellenende ohne Anfangsstrich-Zeile gilt, wenn der Kopf einen Anfangsstrich trägt; Config-Schlüssel `metrics.estimate-inputs` und `metrics.table.*` sind Pflicht-/Wertebereichs-geprüft |
 | 2026-10-30 | §[`DC-FA-MET-001.a`](spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics) Schritt 9: die Messung ist umgesetzt (Grund-Code `metrics-over-limit`, `SPEC-107`); die Binär-Erkennung folgt der Datei-Prüfung von git (NUL in den ersten 8000 Bytes auf einer Seite), ein Submodul trägt 0 bei, ein Pfad mit leerem oder `.`-Segment ist ein Config- bzw. Eingabefehler; die CLI verlangt `.git`, sobald das Modul aktiv ist |
 | 2026-10-30 | §[`DC-FA-MET-001.a`](spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics): die Grund-Codes `metrics-limit-mismatch`, `metrics-reason-empty` und `metrics-cut-reason-missing` stehen jetzt in der Tabelle von §4 (`SPEC-104` bis `SPEC-106`); ein Plan als Symlink ist ein Eingabefehler (Schritte 2 und 12). Das Schema `metrics.*` in §2 gilt für das fertige Modul: die Schlüssel `estimate-inputs`, `table.*` und `excluded` kommen mit der Umsetzung der Messung und der Tabelle |

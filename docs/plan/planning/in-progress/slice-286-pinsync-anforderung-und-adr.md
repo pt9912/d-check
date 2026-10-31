@@ -63,15 +63,15 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] Die Anforderung steht im Lastenheft (Bereichs-Kürzel in der Liste ergänzt,
+- [x] Die Anforderung steht im Lastenheft (Bereichs-Kürzel in der Liste ergänzt,
       Version gehoben, Historie-Zeile nach
       [`MR-032`](../../../../harness/conventions.md#mr-032)) mit Akzeptanzkriterien
       je Befund-Klasse, den Rändern mit Exit 2 und ihrem Out-of-Scope.
-- [ ] Die Spezifikation führt das Verfahren (Leseweise der Ausdrücke, Zählregel, Reihenfolge der
+- [x] Die Spezifikation führt das Verfahren (Leseweise der Ausdrücke, Zählregel, Reihenfolge der
       Befunde), das Konfigurations-Schema und die Grund-Codes; jede Aussage über die Grenzen
       (Eingaben außerhalb der Scan-Menge, [`AGENTS.md`](../../../../AGENTS.md) §3.8) ist
       am Gegenstand gezählt oder gemessen, nicht aus der Beschreibung übernommen.
-- [ ] Die ADR (Entscheide samt verglichenen Alternativen) ist `Accepted`, im
+- [x] Die ADR (Entscheide samt verglichenen Alternativen) ist `Accepted`, im
       [ADR-Index](../../adr/README.md) geführt und trägt `## Re-Evaluierungs-Trigger`.
 - [ ] `make gates` grün.
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
@@ -95,6 +95,7 @@ Aussagen-Berührung steht hier gar nicht.
 | `spec/spezifikation.md` | update | Verfahren, Konfigurations-Schema, Grund-Codes |
 | ADR im Verzeichnis `docs/plan/adr/` (nächste freie Nummer, Titel „pinsync-modul“) | neu | Entscheidung samt Alternativen |
 | `docs/plan/adr/README.md` | update | ADR-Index ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 4) |
+| `docs/plan/planning/open/slice-287-pinsync-modulkern.md` | update | zwei Plan-Zeilen: die Zeilen der Grund-Code-Tabelle und die Modul-Aufzählung des Lastenhefts kommen mit dem Code |
 
 **Festzuschreibende Entscheide** — vom Auftraggeber am 2026-10-31 mit den
 Empfehlungen bestätigt (unverändert 1–9); Punkt 6 hält die Symlink-Regel erst nach dem
@@ -133,6 +134,55 @@ Plan-Nachtrag (`grep -cE '<ausdruck>' Dockerfile Makefile`, erwartet je 1) und d
 Negativfälle (Kommentarzeile mit demselben Text, Wert in einem `FROM`, zwei Zeilen mit
 Treffer, `v`-Präfix, CRLF) stehen als Testfälle für
 `slice-287`.
+
+**Plan-Nachtrag (2026-10-31, beim Schreiben; die Entscheide 1–9 gelten, drei Schärfungen
+und eine Abweichung stehen offen im Plan, nicht erst im Bericht):**
+
+- **Punkt 6, Symlink — Abweichung von der Empfehlung, die der Plan an das Lesen des Codes
+  band.** `targets` liest eine wörtlich eingetragene Datei über `ReadFile`
+  (`internal/hexagon/core/rules/targets.go`, `os.ReadFile` im Adapter) und folgt einem Symlink
+  dabei still; nur der **Glob**-Treffer auf einen Symlink ist dort fail-closed. Die
+  Empfehlung „wie `targets`“ hätte das §3.8-Risiko aus §6 eintreten lassen. Gewählt ist die
+  Haltung von `metrics` für einen Plan: **Symlink ⇒ Exit 2**, geprüft an jedem Segment des
+  Pfades mit `Kind` (`Lstat`). Die Anforderung, die Spezifikation und die ADR führen das.
+- **Punkt 4, Schärfung:** eine Zeile trifft nur, wenn die Gruppe **nicht leer** fängt; so ist
+  die Zählregel („Zeilen mit Treffer“) ohne Sonderfall.
+- **Punkt 5, Schärfung:** zwei Quellen eines Pins mit gleichem Pfad **und** gleichem Ausdruck
+  sind Exit 2 (eine Stelle gegen sich selbst wäre ein stilles Grün). Ebenso: Modul aktiv ohne
+  Pin ⇒ Exit 2.
+- **Punkt 8, Schärfung:** bei ungleichen Werten meldet das Modul jede Quelle, die vom Wert der
+  **ersten** Quelle mit genau einem Treffer abweicht; dazu die Bezugsmenge-Zeile (`P` Pins,
+  `S` Quellen), weil ein Gate ohne seine Bezugsmenge mehr behauptet, als es prüft.
+- **Punkt 9, Grund-Codes — Tabelle erst mit dem Code.** Der Test
+  `TestAllReasonsDeckungGegenSpezifikationGrundCodes` hält die Tabelle in §4 der
+  Spezifikation gegen `AllReasons()`; drei Zeilen vor dem Code sind rot (am ersten Lauf
+  gemessen). Die Codes stehen deshalb im **Verfahren** der Spezifikation, die drei Zeilen
+  in der Tabelle legt `slice-287` mit dem Code an — wie bei
+  `metrics`. Die DoD-Aussage „führt die Grund-Codes“ ist damit durch das Verfahren
+  getragen; die Tabelle ist Lieferung von `slice-287`.
+- **Gegenprobe am eigenen Bestand** (Ausdrücke in der Form mit Fanggruppe, zählend als
+  `grep -cE`, erwartet je 1): `^ARG GO_VERSION=([^ ]+)$` und
+  `^ARG GOLANGCI_LINT_VERSION=v?([^ ]+)$` auf `Dockerfile` (je 1; Zeilen 31/32),
+  `^GO_VERSION[[:space:]]*\?=[[:space:]]*([^ ]+)$` und
+  `^GOLANGCI_LINT_VERSION[[:space:]]*\?=[[:space:]]*v?([^ ]+)$` auf `Makefile` (je 1;
+  Zeilen 13/14); `grep -c $'\r'` auf beiden Dateien: 0. Die Negativfälle bleiben Testfälle
+  für `slice-287`.
+- **Listen in Anforderung und Spezifikation** (Eingabefehler, Grund-Codes) beschreiben Code,
+  der erst in `slice-287` entsteht; dort wird jede Zeile der Liste am Code gezählt und mit
+  einem Test belegt (`BEO-ALL/spec-randbedingung-ohne-test`). Gezählt am **vorhandenen**
+  Gegenstand sind hier: die Pfad-Prüfung (`ValidLiteralPath`: vier Fehlerklassen — leer,
+  `/`-Anfang, leeres/`.`/`..`-Segment, Steuer-/Glob-Zeichen) und das Symlink-Verhalten von
+  `targets` (Lesen folgt, Glob-Treffer weist ab).
+- **Bezüge in der ADR:** Entscheide 1–10 (Punkt 10 = Bezugsmenge, aus Punkt 8 herausgelöst).
+- **Review-Runde 1 (Befunde F-1 bis F-11):** die Widersprüche zwischen Anforderung und
+  Spezifikation (Treffer-Definition: erste Passung; Reihenfolge der Eingabefehler: erst die
+  Konfiguration aller Pins) sind in beiden und in der ADR angeglichen; die Kriterien decken die
+  zugesagten Randbedingungen ab; die Fitness-Zeile `Selbstlauf` ist als künftig gekennzeichnet;
+  die Geschichte-Zeile der ADR nennt, was bestätigt und was geschärft ist. Für `slice-287`
+  offen: ein `pinsync`-Block bei nicht aktivem Modul (Form prüfen, nicht ausführen — der
+  Implementer entscheidet am Konfigurations-Rand) und zwei verschiedene Ausdrücke derselben
+  Datei auf derselben Zeile (vergleichen eine Zeile mit sich selbst; Test und Hinweis im
+  Handbuch).
 
 ## 4. Trigger
 

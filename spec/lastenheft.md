@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.110.3
+**Version:** 0.111.0
 
 **Status:** Draft
 
@@ -78,7 +78,8 @@ statt per Code-Kopie.
 > (Review-Report-Deckung, Modul `reviews`), `MENT`
 > (Erwähnungs-Deckung einer Artefakt-Menge, Modul `mentions`), `FILE`
 > (Zeilen-/Byte-Obergrenzen einer ganzen Datei, Modul `file`), `MET`
-> (Kennzahl eines Planungsdokuments gegen Messung aus git, Modul `metrics`), `CONF`
+> (Kennzahl eines Planungsdokuments gegen Messung aus git, Modul `metrics`), `PSYNC`
+> (Gleichheit eines Wertes an mehreren Stellen, Modul `pinsync`), `CONF`
 > (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
@@ -4318,6 +4319,106 @@ Rename-Erkennung nach git-Art, Kopien-Erkennung, Gewichtung von Binärdateien.**
 nächste, erledigt) — sie werden nicht geprüft. (7) **Die Erkennung einer älteren
 Prosa-Form** statt des Blocks — falls gewünscht, eine eigene Anforderung.
 
+### DC-FA-PSYNC-001 — Gleichheit eines Wertes an mehreren Stellen (Modul `pinsync`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `pinsync` prüft d-check, dass ein
+benannter Wert — etwa eine Versionsnummer — an **allen** konfigurierten Stellen
+gleich ist. Er prüft **Gleichheit mehrerer Dateien**, nicht Aktualität (kein Abgleich
+mit einer Netz-Quelle) und nicht den Inhalt einer Datei gegen einen Hash. Die Pins, ihre
+Quellen und die Ausdrücke sind Konfiguration, keine feste Regel.
+
+**Ein Pin** trägt einen Namen und mindestens **zwei Quellen**. Eine **Quelle** ist ein
+Dateipfad (relativ zur Scan-Wurzel) und ein regulärer Ausdruck (RE2) mit **genau einer**
+Fanggruppe; der Wert der Quelle ist der Text der Gruppe. Ein Pin mit nur einer Quelle
+ist ein Konfigurationsfehler: ohne zweite Stelle gibt es nichts zu vergleichen, und ein
+stilles Grün wäre ein Gate ohne Prüfung. Ein führendes `v` steuert der Ausdruck selbst
+(`v?` vor der Fanggruppe); einen Schalter dafür und jede andere Normalisierung der Werte
+gibt es nicht. Verglichen wird byte-genau.
+
+**Die Datei wird zeilenweise gelesen** (Trenner `\n`; ein `\r` am Zeilenende gehört nicht
+zur Zeile; eine letzte Zeile ohne Zeilenende zählt). Der Ausdruck läuft **je Zeile**, `^`
+und `$` bedeuten Zeilenanfang und Zeilenende; einen mehrzeiligen Modus gibt es nicht.
+Eine Zeile **trifft**, wenn die **erste** Passung des Ausdrucks in ihr eine nicht leere
+Fanggruppe hat. **Genau ein Treffer** heißt: genau eine Zeile der Datei trifft; mehrere
+Vorkommen innerhalb einer Zeile zählen als eine Zeile.
+
+**Drei Befund-Klassen:** (1) die Werte zweier Quellen eines Pins sind ungleich
+(`pinsync-mismatch`); (2) der Ausdruck einer Quelle trifft in ihrer Datei keine Zeile
+(`pinsync-no-match`); (3) er trifft mehr als eine Zeile (`pinsync-ambiguous`). Ein Wert
+wird nur verglichen, wenn seine Quelle genau einen Treffer hat; eine Quelle ohne oder mit
+mehreren Treffern trägt zum Vergleich nichts bei und ist ihr eigener Befund.
+
+**Ein Eingabefehler ist Exit 2 und kein Befund:** kein Pin konfiguriert, obwohl das Modul
+aktiv ist; ein Pin ohne Namen, mit doppeltem Namen oder mit weniger als zwei Quellen; ein
+Pfad, der leer, absolut, mit leerem, `.`- oder `..`-Segment, mit Glob-Zeichen oder mit
+Steuerzeichen angegeben ist; zwei Quellen eines Pins mit gleichem Pfad **und** gleichem
+Ausdruck (eine Stelle gegen sich selbst); ein Ausdruck, der nicht übersetzt, oder der
+nicht genau eine Fanggruppe trägt (benannte Gruppen zählen, nicht fangende `(?:…)` nicht);
+eine Quelle, die nicht existiert (auch ein Datei-Segment mitten im Pfad), ein Verzeichnis ist, nicht gelesen werden kann oder
+selbst — oder in einem Verzeichnis-Segment ihres Pfades — ein Symlink ist. Der Lauf bricht
+beim ersten Fehler ab — zuerst die Konfiguration aller Pins (Pins nach Namen, Quellen in der
+Reihenfolge der Konfiguration), dann das Lesen der Quellen in derselben Reihenfolge:
+Exit 2, ein Klartext mit Pin und Ursache, **kein** Befund aus keinem Modul.
+
+**Die Reihenfolge ist deterministisch:** das Modul liefert Befunde nach Pin-Name, innerhalb
+eines Pins nach der Reihenfolge der Quellen in der Konfiguration; die Ausgabe sortiert wie
+bei jedem Modul ([`DC-QA-02`](#dc-qa-02--determinismus)). Ein Befund trägt Datei und Zeile
+der Quelle, soweit sie einen Treffer hat (sonst Zeile 1), und den Pin-Namen als Ziel;
+`pinsync-mismatch` nennt in der Meldung alle Quellen des Pins mit ihrem Wert. Bei ungleichen
+Werten meldet das Modul jede Quelle, deren Wert vom Wert der **ersten** Quelle mit genau
+einem Treffer abweicht.
+
+**Der Lauf trägt seine Bezugsmenge:** eine Zeile `pinsync: <P> Pin(s) geprüft, <S>
+Quelle(n) gelesen` (im Default-Modus auf stderr, unter `--json`/`--yaml` in `summary.notes`).
+Die Zeile sagt, was das Modul gelesen hat — nicht, dass jeder Pin des Repos erfasst ist: ein
+Pin, den niemand konfiguriert hat, wird nicht geprüft.
+
+**Das Modul liest Eingaben, die es nicht scannt, und dort gilt die Zusage der Scan-Menge
+nicht.** Die Quelldateien (`Dockerfile`, `Makefile`, jede Textdatei) sind keine
+Markdown-Dateien und liegen außerhalb der Scan-Menge; `scan.roots`, `scan.ignore` und die
+Skip-Liste schränken sie nicht ein. Die Zusage gilt für diese **ausdrücklich benannten**
+Dateien, nicht für den Rest des Repos. Das Modul liest Text und kennt kein Format: ein
+Ausdruck, der eine Kommentarzeile mit dem richtigen Wortlaut trifft, ist ein Treffer — ob
+der Ausdruck die **richtige** Stelle meint, ist die Aussage des Ausdrucks, nicht des Moduls
+(„genau ein Treffer“ fängt nur die Doppeldeutigkeit). Gleichheit ist Textgleichheit:
+`1.27` und `1.27.0` sind ungleich. Wo ein Wert über mehrere Zeilen läuft (eine `ARG` mit
+Zeilenfortsetzung `\`), erreicht ihn der Ausdruck nicht. Ein Symlink wird nicht gelesen
+(Exit 2): das Modul folgte ihm sonst still an eine Stelle, die kein Scan sieht.
+Gelesen wird der **Arbeitsbaum**: eine nicht eingecheckte, untrackte oder von git ignorierte
+Quelle gilt wie jede andere, und was git nicht kennt, prüft das Modul nicht. Der
+Symlink-Schutz erfasst Symlinks, nicht Hardlinks und nicht Bind-Mounts.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given einen Pin mit zwei Quellen, deren Ausdrücke je genau eine Zeile treffen und denselben Wert fangen, when `pinsync` aktiviert läuft, then Exit 0 und keine Befunde.
+- **Negative (ungleiche Werte):** Given zwei Quellen mit den Werten `1.27.3` und `1.27.4`, when der Lauf erfolgt, then Befund `pinsync-mismatch` an der abweichenden Quelle, die Meldung nennt beide Werte und beide Dateien; Exit 1.
+- **Negative (kein Treffer):** Given einen Ausdruck, der in seiner Datei keine Zeile trifft (auch einen, dessen Gruppe nur leer fängt), when der Lauf erfolgt, then Befund `pinsync-no-match`, und der Wert dieser Quelle geht in keinen Vergleich ein.
+- **Negative (mehrdeutig):** Given einen Ausdruck, der zwei Zeilen trifft, when der Lauf erfolgt, then Befund `pinsync-ambiguous`; mehrere Vorkommen **innerhalb** einer Zeile zählen nicht doppelt.
+- **Randformen des Lesens:** Given Dateien mit CRLF-Zeilenenden, ohne Zeilenende in der letzten Zeile, mit einem `v`-Präfix vor dem Wert (Ausdruck mit und ohne `v?`), mit einer Kommentarzeile desselben Wortlauts und mit einer `FROM`-Zeile ähnlichen Werts, when der Lauf erfolgt, then verhält sich jede Form wie oben beschrieben.
+- **Negative (Eingabefehler, fail-closed):** Given einen Pin mit einer Quelle, einen Ausdruck ohne oder mit zwei Fanggruppen, einen Pfad mit `..`, eine fehlende Datei oder einen Symlink als Quelle, when der Lauf erfolgt, then Exit 2 mit Klartext und kein Befund.
+- **Bezugsmenge:** Given einen Lauf mit zwei Pins und vier Quellen, when der Lauf erfolgt, then stderr (Default) bzw. `summary.notes` (`--json`/`--yaml`) trägt `pinsync: 2 Pin(s) geprüft, 4 Quelle(n) gelesen`.
+- **Scan-Menge:** Given eine Quelle, die unter `scan.ignore` oder außerhalb von `scan.roots` liegt oder keine Markdown-Endung trägt, when der Lauf erfolgt, then wird sie gelesen und geprüft.
+- **Negative (Eingabefehler, Reihenfolge):** Given einen Pin `a` mit fehlender Quelldatei und einen Pin `b` mit ungültigem Ausdruck, when der Lauf erfolgt, then Exit 2 mit der Ursache von `b` (die Konfiguration aller Pins vor dem ersten Lesen); Given nur Lesefehler, then die Ursache der ersten Quelle in Pin-Namen- und Konfigurations-Reihenfolge.
+- **Negative (weitere Eingabefehler):** Given einen Symlink als Verzeichnis-Segment des Pfades, ein Verzeichnis als Quelle, ein Datei-Segment mitten im Pfad, zwei Quellen mit gleichem Pfad und gleichem Ausdruck, einen doppelten Pin-Namen oder ein aktives Modul ohne Pin, when der Lauf erfolgt, then jeweils Exit 2 mit Klartext und kein Befund.
+- **Treffer:** Given den Ausdruck `a(b*)` auf der Zeile `a ab`, when der Lauf erfolgt, then trifft die Zeile nicht (die erste Passung fängt leer).
+- **Reihenfolge:** Given mehrere Pins mit Befunden, when der Lauf zweimal erfolgt, then byte-identische Ausgabe, Befunde nach Pin-Name und Quellen-Reihenfolge.
+- **Betrieb:** Given das gebaute Image, when der Lauf unter `:ro` und gegen ein Repo mit anderem Eigentümer erfolgt, then dasselbe Ergebnis wie gegen ein eigenes beschreibbares Repo.
+- **Determinismus:** Given dieselbe Eingabe, when der Lauf zweimal erfolgt, then byte-identische Ausgabe in stdout, stderr und Exit-Code.
+- **Default byte-identisch:** Given **keinen** `pinsync`-Block und kein `--enable pinsync`, when `d-check` läuft, then Ausgabe und Exit-Code sind byte-identisch zu einem Lauf ohne dieses Modul.
+- **Eigener Bestand:** Given die zwei Pins, die dieses Repo in `Dockerfile` und `Makefile` doppelt führt, when `pinsync` im eigenen Profil läuft, then Exit 0; wird der Wert in nur einer der beiden Dateien geändert, then Exit 1 mit `pinsync-mismatch`.
+
+**Out-of-Scope:** (1) **Aktualität** — ob der Wert der neueste ist: ein anderes Modul mit
+Netzzugriff. (2) **Ein Schalter `strip-prefix` oder jede andere Normalisierung** — der
+Ausdruck trägt sie; ein zweiter Mechanismus wäre eine zweite Stelle für dieselbe
+Entscheidung. (3) **Schreibende Wege** — den Wert in der zweiten Datei angleichen:
+[`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) schließt sie aus; ein
+Vorschlag wäre Ausgabe, nie Schreiben. (4) **Mehrzeilige Werte und ein mehrzeiliger
+Ausdruck.** (5) **Der Vergleich von Digests und Prüfsummen als solche** — der Ausdruck kann
+sie fangen, welche Digests zusammengehören, ist Fachwissen des Repos. (6) **Eine Quelle ohne
+Datei** (Umgebungsvariable, Kommandozeile, Netz). (7) **Die übrigen Spiegel einer
+Pin-Hebung** (Release-URLs, Prosa-Pins): ein anderer Gegenstand als Wertgleichheit zwischen
+Dateien.
+
 ---
 
 ## 4. Nichtfunktionale Anforderungen
@@ -4370,6 +4471,7 @@ Prosa-Form** statt des Blocks — falls gewünscht, eine eigene Anforderung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.111.0 | 2026-10-31 | Neue Anforderung [`DC-FA-PSYNC-001`](#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in) — **Gleichheit eines Wertes an mehreren Stellen** (Modul `pinsync`, opt-in) samt neuem Bereichskürzel `PSYNC` in §3: pro benanntem Pin mindestens zwei Quellen (Datei und regulärer Ausdruck mit genau einer Fanggruppe), gelesen zeilenweise; Befund bei ungleichen Werten, bei keinem und bei mehr als einem Treffer. Ein Pin mit nur einer Quelle, ein Ausdruck ohne genau eine Fanggruppe, eine fehlende Quelle und ein Symlink als Quelle sind Eingabefehler (Exit 2). Kein Schalter `strip-prefix`, keine Aktualitätsprüfung, kein Netz. Die Quelldateien liegen außerhalb der Scan-Menge; die Grenze steht in der Anforderung. Die Modul-Aufzählung in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) und das Glossar nennen `pinsync` erst, wenn das Modul registriert ist. Begründung in begleitender ADR | GitHub-Issue 14 |
 | 0.110.3 | 2026-10-30 | [`DC-FA-MET-001`](#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in): die Tabellenzählung ist umgesetzt; die Abweichungen der Leseweise vom Programm des Anlass-Repos sind vollständig benannt — ein Strich im Code-Span gehört zur Zelle (dort ein Fehler), Kopf und Datenzeilen beginnen an Spalte 0, Tabellen in Zitat, Liste oder HTML-Kommentar werden nicht gelesen | — |
 | 0.110.2 | 2026-10-30 | [`DC-FA-MET-001`](#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in): die Zeilen-Summe ist am Fixture belegt (Randformen und Summe aus `git diff --numstat --no-renames`); die Zusage nennt jetzt ihre Grenzen — Diff-Heuristik der Bibliothek bei verschobenen Blöcken, `.gitattributes` und `core.bigFileThreshold` nicht ausgewertet, Submodul trägt 0 bei, Dateinamen mit Glob-Zeichen nicht angebbar, mehrdeutiger Kurz-Hash, flacher Klon ohne Basis ⇒ Exit 2 | — |
 | 0.110.1 | 2026-10-30 | Registrierung des Moduls `metrics` (Nachzug zu 0.110.0, keine Verhaltensänderung der Anforderung): der Modulsatz in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) und das Glossar nennen `metrics`, sobald es registriert ist. Dieselbe Änderung schreibt die Leseweise des Plan-Verzeichnisses fest: ein Plan, der ein Symlink ist, ist ein Eingabefehler (Exit 2), `scan.ignore` und die Skip-Liste gelten dafür nicht | — |
