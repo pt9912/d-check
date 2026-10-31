@@ -24,6 +24,8 @@ die Listen-Hälfte misst `wave-drift` als Kennungs-Bijektion (je offener
 Welle-Datei ein Zeiger, beidseitig; `waves.mode: many`) — diese Prosa
 bleibt deshalb frei von Wellen-Kennungen.
 
+- [`welle-94-pinsync-modul`](../welle-94-pinsync-modul.md)
+
 **Mehr-Wellen-Betrieb ist zugelassen** (Roadmap-Entscheid des Auftraggebers,
 2026-08-22): unabhängige Stränge — etwa eine Baseline-Hebung neben einer
 Produkt-Welle — dürfen gleichzeitig als flache Wellendokumente offen sein; je
