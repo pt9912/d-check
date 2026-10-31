@@ -112,6 +112,16 @@ Workflow-Skeletts): die Modul-Aufzählungen (Modulliste, README-Listen, Handbuch
 `operations.md`, `print-config`-Vorlage, Spiegel-Tests) werden mit `grep` über den Namen
 eines Bestandsmoduls gezählt (etwa `mentions`), jeder Treffer steht hier im Nachtrag.
 
+**Aus Review und Verifikation von `slice-286` mitgegeben** (jedes braucht einen Test oder eine
+Entscheidung im Code, bevor der Slice schließt): (1) der abschließende Schrägstrich —
+`Dockerfile/` passiert `ValidLiteralPath`, `Kind` meldet dann ENOTDIR (Exit 2); die Anforderung
+führt „leeres Segment“ als Eingabefehler, also entweder die Pfad-Prüfung für dieses Modul
+verschärfen oder den Fall als Lesefehler testen; (2) Kriterien und Tests für drei oder mehr
+Quellen mit mehreren Abweichungen, einen Pin ohne Namen, „weniger als zwei Quellen mit genau einem
+Treffer“ und Lesefehler außer „fehlend“; (3) ein `pinsync`-Block bei nicht aktivem Modul; (4)
+zwei verschiedene Ausdrücke derselben Datei auf derselben Zeile; (5) die Zeilen der
+Grund-Code-Tabelle und die Modul-Aufzählung im Lastenheft.
+
 **Negativfälle der Fang-Logik (Schritt 19):** Kommentarzeile mit demselben Text; Wert in einer
 `FROM`-Zeile; zwei Zeilen mit Treffer; Treffer mit `v`-Präfix außerhalb und innerhalb der
 Gruppe; CRLF am Zeilenende; Ausdruck ohne Fanggruppe; leere Fanggruppe; leere Datei;

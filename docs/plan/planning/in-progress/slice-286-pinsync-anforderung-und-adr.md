@@ -73,13 +73,13 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       am Gegenstand gezählt oder gemessen, nicht aus der Beschreibung übernommen.
 - [x] Die ADR (Entscheide samt verglichenen Alternativen) ist `Accepted`, im
       [ADR-Index](../../adr/README.md) geführt und trägt `## Re-Evaluierungs-Trigger`.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure.
 
 ## 3. Plan (vor Code)
@@ -95,7 +95,7 @@ Aussagen-Berührung steht hier gar nicht.
 | `spec/spezifikation.md` | update | Verfahren, Konfigurations-Schema, Grund-Codes |
 | ADR im Verzeichnis `docs/plan/adr/` (nächste freie Nummer, Titel „pinsync-modul“) | neu | Entscheidung samt Alternativen |
 | `docs/plan/adr/README.md` | update | ADR-Index ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 4) |
-| `docs/plan/planning/open/slice-287-pinsync-modulkern.md` | update | zwei Plan-Zeilen: die Zeilen der Grund-Code-Tabelle und die Modul-Aufzählung des Lastenhefts kommen mit dem Code |
+| Plan von `slice-287` | update | zwei Plan-Zeilen: die Zeilen der Grund-Code-Tabelle und die Modul-Aufzählung des Lastenhefts kommen mit dem Code |
 
 **Festzuschreibende Entscheide** — vom Auftraggeber am 2026-10-31 mit den
 Empfehlungen bestätigt (unverändert 1–9); Punkt 6 hält die Symlink-Regel erst nach dem
@@ -218,15 +218,16 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 dasteht.
 
 - Die Zeilen-Leseweise passt nicht zu einem Pin, der über mehrere Zeilen läuft (ein
-  `ARG` mit Zeilenfortsetzung `\`) — **Ausgang:** *entfallen* oder *weiter offen*, nach der
-  Gegenprobe am eigenen Bestand entschieden; die Anforderung nennt die Grenze
-  ausdrücklich (Out-of-Scope: mehrzeilige Werte).
+  `ARG` mit Zeilenfortsetzung `\`) — **Ausgang:** entfallen: die Anforderung nennt die Grenze
+  (Out-of-Scope 4 und der Absatz zur Scan-Menge), und am eigenen Bestand steht jeder der vier
+  Pins einzeilig (je 1 Treffer, §3 Plan-Nachtrag).
 - Der Name `pinsync` kollidiert in Lexik und Handbuch mit `pins` und `versions` —
-  **Ausgang:** *entfallen*, sobald die Anforderung das Abgrenzungs-Wort („Gleichheit
-  mehrerer Dateien“) im ersten Satz trägt und das Reviewer-Urteil es bestätigt.
+  **Ausgang:** entfallen: der erste Absatz der Anforderung grenzt ab („Gleichheit mehrerer
+  Dateien, nicht Aktualität“), Review R1 und Verifikation melden dazu keinen Befund.
 - Ein stilles Grün über einer Quelle, die ein Symlink auf eine Datei außerhalb des Repos
-  ist (§3.8) — **Ausgang:** *eingetreten* nur, wenn die Spezifikation die Symlink-Regel
-  nicht nennt; sonst *entfallen* mit Verweis auf die Regel.
+  ist (§3.8) — **Ausgang:** entfallen: Anforderung, Spezifikation (Schritt 3) und ADR (Punkt 6)
+  nennen die Regel (Symlink, auch als Verzeichnis-Segment, ist Exit 2); die Grenze für Hardlink
+  und Bind-Mount steht in der Anforderung.
 
 ## 7. Closure-Notiz
 
@@ -236,7 +237,43 @@ formulieren) · `grundlagen-traceability.md` §Herkunfts-Anker für Steering-Loo
 (das Feld `liegt in` steht **nur**, wenn mit diesem Slice wirklich etwas verkörpert
 wurde).
 
-Entsteht bei der Closure.
+- **Geliefert:** die Anforderung [`DC-FA-PSYNC-001`](../../../../spec/lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in)
+  (Lastenheft 0.111.0), das Verfahren [`DC-FA-PSYNC-001.a`](../../../../spec/spezifikation.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync)
+  samt Schema `pinsync.*` und die ADR [`ADR-0113`](../../adr/0113-pinsync-modul.md) (`Accepted`).
+  Die Modul-Aufzählung in [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl) und im Glossar sowie die Zeilen der
+  Grund-Code-Tabelle fehlen absichtlich: der Spiegel-Test und der Lockstep-Test halten sie gegen den
+  Code, das Modul ist noch nicht registriert.
+- **Was funktioniert hat:** die Gegenprobe am eigenen Bestand vor dem Schreiben (vier Ausdrücke, je 1
+  Treffer, kein CR); die Lektüre des Codes von `targets` zeigte die Symlink-Lücke, bevor sie in die
+  Anforderung wanderte.
+- **Was anders lief als geplant:** (1) Entscheid 6: ein Symlink als Quelle ist Exit 2 statt „wie
+  `targets`“, weil `targets` einer wörtlich eingetragenen Datei still folgt. (2) Der Lockstep-Test
+  verbot die Grund-Code-Zeilen vor dem Code; sie wandern nach `slice-287`. (3) Review R1
+  ([Report](../../../reviews/2026-10-31-slice-286-code-r1.md), 5 MEDIUM) fand Widersprüche zwischen
+  Anforderung, Spezifikation und ADR (Treffer-Definition, Reihenfolge der Eingabefehler). (4) Der
+  Korrektur-Commit wäre an der `Accepted`-ADR gescheitert; der lokale, ungepushte Commit wurde neu
+  gebildet. Die Review-Runde sah deshalb eine Vorfassung; die Korrektur beschränkte sich auf ihre
+  Befunde, eine zweite Runde lief nicht, der Verifier
+  ([Report](../../../reviews/2026-10-31-slice-286-verifikation.md)) hat die Einarbeitung gegen
+  jeden Befund geprüft.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle; gezählt, nicht verkörpert.
+- **Beobachtungs-Register (`../observations/`):**
+  [`adr-accepted-bevor-der-mechanismus-steht`](../observations/BEO-ALL/adr-accepted-bevor-der-mechanismus-steht/observation.md)
+  bekommt den Beleg `evidence/slice-286.md` — Zähler steht damit bei 2×. Zitiert, ohne neuen Beleg:
+  [`module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md),
+  [`erkennungs-regex-nur-gegen-positivfaelle-getestet`](../observations/BEO-ALL/erkennungs-regex-nur-gegen-positivfaelle-getestet/observation.md),
+  [`pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md) und
+  [`spec-randbedingung-ohne-test`](../observations/BEO-ALL/spec-randbedingung-ohne-test/observation.md).
+- **Folge-Slices:** [`slice-287`](../welle-94-pinsync-modul.md#4-slices-in-dieser-welle) und
+  [`slice-288`](../welle-94-pinsync-modul.md#4-slices-in-dieser-welle) — beide liegen in `open/`.
+  Mitgegeben an `slice-287`: der abschließende Schrägstrich (`Dockerfile/` passiert
+  `ValidLiteralPath`; `Kind` meldet ENOTDIR, Exit 2, Test), Kriterien für drei oder mehr Quellen,
+  Pin ohne Namen und Lesefehler außer „fehlend“.
+- **Risiken aus §6:** alle drei entfallen, jedes mit Begründung (siehe §6). Trigger-Audit: kein
+  Carveout, kein bootstrap-aware Gate, keine Schwelle gesenkt; die neue ADR trägt ihren
+  Re-Evaluierungs-Trigger; keine Hard Rule mit eingetretenem Trigger.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — beide Slices liegen in
+  `open/`; (c) Register — die zitierten Beobachtungen existieren und tragen Belege.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
