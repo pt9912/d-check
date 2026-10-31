@@ -202,6 +202,13 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   entry needs a non-empty reason; the estimate is counted from a table of the
   plan. Input errors and a missing `.git` are exit 2; opt-in
   ([`DC-FA-MET-001`](spec/lastenheft.md#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in))
+- `pinsync` — equality of one value at several places: a named pin has at least
+  two sources (a file and an RE2 expression with exactly one capture group),
+  read line by line; a finding for unequal values, for no match and for more
+  than one matching line. A configuration error, a missing source and a symlink
+  as a source are exit 2; the sources are named files outside the scan set.
+  Hermetic, opt-in
+  ([`DC-FA-PSYNC-001`](spec/lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in))
 - `workflows` — declaration consistency of the `uses:` references of CI
   workflows below a **configured** directory (`workflows.dir` — not hard-wired,
   because the location is CI-system specific), opt-in. A **foreign** reference

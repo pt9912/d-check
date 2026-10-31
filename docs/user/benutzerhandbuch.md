@@ -1579,6 +1579,81 @@ von git übereinstimmt — bei verschobenen Blöcken kann die Bibliothek eine an
 liefern; `.gitattributes` wertet sie nicht aus, ein Submodul zählt 0. Das Plan-Verzeichnis
 ist ausdrücklich benannt und nicht auf `scan.roots` beschränkt.
 
+### 4.27 Einen Wert an mehreren Stellen gleich halten (Modul `pinsync`)
+
+**Ausgangslage:** Dieselbe Version steht an zwei Stellen — im `Dockerfile` als `ARG`, im
+`Makefile` als Variable. Wer die eine hebt und die andere vergisst, merkt es erst, wenn ein
+Bau auseinanderläuft.
+
+**Ziel:** Ein benannter Wert muss an allen konfigurierten Stellen **gleich** sein. Geprüft
+wird die Gleichheit mehrerer Dateien, nicht die Aktualität des Wertes.
+
+**So geht es:** Ein **Pin** trägt einen Namen und mindestens **zwei Quellen**; eine Quelle
+ist eine Datei und ein regulärer Ausdruck (RE2) mit **genau einer** Fanggruppe — der Text der
+Gruppe ist der Wert.
+
+```yaml
+modules: [links, anchors]      # pinsync läuft über --enable, nicht über modules:
+pinsync:
+  pins:
+    - name: go-version
+      sources:
+        - {file: Dockerfile, pattern: '^ARG GO_VERSION=v?(\S+)'}
+        - {file: Makefile, pattern: '^GO_VERSION\s*:?=\s*v?(\S+)'}
+```
+
+Das `v?` vor der Gruppe steuert der Ausdruck selbst: so ergeben `ARG GO_VERSION=v1.27.3` und
+`GO_VERSION := 1.27.3` beide den Wert `1.27.3`. Einen Schalter dafür gibt es nicht; steht das
+`v` **in** der Gruppe, sind beide Werte verschieden.
+
+```bash
+docker run --rm --network none -v "$PWD":/repo:ro \
+  ghcr.io/pt9912/d-check:v0.90.0 --enable pinsync
+```
+
+**Ergebnis:** je abweichende Quelle ein Befund auf der Zeile ihres Treffers, die Meldung nennt
+alle Quellen des Pins mit ihrem Wert; die Bezugsmenge steht auf stderr (unter `--json` und
+`--yaml` in `summary.notes`):
+
+<!-- d-check-test:not-replayable: gekürzte Illustration, nicht die wörtliche Ausgabe dieses Repos -->
+```text
+Makefile:12	go-version	pinsync-mismatch	Pin "go-version": Makefile hat "1.27.4", der Bezug Dockerfile hat "1.27.3" (Werte: Dockerfile=1.27.3, Makefile=1.27.4)
+pinsync: 1 Pin(s) geprüft, 2 Quelle(n) gelesen
+```
+
+**Sieben Dinge, die dabei zählen:**
+
+- **Drei Befunde, ein Fehlerweg.** `pinsync-mismatch` (ein Wert weicht ab), `pinsync-no-match`
+  (der Ausdruck trifft keine Zeile, Zeile 1) und `pinsync-ambiguous` (er trifft mehr als eine
+  Zeile; die Meldung nennt alle). Ein Wert wird nur verglichen, wenn seine Quelle **genau
+  einen** Treffer hat; Bezug ist die **erste** solche Quelle in der Reihenfolge der
+  Konfiguration. Alles andere ist ein **Eingabefehler**: Exit 2, kein Befund.
+- **Eingabefehler:** kein Pin trotz aktivem Modul, ein Pin ohne Namen, mit doppeltem Namen
+  oder mit weniger als zwei Quellen; ein Pfad, der leer, absolut, mit `..`, mit Glob- oder
+  Steuerzeichen oder mit abschließendem `/` angegeben ist; dieselbe Datei **und** derselbe
+  Ausdruck zweimal in einem Pin; ein Ausdruck, der nicht übersetzt oder nicht genau eine
+  Fanggruppe trägt (benannte zählen, `(?:…)` nicht); eine Quelle, die fehlt, ein Verzeichnis
+  ist, nicht lesbar ist oder — auch in einem Verzeichnis-Segment — ein **Symlink** ist.
+- **Zeilenweise.** Der Ausdruck läuft je Zeile; `^` und `$` meinen Zeilenanfang und
+  Zeilenende, ein `\r` am Zeilenende gehört nicht zur Zeile, eine letzte Zeile ohne
+  Zeilenende zählt. Eine Zeile **trifft**, wenn die erste Passung des Ausdrucks eine nicht
+  leere Gruppe hat; mehrere Vorkommen in einer Zeile zählen als eine Zeile. Werte über
+  Zeilenfortsetzungen erreicht der Ausdruck nicht.
+- **Textgleichheit.** Verglichen wird byte-genau: `1.27` und `1.27.0` sind ungleich.
+- **Die Quellen liegen außerhalb der Scan-Menge.** `scan.roots`, `scan.ignore` und die
+  Skip-Liste schränken sie nicht ein, und sie brauchen keine Markdown-Endung. Gelesen wird der
+  Arbeitsbaum: eine nicht eingecheckte oder ignorierte Datei gilt wie jede andere.
+- **Ein Symlink wird nicht gelesen,** weil das Modul ihm sonst still an eine Stelle folgte, die
+  kein Scan sieht. Hardlinks und Bind-Mounts erfasst der Schutz nicht.
+- **Hermetisch:** kein git, kein Netz, kein Programmstart, kein Schreiben; ohne
+  `pinsync`-Konfiguration ist der Lauf unverändert. Ein `pinsync`-Block bei nicht aktivem
+  Modul wird gelesen und geprüft, aber nicht ausgeführt.
+
+**Was das Modul nicht sagt:** ob der Ausdruck die **richtige** Stelle meint — ein Treffer in
+einer Kommentarzeile mit dem passenden Wortlaut ist ein Treffer; „genau ein Treffer" fängt nur
+die Doppeldeutigkeit. Die Bezugsmenge sagt, was gelesen wurde, nicht, dass jeder Pin des Repos
+erfasst ist.
+
 ## 5. Konfiguration
 
 Eine optionale `.d-check.yml` in der Repo-Wurzel passt d-check an. Ohne
@@ -2906,6 +2981,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu **zwölf** Bedingungen mit je eigenem Grund-Code — die siebte ist die **Chronologie-Monotonie** (`table.order`/`table.order-column`): typisierte Schlüsselspalte (ISO-Datum, Punkt-Version), rohe Zellen, nicht-strikt je zusammenhängender Tabelle; die achte die **Überschriften-Form** (`headings-match`/`headings-level`): **jede** Überschrift der geprüften Ebene innerhalb des Abschnitts matcht das Muster, geprüft auf ihrem **Text**, gemeldet **je** Überschrift auf **ihrer** Zeile; die neunte die **Zellenlänge** (`table.column` je Eintrag `name` mit `cell-max-chars`/`cell-min-chars`): jede Zelle einer über ihren **Kopfzeilen-Namen** benannten Spalte liegt in einer Spanne aus **Zeichen**, gemeldet auf **ihrer** Zeile — eine Obergrenze allein ließe die leere Zelle passieren; die **zehnte** die **offenen Task-Items** (`max-open-tasks`): gezählt auf den **rohen** Abschnitts-Zeilen statt auf dem bereinigten Text, ein Befund je Item auf **seiner** Zeile ⇒ `section-tasks-open` — ein überzähliger Backtick im Absatz schaltet sie nicht ab, ein vergessener Schluss-Fence sehr wohl; die **elfte** eine **bedingte Pflicht-Marke** dazu (`open-tasks-require-marker`, nur wirksam, wenn die zehnte bereits einen Überschuss-Fund meldet): eine vorhandene Marke (`hasMarker`-Form wie bei den geforderten Marken) tilgt **alle** `section-tasks-open`-Einzelbefunde des Abschnitts, eine fehlende ersetzt sie durch **einen** `section-open-tasks-marker-missing` auf der Überschriftszeile — `open-tasks-require-marker-section` verlegt die Suche wahlweise in einen **anderen**, benannten Abschnitt derselben Datei (RE2 gegen dieselbe rohe Überschriften-Zeile wie `section-pattern`); trifft das Muster keinen Abschnitt, gilt die Marke als fehlend; die **zwölfte** ein **Zeilenbudget** (`max-lines`): die Zeilenumbrüche im **bereinigten** Abschnittstext (dieselbe Grundmenge wie `min-sentences`, Fenced-Code zählt also nicht mit) liegen bei oder unter der Schwelle ⇒ sonst `section-lines-exceeded` auf der Überschriftszeile; Untergrenze `1`, nicht `0` (ein Abschnitt hat so gut wie nie null bereinigte Zeilen). `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat; **einzige Ausnahme** ist die per `exempt-expect-count` **erklärte** Leermenge, deren Abweichung `section-exempt-mismatch` meldet. Je Regel nimmt `skip-pattern` eine Datei nach ihrem rohen Inhalt aus (etwa archivierte Stubs); den Leerlauf-Befund hebt das nur mit `skip-allows-empty: true` aus, das die so geleerte Menge zum Ruhezustand erklärt | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing`, `section-unordered`, `section-cell-untyped`, `section-heading-mismatch`, `section-cell-oversized`, `section-cell-undersized`, `section-column-missing`, `section-exempt-mismatch`, `section-tasks-open`, `section-open-tasks-marker-missing`, `section-lines-exceeded` |
 | `file`      | opt-in        | Zeilen-/Byte-Obergrenzen einer **ganzen** Datei, unabhängig von Dateiart und `scan.roots`/`scan.ignore` — eigenes Modul statt einer Erweiterung von `structure`, weil jenes den **bereinigten** Abschnittstext einer Markdown-Datei zählt und `file` die **rohe** Datei jeder Art. `max-lines` zählt wie `wc -l` plus eine unvollständige Schlusszeile (dieselbe Zählung wie `codepaths`/`citations`) ⇒ `file-lines-exceeded`; `max-bytes` die rohe Byte-Länge (Fenced-/Inline-Code zählt mit) ⇒ `file-bytes-exceeded`. Mindestens eine der beiden Schwellen ist Pflicht, sonst Exit 2. Kandidaten kommen aus **eigenen** `files`-Globs (kein `scope`, wie bei `structure`), abzüglich `exempt-paths`; keine Regel trifft eine Datei ⇒ `file-no-match`. **Hermetisch** (kein git), fail-closed bei unlesbarem Baum | `file-no-match`, `file-lines-exceeded`, `file-bytes-exceeded` |
 | `metrics`   | opt-in        | Kennzahl eines Planungsdokuments (§4.26): die Marke im Block eines Plans gegen die konfigurierte ganzzahlige Formel, die Zeilen-Summe aus git (`numstat` ohne Rename-Erkennung, braucht `.git`) gegen die Marke, Ausnahme-Einträge auf einen nicht leeren Grund, Schätzung aus der Tabelle des Plans; das Plan-Verzeichnis ist ausdrücklich benannt: weder `scan.roots` noch `scan.ignore` noch die Skip-Liste gelten dafür |
+| `pinsync`   | opt-in        | Gleichheit eines Wertes an mehreren Stellen (§4.27): ein Pin trägt einen Namen und mindestens zwei Quellen (Datei und RE2-Ausdruck mit genau einer Fanggruppe), gelesen zeilenweise; Befund bei ungleichen Werten, bei keinem und bei mehr als einem Treffer; Fehler der Konfiguration, eine fehlende Quelle und ein Symlink als Quelle sind Exit 2; **hermetisch** (kein git, kein Netz); die Quellen sind ausdrücklich benannt: weder `scan.roots` noch `scan.ignore` noch die Skip-Liste gelten dafür | `pinsync-mismatch`, `pinsync-no-match`, `pinsync-ambiguous` |
 | `workflows` | opt-in        | Deklarations-Konsistenz der `uses:`-Referenzen von CI-Workflows unterhalb eines **konfigurierten** Verzeichnisses (`workflows.dir` — der Ort ist nicht verdrahtet, weil er CI-System-spezifisch ist). **Fremde** Referenz: voller 40-stelliger Commit-SHA plus Tag-Kommentar dahinter — ein Tag lässt sich umhängen, ein SHA nicht; geprüft wird die **Form**, nicht die **Gültigkeit** (das wäre Netz). **Derselbe SHA trägt dateiübergreifend überall denselben Tag-Kommentar** — ein Widerspruch meldet jede beteiligte Zeile, welcher Wert stimmt bleibt Netz. **Lokale** Referenz (`./…`): kein Pin nötig — sie löst auf denselben Commit auf wie ihr Aufrufer —, dafür zwei andere Fragen: **existiert** das Ziel, und **bekommt es die Rechte, die es verlangt?** Ein aufgerufener Workflow erhält nur, was der aufrufende **Job** selbst führt; ein Job ohne eigenes `permissions:` erbt zwar den Workflow-Kopf, kann aber nichts weitergeben, was er nicht deklariert. Stufen: `none` < `read` < `write`; ein nicht genannter Scope ist `none`, `read-all`/`write-all` setzen jeden. Die Referenzen kommen aus dem **YAML-Baum**, nicht aus einer Textsuche. **Hermetisch** (kein git, kein Netz, kein Ausführen), fail-closed bei leerer Prüfmenge und bei unlesbarem YAML. **Benannte Grenze:** das Modul liest die **Ziele** lokaler Referenzen, die es nicht scannt — dieselbe Parse-Zusage gilt dort —, und es deckt **eine** Deklarations-Klasse, nicht die Lauffähigkeit | `uses-pin-missing`, `uses-pin-untagged`, `uses-pin-tag-conflict`, `uses-local-missing`, `uses-local-perms-undeclared`, `uses-local-perms-narrow`, `workflow-unparsable` |
 | `reviews`   | opt-in        | Review-Report-Deckung: jeder `done/`-Slice mit einer Review-Zusage braucht mindestens einen Report unter `reviews-dir`. **Zusage** ist ein Checkbox-Punkt (Haken-Zustand egal), auf den `promise-pattern` passt — Default: die Phrase „unabhängiger Review" **oder** die Vorlagen-Form „Review durchgeführt" am Anfang eines Punkt-Teils (hinter der Task-Box, `;` oder `,`, auch über einen Zeilenumbruch). **Zuordnung** über `match`: `id` (Default) über die `slice-<NNN>`-Kennung im Report-Namen — eine Zusage ohne lesbare Kennung im Slice-Namen ist selbst ein Befund —, `name` über den Basisnamen des Slice, gefolgt von einem Zeichen, das weder Buchstabe noch Ziffer ist (für Slug-Kennungen) — trägt der Report-Name auch einen längeren Slice-Basisnamen, der den kürzeren enthält, deckt er nur den längeren. `done-dir` wird unmittelbar gelesen, mit `recursive` auch die Unterverzeichnisse; `skip-pattern` nimmt eine Datei nach ihrem Inhalt aus (etwa archivierte Stubs). Fail-closed bei leerer Kandidatenmenge oder unlesbarem Verzeichnis — eine Menge, die erst `skip-pattern` leert, ist nur mit `skip-allows-empty: true` kein Befund; null Zusagen unter vorhandenen Kandidaten sind legitim, außer mit `require-promises` | `review-missing`                                             |
 | `mentions`  | opt-in        | Erwähnungs-Deckung: jedes Mitglied einer über Pfad-Globs konfigurierten **Soll-Menge** (`artifacts`) muss in mindestens einem Dokument der ebenso konfigurierten **Ist-Menge** (`documents`) wörtlich vorkommen. Gesucht wird eine **eigenständige Nennung**: links blockiert Buchstabe, Ziffer, `-` und `.`, rechts nur Buchstabe und Ziffer — Satz-Schlusspunkt, Kompositum, Kursivierung und `../`-relative Verlinkung zählen damit. Preis: ein Unterstrich-Kompositum, eine angehängte Endung und ein fremdes Pfad-Präfix decken das Mitglied darunter. `match: path` (Default, Pfad ab der Scan-Wurzel) oder `basename` (nur der Dateiname) — für Dokumente, die **relativ** verlinken, ist `basename` die richtige Form; kollidierende Suchbegriffe prüft das Modul selbst und bricht ab (Exit 2), statt sie dem Konfigurierenden aufzugeben. **Ein Block ist EIN Paar** — die Ist-Menge wird als Vereinigung gelesen. Fail-closed: fehlende oder leer bleibende Menge und unlesbares Verzeichnis ⇒ Exit 2, nicht „0 Befunde". Die Zusammenfassung nennt die Bezugsmenge (`N von M`) | `artifact-unmentioned` |

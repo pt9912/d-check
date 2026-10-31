@@ -203,6 +203,13 @@ Dokuments:
   zählt das Modul aus einer Tabelle des Plans. Eingabefehler und fehlendes
   `.git` sind Exit 2; opt-in
   ([`DC-FA-MET-001`](spec/lastenheft.md#dc-fa-met-001--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-modul-metrics-opt-in))
+- `pinsync` — Gleichheit eines Wertes an mehreren Stellen: ein benannter Pin
+  trägt mindestens zwei Quellen (Datei und RE2-Ausdruck mit genau einer
+  Fanggruppe), zeilenweise gelesen; Befund bei ungleichen Werten, bei keinem
+  und bei mehr als einem Treffer. Ein Konfigurationsfehler, eine fehlende
+  Quelle und ein Symlink als Quelle sind Exit 2; die Quellen sind benannte
+  Dateien außerhalb der Scan-Menge. Hermetisch, opt-in
+  ([`DC-FA-PSYNC-001`](spec/lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in))
 - `workflows` — Deklarations-Konsistenz der `uses:`-Referenzen von CI-Workflows
   unterhalb eines **konfigurierten** Verzeichnisses (`workflows.dir` — nicht
   verdrahtet, weil CI-System-spezifisch), opt-in. Eine **fremde** Referenz nennt
