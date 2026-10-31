@@ -18,6 +18,8 @@
 #   (6) metrics:  Messung aus git im Container unter :ro, mit fremdem Benutzer
 #                 und ohne .git (DC-FA-MET-001).
 #   (7) metrics:  Schätzung aus der Tabelle des Plans (DC-FA-MET-001).
+#   (8) pinsync:  Wertvergleich unter :ro, mit fremdem Benutzer, ohne Netz
+#                 (DC-FA-PSYNC-001).
 #
 # „Nativ" in einem Docker-only-Repo: das statische Binary wird aus dem
 # Runtime-Image extrahiert (docker cp) und direkt ausgeführt — kein
@@ -228,4 +230,49 @@ docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none -v "$tfx":/repo:ro "$REF"
 grep -q 'weicht von der Tabelle ab' "$WORK/t2.err" || fail "metrics Tabelle: Hinweis bei Messung >= 1 fehlt: $(cat "$WORK/t2.err")"
 echo "image-test: (7) metrics — Schätzung aus der Tabelle: Befund bei Messung 0, Hinweis bei Messung >= 1"
 
-echo "image-test: OK — Akzeptanzkriterien erfüllt (DC-FA-DIST-001, DC-FA-CLI-007, DC-FA-CLI-008, DC-FA-CLI-013, DC-FA-MET-001)"
+# --- (8) pinsync: Wertvergleich unter :ro, fremdem Eigentümer, ohne Netz ---
+# abdeckung: DC-FA-PSYNC-001
+# Dasselbe Ergebnis gegen ein Repo, das einem anderen Benutzer gehört und nur
+# lesbar eingehängt ist, wie gegen ein eigenes beschreibbares: gleiche Werte
+# Exit 0, ungleiche Exit 1 mit pinsync-mismatch, eine Symlink-Quelle Exit 2.
+pfx="$WORK/pinsyncfix"
+mkdir -p "$pfx"
+cat > "$pfx/.d-check.yml" <<'YML'
+modules: [links]
+pinsync:
+  pins:
+    - name: go
+      sources:
+        - {file: Dockerfile, pattern: '^ARG GO_VERSION=v?(\S+)$'}
+        - {file: Makefile, pattern: '^GO_VERSION\s*\?=\s*v?(\S+)$'}
+YML
+printf 'ARG GO_VERSION=1.27.3\n' > "$pfx/Dockerfile"
+printf 'GO_VERSION ?= v1.27.3\n' > "$pfx/Makefile"
+chmod -R a+rX "$pfx"
+px=0
+docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none --user 12345:12345 -v "$pfx":/repo:ro "$REF" --enable pinsync \
+  > "$WORK/p.out" 2> "$WORK/p.err" || px=$?
+[ "$px" -eq 0 ] || fail "pinsync: Exit $px bei gleichen Werten unter :ro und fremdem Benutzer, want 0 ($(cat "$WORK/p.out") $(cat "$WORK/p.err"))"
+grep -q 'pinsync: 1 Pin(s) geprüft, 2 Quelle(n) gelesen' "$WORK/p.err" || fail "pinsync: Bezugsmengen-Zeile fehlt: $(cat "$WORK/p.err")"
+printf 'GO_VERSION ?= v1.27.4\n' > "$pfx/Makefile"
+px=0
+docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none --user 12345:12345 -v "$pfx":/repo:ro "$REF" --enable pinsync \
+  > "$WORK/p1.out" 2> "$WORK/p1.err" || px=$?
+[ "$px" -eq 1 ] || fail "pinsync: Exit $px bei ungleichen Werten unter :ro und fremdem Benutzer, want 1 ($(cat "$WORK/p1.err"))"
+grep -q 'pinsync-mismatch' "$WORK/p1.out" || fail "pinsync: pinsync-mismatch fehlt: $(cat "$WORK/p1.out")"
+px=0
+docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none -v "$pfx":/repo "$REF" --enable pinsync \
+  > "$WORK/p2.out" 2> "$WORK/p2.err" || px=$?
+[ "$px" -eq 1 ] || fail "pinsync: Exit $px gegen ein beschreibbares Repo, want 1"
+cmp -s "$WORK/p1.out" "$WORK/p2.out" || fail "pinsync: Ausgabe unter :ro und fremdem Benutzer weicht vom beschreibbaren Lauf ab"
+rm "$pfx/Makefile"
+printf 'GO_VERSION ?= 1.27.3\n' > "$pfx/echt.mk"
+ln -s echt.mk "$pfx/Makefile"
+chmod -R a+rX "$pfx"
+px=0
+docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none --user 12345:12345 -v "$pfx":/repo:ro "$REF" --enable pinsync \
+  > "$WORK/p3.out" 2> "$WORK/p3.err" || px=$?
+[ "$px" -eq 2 ] || fail "pinsync: Exit $px bei Symlink-Quelle, want 2 ($(cat "$WORK/p3.err"))"
+echo "image-test: (8) pinsync — gleiche Werte Exit 0, ungleiche Exit 1 (:ro, fremder Benutzer == beschreibbar), Symlink-Quelle Exit 2"
+
+echo "image-test: OK — Akzeptanzkriterien erfüllt (DC-FA-DIST-001, DC-FA-CLI-007, DC-FA-CLI-008, DC-FA-CLI-013, DC-FA-MET-001, DC-FA-PSYNC-001)"

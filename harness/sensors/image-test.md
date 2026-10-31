@@ -11,6 +11,10 @@ das lokal gebaute Image (`tools/image-test.sh`):
 - der read-only-Mount ist vollständig;
 - ein **fehlender** Mount endet mit Exit 2 und einem Hinweis, nicht mit einer
   stillen Leermenge.
+- das Modul `pinsync` im Container unter `:ro`, mit fremdem Benutzer und ohne Netz:
+  gleiche Werte Exit 0, ungleiche Exit 1 mit `pinsync-mismatch`, dieselbe Ausgabe wie
+  gegen ein beschreibbares Repo, eine Symlink-Quelle Exit 2
+  ([`DC-FA-PSYNC-001`](../../spec/lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in)).
 - dazu zwei Modi über dieselbe Grenze: `--doctor`/`--repair` nativ vs. Container
   byte-identisch
   ([`DC-FA-CLI-007`](../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus),
