@@ -93,6 +93,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 
 | Welle | Abschluss | Closure-Notiz |
 |---|---|---|
+| welle-94-pinsync-modul | 2026-10-31 | [`welle-94-results.md`](../done/welle-94-results.md) |
 | welle-93-metrics-modul | 2026-10-31 | [`welle-93-results.md`](../done/welle-93-results.md) |
 | welle-92-namens-slices-und-home-variablen | 2026-10-29 | [`welle-92-results.md`](../done/welle-92-results.md) |
 | welle-91-adoption-ai-harness-init | 2026-09-29 | [`welle-91-results.md`](../done/welle-91-results.md) |
