@@ -29,7 +29,7 @@ scan:
 #
 # Diese Liste hat Spiegel ausserhalb dieser Datei (BEO-ALL/modulliste-spiegel-ungegated): FOCUS_DISABLE im
 # Makefile und netlessDocModules() im Go-Test. Beide sind hier nachzuziehen.
-modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions, structure, diagrams, citations, file]
+modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions, structure, diagrams, citations, file, pinsync]
 
 # Geteiltes Referenz-Ventil (DC-FA-REF-001): Ziel-Achsen-Pendant zu scan.ignore
 # (jenes entfernt Quell-Dateien, dieses Ziel-Referenzen), honoriert von
@@ -1079,3 +1079,23 @@ mentions:
   documents:
     - docs/plan/adr/README.md
   match: basename
+
+# pinsync (DC-FA-PSYNC-001, ADR-0113): dieselbe Version an zwei Stellen. Beide Pins
+# stehen im Dockerfile (ARG) und im Makefile (?=); das "v?" von golangci-lint steht
+# ausserhalb der Fanggruppe, damit "v2.15.0" und "2.15.0" als gleich gelten.
+# Gegenstand ist die Wertgleichheit, nicht die Aktualitaet (die tragen die
+# freshness-Targets) und nicht die Digests der Basis-Images.
+pinsync:
+  pins:
+    - name: GO_VERSION
+      sources:
+        - file: Dockerfile
+          pattern: '^ARG GO_VERSION=(\S+)$'
+        - file: Makefile
+          pattern: '^GO_VERSION\s*\?=\s*(\S+)$'
+    - name: GOLANGCI_LINT_VERSION
+      sources:
+        - file: Dockerfile
+          pattern: '^ARG GOLANGCI_LINT_VERSION=v?(\S+)$'
+        - file: Makefile
+          pattern: '^GOLANGCI_LINT_VERSION\s*\?=\s*v?(\S+)$'

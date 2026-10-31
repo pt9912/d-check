@@ -2,12 +2,13 @@
 
 ## Vertrag
 
-**Elf Module** über die gesamte Repo-Doku: Links, **Anker**,
+**Zwölf Module** über die gesamte Repo-Doku: Links, **Anker**,
 **Kennungs-Linkpflicht**, **Referenzmatrix**, **Inline-Code-Pfade**,
 **Abschnitts-Invarianten** (`structure`), **Kennungen in Diagramm-Fences**
 (`diagrams`), **Markdown-Span-Artefakte** (`spans`), **Host-Pfade**
-(`hostpaths`), **Versions-Pins** (`versions`) und **wortgleiche Zitate gegen
-ihre Quelle** (`citations`).
+(`hostpaths`), **Versions-Pins** (`versions`), **wortgleiche Zitate gegen
+ihre Quelle** (`citations`) und **die Gleichheit eines Wertes an mehreren
+Stellen** (`pinsync`).
 
 **Dogfooding-Selbstkonfiguration:** Runtime-Image, read-only-Mount,
 `--network none`, [`.d-check.yml`](../../.d-check.yml). Der Lauf ist zugleich
@@ -41,6 +42,14 @@ die automatisierte Messmethode für
    [`.d-check.yml`](../../.d-check.yml) — die vendorte Baseline und ihr Cache
    (Fremdinhalt) und die Fixtures der [Black-Box-Probe](blackbox-probe.md),
    die absichtlich kaputte Links tragen.
+5. **`pinsync` bewacht zwei Paare, nicht alle Pins** — `GO_VERSION` und
+   `GOLANGCI_LINT_VERSION` in `Dockerfile` und `Makefile`
+   ([`DC-FA-PSYNC-001`](../../spec/lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in),
+   [ADR-0113](../../docs/plan/adr/0113-pinsync-modul.md)). Das Modul vergleicht die
+   Werte beider Dateien auf Gleichheit; ob der Wert aktuell ist, sagen die
+   `freshness-*`-Targets, und die Digests der Basis-Images und weitere Spiegel einer
+   Pin-Hebung bleiben ungeprüft. Die Quellen liest es außerhalb der Scan-Menge
+   (`scan.roots`, `scan.ignore` gelten dort nicht).
 **Wie groß der Ausschnitt ist, sagt das Kommando:** `make doc-check` nennt die
 geprüfte Dateizahl in seiner Schluss-Zeile.
 
