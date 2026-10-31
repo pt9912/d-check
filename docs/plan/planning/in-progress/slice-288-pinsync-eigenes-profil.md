@@ -62,23 +62,23 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] Die `.d-check.yml` führt das Modul mit zwei Pins zu je zwei Quellen (vier Ausdrücke);
+- [x] Die `.d-check.yml` führt das Modul mit zwei Pins zu je zwei Quellen (vier Ausdrücke);
       jeder Ausdruck hat am Bestand **genau einen** Treffer (Zählbefehl im Plan-Nachtrag
       mit Ergebnis), das `v` von `GOLANGCI_LINT_VERSION` steht außerhalb der Fanggruppe.
-- [ ] Die Brechprobe liegt als Beleg vor: mit einem in nur einer Datei gehobenen Wert endet
+- [x] Die Brechprobe liegt als Beleg vor: mit einem in nur einer Datei gehobenen Wert endet
       `make doc-check` rot mit dem Grund-Code des Moduls und der Fundstelle; die Rücknahme
       ist wieder grün (beide Richtungen, echte Ausgabe im Report).
-- [ ] Das Gate-Verzeichnis (`harness/README.md` §Sensors, `harness/sensors/doc-check.md`)
+- [x] Das Gate-Verzeichnis (`harness/README.md` §Sensors, `harness/sensors/doc-check.md`)
       nennt die neue Zusage von `doc-check` mit ihrer Bindung (die Anforderung aus
       `slice-286`, die ADR).
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure.
 
 ## 3. Plan (vor Code)
 
@@ -163,7 +163,48 @@ formulieren) · `grundlagen-traceability.md` §Herkunfts-Anker für Steering-Loo
 (das Feld `liegt in` steht **nur**, wenn mit diesem Slice wirklich etwas verkörpert
 wurde).
 
-Entsteht bei der Closure.
+- **Geliefert:** `pinsync` im eigenen Gate `make doc-check`: zwei Pins (`GO_VERSION`,
+  `GOLANGCI_LINT_VERSION`) zu je zwei Quellen (`Dockerfile`, `Makefile`), vier Ausdrücke mit je genau
+  einem Treffer am Bestand (`Dockerfile:31`/`32`, `Makefile:13`/`14`, kein CR), das `v?` von
+  `GOLANGCI_LINT_VERSION` außerhalb der Fanggruppe. Die Modulliste ist nachgezogen
+  (`FOCUS_DISABLE` im `Makefile`, `netlessDocModules()` im Test); Gate-Index und Sensor-Doku nennen
+  die Zusage und ihre Grenzen ([`DC-FA-PSYNC-001`](../../../../spec/lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in),
+  [`ADR-0113`](../../adr/0113-pinsync-modul.md)).
+- **Was funktioniert hat:** Die Brechprobe in beide Richtungen am eigenen Gate: grün, ein Wert in nur
+  einer Datei gehoben ⇒ `pinsync-mismatch` mit Fundstelle (`Makefile:13`, `Makefile:14`), Rücknahme
+  grün; der Verifier fuhr sie je Pin und Datei, dazu `pinsync-no-match` (Zeile auskommentiert) und
+  `pinsync-ambiguous` (Zeile verdoppelt), und `v`/ohne `v` zählt gleich.
+- **Was anders lief als geplant:** (1) Zwei Dateien kamen zur Änderungsliste (`Makefile`,
+  `gate_consistency_test.go`), vorab als Plan-Nachtrag committet. (2) Der Review fand zwei
+  Prosa-Spiegel der Modulliste (Makefile-Beschreibung, Modulzahl in der Sensor-Doku) und eine
+  Grenze (`?=` ist zur Laufzeit überschreibbar, das Modul liest den Dateistand); eingearbeitet. (3)
+  `make blackbox-probe REF=v0.90.0` ist mit der heutigen `.d-check.yml` **nicht** identisch: die
+  Fixture `repo` liest die Repo-Konfiguration, und das alte Image kennt den Block `pinsync` nicht
+  (Exit 2). Mit der `.d-check.yml` vor diesem Slice (Datei vorübergehend zurückgestellt) ist die
+  Probe byte-identisch über 20 Vergleiche; die 16 Vergleiche der anderen Fixtures sind es in beiden
+  Fällen. (4) Der Verifier-Vermerk V-3 („`FOCUS_DISABLE` von keinem Wächter gedeckt“) trifft nicht
+  zu — er fuhr nur `make adr-check`; `make test` wird rot (`TestFocusDisable_DecktDCheckYmlModules`).
+  (5) Der Betrieb unter `:ro` mit fremdem Benutzer und ohne Netz ist belegt: `make doc-check`/`gates`
+  laufen so, dazu der Handlauf in `slice-287`; einen `pinsync`-Teil in `image-test` gibt es nicht.
+- **Steering-Loop-Eintrag:** keiner mit neuer Schwelle; gezählt, nicht verkörpert. Benannte
+  Grenzen: `pinsync` bewacht zwei Paare und die Wertgleichheit — Digests der Basis-Images und weitere
+  Spiegel einer Pin-Hebung bleiben ungeprüft,
+  [`pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md) wird
+  nicht aufgelöst.
+- **Beobachtungs-Register (`../observations/`):**
+  [`modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
+  bekommt den Beleg `evidence/slice-288.md` (Prosa-Spiegel der Modulliste, vom Review gefunden).
+  Zitiert, ohne neuen Beleg:
+  [`pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md) und
+  [`module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md).
+- **Folge-Slices:** keine. Der Release-Prep zieht nach (`AGENTS.md` §5 Zeile 17), unter anderem die
+  Modulzahl in `packaging/dockerhub/overview.md`.
+- **Risiken aus §6:** beide entfallen, jedes mit Begründung (siehe §6). Trigger-Audit: kein Carveout,
+  kein bootstrap-aware Gate, keine Schwelle gesenkt oder Ausnahme eingetragen (`pinsync` ist eine
+  zusätzliche Prüfung); keine neue ADR; keine Hard Rule mit eingetretenem Trigger.
+- **Drei Paarungen:** (a) Anker — kein `liegt in`-Feld; (b) Folge-Slice — keiner genannt;
+  (c) Register — die zitierten Beobachtungen existieren, `modulliste-spiegel-ungegated` trägt den neuen
+  Beleg.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
