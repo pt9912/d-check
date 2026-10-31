@@ -2,7 +2,7 @@
 
 ## Vertrag
 
-**Zwölf Module** über die gesamte Repo-Doku: Links, **Anker**,
+**Die Module der Liste `modules`** der `.d-check.yml` über die gesamte Repo-Doku, darunter Links, **Anker**,
 **Kennungs-Linkpflicht**, **Referenzmatrix**, **Inline-Code-Pfade**,
 **Abschnitts-Invarianten** (`structure`), **Kennungen in Diagramm-Fences**
 (`diagrams`), **Markdown-Span-Artefakte** (`spans`), **Host-Pfade**
@@ -49,7 +49,9 @@ die automatisierte Messmethode für
    Werte beider Dateien auf Gleichheit; ob der Wert aktuell ist, sagen die
    `freshness-*`-Targets, und die Digests der Basis-Images und weitere Spiegel einer
    Pin-Hebung bleiben ungeprüft. Die Quellen liest es außerhalb der Scan-Menge
-   (`scan.roots`, `scan.ignore` gelten dort nicht).
+   (`scan.roots`, `scan.ignore` gelten dort nicht). Es liest den Dateistand: das
+   `Makefile` setzt beide Werte mit `?=`, und ein Aufruf mit `GO_VERSION=…` oder eine
+   Umgebungsvariable überschreibt sie zur Laufzeit, ohne dass das Modul es sieht.
 **Wie groß der Ausschnitt ist, sagt das Kommando:** `make doc-check` nennt die
 geprüfte Dateizahl in seiner Schluss-Zeile.
 

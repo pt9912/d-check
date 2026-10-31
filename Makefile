@@ -166,7 +166,7 @@ COMPLETE_FLAGS = --trace --require-complete
 # Zugleich die automatisierte DC-QA-03-Messmethode (slice-008):
 # read-only-Mount + --network none — alle Module außer external aktiv,
 # der Lauf beweist Seiteneffektfreiheit und Netzlosigkeit.
-doc-check: build ## Links, Anker, Kennungs-Linkpflicht, Referenzmatrix, Inline-Code-Pfade, Spans, Host-Pfade, Versions-Pins, Abschnitts-Invarianten und Diagramm-Kennungen via d-check selbst (Dogfooding; netzlos: DC-QA-03).
+doc-check: build ## Links, Anker, Kennungs-Linkpflicht, Referenzmatrix, Inline-Code-Pfade, Spans, Host-Pfade, Versions-Pins, Abschnitts-Invarianten, Diagramm-Kennungen, Zitate und die Gleichheit der Doppel-Pins (pinsync) via d-check selbst (Dogfooding; netzlos: DC-QA-03).
 	$(DCHECK_RUN)
 
 # Dogfooding-Render (kein Gate): die Requirements Traceability Matrix
