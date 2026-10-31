@@ -112,6 +112,30 @@ Workflow-Skeletts): die Modul-Aufzählungen (Modulliste, README-Listen, Handbuch
 `operations.md`, `print-config`-Vorlage, Spiegel-Tests) werden mit `grep` über den Namen
 eines Bestandsmoduls gezählt (etwa `mentions`), jeder Treffer steht hier im Nachtrag.
 
+**Plan-Änderung vor dem Code (Schritt 17, 2026-10-31):** die Tabelle oben wird um die Dateien
+ergänzt, die die Modul-Aufzählungen und das Gerüst tragen. Gezählt mit
+`grep -rln "mentions" . | grep -v "docs/plan\|docs/reviews\|.harness/baseline\|CHANGELOG\|.git/"`:
+
+| Datei | Änderungs-Art | Begründung und Treffer der Aufzählungs-Suche |
+|---|---|---|
+| `internal/hexagon/core/app/diagnose.go` | update | `AllReasons()` und `reasonTexts()` führen die drei neuen Grund-Codes (Lockstep-Test) |
+| `internal/adapter/driving/cli/config_template.go` | update | `--print-config`: Zeile „Verfügbar“ und Block `pinsync` |
+| `README.md`, `README.de.md` | update | Modul-Bullets (Spiegel-Test `ReadmeEn`/`ReadmeDe`) — Treffer der Suche |
+| `docs/user/abdeckung-tests.md` | update | von `make abdeckung` abgeleitet; `make test` hält sie gegen die Ableitung |
+| `internal/adapter/driven/configyaml/pinsync_test.go`, `internal/hexagon/core/rules/pinsync_test.go` | neu | Tests je Randbedingung der Anforderung |
+
+Treffer der Suche **ohne** Änderung: `Makefile` (FOCUS_DISABLE spiegelt die Module der
+`.d-check.yml`, die `pinsync` erst mit `slice-288` trägt) und `.d-check.yml` (Selbstlauf =
+`slice-288`), `harness/README.md` und `harness/sensors/mention-coverage.md` (Gate-Index und
+Sensor-Doku des Targets `mention-coverage`, keine Modul-Aufzählung), `gate_consistency_test.go`
+(Modulsatz des Netzlos-Guards über die `.d-check.yml`), `report_test.go` (Beispiel einer Note),
+`mentions.go`/`workflows.go` (Modul-Code), `.claude/settings.local.json` (Werkzeug-Einstellung).
+Entscheide zu den mitgegebenen Punkten: (1) die Pfad-Prüfung wird **für dieses Modul**
+verschärft — ein abschließender `/` ist ein Eingabefehler der Konfiguration (die gemeinsame
+`ValidLiteralPath` bleibt unverändert, `metrics` darf Verzeichnisse nennen); (3) die Konfiguration
+wird am Rand geprüft, auch wenn das Modul nicht aktiv ist (wie `metrics`); nur die leere
+Pin-Liste ist erst im aktiven Modul ein Fehler.
+
 **Aus Review und Verifikation von `slice-286` mitgegeben** (jedes braucht einen Test oder eine
 Entscheidung im Code, bevor der Slice schließt): (1) der abschließende Schrägstrich —
 `Dockerfile/` passiert `ValidLiteralPath`, `Kind` meldet dann ENOTDIR (Exit 2); die Anforderung
