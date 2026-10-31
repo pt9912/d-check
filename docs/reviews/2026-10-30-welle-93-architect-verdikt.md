@@ -1,7 +1,7 @@
 # Architect-Verdikt — welle-93 (Modul `metrics`), Plan gegen Entscheidungslage
 
 **Rolle:** Architect (Modul 8), frischer Kontext, **vor** Code.
-**Gegenstand:** [welle-93](../plan/planning/done/welle-93-metrics-modul.md) und ihre drei Slice-Pläne
+**Gegenstand:** [welle-93](../plan/planning/done/welle-93/welle-93-metrics-modul.md) und ihre drei Slice-Pläne
 [slice-282](../plan/planning/done/welle-93/slice-282-metrics-anforderung-und-adr.md),
 [slice-283](../plan/planning/done/welle-93/slice-283-metrics-modulkern-formel-und-grund.md),
 [slice-284](../plan/planning/done/welle-93/slice-284-metrics-messung-aus-git.md) (alle uncommittet).
@@ -112,13 +112,13 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
 
 - Der Schnitt folgt dem Lieferwert (hermetische Formel/Grund vs. Messung aus git), nicht den Schichten — so verlangt es Baseline-Regelwerk
   [modul-05](../../.harness/baseline/v6.18.1/regelwerk/modul-05-planning-harness.md) §Ziel-Form: Slice („Schnitt nach Lieferwert"). Ein Port-/Adapter-Vorab-Slice wäre ein
-  Schicht-Zombie ohne Konsumenten. Reihenfolge 282 → 283 → 284 ist fachlich zwingend ([welle-93](../plan/planning/done/welle-93-metrics-modul.md) §5).
+  Schicht-Zombie ohne Konsumenten. Reihenfolge 282 → 283 → 284 ist fachlich zwingend ([welle-93](../plan/planning/done/welle-93/welle-93-metrics-modul.md) §5).
 - Beide Modul-Slices berühren mehr als zwei Schichten (283: Kern, `configyaml`-Adapter, CLI-Gerüst; 284: Port, git-Adapter, Kern, CLI). Das ist bei jedem opt-in-Modul der Fall
   (Präzedenz ADR-0027/ADR-0030) und in beiden Plänen als Rückführungs-Trigger vorab benannt (283 §4 Z. 141–144 mit [`MR-066`](../../harness/conventions.md#mr-066)).
   **Akzeptiert** mit dieser Begründung; es wird kein eigener Träger angelegt. Wählt der Auftraggeber in F-2 Weg (a), wächst slice-283 um Port und Adapter — dann ist der
   benannte Rückführungs-Trigger der Normalfall, und die Block-Lexik sollte vorab als eigener Slice geschnitten werden.
 - Zwischenzustand nach slice-283 (Modul aktiv, git-Hälfte fehlt, Exit-2-Zusage ohne `.git` noch nicht eingelöst) ist auf die offene Welle beschränkt; kein Release dazwischen
-  ([welle-93](../plan/planning/done/welle-93-metrics-modul.md) §6). Akzeptiertes Negativ.
+  ([welle-93](../plan/planning/done/welle-93/welle-93-metrics-modul.md) §6). Akzeptiertes Negativ.
 
 ## Bestätigte Bezüge (kein Befund)
 
@@ -132,7 +132,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
   daher greift die Klassifikations-Richtung in [gate_consistency_test.go](../../internal/adapter/driven/configyaml/gate_consistency_test.go) Z. 60–71 nicht; sie wäre bei einer späteren Aufnahme neu zu entscheiden.
 - **Entscheid 3 (lineare Formel, kein Parser) und Entscheid 5 (Grund-Codes):** keine bestehende ADR berührt; Spezifikations-Sache in slice-282. Ob die Fachlogik des Anlass-Repos „Zustände" verlangt, entscheidet dessen Gegenprobe (slice-282 Z. 61–62, Rückführung Z. 169–171) — nicht vorab zu entscheiden.
 - **Entscheid 4, Rename-Erkennung aus:** Das Issue nennt das Kommando wörtlich (`git diff --numstat <basis>..HEAD`). Ob dessen Standard-Verhalten (Rename-Erkennung an oder aus) mit `--no-renames` zusammenfällt,
-  habe ich **nicht** gemessen. Die Empfehlung der Pläne ist deshalb zu Recht nur Empfehlung; maßgeblich ist, was das Programm des Anlass-Repos tut (Paritäts-Probe in [welle-93](../plan/planning/done/welle-93-metrics-modul.md) §3).
+  habe ich **nicht** gemessen. Die Empfehlung der Pläne ist deshalb zu Recht nur Empfehlung; maßgeblich ist, was das Programm des Anlass-Repos tut (Paritäts-Probe in [welle-93](../plan/planning/done/welle-93/welle-93-metrics-modul.md) §3).
 - **Abwärts-Sperre:** Die Pläne lassen die Spec-Straten nie auf Slices oder ADRs zeigen (slice-282 Z. 23–25); `DC-*` entstehen nur im Lastenheft ([AGENTS.md](../../AGENTS.md) §5 Zeile 3).
 
 ## Nicht geprüft
