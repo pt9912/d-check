@@ -316,9 +316,9 @@ spec, and both are measured, not asserted:
   ([`DC-FA-CONF-001`](spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
 - **Dogfooding:** d-check validates its own docs on every
   gate run — with the [self-configuration](.d-check.yml) fully
-  built out (**twelve** modules incl. reference matrix, span artifacts,
+  built out (**thirteen** modules incl. reference matrix, span artifacts,
   host-path hygiene, version-pin consistency, structure invariants,
-  diagram identifiers and verbatim citations).
+  diagram identifiers, verbatim citations and value equality of paired pins).
 - **Container native-identical:** the image's finding output and exit code
   are byte-identical to native execution, tested automatically per platform
   (`linux/amd64`, `linux/arm64`)
@@ -336,7 +336,7 @@ works for both registries)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.90.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.91.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

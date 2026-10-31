@@ -50,10 +50,11 @@ The digest for every version is listed in the
 
 ## Modules
 
-21 rule modules, most of them opt-in: `links`, `anchors`, `ids`, `matrix`,
+26 rule modules, most of them opt-in: `links`, `anchors`, `ids`, `matrix`,
 `external`, `sources`, `codepaths`, `spans`, `hostpaths`, `diagrams`,
 `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`,
-`targets`, `citations`, `structure`, `workflows`. Two of them reach the network
+`targets`, `citations`, `structure`, `workflows`, `reviews`, `mentions`,
+`file`, `metrics`, `pinsync`. Two of them reach the network
 (`external`, `sources`) and are never active by default.
 
 ## Documentation

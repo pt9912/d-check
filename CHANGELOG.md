@@ -4,6 +4,39 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.91.0] — 2026-10-31
+
+### Added
+
+- **Neues Modul `pinsync`: gleiche Werte an mehreren Dateistellen gegeneinander prüfen**
+  ([`DC-FA-PSYNC-001`](spec/lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in),
+  Lastenheft 0.111.1, opt-in über `--enable pinsync`). Ein benannter Pin hat mindestens zwei
+  Quellen, je eine Datei und einen RE2-Ausdruck mit genau einer Fanggruppe. Das Modul liest zeilenweise
+  (`\n`, ein `\r` am Zeilenende gehört nicht zur Zeile); eine Zeile trifft, wenn die erste Passung des
+  Ausdrucks eine nicht leere Gruppe hat. Je Quelle muss genau eine Zeile treffen; verglichen wird gegen
+  die erste Quelle mit genau einem Treffer, byte-genau. Drei Grund-Codes: `pinsync-mismatch`
+  (ungleiche Werte, die Meldung nennt alle), `pinsync-no-match` (Zeile 1) und `pinsync-ambiguous`
+  (erste Treffer-Zeile, die Meldung nennt alle). Eingabefehler sind Exit 2: kein oder doppelter Pin,
+  fehlender Name, weniger als zwei Quellen, ein Pfad mit `..`, absolut, Glob oder abschließendem `/`,
+  ein Ausdruck, der nicht kompiliert oder nicht genau eine Gruppe hat, dieselbe Stelle zweimal in
+  einem Pin, eine Quelle, die fehlt, ein Verzeichnis oder nicht lesbar ist, und ein **Symlink als
+  Quelle** (auch als Verzeichnis-Segment). Die Quellen liegen außerhalb der Scan-Menge; das Modul
+  schreibt nie, braucht kein Netz und kein git. Die Zusammenfassung nennt Pins und gelesene Quellen
+  (`pinsync: <P> Pin(s) geprüft, <S> Quelle(n) gelesen`). Gleichheit, keine Aktualität; es gibt keinen
+  Schalter für ein führendes `v` (der Ausdruck trägt `v?` vor der Gruppe). Neue Schlüssel
+  `pinsync.*`; `--print-config` führt sie. Ohne `pinsync`-Konfiguration ist der Lauf byte-identisch zu
+  v0.90.0 (`make blackbox-probe`, 20 Vergleiche). Grenzen (Hardlink, Bind-Mount, FIFO als Quelle,
+  zwei gleichwertige Ausdrücke derselben Datei, `?=` im Makefile) stehen in der Anforderung und im
+  Handbuch. Anlass: GitHub-Issue 14. Handbuch §4.27.
+
+### Changed
+
+- **Das eigene Gate `make doc-check` prüft `GO_VERSION` und `GOLANGCI_LINT_VERSION`** in `Dockerfile`
+  und `Makefile` mit `pinsync`; ein Wert, in nur einer Datei gehoben, färbt den Lauf rot
+  (`pinsync-mismatch` mit Fundstelle).
+- **`make image-test` fährt eine Phase für `pinsync`:** Wertvergleich unter `:ro`, mit fremdem Benutzer
+  und ohne Netz, dieselbe Ausgabe wie gegen ein beschreibbares Repo.
+
 ## [0.90.0] — 2026-10-30
 
 ### Added

@@ -320,9 +320,9 @@ Lastenhefts, und beide werden gemessen, nicht behauptet:
   ([`DC-FA-CONF-001`](spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
 - **Dogfooding:** d-check validiert die eigene Doku bei jedem
   Gate-Lauf — mit der [Selbstkonfiguration](.d-check.yml) im
-  Vollausbau (**zwölf** Module inkl. Referenzmatrix, Span-Artefakten,
+  Vollausbau (**dreizehn** Module inkl. Referenzmatrix, Span-Artefakten,
   Host-Pfad-Hygiene, Versions-Pin-Konsistenz, Struktur-Invarianten,
-  Diagramm-Kennungen und wortgleichen Zitaten).
+  Diagramm-Kennungen, wortgleichen Zitaten und Wertgleichheit von Doppel-Pins).
 - **Container nativ-identisch:** Befund-Ausgabe und Exit-Code des
   Images sind byte-identisch zur nativen Ausführung, je Plattform
   (`linux/amd64`, `linux/arm64`) automatisiert getestet
@@ -340,7 +340,7 @@ zusätzlich nach Docker Hub gespiegelt als
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.90.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.91.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
