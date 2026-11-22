@@ -23,7 +23,7 @@ dieser Kopf zieht sie nach, sobald sie stehen),
 [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl) und
 Glossar). Der Verweis zeigt **aufwärts**: Die Spec nennt diesen Slice nie.
 
-**Verantwortlich:** pt9912.
+**Verantwortlich:** —
 
 **Autor:** pt9912. **Datum:** 2026-11-22.
 
@@ -181,14 +181,21 @@ dasteht.
 - Ein nicht geschlossener Fence nimmt über die geteilte Lexik den Rest der Datei aus der
   Prüfung — ein stilles Grün über einem Teil der Datei
   ([`BEO-ALL/prosa-verschwindet-in-inline-code-spanne`](../observations/BEO-ALL/prosa-verschwindet-in-inline-code-spanne/observation.md),
-  Fence-Hälfte, 2×) — **Ausgang:** offen bis zur Closure.
+  Fence-Hälfte, 2×) — **Ausgang:** *entfallen*, wenn ein Test das in der Anforderung
+  festgelegte Verhalten beim offenen Fence belegt und die Meldung oder die Bezugsmenge den
+  ausgenommenen Teil sichtbar macht; *weiter offen* — ein Beleg, der den Zähler auf 3×
+  hebt —, wenn der Ausfall still bleibt.
 - `proseLineSet`/`tableRowLine` sind paket-interne Helfer anderer Module; sie für ein neues
   Modul zu nutzen bindet dessen Verhalten an deren Änderungen
   ([`BEO-ALL/shared-lexicon-drifts-at-edges`](../observations/BEO-ALL/shared-lexicon-drifts-at-edges/observation.md),
-  verkörpert über Kopplungs-Tests) — **Ausgang:** offen bis zur Closure.
+  verkörpert über Kopplungs-Tests) — **Ausgang:** *entfallen*, wenn ein Kopplungs-Test
+  dieselbe Eingabe durch `linelength` und die bisherigen Konsumenten fährt; *eingetreten*
+  (Rückführung nach `next`, §4), wenn die Helfer für das Modul geändert werden müssten.
 - Eine Randbedingung der Anforderung bleibt ohne Test
   ([`BEO-ALL/spec-randbedingung-ohne-test`](../observations/BEO-ALL/spec-randbedingung-ohne-test/observation.md),
-  1×) — **Ausgang:** offen bis zur Closure.
+  1×) — **Ausgang:** *entfallen*, wenn jede Randbedingung der Anforderung einen Test mit
+  gezeigtem Rot hat (Zuordnung im Plan-Nachtrag); *weiter offen* — ein Beleg in diesem
+  Eintrag —, wenn eine fehlt.
 
 ## 7. Closure-Notiz
 

@@ -26,7 +26,7 @@ Anforderung), `spezifikation.md` §1 (neues Verfahren), §2 (Schema `linelength.
 unberührt (die Rolle „Regel-Modul“ besteht). Der Verweis zeigt **aufwärts**: Die Spec
 nennt diesen Slice nie.
 
-**Verantwortlich:** pt9912.
+**Verantwortlich:** —
 
 **Autor:** pt9912. **Datum:** 2026-11-22.
 
@@ -198,16 +198,26 @@ dasteht.
 
 - Die Ausnahme (c) „kein Leerzeichen ab der Grenze“ ist zu grob: eine Zeile mit langem
   Link **und** umbrechbarem Text davor wird ausgenommen, obwohl sie kürzbar wäre —
-  **Ausgang:** offen bis zur Closure.
+  **Ausgang:** *entfallen*, wenn die Anforderung diese Grenze der Ausnahme ausdrücklich
+  nennt und die ADR die Alternative (nur der Überschuss nach dem letzten Leerzeichen
+  zählt) verglichen hat; *weiter offen* ins Register, wenn Review oder Verifikation die
+  Grenze als Mangel lesen.
 - Ein vergessener Schluss-Fence macht für die geteilte Lexik den Rest der Datei zu Code
   (die Fence-Hälfte von
   [`BEO-ALL/prosa-verschwindet-in-inline-code-spanne`](../observations/BEO-ALL/prosa-verschwindet-in-inline-code-spanne/observation.md),
   2×); nimmt das Modul Fenced-Code über dieselbe Lexik aus, fällt jede überlange Zeile
   danach still aus der Prüfung — ein dritter Beleg wäre die Schwelle. Die
   Inline-Code-Hälfte trifft das Modul nicht: es misst die rohe Zeile —
-  **Ausgang:** offen bis zur Closure.
+  **Ausgang:** *entfallen*, wenn die Anforderung das Verhalten beim offenen Fence festlegt
+  und als Grenze benennt (der Test dazu ist Lieferung von
+  [`slice-290`](../open/slice-290-linelength-modulkern.md)); *weiter offen* — ein Beleg in
+  `BEO-ALL/prosa-verschwindet-in-inline-code-spanne`, der den Zähler auf 3× hebt —, wenn
+  sie es offen lässt.
 - Der Name `linelength` liest sich neben `file.max-lines` und `structure.max-lines` als
-  vierte Längen-Achse und wird verwechselt — **Ausgang:** offen bis zur Closure.
+  vierte Längen-Achse und wird verwechselt — **Ausgang:** *entfallen*, wenn Anforderung und
+  ADR die Längen-Achsen gegeneinander abgrenzen und das Review dazu keinen Befund meldet;
+  *weiter offen* — ein Beleg in `BEO-ALL/max-lines-namenskollision-structure-file` —, wenn
+  es einen meldet.
 
 ## 7. Closure-Notiz
 
