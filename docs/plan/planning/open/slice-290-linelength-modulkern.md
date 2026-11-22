@@ -12,7 +12,7 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 **Welle:** [`welle-95-linelength-modul`](../welle-95-linelength-modul.md).
 
 **Bezug:** die Anforderung des Moduls `linelength` und ihre ADR aus
-[`slice-289`](../open/slice-289-linelength-anforderung-und-adr.md) (Kennungen vergibt jener Slice;
+[`slice-289`](../next/slice-289-linelength-anforderung-und-adr.md) (Kennungen vergibt jener Slice;
 dieser Kopf zieht sie nach, sobald sie stehen),
 [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus),
 [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit),
@@ -40,7 +40,7 @@ zusammen mit der Begründungs-Pflicht je Punkt.
 
 **Ziel:** Das opt-in-Modul `linelength` ist registriert, liest seinen Block am
 Konfigurations-Rand (Fehlkonfiguration ⇒ Exit 2), misst jede Zeile der Markdown-Dateien
-seiner Scan-Menge nach den in [`slice-289`](../open/slice-289-linelength-anforderung-und-adr.md)
+seiner Scan-Menge nach den in [`slice-289`](../next/slice-289-linelength-anforderung-und-adr.md)
 bestätigten Entscheiden und meldet jede überlange Zeile mit ihrem Grund-Code — jede
 Randbedingung der Anforderung hat einen Test, der ohne die Regel aus dem richtigen
 Grund rot läuft.
@@ -48,7 +48,7 @@ Grund rot läuft.
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Anforderung, Verfahren, ADR ändern** — gehören
-  [`slice-289`](../open/slice-289-linelength-anforderung-und-adr.md). Zeigt der Code, dass ein
+  [`slice-289`](../next/slice-289-linelength-anforderung-und-adr.md). Zeigt der Code, dass ein
   Entscheid nicht trägt, geht das als Plan-Änderung zurück an die Anforderung, nicht als
   stille Abweichung im Code.
 - **Das Modul im eigenen Profil (`.d-check.yml`) einschalten** — Welle-Out-of-Scope:
@@ -79,7 +79,7 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       Ausnahme einzeln schaltbar und getestet (an und aus), ein Befund je Zeile mit Ort,
       Länge und Grenze, Reihenfolge nach Pfad und Zeile, Bezugsmenge, leere Kandidaten-Menge
       fail-closed; die Negativfälle aus dem Plan von
-      [`slice-289`](../open/slice-289-linelength-anforderung-und-adr.md) stehen als Testfälle, und
+      [`slice-289`](../next/slice-289-linelength-anforderung-und-adr.md) stehen als Testfälle, und
       für jeden Test ist ein Rot ohne die Regel gezeigt (Baseline-Regelwerk
       `modul-11-verification.md` §Bewusstes Brechen).
 - [ ] Spiegel: Grund-Code in `AllReasons()`/Diagnose-Klartext und §4 der Spezifikation,
@@ -148,7 +148,7 @@ endgültige Liste folgt den bestätigten Entscheiden):
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
-**Start** (`next` → `in-progress`): [`slice-289`](../open/slice-289-linelength-anforderung-und-adr.md)
+**Start** (`next` → `in-progress`): [`slice-289`](../next/slice-289-linelength-anforderung-und-adr.md)
 liegt in `done/` (Anforderung, Spezifikation und ADR stehen, die Entscheide sind bestätigt),
 und das WIP-Limit ist frei.
 
@@ -264,7 +264,7 @@ Scan-Menge). Der Zähler folgt aus den Dateien der Closure.
 `make nightly-state` am 2026-11-22: **beide rot** — `upstream-drift` mit fünf veralteten
 Pins (Go, Semgrep, a-check, `docker/login-action`, Digest `golang:1.27.3`), `image-scan` mit
 behebbaren CRITICAL/HIGH im publizierten Image; Einzelheiten im Plan von
-[`slice-289`](../open/slice-289-linelength-anforderung-und-adr.md) §8. Berührt das Modul nicht;
+[`slice-289`](../next/slice-289-linelength-anforderung-und-adr.md) §8. Berührt das Modul nicht;
 eigene Pin-Hebung vor dem nächsten Release. Beim Start dieses Slice neu lesen.
 
 **Modus-Begründungsblock — Umfang.** Alle berührten Sub-Areas GF.
