@@ -195,6 +195,72 @@ Umlaut/Emoji, `\r\n`, Tab, nicht geschlossener Fence bis Dateiende, Tabellenzeil
 Trennzeile, URL mit Leerzeichen davor) stehen als Testfälle für
 [`slice-290`](../open/slice-290-linelength-modulkern.md).
 
+**Plan-Nachtrag — Gegenprobe gelaufen (2026-11-22, Implementer).** Gemessen auf dem Stand `f3dc94da` (vor diesem Nachtrag) über die
+**globale** Scan-Menge des eigenen Profils (`scan.roots: ["."]`, die drei `scan.ignore`-Muster,
+die feste Skip-Liste, nur reguläre `*.md`-Dateien, keine Symlinks) — die Menge, die `linelength`
+ohne eigenen `scope` erbt. Grenze 120, Zähleinheit Codepunkte der rohen Zeile ohne `\n`, ein `\r`
+vor dem `\n` zählt nicht; Fenced-Code nach dem Umschalt-Automaten der geteilten Lexik.
+
+| Größe | Zahl |
+|---|---|
+| Dateien · Zeilen | 1237 · 86275 |
+| Zeilen über 120, mit Fenced-Code | 6108 |
+| Zeilen über 120, ohne Fenced-Code | 6082 |
+| davon Tabellenzeilen (Ausnahme b) | 3130 |
+| davon ohne Leerraum ab Position 121 (Ausnahme c) | 828 |
+| Befunde mit allen drei Ausnahmen an (Default) | 2124 |
+| zum Vergleich: über 120 **Bytes** statt Codepunkten, mit Fenced-Code | 6233 |
+
+Damit ist „das eigene Profil schaltet das Modul nicht ein“ belegt: bei 120 stünden 2124 Befunde
+an. Kommando (aus der Repo-Wurzel, eine einzige `awk`-Instanz; das Ende des Programms gibt die
+Zahlen aus):
+
+```sh
+find . \( -type d \( -name .git -o -name node_modules -o -name build -o -name target \
+    -o -name dist -o -name vendor -o -name .venv -o -name __pycache__ -o -name .idea \
+    -o -name .vscode -o -name .gradle \) -prune \) \
+  -o \( -path ./.harness/baseline -o -path ./.harness/cache \
+    -o -path ./tools/blackbox-probe/fixtures \) -prune \
+  -o -type f -name '*.md' -print0 \
+| LC_ALL=C.UTF-8 xargs -0 awk -v G=120 '
+  FNR == 1 { infence = 0; files++ }
+  { raw = $0; sub(/\r$/, "", raw); lines++
+    t = raw; sub(/^[ \t]+/, "", t); toggle = 0
+    if (substr(t, 1, 3) == "~~~") toggle = 1
+    else if (substr(t, 1, 3) == "\140\140\140") {
+      rest = t; sub(/^\140+/, "", rest); if (index(rest, "\140") == 0) toggle = 1 }
+    code = (toggle || infence); if (toggle) infence = !infence
+    if (length(raw) > G) { all++
+      if (!code) { prose++
+        if (substr(raw, 1, 1) == "|") table++
+        else if (substr(raw, G + 1) ~ /[ \t]/) hit++
+        else unbreak++ } } }
+  END { print files, lines, all, prose, table, unbreak, hit }'
+```
+
+Die Bytes-Zeile ist dasselbe Kommando unter `LC_ALL=C`. Gegenprobe der Menge: `make doc-check`
+meldet 1243 Dateien — die Vereinigung aller Modul-Mengen; die 6 Dateien mehr sind die
+Fixture-Dateien unter `tools/blackbox-probe/fixtures/`, die `citations.scope` nicht ausnimmt
+(`find tools/blackbox-probe/fixtures -type f -name '*.md' | wc -l` ⇒ 6).
+
+**Am Gegenstand gelesen, für die Grenz-Aussagen der Spezifikation** (Kommando neben der Aussage):
+
+- Der Fence-Automat teilt an `\n` und lässt ein `\r` in der Zeile:
+  `grep -n 'strings.Split(string(content), "\\n")' internal/hexagon/core/rules/markdown.go` ⇒ Z. 91.
+- Leerraum vor dem Zaun sind Space und Tab, beliebig viele:
+  `grep -n 'TrimLeft(raw, " \\t")' internal/hexagon/core/rules/markdown.go` ⇒ Z. 53 (`TrimFenceIndent`).
+- Tabellenzeile = in der Prosa-Menge und die **rohe** Zeile beginnt mit `|`:
+  `grep -n 'HasPrefix(lines\[i\], "|")' internal/hexagon/core/rules/markdown.go` ⇒ Z. 193.
+- Die Scan-Menge nimmt nur Dateien mit der Endung `.md` (Groß-/Kleinschreibung zählt) und läuft
+  nicht durch Symlinks: `grep -n 'HasSuffix(e.Name, ".md")\|case driven.Kind' internal/hexagon/core/rules/scan.go`
+  ⇒ Z. 94, 112, 119, 120.
+- Eine unlesbare Datei der Scan-Menge beendet den ganzen Lauf mit Exit 2:
+  `grep -n 'nicht lesbar: ' internal/hexagon/core/rules/run.go` ⇒ Z. 232.
+- Den Schlüssel `<modul>.scope` nehmen heute 16 Module an; `linelength` kommt als siebzehntes dazu:
+  `sed -n '/^func applyScopes/,/^	}$/p' internal/adapter/driven/configyaml/configyaml.go | grep -c '{"'` ⇒ 16.
+- Den Zeilen-Marker honorieren vier Module (`codepaths`, `ids`, `versions`, `diagrams`):
+  `grep -n 'ignoreMarker nimmt' -A1 internal/hexagon/core/rules/codepaths.go`.
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
