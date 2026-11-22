@@ -7,7 +7,7 @@
 **Autor:** pt9912
 
 **Bezug:** Auftrag des Auftraggebers vom 2026-11-22 (Zeilenlänge in Markdown-Dateien, nur Markdown),
-die neue Anforderung `DC-FA-LLEN-001` des Moduls (entsteht im Lastenheft; bis dahin ohne Link), <!-- d-check:ignore (die Kennung entsteht im Lastenheft mit dieser Entscheidung; der Link ersetzt den Marker, sobald sie steht) -->
+[`DC-FA-LLEN-001`](../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in),
 [`DC-FA-SCAN-001`](../../../spec/lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln),
 [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope),
 [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus),
@@ -16,11 +16,14 @@ die neue Anforderung `DC-FA-LLEN-001` des Moduls (entsteht im Lastenheft; bis da
 [ADR-0088](0088-file-modul-groessengrenzen.md) und [ADR-0089](0089-structure-max-lines-zwoelfte-bedingung.md)
 (die zwei Nachbar-Achsen), [ADR-0069](0069-zellenlaenge-als-strukturbedingung.md) (dieselbe Zähleinheit),
 [ADR-0063](0063-marker-form-folgt-der-kommentar-lexik-der-eingabe.md) (der Zeilen-Marker),
+[ADR-0113](0113-pinsync-modul.md) (dieselbe Zeilen-Zerlegung),
 slice-289 <!-- d-check:status-provenance -->.
 
-**Schärft:** das neue Verfahren `DC-FA-LLEN-001.a` in [§1](../../../spec/spezifikation.md#1-algorithmen-und-datenflüsse), <!-- d-check:ignore (das Verfahren entsteht mit dieser Entscheidung; der Link ersetzt den Marker, sobald es steht) -->
-das Schema `linelength.*` in [§2](../../../spec/spezifikation.md#2-datenstrukturen-und-schemas) und den
-Grund-Code `line-chars-exceeded` in [§4](../../../spec/spezifikation.md#4-grund--und-fehler-codes).
+**Schärft:**
+[`DC-FA-LLEN-001.a`](../../../spec/spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength)
+(neues Modul-Verfahren samt Grund-Code `line-chars-exceeded`) und das Schema `linelength.*` in
+[§2](../../../spec/spezifikation.md#2-datenstrukturen-und-schemas); die Zeile des Grund-Codes in
+[§4](../../../spec/spezifikation.md#4-grund--und-fehler-codes) kommt mit dem registrierten Modul.
 
 **Regeln:** Baseline-Regelwerk
 [`modul-04-adrs.md` §Ziel-Form: ADR (MADR)](../../../.harness/baseline/v6.18.1/regelwerk/modul-04-adrs.md).
@@ -35,7 +38,8 @@ ganzen Datei jeder Art, `structure` die Zeilen eines Abschnitts im bereinigten T
 Tabellenzelle. Der Auftraggeber hat die Prüfung auf Markdown-Dateien beschränkt und die Empfehlungen zu
 Modulname, Eingabemenge, Zähleinheit, Schlüssel, Ausnahmen, Befund, Bezugsmenge und leerer Menge
 bestätigt; das Architect-Verdikt vom selben Tag hat Entscheid 8 gegen das Lastenheft gestellt, Entscheid 9
-ergänzt und die Ränder von 5 (c) und 7 geschärft.
+ergänzt und die Ränder von 5 (c) und 7 geschärft. Entscheid 8 in dieser Fassung und Entscheid 9 hat der
+Auftraggeber am 2026-11-22 bestätigt.
 
 Drei Randbedingungen gelten unabhängig davon. Ein Lauf ohne `linelength` bleibt byte-identisch. Das Modul
 schreibt nie. Und die Fragen „ist das Fenced-Code“ und „ist das eine Tabellenzeile“ hat das Produkt schon
@@ -49,11 +53,12 @@ Liste als Bezug):
 
 1. **Name und Kürzel:** Modul `linelength`, Bereichskürzel `LLEN` (`LINK` ist belegt).
 2. **Eingabemenge:** die Markdown-Dateien der Scan-Menge (`scan.roots`/`scan.ignore`), mit modul-lokalem
-   `scope` nach [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) und `exempt-paths` wie die übrigen Prosa-Module. Das Modul liest keine Datei
-   außerhalb dieser Menge.
-3. **Zähleinheit:** Unicode-Codepunkte der **rohen** Zeile, Einrückung eingeschlossen; Zeilen enden an `\n`,
-   ein `\r` unmittelbar davor gehört nicht zur Zeile. Ein Tab ist ein Zeichen. Ungültiges UTF-8 zählt je Byte
-   als ein Zeichen.
+   `scope` nach [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) und
+   `exempt-paths` wie die übrigen Prosa-Module. Das Modul liest keine Datei außerhalb dieser Menge.
+3. **Zähleinheit:** Unicode-Codepunkte der **rohen** Zeile, Einrückung eingeschlossen. Zeilen enden an `\n`;
+   ein einzelnes `\r` am Zeilenende gehört nicht zur Zeile — auch am Ende einer letzten Zeile ohne `\n`,
+   dieselbe Zerlegung wie bei `pinsync` ([ADR-0113](0113-pinsync-modul.md) Entscheidung 2). Ein Tab ist ein
+   Zeichen. Ungültiges UTF-8 zählt je Byte als ein Zeichen.
 4. **Schwelle:** `linelength.max-chars`, Pflicht bei aktivem Modul, ganzzahlig ≥ 1, sonst Exit 2. Befund bei
    `Länge > max-chars`; genau auf der Grenze ist befundfrei.
 5. **Ausnahmen, je einzeln schaltbar, Default „ausgenommen“.** Überschriften zählen mit.
@@ -63,7 +68,8 @@ Liste als Bezug):
      beginnt mit `|`. Eine Trennzeile wird nicht verlangt, eingerückte Zeilen sind keine.
    - (c) `exempt-unbreakable`: Zeilen, deren Codepunkte an den Positionen `max-chars + 1` bis Zeilenende
      keinen Leerraum enthalten; Leerraum sind Space und Tab. Gleichwertig: das letzte Leerraum-Zeichen steht
-     auf einer Position ≤ `max-chars`.
+     auf einer Position ≤ `max-chars`, oder die Zeile hat keines. Die Regel prüft nicht, ob die Zeile sich
+     umbrechen ließe (Konsequenzen).
 6. **Befund:** je überlanger Zeile ein Befund `line-chars-exceeded`, Ort = Datei und Zeile, die Meldung nennt
    gemessene Länge und Grenze. Reihenfolge nach Pfad, dann Zeile.
 7. **Bezugsmenge:** der Lauf trägt eine Zeile mit der Zahl der geprüften Dateien, der geprüften Zeilen und der
@@ -72,7 +78,9 @@ Liste als Bezug):
    `pinsync`: stderr im Default-Modus, `summary.notes` unter `--json`/`--yaml`.
 8. **Leere Menge ist kein Fehler.** Trifft die Eingabemenge keine Markdown-Datei, meldet das Modul nichts, und
    die Bezugsmenge nennt `0`. Eine explizit leere `linelength.scope.roots` prüft nichts, wie
-   [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) es jedem scannenden Modul zusagt.
+   [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) es jedem scannenden
+   Modul zusagt. Unberührt bleibt der Umgebungsfehler einer gänzlich leeren Repository-Wurzel (Exit 2), der
+   für jeden Lauf gilt, nicht für dieses Modul.
 9. **Kein Zeilen-Marker.** `linelength` honoriert `d-check:ignore` nicht; die benannte Liste der
    honorierenden Module bleibt bei vier. Eine überlange Zeile ist deterministisch und behebbar; die Ventile
    sind (a)–(c), `scope` und `exempt-paths`.
@@ -101,11 +109,11 @@ und teilt mit `cell-max-chars` die Einheit, nicht den Gegenstand.
 | E — Zähleinheit Anzeigebreite | entspricht dem, was ein Editor zeigt | braucht eine Breiten-Tabelle (East-Asian-Wide, Emoji), die sich mit der Unicode-Version ändert; das gefährdet [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus) |
 | F — eigener Fence- und Tabellen-Leser nach CommonMark-strenger Lesart | schließt Zäune längengleich, erkennt GFM-Tabellen ohne führende Pipe | eine zweite Antwort neben `proseLineSet`/`tableRowLine` — genau der Defekt aus ADR-0054 Entscheidung 1; was gemessen wird, wiche von dem ab, was `links` oder `structure` als Fenced-Code und Tabelle lesen |
 | G — (c) als „nur der Teil bis zum letzten Leerzeichen zählt“ | liest sich als eigene Regel | dieselbe Bedingung wie (c), bis auf eine Randposition; **keine** eigene Option |
-| H — (c) streng: nur eine Zeile mit einem Wort, das allein länger als die Grenze ist | eine Zeile mit umbrechbarem Text vor einem Link wird gemeldet | ein Link, der nach dem Umbruch auf eine eigene Zeile passt, erzwingt den Umbruch vor dem Link; Markdown-Links mit Leerzeichen im Linktext bleiben gemeldet, auch wenn der lange Teil die URL ist |
+| H — (c) streng: ausgenommen ist nur eine Zeile, die eine Folge ohne Leerraum trägt, die allein länger als `max-chars` ist | nimmt genau die Zeilen aus, die kein Umbruch unter die Grenze bringt, und meldet jede, die er bringt — am Bestand unten 361 Zeilen mehr; gleicher Aufwand wie (c) | eine Zeile mit umbrechbarem Text vor einer überlangen URL bleibt ausgenommen; eine Folge, die erst mit ihrer Einrückung über die Grenze ragt, gilt als umbrechbar |
 | I — keine Ausnahme (c), stattdessen der Marker `d-check:ignore` | jede Ausnahme steht sichtbar an ihrer Zeile | der Marker verlängert die Zeile, die er ausnimmt; er verlässt die benannte Liste aus vier Modulen; und das Lastenheft schaltet deterministische Befunde nicht zeilenweise stumm |
 | J — leere Menge ⇒ Exit 2 (Empfehlung des Plans) | kein Lauf ohne Gegenstand passiert grün | widerspricht [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) für eine explizit leere `scope.roots`; Exit 2 ist ein Eingabefehler, und eine leere Scan-Menge ist keiner — auch die übrigen scannenden Module laufen darüber ohne Fehler |
 | K — leere Menge ⇒ Befund (Exit 1), ausgenommen eine explizit leere `scope.roots` | fail-closed und mit [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) verträglich | ein Grund-Code mehr für einen Fall, den die Bezugsmenge schon zeigt; die Präzedenz (`file-no-match`) gilt Modulen, deren Regel Dateien behauptet — `linelength` behauptet keine |
-| **L — eigenes Modul, Codepunkte der rohen Zeile, Ausnahmen aus der geteilten Lexik, (c) nach letztem Leerraum, leere Menge kein Fehler, kein Marker** | kleine Fläche, eine Antwort je Lexik-Frage, deterministisch; die Bezugsmenge sagt, was gemessen wurde | erbt die Grenzen der geteilten Lexik (Konsequenzen); (c) nimmt eine Zeile mit umbrechbarem Text vor einem langen Link aus |
+| **L — eigenes Modul, Codepunkte der rohen Zeile, Ausnahmen aus der geteilten Lexik, (c) nach letztem Leerraum, leere Menge kein Fehler, kein Marker** | kleine Fläche, eine Antwort je Lexik-Frage, deterministisch; die Bezugsmenge sagt, was gemessen wurde | erbt die Grenzen der geteilten Lexik (Konsequenzen); (c) nimmt auch Zeilen aus, die ein Umbruch unter die Grenze brächte |
 
 ## Konsequenzen
 
@@ -115,20 +123,27 @@ und teilt mit `cell-max-chars` die Einheit, nicht den Gegenstand.
   - Der Fence-Automat schaltet bei jeder ```` ``` ````- oder `~~~`-Zeile um. Ein ````` ```` `````-Block mit einer
     inneren ```` ``` ````-Zeile und ein ```` ``` ````-Block mit einer `~~~`-Zeile schließen früh; die Zeilen dahinter
     werden gemessen.
-  - Ein eingerückter Code-Block ohne Zaun und ein Zaun in einem Zitat sind kein Fenced-Code; ihre Zeilen
-    werden gemessen.
+  - `TrimFenceIndent` entfernt jede Einrückung aus Space und Tab: auch ein Zaun mit vier und mehr
+    Leerzeichen davor schaltet um. Ein eingerückter Code-Block ohne Zaun und ein Zaun in einem Zitat sind
+    dagegen kein Fenced-Code; ihre Zeilen werden gemessen.
   - Ein nie geschlossener Zaun nimmt den Rest der Datei aus. Das meldet `spans` mit `fence-unclosed`;
     `linelength` meldet es nicht zum zweiten Mal.
   - Eine `|`-Zeile ohne Trennzeile ist ausgenommen. Eine eingerückte Tabellenzeile, eine in einem Zitat und
     eine GFM-Zeile ohne führende Pipe werden gemessen. Mit (a) aus und (b) an ist eine `|`-Zeile im Zaun keine
     Tabellenzeile.
 - Negativ — Grenzen der Entscheidung selbst:
-  - (c) nimmt eine Zeile mit umbrechbarem Text vor einem langen Link aus; die Zahl dieser Zeilen steht in der
-    Bezugsmenge.
+  - (c) ist gröber, als ihr Name sagt: sie nimmt **jede** überlange Zeile aus, deren letzter Leerraum auf oder
+    vor `max-chars` steht — auch Prosa, deren letztes Wort nur über die Grenze ragt. Gemessen am eigenen
+    Bestand bei `max-chars: 120` über die Markdown-Dateien der Scan-Menge, nach (a) und (b): von 2972
+    überlangen Zeilen nimmt (c) 828 aus; davon tragen 151 keinen Leerraum, 316 eine Folge ohne Leerraum, die
+    länger als 120 ist, und 361 keine solche — jede ihrer Folgen passte auf eine eigene Zeile, bei 141 davon ist
+    das letzte Wort höchstens 20 Zeichen lang. Unter Alternative H blieben 467 ausgenommen. Die Zahl `U` der
+    Bezugsmenge macht die Ausnahme sichtbar, nicht ihre Art.
   - Eine Überschrift lässt sich nicht umbrechen; die Reparatur ist Kürzen, und Kürzen ändert ihren Anker. Die
     gebrochenen Verweise melden `links` und `anchors`.
-  - Ein `d-check:ignore`-Kommentar, den ein anderes Modul verlangt, verlängert seine Zeile und zählt mit; weil
-    er Leerzeichen trägt, greift (c) auf ihm nie.
+  - Ein `d-check:ignore`-Kommentar, den ein anderes Modul verlangt, verlängert seine Zeile und zählt mit. (c)
+    nimmt eine solche Zeile nur aus, wenn hinter der Grenze kein Leerraum mehr steht — etwa wenn die Grenze
+    erst im schließenden `-->` liegt.
   - Das eigene Profil des Repos schaltet das Modul nicht ein; diese Entscheidung legt die Fähigkeit fest, nicht
     ihre Nutzung.
 - Folgepflicht: jede Randbedingung der Anforderung (Grenzwert, Einheit, jede Ausnahme an und aus, die Ränder
@@ -152,16 +167,18 @@ und teilt mit `cell-max-chars` die Einheit, nicht den Gegenstand.
 Die Entscheidung wird neu geprüft, wenn (a) die geteilte Lexik ihre Fence- oder Tabellen-Antwort ändert
 (etwa längengleiches Schließen oder eine verlangte Trennzeile) — dann ändern sich (a) und (b) mit, und es ist
 zu prüfen, ob das gewollt ist; (b) ein Konsument eine Zeile ausnehmen muss, die weder Code noch Tabelle noch
-unumbrechbar ist (dann der Marker, Alternative I); (c) ein Review oder eine Verifikation die Nachsicht von (c)
-als Mangel liest (dann Alternative H); (d) ein Konsument Text mit breiten Zeichen prüft und die Codepunkte
-dort nicht tragen (dann Alternative E); oder (e) ein Konsument die Prüfung für eine andere Dateiart verlangt
-(dann ist die Abgrenzung zu `file` neu zu ziehen, Alternative B).
+unumbrechbar ist (dann der Marker, Alternative I); (c) ein Konsument, ein Review oder eine Verifikation die
+über (c) ausgenommenen Zeilen, die ein Umbruch unter die Grenze brächte, als Mangel liest (dann Alternative H);
+(d) ein Konsument Text mit breiten Zeichen prüft und die Codepunkte dort nicht tragen (dann Alternative E);
+oder (e) ein Konsument die Prüfung für eine andere Dateiart verlangt (dann ist die Abgrenzung zu `file` neu zu
+ziehen, Alternative B).
 
 ## Geschichte
 
 | Datum | Ereignis | Verweis |
 |---|---|---|
 | 2026-11-22 | Proposed: Entscheide 1–7 wie vom Auftraggeber bestätigt, 5 und 7 an den Rändern geschärft; Entscheid 8 gegen [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) geändert und Entscheid 9 neu — beide brauchen die Bestätigung des Auftraggebers vor `Accepted` | slice-289 <!-- d-check:status-provenance --> |
+| 2026-11-22 | Proposed, fortgeschrieben: Entscheid 8 und 9 vom Auftraggeber bestätigt; Bezug und Schärft verlinken die Anforderung und ihr Verfahren; Entscheid 3 an die Zeilen-Zerlegung von `pinsync` angeglichen; die Konsequenz von 5 (c) gemessen und Alternative H geschärft — für 5 (c) ist eine Neu-Bestätigung empfohlen (Empfehlung H), die Fassung oben gilt bis dahin | slice-289 <!-- d-check:status-provenance --> |
 
 Nach `Accepted` wird diese Datei **nicht mehr inhaltlich überschrieben**.
 Spätere Korrekturen oder Schärfungen entstehen als neue ADR mit
