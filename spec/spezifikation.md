@@ -3572,6 +3572,87 @@ blockierend, der Lauf hängt, statt mit Exit 2 zu enden. Ein ungültiger `pinsyn
 Exit 2 auch ohne aktives Modul (Schritt 1, am Konfigurations-Rand); sonst bleibt der Block bei
 nicht aktivem Modul inert, ohne Lesen und ohne Zeile in den Hinweisen.
 
+### DC-FA-LLEN-001.a — Zeilenlänge in Markdown-Dateien (`linelength`)
+
+Verfeinert [`DC-FA-LLEN-001`](lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in).
+Das Modul ist **opt-in** (`--enable linelength`), **scannend** und **hermetisch**: es liest die
+Dateien seiner Scan-Menge über den Filesystem-Port, ohne git, ohne Netz und ohne zu schreiben.
+
+1. **Config.** **Exit 2** vor dem Lauf bei: einem `max-chars`, das gesetzt, aber keine ganze
+   Zahl oder kleiner als 1 ist; einem `exempt-code-blocks`, `exempt-tables` oder
+   `exempt-unbreakable`, das kein Wahrheitswert ist; einem leeren oder in einem Segment
+   ungültigen Glob in `exempt-paths` (segmentweise geprüft wie `diagrams.exempt-paths`); einem
+   unbekannten Schlüssel im Block; einem `scope` außerhalb der Regeln von
+   [§DC-FA-CONF-002.a](#dc-fa-conf-002a--effektiver-scan-scope-pro-modul). Diese Prüfungen laufen
+   am Konfigurations-Rand, auch ohne aktives Modul. Ist das Modul aktiv und fehlt `max-chars`,
+   ⇒ **Exit 2**. Ohne Block bleibt die Konfiguration leer; ohne aktives Modul bleibt ein gültiger
+   Block inert, ohne Messung und ohne Zeile in den Hinweisen.
+2. **Eingabemenge.** Die Dateien des effektiven Scan-Scopes des Moduls
+   ([§DC-FA-CONF-002.a](#dc-fa-conf-002a--effektiver-scan-scope-pro-modul)): `linelength.scope`,
+   sonst `scan.roots`/`scan.ignore` — nur Einträge der Art Datei mit der Endung `.md`, kein
+   Symlink, die feste Skip-Liste gilt. Davon entfällt jede Datei, deren wurzel-relativer Pfad ein
+   Glob aus `exempt-paths` trifft (Glob-Auswertung wie `scan.ignore`). Jede Datei wird im Lauf
+   einmal gelesen; eine unlesbare Datei ist ein Umgebungsfehler des Laufs, **Exit 2**
+   ([§DC-FA-CLI-001.a](#dc-fa-cli-001a--ablauf-eines-prüflaufs)). Eine leere Menge ist kein Fehler:
+   das Modul liefert keinen Befund, und Schritt 8 nennt `0` (eine gänzlich leere Scan-Wurzel bleibt
+   der Umgebungsfehler aus demselben Abschnitt, Exit 2).
+3. **Zeilen.** Der rohe Inhalt wird am Zeilenumbruch `\n` geteilt; endet er mit `\n`, entfällt
+   das leere Schlusselement. Ein einzelnes `\r` unmittelbar vor einem `\n` gehört nicht zur
+   Zeile; ein `\r` an anderer Stelle — auch am Ende einer letzten Zeile ohne `\n` — ist ein
+   Zeichen. Die Zeilennummern zählen ab 1. Die Zahl der Zeilen ist damit die von
+   [§DC-FA-FILE-001.a](#dc-fa-file-001a--zeilen--und-byte-obergrenzen-einer-ganzen-datei-file)
+   Schritt 5.
+4. **Ausnahmen (a) und (b).** Ist `exempt-code-blocks` an, entfällt jede Zeile, die nicht in
+   `proseLineSet` liegt: Fenced-Code samt Zäunen nach dem Fence-Automaten von
+   [§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 1
+   (Umschalten bei jeder Zeile, die nach Space und Tab mit ```` ``` ```` oder `~~~` beginnt,
+   ausgenommen eine Backtick-Zeile mit Backtick im Rest). Ist `exempt-tables` an, entfällt jede
+   Zeile, für die `tableRowLine` gilt: sie liegt in `proseLineSet`, und die rohe Zeile beginnt mit
+   `|`. Beide Antworten kommen aus der geteilten Lexik, unabhängig vom jeweils anderen Schalter.
+   Die übrigen Zeilen sind die **geprüften** Zeilen.
+5. **Länge.** Je geprüfter Zeile die Zahl ihrer Unicode-Codepunkte (dieselbe Zählung wie
+   `structure[].table.column[].cell-max-chars`; eine ungültige UTF-8-Folge zählt je Byte als ein
+   Codepunkt). Länge ≤ `max-chars` ⇒ befundfrei.
+6. **Ausnahme (c).** Ist die Länge größer als `max-chars` und `exempt-unbreakable` an, werden die
+   Codepunkte an den Positionen `max-chars + 1` bis zum Zeilenende (Position 1 = erster Codepunkt
+   der Zeile) auf Leerraum geprüft — Leerraum sind U+0020 und U+0009, kein anderes Zeichen. Ist
+   keiner darunter, ist die Zeile ausgenommen und zählt in `U` (Schritt 8). Sonst, und immer bei
+   `exempt-unbreakable: false`, ⇒ Schritt 7.
+7. **Befund.** `line-chars-exceeded` mit `file` = der wurzel-relative Pfad, `line` = die
+   Zeilennummer, `target` = `max-chars=<N>` mit der Grenze `N`, `message` = gemessene Länge und
+   Grenze. Ein `d-check:ignore`-Marker auf der Zeile wirkt nicht; er ist Teil der Zeile und zählt
+   mit. Befunde zählen für Exit 1. Das Modul liefert sie je Datei in Zeilen-Reihenfolge; die
+   Ausgabe sortiert nach Pfad, dann Zeile
+   ([§DC-QA-02.a](#dc-qa-02a--determinismus-und-sortierung)).
+8. **Bezugsmenge in der Zusammenfassung.** Der Lauf trägt eine Zeile bei:
+   `linelength: <D> Datei(en), <Z> Zeile(n) geprüft, <U> davon ohne Leerraum ab der Grenze
+   ausgenommen`, mit `D` der Zahl der Dateien nach Schritt 2, `Z` der Zahl der geprüften Zeilen
+   nach Schritt 4 und `U` der Zahl der nach Schritt 6 ausgenommenen. Sie erscheint im
+   Default-Modus auf stderr und unter `--json`/`--yaml` in `summary.notes`, auch bei `D` = 0.
+9. **Eingabefehler.** Exit 2, ein Klartext mit Schlüssel und Ursache auf stderr, **kein** Befund —
+   auch die Befunde aller anderen Module entfallen. Ursachen: Schritt 1 und die unlesbare Datei
+   aus Schritt 2.
+
+**Nicht Gegenstand:** andere Dateiarten; Anzeigebreite; ein Zeilen-Marker; eine eigene Lesart
+von Fenced-Code, Tabellen, Links oder URLs; das Umbrechen oder Kürzen einer Zeile; Front-Matter
+als eigene Form; mehr als eine Grenze je Lauf.
+
+**Grenzen, am Gegenstand gelesen.** `proseLineSet` baut auf dem Fence-Automaten, der jede
+Zaun-Zeile umschaltet, ohne Zeichen und Länge abzugleichen; die strenge Lesart (`FenceCloses`)
+benutzt er nicht. Ein Block mit längerem Zaun und einer kürzeren inneren Zaun-Zeile, oder ein
+Backtick-Block mit einer `~~~`-Zeile, schließt deshalb früh. `TrimFenceIndent` entfernt **jede**
+Einrückung aus Space und Tab: auch ein Zaun mit vier oder mehr Leerzeichen davor schaltet um,
+während ein eingerückter Code-Block ohne Zaun kein Fenced-Code ist und gemessen wird. Ein Zaun
+hinter `>` schaltet nicht um. Ein nie geschlossener Zaun nimmt den Rest der Datei aus; das meldet
+`spans` als `fence-unclosed` ([§DC-FA-SPAN-001.a](#dc-fa-span-001a--span-artefakt-erkennung)
+Schritt 3), nicht `linelength`. `tableRowLine` verlangt keine Trennzeile und trimmt nicht: eine
+`|`-Zeile ohne Tabelle ist ausgenommen, eine eingerückte oder zitierte Tabellenzeile und eine
+GFM-Zeile ohne führende Pipe nicht. Mit (a) aus und (b) an liegt eine `|`-Zeile im Zaun nicht in
+`proseLineSet` und ist damit keine Tabellenzeile. Gemessen wird die rohe Zeile — Inline-Code wird
+nicht geleert, ein Byte-Order-Mark am Dateianfang zählt als Zeichen der ersten Zeile, ein
+geschütztes Leerzeichen ist für (c) kein Leerraum. Außer der Konfiguration liest das Modul keine
+Datei außerhalb der Eingabemenge aus Schritt 2.
+
 ---
 
 
@@ -3896,6 +3977,11 @@ Exit 2 ohne Prüfung
 | `pinsync.pins[].sources` | Liste | leer | Quellen des Pins; **mindestens zwei** (sonst Exit 2). Die Reihenfolge ist die der Befunde und bestimmt den Bezug des Vergleichs. |
 | `pinsync.pins[].sources[].file` | string | leer | Pfad der Quelle, relativ zur Scan-Wurzel; literal (kein Glob, kein `..`, nicht absolut). Nicht auf `scan.roots` beschränkt. Kein Symlink, auch nicht in einem Verzeichnis-Segment (Exit 2). |
 | `pinsync.pins[].sources[].pattern` | string | leer | RE2-Ausdruck mit **genau einer** Fanggruppe; läuft je Zeile. Zwei Quellen eines Pins dürfen nicht dasselbe `file` **und** dasselbe `pattern` tragen. |
+| `linelength.max-chars` | int | abwesend | Obergrenze der Zeichen je Zeile (Unicode-Codepunkte der rohen Zeile ohne Zeilenende); Länge **größer** als der Wert ⇒ `line-chars-exceeded`, genau auf der Grenze befundfrei. **Pflicht**, sobald das Modul aktiv ist (fehlt ⇒ Exit 2); gesetzt und keine ganze Zahl ≥ 1 ⇒ Exit 2 ([`DC-FA-LLEN-001`](lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)) |
+| `linelength.exempt-code-blocks` | bool | `true` | Zeilen in Fenced-Code samt Zäunen werden nicht gemessen (Antwort der geteilten Lexik); `false` misst sie mit |
+| `linelength.exempt-tables` | bool | `true` | Zeilen außerhalb von Fenced-Code, die mit `\|` beginnen, werden nicht gemessen — eine Trennzeile wird nicht verlangt; `false` misst sie mit |
+| `linelength.exempt-unbreakable` | bool | `true` | eine Zeile über der Grenze ohne Leerraum (Space, Tab) an den Positionen `max-chars + 1` bis Zeilenende ist ausgenommen und zählt in der Bezugsmenge; `false` meldet sie |
+| `linelength.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `linelength`-Prüfung — datei-weit, nach `linelength.scope` bzw. dem globalen Scan. **Segmentweise** validiert; leerer Eintrag oder ungültiges Segment ⇒ Exit 2 |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien **oder Glob-Muster** (Eintrag mit `*`/`?`/`[`, `matchGlob`, `**` erlaubt), aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Richtungen 1 und 2 inert (Schritt 5a läuft unabhängig); eine fehlende/unlesbare Datei, ein Glob ohne Treffer oder ein ungültiges Glob ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
@@ -4101,6 +4187,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-11-22 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) neu: Verfahren des opt-in-Moduls `linelength` (Config-Prüfung am Rand, Eingabemenge aus dem effektiven Scan-Scope minus `exempt-paths`, Zeilen wie bei `file`, Ausnahmen (a) und (b) aus `proseLineSet`/`tableRowLine`, Länge in Codepunkten der rohen Zeile, Ausnahme (c) über Leerraum ab Position `max-chars + 1`, kein Zeilen-Marker, Bezugsmenge auch bei leerer Menge), das Schema `linelength.*` in §2 und der Grund-Code `line-chars-exceeded` im Verfahren. Das Schema gilt für das fertige Modul; der Code steht in der Tabelle von §4, sobald das Modul ihn liefert |
 | 2026-10-31 | §[`DC-FA-PSYNC-001.a`](spezifikation.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync) Grenzen: der Selbstvergleich zweier gleichwertiger Ausdrücke derselben Datei, die FIFO/Gerätedatei/Socket als Quelle und das Verhalten eines ungültigen Blocks bei nicht aktivem Modul sind benannt |
 | 2026-10-31 | §4: die Grund-Codes `pinsync-mismatch` (`SPEC-109`), `pinsync-no-match` (`SPEC-110`) und `pinsync-ambiguous` (`SPEC-111`) stehen in der Tabelle, weil das Modul `pinsync` sie nun liefert; das Verfahren in §[`DC-FA-PSYNC-001.a`](spezifikation.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync) ist unverändert |
 | 2026-10-31 | §[`DC-FA-PSYNC-001.a`](spezifikation.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync) neu: Verfahren des opt-in-Moduls `pinsync` (Config-Prüfung vor dem Lauf, Segment-Prüfung auf Symlinks, zeilenweises Lesen, Treffer mit nicht leerer Fanggruppe, Vergleich gegen die erste Quelle mit genau einem Treffer, Bezugsmenge), das Schema `pinsync.*` in §2 und die Grund-Codes `pinsync-mismatch`, `pinsync-no-match` und `pinsync-ambiguous` im Verfahren. Das Schema gilt für das fertige Modul; die Codes stehen in der Tabelle von §4, sobald das Modul sie liefert |
