@@ -11,8 +11,8 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 
 **Welle:** [`welle-95-linelength-modul`](../welle-95-linelength-modul.md).
 
-**Bezug:** neue Anforderung des Moduls `linelength` (die Kennung vergibt dieser Slice
-beim Schreiben ins Lastenheft; Empfehlung: Bereichs-Kürzel `LLEN`, Nummer 001),
+**Bezug:** [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) — die Anforderung des Moduls
+`linelength`, die dieser Slice ins Lastenheft schreibt (Bereichs-Kürzel `LLEN`),
 [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus),
 [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
 (Scope), [`DC-FA-SCAN-001`](../../../../spec/lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln),

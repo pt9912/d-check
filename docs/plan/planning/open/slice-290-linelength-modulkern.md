@@ -11,9 +11,9 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 
 **Welle:** [`welle-95-linelength-modul`](../welle-95-linelength-modul.md).
 
-**Bezug:** die Anforderung des Moduls `linelength` und ihre ADR aus
-[`slice-289`](../in-progress/slice-289-linelength-anforderung-und-adr.md) (Kennungen vergibt jener Slice;
-dieser Kopf zieht sie nach, sobald sie stehen),
+**Bezug:** [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) und
+[ADR-0114](../../adr/0114-linelength-modul.md) aus
+[`slice-289`](../in-progress/slice-289-linelength-anforderung-und-adr.md),
 [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus),
 [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit),
 [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl).
