@@ -77,11 +77,15 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       das Modul.
 - [ ] Regel: Zählung in Codepunkten, Grenze genau auf der Schwelle befundfrei, jede
       Ausnahme einzeln schaltbar und getestet (an und aus), ein Befund je Zeile mit Ort,
-      Länge und Grenze, Reihenfolge nach Pfad und Zeile, Bezugsmenge, leere Kandidaten-Menge
-      fail-closed; die Negativfälle aus dem Plan von
+      Länge und Grenze, Reihenfolge nach Pfad und Zeile, Bezugsmenge (Zeilen wie bei `file`
+      gezählt, die über (c) ausgenommenen als eigene Zahl), leere Menge kein Fehler; die
+      Negativfälle aus dem Plan von
       [`slice-289`](../in-progress/slice-289-linelength-anforderung-und-adr.md) stehen als Testfälle, und
       für jeden Test ist ein Rot ohne die Regel gezeigt (Baseline-Regelwerk
-      `modul-11-verification.md` §Bewusstes Brechen).
+      `modul-11-verification.md` §Bewusstes Brechen). Der Kopplungs-Test fährt dieselbe Eingabe
+      durch `linelength` und die bisherigen Konsumenten von `proseLineSet`/`tableRowLine` —
+      Pflicht nach [ADR-0054](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md)
+      Entscheidung 4, keine Option (Architect-Verdikt F-3).
 - [ ] Spiegel: Grund-Code in `AllReasons()`/Diagnose-Klartext und §4 der Spezifikation,
       Modul in der Aufzählung von
       [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl),
@@ -89,6 +93,9 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       fangen das neue Modul (vor dem Editieren aufgelistet,
       [`MR-025`](../../../../harness/conventions.md#mr-025)).
 - [ ] `make gates` grün.
+- [ ] [ADR-0114](../../adr/0114-linelength-modul.md) `Accepted`, Index nachgezogen — der
+      Status-Übergang durch den Architect, nachdem Review und Verifikation dieses Slice keine
+      Änderung an der Entscheidung mehr verlangen (Architect-Verdikt F-8).
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
@@ -124,7 +131,9 @@ Aufzählungs-Suche nach einem bestehenden Modulnamen (etwa `pinsync`) über das 
 jeder Treffer, der in der Tabelle fehlt, kommt als Plan-Nachtrag vor den Code.
 
 **Testfälle aus der Anforderung** (Negativliste nach Schritt 19 des Workflow-Skeletts; die
-endgültige Liste folgt den bestätigten Entscheiden):
+Liste folgt den bestätigten Entscheiden 1–9 und dem
+[Architect-Verdikt](../../../reviews/2026-11-22-welle-95-architect-verdikt.md); maßgeblich ist
+die Anforderung, sobald sie steht):
 
 - Zeile mit `max-chars` Zeichen ⇒ befundfrei; mit `max-chars + 1` ⇒ ein Befund.
 - Zeile aus Mehrbyte-Zeichen (Umlaut, Emoji) an der Grenze ⇒ gezählt in Codepunkten,
@@ -133,15 +142,27 @@ endgültige Liste folgt den bestätigten Entscheiden):
   nach der Regel der Anforderung.
 - Überlange Zeile in Fenced-Code (Backtick- und Tilde-Zaun, eingerückter Zaun) ⇒ mit
   Ausnahme an befundfrei, mit Ausnahme aus ein Befund; die Zaunzeile selbst ebenso.
-- Nicht geschlossener Fence bis Dateiende ⇒ das Verhalten der geteilten Lexik ist
-  festgehalten und in der Anforderung benannt (Risiko unten).
-- Überlange Tabellenzeile, Tabelle ohne Trennzeile (keine Tabelle) ⇒ nach der Lexik.
-- Zeile mit langer URL ohne Leerzeichen ab der Grenze ⇒ ausgenommen; mit Leerzeichen nach
-  der Grenze ⇒ Befund.
+- `~~~`-Zeile in einem Backtick-Block ⇒ der Block schließt früh, die Zeilen danach werden
+  gemessen; eingerückter Code-Block (vier Leerzeichen, ohne Zaun) ⇒ gemessen (Verdikt F-3).
+- Nicht geschlossener Fence bis Dateiende ⇒ der Rest der Datei ist ausgenommen, wie die
+  Anforderung es als Grenze benennt; gemeldet wird der offene Zaun von `spans`
+  (`fence-unclosed`), nicht von `linelength` (Verdikt F-3).
+- Überlange `|`-Zeile ohne Trennzeile ⇒ ausgenommen (die Lexik verlangt keine Trennzeile);
+  eingerückte `|`-Zeile, Zeile in einem Zitat (`> |`) und GFM-Zeile ohne führende Pipe ⇒
+  gemessen; `exempt-code-blocks: false` mit `exempt-tables: true` ⇒ eine `|`-Zeile im Zaun wird
+  gemessen (Verdikt F-4).
+- Zeile mit langer URL ohne Leerraum ab der Grenze ⇒ ausgenommen; Leerzeichen genau auf Position
+  `max-chars + 1` ⇒ Befund; letztes Leerzeichen auf Position `max-chars` ⇒ ausgenommen; Tab nach
+  der Grenze ⇒ Befund (Verdikt F-5).
+- Zeile über der Grenze mit `<!-- d-check:ignore … -->` ⇒ Befund (Entscheid 9).
+- Bezugsmenge: Datei mit und ohne abschließendes `\n` ⇒ dieselbe Zeilenzahl wie bei `file`;
+  die über (c) ausgenommenen Zeilen stehen als eigene Zahl (Verdikt F-7).
 - Zwei Dateien mit Befunden ⇒ Reihenfolge Pfad, dann Zeile; zweimal derselbe Lauf ⇒
   byte-gleiche Ausgabe.
-- Keine Markdown-Datei in der Menge ⇒ fail-closed nach der Anforderung; Nicht-Markdown-Datei
-  in `scan.roots` mit langer Zeile ⇒ kein Befund.
+- Keine Markdown-Datei in der Menge ⇒ kein Befund, Exit 0, Bezugsmenge `0`; explizit leere
+  `linelength.scope.roots` ⇒ prüft nichts, kein Fehler (Entscheid 8,
+  [`DC-FA-CONF-002`](../../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope));
+  Nicht-Markdown-Datei in `scan.roots` mit langer Zeile ⇒ kein Befund.
 
 ## 4. Trigger
 
@@ -182,13 +203,15 @@ dasteht.
   Prüfung — ein stilles Grün über einem Teil der Datei
   ([`BEO-ALL/prosa-verschwindet-in-inline-code-spanne`](../observations/BEO-ALL/prosa-verschwindet-in-inline-code-spanne/observation.md),
   Fence-Hälfte, 2×) — **Ausgang:** *entfallen*, wenn ein Test das in der Anforderung
-  festgelegte Verhalten beim offenen Fence belegt und die Meldung oder die Bezugsmenge den
-  ausgenommenen Teil sichtbar macht; *weiter offen* — ein Beleg, der den Zähler auf 3×
-  hebt —, wenn der Ausfall still bleibt.
+  festgelegte Verhalten beim offenen Fence belegt und die Anforderung für die Meldung auf
+  `spans` (`fence-unclosed`) verweist — ein zweiter Wächter in `linelength` wäre eine zweite
+  Antwort (Architect-Verdikt F-3); *weiter offen* — ein Beleg, der den Zähler auf 3× hebt —,
+  wenn der Ausfall in keinem Modul sichtbar wird.
 - `proseLineSet`/`tableRowLine` sind paket-interne Helfer anderer Module; sie für ein neues
   Modul zu nutzen bindet dessen Verhalten an deren Änderungen
   ([`BEO-ALL/shared-lexicon-drifts-at-edges`](../observations/BEO-ALL/shared-lexicon-drifts-at-edges/observation.md),
-  verkörpert über Kopplungs-Tests) — **Ausgang:** *entfallen*, wenn ein Kopplungs-Test
+  verkörpert über Kopplungs-Tests; Pflicht nach [ADR-0054](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md) Entscheidung 4, DoD-Punkt 2) —
+  **Ausgang:** *entfallen*, wenn der Kopplungs-Test
   dieselbe Eingabe durch `linelength` und die bisherigen Konsumenten fährt; *eingetreten*
   (Rückführung nach `next`, §4), wenn die Helfer für das Modul geändert werden müssten.
 - Eine Randbedingung der Anforderung bleibt ohne Test

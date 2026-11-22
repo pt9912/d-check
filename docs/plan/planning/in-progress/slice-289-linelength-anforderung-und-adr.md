@@ -72,15 +72,17 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 - [ ] Die Anforderung steht im Lastenheft (Bereichs-Kürzel in der Liste ergänzt,
       Version gehoben, Historie-Zeile nach
       [`MR-032`](../../../../harness/conventions.md#mr-032)) mit Akzeptanzkriterien je
-      Entscheid (Zähleinheit, jede Ausnahme, Grenzwert genau auf der Schwelle), den
-      Rändern mit Exit 2 und ihrem Out-of-Scope.
+      Entscheid (Zähleinheit, jede Ausnahme samt ihren Rändern, Grenzwert genau auf der
+      Schwelle, leere Menge, Zeile über der Grenze mit `d-check:ignore` ⇒ Befund), den Rändern
+      mit Exit 2, den benannten Grenzen der geteilten Lexik und ihrem Out-of-Scope.
 - [ ] Die Spezifikation führt das Verfahren (Leseweise, Zählregel, Ausnahmen, Reihenfolge
       der Befunde, Bezugsmenge), das Schema `linelength.*` und den Grund-Code im Verfahren;
       jede Aussage über die Grenzen (welche Eingaben das Modul liest, [`AGENTS.md`](../../../../AGENTS.md)
       §3.8) ist am Gegenstand gezählt oder gemessen, nicht aus der Beschreibung übernommen.
-- [ ] Die ADR (Entscheide samt verglichenen Alternativen, darunter „Bedingung in `file`“ und
-      „Bedingung in `structure`“) ist `Accepted`, im [ADR-Index](../../adr/README.md) geführt
-      und trägt `## Re-Evaluierungs-Trigger`.
+- [ ] [ADR-0114](../../adr/0114-linelength-modul.md) liegt `Proposed` vor, ist im
+      [ADR-Index](../../adr/README.md) geführt, trägt `## Re-Evaluierungs-Trigger`, und die
+      Anforderungs-Kennung und das `Schärft:`-Feld sind verlinkt (Architect). `Accepted` wird sie
+      mit der Closure von [`slice-290`](../open/slice-290-linelength-modulkern.md) (Verdikt F-8).
 - [ ] `make gates` grün.
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
@@ -101,19 +103,32 @@ Aussagen-Berührung steht hier gar nicht.
 |---|---|---|
 | `spec/lastenheft.md` | update | neue Anforderung, Kürzel in der Liste, Version und Historie |
 | `spec/spezifikation.md` | update | Verfahren, Schema `linelength.*`, Grund-Code im Verfahren |
-| ADR im Verzeichnis `docs/plan/adr/` (nächste freie Nummer, Titel „linelength-modul“) | neu | Entscheidung samt Alternativen |
-| `docs/plan/adr/README.md` | update | ADR-Index ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 4) |
-| Plan von [`slice-290`](../open/slice-290-linelength-modulkern.md) | update | die Testfälle, die aus den bestätigten Entscheiden folgen, und die zwei mit dem Code kommenden Spiegel-Stellen |
+| [ADR-0114](../../adr/0114-linelength-modul.md) | update — **schreibt der Architect** | liegt `Proposed` vor (vom Architect geschrieben, samt Index-Zeile); nachzuziehen sind die Verlinkung der Anforderungs-Kennung und das `Schärft:`-Feld, sobald die Anforderung im Lastenheft steht. Der Implementer liest die ADR als Constraint und meldet eine nötige Änderung als Befund an den Architect |
+| Plan von [`slice-290`](../open/slice-290-linelength-modulkern.md) | update — Planner | die Testfälle, die aus den bestätigten Entscheiden und dem Architect-Verdikt folgen, und die zwei mit dem Code kommenden Spiegel-Stellen |
 
-**Festzuschreibende Entscheide** — vom Auftraggeber am 2026-11-22 mit den
-Empfehlungen bestätigt (unverändert 1–8):
+**Plan-Änderung nach dem Architect-Verdikt (2026-11-22).** Das
+[Architect-Verdikt](../../../reviews/2026-11-22-welle-95-architect-verdikt.md) (F-1 bis F-8)
+ist eingearbeitet: Entscheid 1, 5 und 7 sind am Gegenstand korrigiert bzw. präzisiert, Entscheid 8
+ist gegen [`DC-FA-CONF-002`](../../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope)
+neu gefasst, Entscheid 9 ist neu, und die ADR bleibt `Proposed` bis zur Closure von
+[`slice-290`](../open/slice-290-linelength-modulkern.md) (F-8). Die ADR schreibt der Architect,
+nicht dieser Slice (Modul 8 §Rollen-Regeln); die Zeile „ADR-Index“ entfällt deshalb aus der Tabelle.
+Die Reihenfolge war nicht regelkonform: der Slice lag in `in-progress/`, bevor das Verdikt vorlag
+(dort als einmaliges akzeptiertes Negativ geführt; kein Code war entstanden).
+
+**Festzuschreibende Entscheide** — vom Auftraggeber am 2026-11-22 bestätigt: 1–7 mit den
+Empfehlungen (1, 5 und 7 danach vom Architect am Gegenstand geschärft, ohne die Wahl zu ändern),
+8 in der neuen Fassung und 9 neu, beide nach dem Architect-Verdikt. Maßgeblich für die Begründung
+ist [ADR-0114](../../adr/0114-linelength-modul.md).
 
 1. **Eigenes Modul statt Bedingung.** Modul `linelength`, Bereichs-Kürzel `LLEN`
    (`LINK` ist belegt). Verworfen: eine dritte Schwelle im Modul `file` — es liest jede
    Dateiart roh über eigene Globs, die Markdown-Ausnahmen (Fenced-Code, Tabellen)
    brächen seine Zusage „unabhängig von der Dateiart“; eine Bedingung in `structure` —
-   sie ist an einen Abschnitt gebunden und meldet auf der Überschriftszeile, eine
-   Zeilenlänge gilt der ganzen Datei und gehört auf ihre Zeile.
+   es wählt seine Dateien über eigene Globs und kennt kein `scope`, jede Regel braucht einen
+   Abschnitts-Selektor, und es misst den bereinigten Text (Verdikt F-6; der frühere Grund
+   „meldet auf der Überschriftszeile“ stimmte am Gegenstand nicht, `cell-max-chars` meldet auf
+   der Zeile selbst).
 2. **Eingabemenge:** die Markdown-Dateien der Scan-Menge (`scan.roots`/`scan.ignore`,
    [`DC-FA-SCAN-001`](../../../../spec/lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln))
    mit modul-lokalem `scope`
@@ -135,13 +150,19 @@ Empfehlungen bestätigt (unverändert 1–8):
    ([`BEO-ALL/max-lines-namenskollision-structure-file`](../observations/BEO-ALL/max-lines-namenskollision-structure-file/observation.md)),
    eine dritte nahe Form vergrößerte die Verwechslung.
 5. **Ausnahmen, je einzeln schaltbar, Default „ausgenommen“:** (a) Zeilen in
-   Fenced-Code-Blöcken samt ihrer Zäune (`exempt-code-blocks`), (b) Zeilen einer
-   Pipe-Tabelle (`exempt-tables`), (c) Zeilen, deren Teil ab der Grenze kein Leerzeichen
-   enthält — eine lange URL, ein langer Link, ein langer Inline-Code-Pfad lässt sich
-   nicht umbrechen (`exempt-unbreakable`). Überschriften zählen mit. Die Erkennung von
+   Fenced-Code-Blöcken samt ihrer Zäune (`exempt-code-blocks`), (b) Zeilen außerhalb von
+   Fenced-Code, die mit `|` beginnen (`exempt-tables`; die Lexik verlangt keine Trennzeile und
+   trimmt nicht — Verdikt F-4), (c) Zeilen, deren Teil ab der Grenze keinen Leerraum enthält —
+   Leerraum sind Space und Tab, geprüft werden die Codepunkte an den Positionen `max-chars + 1`
+   bis Zeilenende; eine lange URL, ein langer Link, ein langer Inline-Code-Pfad lässt sich
+   nicht umbrechen (`exempt-unbreakable`; Verdikt F-5). Überschriften zählen mit. Die Erkennung von
    Fenced-Code und Tabellenzeile nimmt das Modul aus der geteilten Lexik
    (`proseLineSet`, `tableRowLine`), kein eigenes Muster daneben
-   ([`BEO-ALL/gemeinsame-leser-sind-zwei-familien`](../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md)).
+   ([`BEO-ALL/gemeinsame-leser-sind-zwei-familien`](../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md));
+   die Grenzen dieser Lexik (Umschalten bei jeder Zaun-Zeile, eingerückter Code-Block und Zaun im
+   Zitat werden gemessen, offener Zaun nimmt den Rest der Datei aus — gemeldet von `spans` als
+   `fence-unclosed`; eingerückte, zitierte und GFM-Zeilen ohne führende Pipe sind keine
+   Tabellenzeilen) nennt die Anforderung (Verdikt F-3, F-4).
    Front-Matter ist keine eigene Ausnahme (d-check kennt ihn heute nicht als Form).
 6. **Befund:** je überlanger Zeile ein Befund, Ort = Datei und Zeile, Meldung nennt
    gemessene Länge und Grenze; Grund-Code `line-chars-exceeded` (Empfehlung, analog
@@ -150,9 +171,20 @@ Empfehlungen bestätigt (unverändert 1–8):
 7. **Bezugsmenge:** die Vollständigkeits-Zeile nennt geprüfte Dateien und geprüfte
    Zeilen **nach** Abzug der Ausnahmen, damit ein grünes Ergebnis nicht mehr behauptet,
    als es misst (Baseline-Regelwerk `modul-13-quality-gates.md` §Hard Rule, *Ein Gate
-   ohne seine Grenze*).
-8. **Leere Kandidaten-Menge:** aktives Modul und keine Markdown-Datei in der Menge ist
-   Exit 2 (fail-closed wie `structure`/`file`), kein stilles Grün.
+   ohne seine Grenze*). Geschärft (Verdikt F-7): Zeilen zählen wie bei `file`
+   (Zeilenumbrüche plus eine unvollständige Schlusszeile); „geprüft“ ist die Menge nach `scope`,
+   `exempt-paths`, (a) und (b); die über (c) ausgenommenen Zeilen stehen als eigene Zahl
+   daneben; Ausgabe auf stderr bzw. in `summary.notes`.
+8. **Leere Menge ist kein Fehler** (neu gefasst nach Verdikt F-1, bestätigt 2026-11-22): trifft
+   die Eingabemenge keine Markdown-Datei, meldet das Modul nichts, und die Bezugsmenge nennt
+   `0`; eine explizit leere `linelength.scope.roots` prüft nichts, wie
+   [`DC-FA-CONF-002`](../../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) es
+   jedem scannenden Modul zusagt. Die frühere Fassung (Exit 2, „fail-closed wie
+   `structure`/`file`“) widersprach dieser Anforderung, und die Präzedenz trug nicht: dort ist die
+   Nullmenge ein Befund mit Exit 1 eines nicht scannenden Moduls.
+9. **Kein Zeilen-Marker** (neu nach Verdikt F-2, bestätigt 2026-11-22): `linelength` honoriert
+   `d-check:ignore` nicht; die Ventile sind (a)–(c), `scope` und `exempt-paths`. Eine Zeile über
+   der Grenze mit Marker ist ein Befund (der Marker zählt mit).
 
 **Gegenprobe vor dem Schreiben (Schritt 19 des Workflow-Skeletts):** die Zählregel läuft
 am eigenen Bestand (`awk '{ if (length($0) > 120) n++ } END { print n }'` über die
@@ -177,7 +209,7 @@ WIP-Limit ist frei (`in-progress/` trägt nur die Roadmap).
   mehr als eine Review-Sitzung, oder die Ausnahme (c) verlangt eine eigene Link-Lexik,
   die die geteilte nicht hergibt.
 - `in-progress` → `open` (blockiert): der Auftraggeber entscheidet einen der Punkte
-  1, 3 oder 5 nicht; ohne Entscheid beginnt kein Code.
+  1, 3, 5, 8 oder 9 nicht; ohne Entscheid beginnt kein Code.
 
 ## 5. Closure-Trigger
 
@@ -199,17 +231,19 @@ dasteht.
 - Die Ausnahme (c) „kein Leerzeichen ab der Grenze“ ist zu grob: eine Zeile mit langem
   Link **und** umbrechbarem Text davor wird ausgenommen, obwohl sie kürzbar wäre —
   **Ausgang:** *entfallen*, wenn die Anforderung diese Grenze der Ausnahme ausdrücklich
-  nennt und die ADR die Alternative (nur der Überschuss nach dem letzten Leerzeichen
-  zählt) verglichen hat; *weiter offen* ins Register, wenn Review oder Verifikation die
-  Grenze als Mangel lesen.
+  nennt und die ADR die strenge Variante (nur ein Wort, das allein länger als die Grenze ist,
+  wird ausgenommen) verglichen hat — die früher hier genannte Alternative „nur der Überschuss
+  nach dem letzten Leerzeichen zählt“ ist bis auf eine Randposition dieselbe Regel (Verdikt F-5);
+  *weiter offen* ins Register, wenn Review oder Verifikation die Grenze als Mangel lesen.
 - Ein vergessener Schluss-Fence macht für die geteilte Lexik den Rest der Datei zu Code
   (die Fence-Hälfte von
   [`BEO-ALL/prosa-verschwindet-in-inline-code-spanne`](../observations/BEO-ALL/prosa-verschwindet-in-inline-code-spanne/observation.md),
   2×); nimmt das Modul Fenced-Code über dieselbe Lexik aus, fällt jede überlange Zeile
   danach still aus der Prüfung — ein dritter Beleg wäre die Schwelle. Die
   Inline-Code-Hälfte trifft das Modul nicht: es misst die rohe Zeile —
-  **Ausgang:** *entfallen*, wenn die Anforderung das Verhalten beim offenen Fence festlegt
-  und als Grenze benennt (der Test dazu ist Lieferung von
+  **Ausgang:** *entfallen*, wenn die Anforderung das Verhalten beim offenen Fence festlegt,
+  als Grenze benennt und für die Meldung auf `spans` (`fence-unclosed`) verweist — ein zweiter
+  Wächter in `linelength` wäre eine zweite Antwort (Verdikt F-3; der Test dazu ist Lieferung von
   [`slice-290`](../open/slice-290-linelength-modulkern.md)); *weiter offen* — ein Beleg in
   `BEO-ALL/prosa-verschwindet-in-inline-code-spanne`, der den Zähler auf 3× hebt —, wenn
   sie es offen lässt.
