@@ -105,8 +105,8 @@ Aussagen-Berührung steht hier gar nicht.
 | `docs/plan/adr/README.md` | update | ADR-Index ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 4) |
 | Plan von [`slice-290`](../open/slice-290-linelength-modulkern.md) | update | die Testfälle, die aus den bestätigten Entscheiden folgen, und die zwei mit dem Code kommenden Spiegel-Stellen |
 
-**Festzuschreibende Entscheide** — Empfehlungen; offen bis zum Entscheid des
-Auftraggebers, ohne ihn beginnt kein Code:
+**Festzuschreibende Entscheide** — vom Auftraggeber am 2026-11-22 mit den
+Empfehlungen bestätigt (unverändert 1–8):
 
 1. **Eigenes Modul statt Bedingung.** Modul `linelength`, Bereichs-Kürzel `LLEN`
    (`LINK` ist belegt). Verworfen: eine dritte Schwelle im Modul `file` — es liest jede

@@ -94,7 +94,9 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   Bedingung in `file` oder `structure`, Zähleinheit (Zeichen, Bytes oder
   Anzeigebreite), welche Zeilen ausgenommen sind und ob schaltbar, Name des
   Schwellen-Schlüssels (Abstand zu `max-lines`), Grund-Code und Befund-Ort.
-- **Entschieden mit dem Auftraggeber (2026-11-22):** nur Markdown-Dateien.
+- **Entschieden mit dem Auftraggeber (2026-11-22):** nur Markdown-Dateien; die acht
+  Entscheide in [`slice-289`](open/slice-289-linelength-anforderung-und-adr.md) §3 mit den
+  Empfehlungen bestätigt.
 
 ## 6. Out-of-Scope für diese Welle
 
