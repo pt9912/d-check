@@ -324,6 +324,54 @@ grep -n 'neu belegt\|Neubelegung\|belegt eine Seite\|Quelle einer\|Ende in HEAD\
 grep -n 'Nicht-Merge-Commit' spec/lastenheft.md
 ```
 
+**Plan-Änderung nach Review R2 (Implementer, 2026-11-23, vor dem Fix):** Die Befunde M-1 bis M-3,
+L-1, L-2, L-5 und I-1 aus `docs/reviews/2026-11-23-slice-291-vcs-umbenennung-r2.md` gehen in den
+Spec-Text. Constraint ist [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) in der Fassung
+nach R2 (Entscheidung 9, 10, 11, §Konsequenzen); den Wortlaut gibt die Planner-Übergabe vor. Alle
+Stellen liegen in schon geführten Abschnitten.
+
+- **Neue Kriterien: vier.**
+  - beide Schlüssel, Umbiegen auf eine Datei, die die Range auf den alten Namen umbenennt;
+  - beide Schlüssel, Umbenennung ohne Namenswechsel samt Umbiegen auf eine gleichnamige Datei;
+  - ein Name, den die Range freimacht und durch eine Umbenennung neu belegt;
+  - Löschen und Neuanlegen im selben Commit nach einer Umbenennung.
+- **Angeglichen:** das Bindekriterium für beide Schlüssel; die Kriterien „Ende gelöscht und neu
+  angelegt“, „Merge-Seite …“, „fail-closed (Zwischen-Commit)“; der „Allgemein“-Satz.
+- **Versionen (L-2):** Die Zeile 0.114.0 geht auf den Wortlaut des ersten Inhalts-Commits zurück.
+  0.114.1 trägt die Fixes nach R1, 0.114.2 die nach R2; der Kopf nennt 0.114.2. Die Historie der
+  Spezifikation bekommt eine eigene Zeile ([`MR-032`](../../../../harness/conventions.md#mr-032) gilt dort nicht).
+
+Aussagen-Suche (Stand vor dem Fix, Kommandos darunter), Treffer:
+
+- **M-3, „nie grüner“:** Lastenheft Z. 2331.
+- **M-3, „strenger als“ und „gleicher Name, andere Datei“:**
+  - Lastenheft Z. 2321–2327 (Grenze) und Z. 2376 (Bindekriterium);
+  - Spezifikation Z. 2171–2177.
+- **M-3, Normalform „Dateiname des Endes“ und „erst gleichsetzen, dann normieren“:**
+  - Spezifikation Z. 2145–2146 sowie Schema-Zeile Z. 4012;
+  - Lastenheft Z. 2299 (Was gleichgesetzt wird);
+  - die Lastenheft-Zeile 0.114.0 (Z. 4750) wird ohnehin zurückgestellt.
+- **M-1, Teilnahme und „zugleich Quelle“:**
+  - Lastenheft Z. 2290–2291 (Mehrdeutigkeit) und Z. 2293–2294 („ein Ziel, das auf A oder auf B auflöst“);
+  - Spezifikation Z. 2148–2156 (Teilnahme samt dem Satz zur mit „gelöscht“ endenden Kette).
+- **M-2 und I-1, „löscht und legt neu an“, „unberührt“, „in einem späteren Schritt“:**
+  - Lastenheft Z. 2276–2278 (Kette, Seite, auf der der Pfad besteht), Z. 2282 („in einem späteren Schritt“), Z. 2340–2341 (Merge-Grenze), Kriterien Z. 2371 und 2372, Zeile 0.114.0;
+  - Spezifikation Z. 2082–2095 (Kette: „umbenennen oder löschen“, „unberührt“, „in einem späteren Schritt dieser Linie“);
+  - alle übrigen „unberührt“-Treffer der Spec-Straten gehören anderen Modulen.
+- **L-1, „Zwischen-Commit“ und was gelesen wird:**
+  - Lastenheft Z. 2301–2306 (Was gelesen wird), Z. 2374 („Allgemein“), Z. 2381 (Kriterium);
+  - Spezifikation Z. 2101–2107 (Gelesen und fail-closed), Z. 2160–2163 (Satz zu Exit 2), Schema-Zeile Z. 4012.
+- **L-5, „nur noch in BASE existiert“:** Spezifikation Z. 2202.
+- **L-2:** Lastenheft Kopf Z. 3 und Zeile 0.114.0 (Z. 4750).
+
+```bash
+for p in 'nie grüner' 'Dateiname des Endes\|Dateinamen des Endes\|Dateinamen ihres Endes' \
+  'zugleich Quelle' 'löscht und legt neu an\|Löschen und Neuanlegen\|gelöscht und als' 'unberührt' \
+  'nur noch in BASE existiert' 'gleicher Name, andere Datei' 'Zwischen-Commit' 'strenger als' \
+  'auf A oder' 'erst gleichgesetzt\|erst gleichsetzen' 'in einem späteren Schritt'; do
+  grep -n "$p" spec/lastenheft.md spec/spezifikation.md; done
+```
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
