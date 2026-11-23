@@ -3597,7 +3597,8 @@ Dateien seiner Scan-Menge über den Filesystem-Port, ohne git, ohne Netz und ohn
    das Modul liefert keinen Befund, und Schritt 8 nennt `0` (eine gänzlich leere Scan-Wurzel bleibt
    der Umgebungsfehler aus demselben Abschnitt, Exit 2).
 3. **Zeilen.** Der rohe Inhalt wird am Zeilenumbruch `\n` geteilt; endet er mit `\n`, entfällt
-   das leere Schlusselement. Ein einzelnes `\r` am Zeilenende gehört nicht zur Zeile, auch am
+   das leere Schlusselement; ein leerer Inhalt hat keine Zeile (kein Element, nicht ein leeres).
+   Ein einzelnes `\r` am Zeilenende gehört nicht zur Zeile, auch am
    Ende einer letzten Zeile ohne `\n`; ein `\r` an anderer Stelle ist ein Zeichen. Die
    Zeilennummern zählen ab 1. Die Zahl der Zeilen ist damit die von
    [§DC-FA-FILE-001.a](#dc-fa-file-001a--zeilen--und-byte-obergrenzen-einer-ganzen-datei-file)
@@ -3620,8 +3621,9 @@ Dateien seiner Scan-Menge über den Filesystem-Port, ohne git, ohne Netz und ohn
    `exempt-unbreakable: false`, ⇒ Schritt 7. Einrückung gehört zu keinem Wort.
 7. **Befund.** `line-chars-exceeded` mit `file` = der wurzel-relative Pfad, `line` = die
    Zeilennummer, `target` = `max-chars=<N>` mit der Grenze `N`, `message` = gemessene Länge und
-   Grenze. Ein `d-check:ignore`-Marker auf der Zeile wirkt nicht; er ist Teil der Zeile und zählt
-   mit. Befunde zählen für Exit 1. Das Modul liefert sie je Datei in Zeilen-Reihenfolge; die
+   Grenze. Ein `d-check:ignore`-Marker auf der Zeile wirkt nicht; er ist Teil der Zeile, zählt
+   mit, und seine Wörter sind Wörter in Schritt 6 wie jedes andere. Befunde zählen für Exit 1. Das
+   Modul liefert sie je Datei in Zeilen-Reihenfolge; die
    Ausgabe sortiert nach Pfad, dann Zeile
    ([§DC-QA-02.a](#dc-qa-02a--determinismus-und-sortierung)).
 8. **Bezugsmenge in der Zusammenfassung.** Der Lauf trägt eine Zeile bei:
@@ -4187,6 +4189,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-11-23 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) Schritt 3: ein leerer Inhalt hat keine Zeile — die Zählung deckt sich damit auch für die leere Datei mit §[`DC-FA-FILE-001.a`](spezifikation.md#dc-fa-file-001a--zeilen--und-byte-obergrenzen-einer-ganzen-datei-file) Schritt 5. Schritt 7: die Wörter eines Marker-Kommentars sind Wörter in Schritt 6 |
 | 2026-11-23 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) nach Neu-Bestätigung durch den Auftraggeber: Schritt 6 zerlegt die überlange Zeile in Wörter (längste Folgen ohne U+0020 und U+0009) und nimmt sie aus, wenn ein Wort mehr als `max-chars` Codepunkte hat; Schritt 8 und die Schema-Zeile `linelength.exempt-unbreakable` in §2 entsprechend. Schritt 3: ein einzelnes `\r` am Zeilenende gehört nicht zur Zeile, auch am Ende einer letzten Zeile ohne `\n` |
 | 2026-11-22 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) neu: Verfahren des opt-in-Moduls `linelength` (Config-Prüfung am Rand, Eingabemenge aus dem effektiven Scan-Scope minus `exempt-paths`, Zeilen wie bei `file`, Ausnahmen (a) und (b) aus `proseLineSet`/`tableRowLine`, Länge in Codepunkten der rohen Zeile, Ausnahme (c) über Leerraum ab Position `max-chars + 1`, kein Zeilen-Marker, Bezugsmenge auch bei leerer Menge), das Schema `linelength.*` in §2 und der Grund-Code `line-chars-exceeded` im Verfahren. Das Schema gilt für das fertige Modul; der Code steht in der Tabelle von §4, sobald das Modul ihn liefert |
 | 2026-10-31 | §[`DC-FA-PSYNC-001.a`](spezifikation.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync) Grenzen: der Selbstvergleich zweier gleichwertiger Ausdrücke derselben Datei, die FIFO/Gerätedatei/Socket als Quelle und das Verhalten eines ungültigen Blocks bei nicht aktivem Modul sind benannt |

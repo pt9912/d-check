@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.112.1
+**Version:** 0.112.2
 
 **Status:** Draft
 
@@ -4442,8 +4442,9 @@ genau für sie. Eine Datei, die nicht auf `.md` endet (auch `.markdown` oder `.M
 einen Symlink erreichbar ist oder unter einem ausgenommenen Verzeichnis liegt, prüft es nicht.
 
 **Zählregel.** Eine Zeile endet am Zeilenumbruch `\n`; ein einzelnes `\r` am Zeilenende gehört
-nicht zur Zeile, auch am Ende einer letzten Zeile ohne `\n`. Ein Inhalt, der mit `\n` endet, hat danach keine leere Schlusszeile; eine letzte Zeile
-ohne `\n` zählt. Die **Länge** einer Zeile ist die Zahl ihrer Unicode-Codepunkte, gemessen an
+nicht zur Zeile, auch am Ende einer letzten Zeile ohne `\n`. Ein Inhalt, der mit `\n` endet, hat
+danach keine leere Schlusszeile; eine letzte Zeile ohne `\n` zählt; eine leere Datei hat keine
+Zeile. Die **Länge** einer Zeile ist die Zahl ihrer Unicode-Codepunkte, gemessen an
 der **rohen** Zeile: Einrückung, Inline-Code, Link-Ziele, HTML und Kommentare zählen mit, ein
 Tab ist **ein** Zeichen, und eine ungültige UTF-8-Folge zählt je Byte als ein Zeichen. Eine
 Zeile überschreitet die Grenze, wenn ihre Länge **größer** als `max-chars` ist; eine Zeile genau
@@ -4455,9 +4456,12 @@ außerhalb von Fenced-Code, die mit `|` beginnen, werden nicht gemessen. (c)
 `exempt-unbreakable`: eine Zeile über der Grenze, die ein **Wort** trägt, das allein mehr als
 `max-chars` Zeichen hat, ist ausgenommen — kein Umbruch bringt sie unter die Grenze (eine lange
 URL, ein langer Link, ein langer Pfad). Ein **Wort** ist eine längste Folge von Zeichen ohne
-Leerraum; **Leerraum** sind Space und Tab, kein anderes Zeichen. Jede andere überlange Zeile
-bringt ein Umbruch unter die Grenze, und sie ist ein Befund. Überschriften zählen mit; einen Front-Matter-Block
-kennt das Modul nicht als eigene Form, seine Zeilen werden gemessen.
+Leerraum; **Leerraum** sind Space und Tab, kein anderes Zeichen. Umgekehrt gilt das nicht: Nicht
+jede andere überlange Zeile bringt ein Umbruch unter die Grenze — eine Überschrift lässt sich nicht
+umbrechen, und ein Präfix der Markdown-Form kann ein kurzes Wort über die Grenze schieben. Jede
+andere überlange Zeile ist ein Befund; die Ausnahme prüft das Wort, nicht die Form. Überschriften
+zählen mit; einen Front-Matter-Block kennt das Modul nicht als eigene Form, seine Zeilen werden
+gemessen.
 
 **Was Fenced-Code und was eine Tabellenzeile ist, beantwortet die geteilte Lexik des
 Produkts** — dieselbe Antwort, die die übrigen Module auf diese Frage geben, keine zweite. Daraus
@@ -4485,16 +4489,22 @@ folgen Grenzen, die diese Anforderung zusagt, statt sie zu verschweigen:
 
 Die Ausnahme (c) prüft das Wort, nicht den Rest der Zeile, und auch diese Grenze sagt die
 Anforderung zu: eine Zeile mit einem Wort über der Grenze ist **ganz** ausgenommen, auch wenn
-davor oder dahinter umbrechbarer Text steht, der auf eine eigene Zeile passte. Umgekehrt ist ein
-Wort, das erst mit seiner Einrückung über die Grenze ragt, nicht länger als `max-chars`: die
-Zeile ist ein Befund, auch wenn ein Umbruch sie nicht kürzer macht, weil die Einrückung bleibt.
-Die Bezugsmenge zählt die über (c) ausgenommenen Zeilen.
+davor oder dahinter umbrechbarer Text steht, der auf eine eigene Zeile passte. (c) liest keine
+Markdown-Form. Ein Wort von höchstens `max-chars` Zeichen, das erst mit dem, was vor ihm stehen
+muss, über die Grenze ragt — Einrückung, ein Listen-Marker (`- `, `1. `), ein Zitat-Marker
+(`> `), ein Überschriften-Marker (`## `) —, macht die Zeile zu einem Befund, den kein Umbruch
+behebt: Der Marker ist ein eigenes Wort, die Einrückung Leerraum, und beide bleiben beim Umbruch
+vor dem Wort. Die Reparatur ist Kürzen des Worts oder der Form. Die Bezugsmenge zählt die über (c) ausgenommenen Zeilen.
 
 **Kein Zeilen-Marker.** `linelength` honoriert `d-check:ignore` nicht. Eine überlange Zeile ist
 deterministisch und behebbar; die Ventile sind (a) bis (c), `scope` und `exempt-paths`. Ein
 Marker-Kommentar, den ein anderes Modul auf einer Zeile verlangt, verlängert diese Zeile und
-zählt mit. Seine Wörter sind kurz: (c) nimmt eine Zeile mit Marker nur aus, wenn ein anderes Wort
-auf ihr länger als die Grenze ist.
+zählt mit. Für (c) ist er Text wie jeder andere: Trägt er ein Wort, das länger als `max-chars`
+ist, nimmt (c) die Zeile über dieses Wort aus. Das geschieht, sobald die Grenze kleiner ist als ein
+Wort des Kommentars — `d-check:ignore` hat 14 Zeichen, `d-check:status-provenance` 25, ein Pfad in
+`d-check:cite` oft mehr; zulässig ist `max-chars` ab 1. Ist die Grenze mindestens so groß wie jedes
+Wort des Kommentars, nimmt (c) die Zeile nur aus, wenn ein anderes Wort auf ihr länger als die
+Grenze ist.
 
 **Befund und Reihenfolge.** Je überlanger Zeile ein Befund `line-chars-exceeded` mit Datei und
 Zeile; die Meldung nennt gemessene Länge und Grenze. Die Reihenfolge ist Pfad, dann Zeile
@@ -4538,12 +4548,12 @@ Grenze, sodass (c) sie nicht ausnimmt):
 - **Ausnahme (b), an und aus:** Given eine überlange `|`-Zeile ohne Trennzeile, when der Lauf im Default erfolgt, then kein Befund; with `exempt-tables: false`, then ein Befund.
 - **Ausnahme (b), Grenzen:** Given je eine überlange eingerückte `|`-Zeile, eine `> |`-Zeile und eine Zeile `a | b` ohne führende Pipe, when der Lauf im Default erfolgt, then je ein Befund; Given `exempt-code-blocks: false` und `exempt-tables: true` und eine überlange `|`-Zeile in einem Zaun, then ein Befund.
 - **Ausnahme (c), an und aus:** Given eine überlange Zeile mit einem Wort, etwa einer URL, das länger als `max-chars` ist, when der Lauf im Default erfolgt, then kein Befund; with `exempt-unbreakable: false`, then ein Befund.
-- **Ausnahme (c), Ränder:** Given eine überlange Zeile, deren längstes Wort genau `max-chars` Zeichen hat, then ein Befund; mit `max-chars + 1` Zeichen, then kein Befund. Given eine überlange Prosa-Zeile, deren kurzes letztes Wort über die Grenze ragt, then ein Befund. Given umbrechbaren Text vor einem Wort mit mehr als `max-chars` Zeichen, then kein Befund. Given zwei Wörter von je höchstens `max-chars` Zeichen, die nur ein Tab trennt, then ein Befund; Given dieselben Wörter, getrennt durch ein geschütztes Leerzeichen (U+00A0), sodass sie ein Wort mit mehr als `max-chars` Zeichen bilden, then kein Befund. Given ein Wort mit höchstens `max-chars` Zeichen, das nur mit seiner Einrückung über die Grenze reicht, then ein Befund.
+- **Ausnahme (c), Ränder:** Given eine überlange Zeile, deren längstes Wort genau `max-chars` Zeichen hat, then ein Befund; mit `max-chars + 1` Zeichen, then kein Befund. Given eine überlange Prosa-Zeile, deren kurzes letztes Wort über die Grenze ragt, then ein Befund. Given umbrechbaren Text vor einem Wort mit mehr als `max-chars` Zeichen, then kein Befund. Given zwei Wörter von je höchstens `max-chars` Zeichen, die nur ein Tab trennt, then ein Befund; Given dieselben Wörter, getrennt durch ein geschütztes Leerzeichen (U+00A0), sodass sie ein Wort mit mehr als `max-chars` Zeichen bilden, then kein Befund. Given ein Wort mit höchstens `max-chars` Zeichen, das nur mit seiner Einrückung über die Grenze reicht, then ein Befund. Given `max-chars: 120` und eine Zeile aus `- ` und einem Wort mit 119 Zeichen, then ein Befund; Given dasselbe mit `> `, then ein Befund.
 - **Überschrift:** Given eine überlange ATX-Überschrift ohne Wort über der Grenze, when der Lauf erfolgt, then ein Befund.
-- **Kein Zeilen-Marker:** Given eine Zeile über der Grenze, die `<!-- d-check:ignore … -->` trägt, when der Lauf erfolgt, then ein Befund.
+- **Kein Zeilen-Marker:** Given eine Grenze von mindestens 14 und eine Zeile über der Grenze, die `<!-- d-check:ignore -->` trägt, when der Lauf erfolgt, then ein Befund; Given `max-chars: 10` und eine überlange Zeile mit `<!-- d-check:ignore -->` und sonst nur kurzen Wörtern, then kein Befund (das Marker-Wort ist länger als die Grenze).
 - **Eingabemenge:** Given eine Datei unter `linelength.exempt-paths`, eine Datei außerhalb von `linelength.scope` und eine Nicht-Markdown-Datei in `scan.roots`, jede mit überlanger Zeile, when der Lauf erfolgt, then kein Befund aus diesen Dateien.
 - **Leere Menge:** Given ein Repo mit Inhalt, aber ohne Markdown-Datei in der Eingabemenge, when der Lauf erfolgt, then Exit 0, kein Befund, und die Bezugsmenge nennt `0 Datei(en)`; Given eine explizit leere `linelength.scope.roots`, then prüft das Modul nichts, kein Fehler.
-- **Bezugsmenge:** Given eine Datei mit fünf Zeilen, davon eine Tabellenzeile und eine über (c) ausgenommene Zeile, when der Lauf einmal mit und einmal ohne abschließendes `\n` erfolgt, then trägt stderr (Default) bzw. `summary.notes` (`--json`/`--yaml`) beide Male `linelength: 1 Datei(en), 4 Zeile(n) geprüft, 1 davon mit einem Wort über der Grenze ausgenommen`.
+- **Bezugsmenge:** Given eine Datei mit fünf Zeilen, davon eine Tabellenzeile und eine über (c) ausgenommene Zeile, when der Lauf einmal mit und einmal ohne abschließendes `\n` erfolgt, then trägt stderr (Default) bzw. `summary.notes` (`--json`/`--yaml`) beide Male `linelength: 1 Datei(en), 4 Zeile(n) geprüft, 1 davon mit einem Wort über der Grenze ausgenommen`; Given eine leere Markdown-Datei als einzige Datei, then kein Befund und `linelength: 1 Datei(en), 0 Zeile(n) geprüft, 0 davon mit einem Wort über der Grenze ausgenommen` — dieselbe Zeilenzahl 0 wie bei `file`.
 - **Negative (Eingabefehler):** Given ein aktives Modul ohne `max-chars`, ein `max-chars: 0`, ein `max-chars: "80"`, ein `exempt-tables: "nein"`, einen unbekannten Schlüssel unter `linelength`, ein leeres Glob in `exempt-paths` oder einen `scope` ohne `roots`, when der Lauf erfolgt, then jeweils Exit 2 mit Klartext und kein Befund.
 - **Reihenfolge und Determinismus:** Given zwei Dateien mit mehreren Befunden, when der Lauf zweimal erfolgt, then byte-identische Ausgabe in stdout, stderr und Exit-Code, Befunde nach Pfad, dann Zeile.
 - **Default byte-identisch:** Given **keinen** `linelength`-Block und kein `--enable linelength`, when `d-check` läuft, then Ausgabe und Exit-Code sind byte-identisch zu einem Lauf ohne dieses Modul.
@@ -4614,6 +4624,7 @@ Anforderung legt die Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.112.2 | 2026-11-23 | [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) präzisiert, keine Verhaltensänderung der Ausnahmen: nicht jede andere überlange Zeile bringt ein Umbruch unter die Grenze — ein Präfix der Markdown-Form (Einrückung, Listen-, Zitat-, Überschriften-Marker) kann ein kurzes Wort über die Grenze schieben, die Zeile bleibt ein Befund; ein Marker-Kommentar nimmt die Zeile über (c) aus, sobald eines seiner Wörter länger als `max-chars` ist. Eine leere Datei hat keine Zeile. Kriterien für Listen- und Zitat-Präfix, für die Marker-Zeile bei kleiner Grenze und für die leere Datei | — |
 | 0.112.1 | 2026-11-23 | [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) nach Neu-Bestätigung durch den Auftraggeber: die dritte Ausnahme (`exempt-unbreakable`) nimmt nur noch eine überlange Zeile aus, die ein Wort trägt, das allein länger als `max-chars` ist (Wort = längste Folge ohne Space und Tab) — eine Prosa-Zeile mit kurzem Überhang ist ein Befund, eine Zeile mit einem überlangen Wort bleibt ganz ausgenommen; die Grenze, die Marker-Zeile, die Bezugsmengen-Zeile (`<U> davon mit einem Wort über der Grenze ausgenommen`) und die Kriterien zu (c) entsprechend. Ein einzelnes `\r` am Zeilenende gehört nicht zur Zeile, auch am Ende einer letzten Zeile ohne `\n`; neues Teilkriterium dazu | — |
 | 0.112.0 | 2026-11-22 | Neue Anforderung [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) — **Zeilenlänge in Markdown-Dateien** (Modul `linelength`, opt-in) samt neuem Bereichskürzel `LLEN` in §3: ein scannendes Modul über die Markdown-Dateien der Scan-Menge (`scope`, `exempt-paths`) misst jede Zeile in Codepunkten der rohen Zeile gegen `max-chars`; drei je einzeln schaltbare Ausnahmen, im Default an — Fenced-Code samt Zäunen, Zeilen, die mit `\|` beginnen, Zeilen ohne Leerraum ab der Grenze —, mit der Antwort der geteilten Lexik und deren benannten Grenzen (Umschalten bei jeder Zaun-Zeile, offener Zaun bis Dateiende, keine Trennzeile verlangt). Kein Zeilen-Marker; eine leere Menge ist kein Fehler; die Bezugsmenge nennt geprüfte Dateien und Zeilen und die über die dritte Ausnahme ausgenommenen. Fehlendes oder ungültiges `max-chars` ist Exit 2. Andere Dateiarten sind ausgeschlossen. Die Modul-Aufzählung in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) und das Glossar nennen `linelength` erst, wenn das Modul registriert ist. Begründung in begleitender ADR | — |
 | 0.111.1 | 2026-10-31 | Registrierung des Moduls `pinsync` (Nachzug zu 0.111.0, keine Verhaltensänderung der Anforderung): der Modulsatz in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) und das Glossar nennen `pinsync`, sobald es registriert ist | — |
