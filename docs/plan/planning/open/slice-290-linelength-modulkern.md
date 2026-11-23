@@ -167,7 +167,8 @@ die Anforderung, sobald sie steht):
   Zeile über das Marker-Wort aus (Review R1 zu slice-289, F-8).
 - Form-Präfix (Review R1 zu slice-289, F-2): bei `max-chars: 120` eine Zeile aus `- ` und einem Wort
   mit 119 Zeichen ⇒ Befund; dasselbe mit `> ` ⇒ Befund; `- foo ` plus ein Wort mit 119 Zeichen ⇒
-  Befund, die Zeile ist vor dem Wort umbrechbar (Review R2 zu slice-289, F-3).
+  Befund, die Zeile ist vor dem Wort umbrechbar (Review R2 zu slice-289, F-3); `-   ` plus ein Wort
+  mit 117 Zeichen ⇒ Befund (Rand mehrerer Leerzeichen hinter dem Marker, [ADR-0114](../../adr/0114-linelength-modul.md)).
 - Leere Markdown-Datei als einzige Datei ⇒ kein Befund, Bezugsmenge `1 Datei(en), 0 Zeile(n)`
   (Review R1 zu slice-289, F-1).
 - Bezugsmenge: Datei mit und ohne abschließendes `\n` ⇒ dieselbe Zeilenzahl wie bei `file`;
