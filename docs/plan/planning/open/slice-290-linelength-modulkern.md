@@ -95,7 +95,9 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 - [ ] `make gates` grün.
 - [ ] [ADR-0114](../../adr/0114-linelength-modul.md) `Accepted`, Index nachgezogen — der
       Status-Übergang durch den Architect, nachdem Review und Verifikation dieses Slice keine
-      Änderung an der Entscheidung mehr verlangen (Architect-Verdikt F-8).
+      Änderung an der Entscheidung mehr verlangen (Architect-Verdikt F-8); vorher nennt das
+      `Schärft:`-Feld die `SPEC-<NNN>`-Kennung der neuen §4-Zeile des Grund-Codes (Review R1 zu
+      slice-289, F-11).
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
@@ -137,7 +139,7 @@ die Anforderung, sobald sie steht):
 
 - Zeile mit `max-chars` Zeichen ⇒ befundfrei; mit `max-chars + 1` ⇒ ein Befund — mit
   `exempt-unbreakable: false` oder ohne Wort über der Grenze; eine Zeile aus einem einzigen Wort
-  mit `max-chars + 1` Zeichen ist unter Variante H im Default ausgenommen (Implementer-Hinweis).
+  mit `max-chars + 1` Zeichen ist unter Variante H im Default ausgenommen ([ADR-0114](../../adr/0114-linelength-modul.md) Entscheid 5 (c)).
 - Zeile aus Mehrbyte-Zeichen (Umlaut, Emoji) an der Grenze ⇒ gezählt in Codepunkten,
   nicht in Bytes.
 - `\r\n`-Zeilenende ⇒ das `\r` zählt nicht; Tab zählt als ein Zeichen; ungültiges UTF-8
@@ -159,7 +161,7 @@ die Anforderung, sobald sie steht):
   `max-chars` lang ist ⇒ Befund; Zeile nur
   aus kurzen Wörtern, deren letztes über die Grenze ragt ⇒ Befund; ein Tab trennt Wörter wie ein
   Space; ein geschütztes Leerzeichen (U+00A0) trennt nicht; letzte Zeile `…\r` ohne `\n` mit
-  genau `max-chars` Zeichen ⇒ befundfrei (Architect-Befund A5).
+  genau `max-chars` Zeichen ⇒ befundfrei ([ADR-0114](../../adr/0114-linelength-modul.md) Entscheid 3).
 - Zeile über der Grenze mit `<!-- d-check:ignore … -->` ⇒ Befund (Entscheid 9).
 - Bezugsmenge: Datei mit und ohne abschließendes `\n` ⇒ dieselbe Zeilenzahl wie bei `file`;
   die über (c) ausgenommenen Zeilen stehen als eigene Zahl (Verdikt F-7).

@@ -20,11 +20,12 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 [`DC-FA-CONF-002`](../../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope);
 Abgrenzung gegen [`DC-FA-FILE-001`](../../../../spec/lastenheft.md#dc-fa-file-001--zeilen--und-byte-obergrenzen-einer-ganzen-datei-modul-file-opt-in).
 
-**Berührte Spec-Stellen:** `lastenheft.md` §3 (Bereichs-Kürzel-Liste und die neue
-Anforderung), `spezifikation.md` §1 (neues Verfahren), §2 (Schema `linelength.*`),
-§4 (Grund-Code — die Tabellenzeile kommt mit dem Code); `architecture.md` bleibt
-unberührt (die Rolle „Regel-Modul“ besteht). Der Verweis zeigt **aufwärts**: Die Spec
-nennt diesen Slice nie.
+**Berührte Spec-Stellen:** [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) (neu, mit dem
+Bereichs-Kürzel in der Liste von `lastenheft.md` §3), [`DC-FA-LLEN-001.a`](../../../../spec/spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength)
+(neues Verfahren samt Grund-Code), [`SPEC-005`](../../../../spec/spezifikation.md#spec-005--d-checkyml) (Schema
+`linelength.*`); die Zeile des Grund-Codes in `spezifikation.md` §4 kommt mit dem Code;
+`architecture.md` bleibt unberührt (die Rolle „Regel-Modul“ besteht). Der Verweis zeigt
+**aufwärts**: Die Spec nennt diesen Slice nie.
 
 **Verantwortlich:** pt9912
 
@@ -42,9 +43,11 @@ Ausschlusses stehen in **eben diesem Abschnitt** des Baseline-Regelwerks,
 zusammen mit der Begründungs-Pflicht je Punkt.
 
 **Ziel:** Die Anforderung des Moduls `linelength` steht im Lastenheft, ihr Verfahren,
-ihr Schema und ihr Grund-Code in der Spezifikation und die Entscheidung in einer
-`Accepted`-ADR — und die Entscheide unten sind **vor dem ersten Code** vom
-Auftraggeber bestätigt und festgeschrieben.
+ihr Schema und ihr Grund-Code in der Spezifikation und die Entscheidung in einer ADR, die
+`Proposed` vorliegt und mit der Closure von
+[`slice-290`](../open/slice-290-linelength-modulkern.md) `Accepted` wird (Architect-Verdikt F-8)
+— und die Entscheide unten sind **vor dem ersten Code** vom Auftraggeber bestätigt und
+festgeschrieben.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
@@ -137,8 +140,10 @@ ist [ADR-0114](../../adr/0114-linelength-modul.md).
    und `exempt-paths` wie die anderen Prosa-Module. Das Modul liest keine Datei außerhalb
    dieser Menge — die §3.8-Frage hat damit die Antwort „keine“, und die Spezifikation
    sagt es.
-3. **Zähleinheit:** Unicode-Codepunkte der rohen Zeile ohne Zeilenende (`\n`, ein `\r`
-   davor zählt nicht) — dieselbe Einheit wie `cell-max-chars`
+3. **Zähleinheit:** Unicode-Codepunkte der rohen Zeile ohne Zeilenende (`\n`; ein einzelnes
+   `\r` am Zeilenende zählt nicht, auch am Ende einer letzten Zeile ohne `\n` — so geschärft in
+   [ADR-0114](../../adr/0114-linelength-modul.md) Entscheid 3, wie bei `pinsync` und `metrics`) —
+   dieselbe Einheit wie `cell-max-chars`
    (`utf8.RuneCountInString`). Ein Tab zählt als ein Zeichen. Verworfen: Bytes (ein
    Umlaut zählte doppelt) und Anzeigebreite (braucht eine Breiten-Tabelle, East-Asian
    Wide, Emoji — nicht deterministisch über Unicode-Versionen hinweg). Ungültiges UTF-8
@@ -159,8 +164,8 @@ ist [ADR-0114](../../adr/0114-linelength-modul.md).
    kein Umbruch brächte eine solche Zeile unter die Grenze (`exempt-unbreakable`; **Variante H**,
    vom Auftraggeber am 2026-11-23 neu bestätigt). Die zuerst bestätigte Fassung („der Teil ab der
    Grenze enthält keinen Leerraum“, Verdikt F-5) nahm am eigenen Bestand bei 120 auch 361
-   umbrechbare Prosa-Zeilen aus — 44 % ihrer 828 Ausnahmen (Befund A3 des Implementers, vom
-   Architect nachgemessen); H nimmt dort 513 Zeilen aus (direkt gemessen, zweiter Plan-Nachtrag —
+   umbrechbare Prosa-Zeilen aus — 44 % ihrer 828 Ausnahmen (Aufschlüsselung in
+   [ADR-0114](../../adr/0114-linelength-modul.md), Alternative M); H nimmt dort 513 Zeilen aus (direkt gemessen, zweiter Plan-Nachtrag —
    die zuerst genannte 467 zählte nur innerhalb der 828 und übersah Zeilen mit dem langen Wort vor
    umbrechbarem Text). Überschriften zählen mit. Die Erkennung von
    Fenced-Code und Tabellenzeile nimmt das Modul aus der geteilten Lexik
@@ -220,7 +225,8 @@ vor dem `\n` zählt nicht; Fenced-Code nach dem Umschalt-Automaten der geteilten
 
 Damit ist „das eigene Profil schaltet das Modul nicht ein“ belegt: bei 120 stünden 2124 Befunde
 an. Kommando (aus der Repo-Wurzel, eine einzige `awk`-Instanz; das Ende des Programms gibt die
-Zahlen aus):
+Zahlen aus). Es verlangt **GNU awk**: `length` zählt nur dort in der UTF-8-Locale Codepunkte,
+`mawk` zählt Bytes und liefert dann ohne Hinweis die Bytes-Zahlen (Review R1, F-9):
 
 ```sh
 find . \( -type d \( -name .git -o -name node_modules -o -name build -o -name target \
@@ -300,7 +306,7 @@ WIP-Limit ist frei (`in-progress/` trägt nur die Roadmap).
 
 **Rückführungen — vorab benennen, nicht erst im Nachhinein begründen:**
 
-- `in-progress` → `next` (zu groß, zurück zur Zerlegung): die Entscheide 1–8 brauchen
+- `in-progress` → `next` (zu groß, zurück zur Zerlegung): die Entscheide 1–9 brauchen
   mehr als eine Review-Sitzung, oder die Ausnahme (c) verlangt eine eigene Link-Lexik,
   die die geteilte nicht hergibt.
 - `in-progress` → `open` (blockiert): der Auftraggeber entscheidet einen der Punkte
