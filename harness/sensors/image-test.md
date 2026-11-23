@@ -15,6 +15,13 @@ das lokal gebaute Image (`tools/image-test.sh`):
   gleiche Werte Exit 0, ungleiche Exit 1 mit `pinsync-mismatch`, dieselbe Ausgabe wie
   gegen ein beschreibbares Repo, eine Symlink-Quelle Exit 2
   ([`DC-FA-PSYNC-001`](../../spec/lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in)).
+- das Modul `linelength` im Container unter `:ro`, mit fremdem Benutzer und ohne Netz,
+  bei `max-chars: 40`: Zeilen mit 39 und 40 Zeichen befundfrei, mit 41 ein Befund
+  `line-chars-exceeded`; eine Mehrbyte-Zeile zählt Codepunkte, nicht Bytes; Fenced-Code,
+  eine Tabellenzeile und eine Zeile mit einem Wort über der Grenze sind im Default
+  ausgenommen, und jeder der drei Schalter aus macht genau seine Zeile zum Befund; die
+  Bezugsmengen-Zeile auf stderr nennt geprüfte und ausgenommene Zeilen
+  ([`DC-FA-LLEN-001`](../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)).
 - dazu zwei Modi über dieselbe Grenze: `--doctor`/`--repair` nativ vs. Container
   byte-identisch
   ([`DC-FA-CLI-007`](../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus),

@@ -20,6 +20,8 @@
 #   (7) metrics:  Schätzung aus der Tabelle des Plans (DC-FA-MET-001).
 #   (8) pinsync:  Wertvergleich unter :ro, mit fremdem Benutzer, ohne Netz
 #                 (DC-FA-PSYNC-001).
+#   (9) linelength: Grenze, Zähleinheit und Ausnahmen unter :ro, mit fremdem
+#                 Benutzer, ohne Netz (DC-FA-LLEN-001).
 #
 # „Nativ" in einem Docker-only-Repo: das statische Binary wird aus dem
 # Runtime-Image extrahiert (docker cp) und direkt ausgeführt — kein
@@ -275,4 +277,59 @@ docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none --user 12345:12345 -v "$p
 [ "$px" -eq 2 ] || fail "pinsync: Exit $px bei Symlink-Quelle, want 2 ($(cat "$WORK/p3.err"))"
 echo "image-test: (8) pinsync — gleiche Werte Exit 0, ungleiche Exit 1 (:ro, fremder Benutzer == beschreibbar), Symlink-Quelle Exit 2"
 
-echo "image-test: OK — Akzeptanzkriterien erfüllt (DC-FA-DIST-001, DC-FA-CLI-007, DC-FA-CLI-008, DC-FA-CLI-013, DC-FA-MET-001, DC-FA-PSYNC-001)"
+# --- (9) linelength: Grenze, Zähleinheit und Ausnahmen unter :ro, fremdem Eigentümer, ohne Netz ---
+# abdeckung: DC-FA-LLEN-001
+# Bei max-chars 40 sind die Zeilen mit 39 und mit 40 Zeichen befundfrei, die
+# mit 41 ein Befund. Gezählt werden Codepunkte, nicht Bytes: die Mehrbyte-Zeile
+# mit 40 Codepunkten in 90 Bytes ist befundfrei, die mit 41 in 91 ein Befund.
+# Fenced-Code samt Zäunen, die Tabellenzeile und die Zeile mit einem Wort über
+# 40 Zeichen sind im Default ausgenommen; ein Schalter aus macht genau seine
+# Zeile zum Befund, die Bezugsmenge auf stderr zählt mit.
+lfx="$WORK/linelengthfix"
+mkdir -p "$lfx"
+m='äö😀'
+{
+  printf '# Probe\n'                                                           # Z. 1:  7
+  printf 'aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa\n'                           # Z. 2: 39
+  printf 'aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaaa\n'                          # Z. 3: 40
+  printf 'aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa a\n'                         # Z. 4: 41
+  printf '%s %s %s %s %s %s %s %s %s %sx\n' "$m" "$m" "$m" "$m" "$m" "$m" "$m" "$m" "$m" "$m"  # Z. 5: 40 (90 Bytes)
+  printf '%s %s %s %s %s %s %s %s %s %sxy\n' "$m" "$m" "$m" "$m" "$m" "$m" "$m" "$m" "$m" "$m" # Z. 6: 41 (91 Bytes)
+  printf '```\n'                                                               # Z. 7:  3, Zaun
+  printf 'aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaaaaa\n'    # Z. 8: 62, im Zaun
+  printf '```\n'                                                               # Z. 9:  3, Zaun
+  printf '| aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa aaaa |\n'   # Z. 10: 63, Tabelle
+  printf 'Siehe https://example.org/ein/sehr/langer/pfad/zur/seite.html dort\n' # Z. 11: 66, Wort mit 55
+} > "$lfx/probe.md"
+
+# ll_lauf <Name> <Schalter-Zeile oder leer> <Befunde als Zeile:Länge …> <geprüft> <ausgenommen>
+# fährt den Container mit max-chars 40 und prüft Exit 1, die Befunde in
+# Pfad-, dann Zeilen-Reihenfolge mit Grund und Grenze, die Länge und die
+# Grenze in der Meldung und die Bezugsmengen-Zeile auf stderr.
+ll_lauf() {
+  printf 'modules: [links]\nlinelength:\n  max-chars: 40\n' > "$lfx/.d-check.yml"
+  [ -z "$2" ] || printf '  %s\n' "$2" >> "$lfx/.d-check.yml"
+  chmod -R a+rX "$lfx"
+  local lx=0 want="" z
+  docker run --rm ${PLAT[@]+"${PLAT[@]}"} --network none --user 12345:12345 -v "$lfx":/repo:ro "$REF" --enable linelength \
+    > "$WORK/$1.out" 2> "$WORK/$1.err" || lx=$?
+  [ "$lx" -eq 1 ] || fail "linelength $1: Exit $lx, want 1 ($(cat "$WORK/$1.err"))"
+  for z in $3; do want="${want}probe.md:${z%%:*}	max-chars=40	line-chars-exceeded
+"; done
+  [ "$(cut -f1-3 "$WORK/$1.out")" = "${want%
+}" ] || fail "linelength $1: Befunde $(cut -f1 "$WORK/$1.out" | tr '\n' ' '), want Zeilen $3"
+  for z in $3; do
+    awk -F'\t' -v f="probe.md:${z%%:*}" -v n="${z#*:}" \
+      '$1 == f && $4 ~ ("(^|[^0-9])" n "([^0-9]|$)") && $4 ~ /(^|[^0-9])40([^0-9]|$)/ { ok = 1 } END { exit !ok }' \
+      "$WORK/$1.out" || fail "linelength $1: Meldung zu Zeile ${z%%:*} nennt nicht ${z#*:} und 40: $(cat "$WORK/$1.out")"
+  done
+  grep -qx "d-check: linelength: 1 Datei(en), $4 Zeile(n) geprüft, $5 davon mit einem Wort über der Grenze ausgenommen" "$WORK/$1.err" \
+    || fail "linelength $1: Bezugsmengen-Zeile fehlt oder weicht ab, want $4 geprüft, $5 ausgenommen: $(cat "$WORK/$1.err")"
+}
+ll_lauf l0 '' '4:41 6:41' 7 1
+ll_lauf l1 'exempt-code-blocks: false' '4:41 6:41 8:62' 10 1
+ll_lauf l2 'exempt-tables: false' '4:41 6:41 10:63' 8 1
+ll_lauf l3 'exempt-unbreakable: false' '4:41 6:41 11:66' 7 0
+echo "image-test: (9) linelength — 40 grün, 41 rot, Codepunkte statt Bytes, Fenced-Code/Tabelle/Wort über der Grenze ausgenommen und je einzeln schaltbar (:ro, fremder Benutzer, ohne Netz)"
+
+echo "image-test: OK — Akzeptanzkriterien erfüllt (DC-FA-DIST-001, DC-FA-CLI-007, DC-FA-CLI-008, DC-FA-CLI-013, DC-FA-MET-001, DC-FA-PSYNC-001, DC-FA-LLEN-001)"
