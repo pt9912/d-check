@@ -75,8 +75,8 @@ Wir geben dem Modul `vcs` einen **eigenen opt-in-Schlüssel `vcs.follow-renames`
 Umbenennungen der Range aus der git-Historie liest und ein Link-Ziel über sie gleichsetzt. Im Einzelnen
 (die Nummern dienen dieser Liste als Bezug; 1–14 vom Auftraggeber am 2026-11-23 bestätigt, Entscheidung 5 in
 der seiten-gleichen Fassung nach Entscheidung 9; danach ohne erneute Bestätigung an die Spezifikation
-angeglichen — Wortlaut von 1, 2, 3, 9 und 13 — und nach den Reviews an 9, 11 und 13 geschärft; Entscheidung 10
-ist nach Review R2 in der Sache geändert und wartet auf die Bestätigung des Auftraggebers, siehe Geschichte):
+angeglichen — Wortlaut von 1, 2, 3, 9 und 13 — und nach den Reviews an 11 und 13 geschärft; Entscheidung 9 und 10
+sind nach Review R2 in der Sache geändert und vom Auftraggeber am 2026-11-23 in dieser Fassung bestätigt, siehe Geschichte):
 
 1. **Erkennung: Inhalts-Gleichheit, keine Ähnlichkeits-Schwelle.** Ein Pfad A, der vor einem Schritt
    existiert und danach nicht, und ein Pfad B, der danach existiert und vorher nicht, sind eine
@@ -256,3 +256,4 @@ Entscheidungen 1–4 und die Wirkung von `ignore-link-targets` bleiben unveränd
 | 2026-11-23 | Proposed, nach Review R1 zum Anforderungs-Slice geschärft: Quellen der Abbildung sind nur Pfade des BASE-Stands, ein Zwischenpfad ist weder Quelle noch Ende (9); verschwindet der Pfad einer Linie ohne Umbenennung, endet sie mit „gelöscht“, auch bei späterer Neubelegung (11); die Zusage „nie röter“ heißt „kein Befund mehr“, der fail-closed-Fall ist benannt (9, Alternative K); `Schärft:` nennt Schritt 2 statt 1; die Einleitung der Entscheidung sagt, was nach der Bestätigung angeglichen wurde | slice-291 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, Entscheidung 11 präzisiert: auch eine Merge-Seite, die einen Pfad nicht umbenennt, ihn aber löscht und neu anlegt, ist eine Linie zu „gelöscht“; neben der Umbenennung der anderen Seite ist das Mehrdeutigkeit. Die Merge-Grenze unter Konsequenzen gilt nur noch für das Überschreiben an Ort und Stelle | slice-291 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, nach Review R2 zum Anforderungs-Slice: Entscheidung 10 normiert ein teilnehmendes Ziel auch mit beiden Schaltern auf eine eigene Marke und den vollen Endpfad, damit gleicht es nie einem nicht teilnehmenden (schließt das Umbiegen auf eine Datei, die den alten Namen bekommt, und die Bedingung „Umbenennung wechselt den Dateinamen“ entfällt) — **in der Sache geändert, nur in Richtung Drift, Bestätigung durch den Auftraggeber offen**; Entscheidung 9: ein Ende nimmt nur teil, wenn es in BASE nicht lag und Ende genau einer Quelle ist (ersetzt „zugleich Quelle und Ende“); Entscheidung 11: „gelöscht“ heißt ohne Ende, Löschen und Neuanlegen im selben Schritt ist Inhaltsänderung, eine Linie ohne den Pfad ist unberührt; Entscheidung 13: gelesen werden auch Bäume von Eltern-Commits vor BASE; Alternativen L und M | slice-291 <!-- d-check:status-provenance --> |
+| 2026-11-23 | Proposed, fortgeschrieben: der Auftraggeber hat Entscheidung 9 und 10 in der Fassung nach Review R2 bestätigt | slice-291 <!-- d-check:status-provenance --> |
