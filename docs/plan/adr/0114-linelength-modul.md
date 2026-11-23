@@ -8,6 +8,7 @@
 
 **Bezug:** Auftrag des Auftraggebers vom 2026-11-22 (Zeilenlänge in Markdown-Dateien, nur Markdown),
 [`DC-FA-LLEN-001`](../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in),
+[Lastenheft §5](../../../spec/lastenheft.md#5-globale-out-of-scope-punkte) (der globale Ausschluss von Lint-Prüfungen und seine Ausnahme für diese Prüfung),
 [`DC-FA-SCAN-001`](../../../spec/lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln),
 [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope),
 [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus),
@@ -47,6 +48,17 @@ Drei Randbedingungen gelten unabhängig davon. Ein Lauf ohne `linelength` bleibt
 schreibt nie. Und die Fragen „ist das Fenced-Code“ und „ist das eine Tabellenzeile“ hat das Produkt schon
 beantwortet: `proseLineSet` und `tableRowLine` in der geteilten Lexik; eine zweite Antwort daneben wäre ein
 Defekt ([ADR-0054](0054-geteilte-lexik-bindet-ihre-konsumenten.md) Entscheidung 1).
+
+Das Lastenheft schließt Rechtschreib-, Stil- und Markdown-Lint-Prüfungen global aus, weil es dafür
+etablierte Werkzeuge gibt ([§5](../../../spec/lastenheft.md#5-globale-out-of-scope-punkte)); eine Zeilen-Grenze ist eine solche Prüfung. Der Auftraggeber hat am
+2026-11-23 entschieden, den Ausschluss zu schärfen statt aufzugeben: §5 nimmt die Zeilenlänge in
+Markdown-Dateien ausdrücklich aus und verweist auf die Anforderung, für alle übrigen Lint-, Stil- und
+Rechtschreib-Prüfungen bleibt er bestehen. Diese eine Prüfung gehört ins Werkzeug, weil sie dort ohne
+Zusatz trägt: hermetisch (nur Dateizugriff, kein Netz, kein Schreiben), deterministisch
+([`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus)), über dieselbe Scan-Menge mit `scope`
+und `exempt-paths` und mit derselben Antwort auf „was ist Fenced-Code, was eine Tabellenzeile“ wie die
+übrigen Module, und ohne ein zweites Werkzeug im Lauf. Ein fremder Linter liest dieselben Dateien mit
+eigenem Parser und gibt auf diese Fragen eine zweite Antwort.
 
 ## Entscheidung
 
@@ -106,7 +118,7 @@ und teilt mit `cell-max-chars` die Einheit, nicht den Gegenstand.
 
 | Option | Pro | Contra |
 |---|---|---|
-| A — nichts tun, ein fremder Markdown-Linter | keine neue Modul-Fläche | eine zweite Toolchain im Repo, und deren Fence- und Tabellen-Antwort ist nicht die des Produkts: zwei Antworten auf dieselbe Frage in einem Lauf |
+| A — nichts tun: ein etabliertes Werkzeug, markdownlint mit der Regel MD013 — der Weg, den Lastenheft §5 für Lint-Prüfungen vorsieht | gibt es, wird gepflegt, bringt weitere Regeln mit; d-check bekommt kein neues Modul | ein zweites Werkzeug mit eigener Toolchain im Lauf; es liest dieselben Dateien mit eigenem Parser und gibt auf „was ist Fenced-Code, was eine Tabellenzeile“ eine zweite Antwort neben der des Produkts; seine Menge ist nicht die Scan-Menge mit `scope`/`exempt-paths`, und eine Bezugsmenge in der Form der übrigen Module trägt es nicht |
 | B — dritte Schwelle im Modul `file` | kein neues Modul | `file` liest jede Dateiart roh über eigene Globs und verspricht „unabhängig von der Dateiart“; Markdown-Ausnahmen brächen diese Zusage, und `file` kennt die Scan-Menge nicht |
 | C — neue Bedingung in `structure` | Glob- und Ausnahme-Mechanik vorhanden | jede Regel braucht einen Abschnitts-Selektor, `structure` wählt seine Dateien selbst und kennt kein `scope`, und es misst den bereinigten Text; eine Breite der ganzen Datei über der Scan-Menge hat keinen dieser Anker |
 | D — Zähleinheit Bytes | trivial, keine Kodierungsfrage | ein Umlaut zählte doppelt; die Grenze beschriebe die Kodierung statt den Text |
@@ -123,6 +135,10 @@ und teilt mit `cell-max-chars` die Einheit, nicht den Gegenstand.
 
 - Positiv: ein Repo bekommt die Zeilen-Grenze mit einer Konfiguration; das Modul braucht keinen Port und
   keine neue Lexik. Eine überlange Prosa-Zeile ist ein Befund, sobald ein Umbruch sie unter die Grenze bringt.
+- Negativ — Abgrenzung zum globalen Ausschluss: der Ausschluss in Lastenheft §5 bleibt für alle übrigen
+  Lint-, Stil- und Rechtschreib-Prüfungen bestehen; §5 nimmt nur die Zeilenlänge in Markdown-Dateien aus.
+  Diese Entscheidung ist **kein** Präzedenzfall: Sie begründet keine weitere Prüfung dieser Art, und jede
+  weitere braucht eine eigene Anforderung und eine eigene Entscheidung gegen §5.
 - Negativ — Grenzen der geteilten Lexik, in der Anforderung zu nennen:
   - Der Fence-Automat schaltet bei jeder ```` ``` ````- oder `~~~`-Zeile um. Ein ````` ```` `````-Block mit einer
     inneren ```` ``` ````-Zeile und ein ```` ``` ````-Block mit einer `~~~`-Zeile schließen früh; die Zeilen dahinter
@@ -186,8 +202,11 @@ unumbrechbar ist (dann der Marker, Alternative I); (c) ein Konsument, ein Review
 überlange Zeilen, die (c) wegen eines einzelnen Wortes über der Grenze ganz ausnimmt, als Mangel liest — etwa
 umbrechbaren Text vor einer langen URL (dann eine Prüfung des Rests neben dem Wort) —, oder umgekehrt den
 Umbruch vor einem langen Link am Zeilenende als Last (dann Alternative M); (d) ein Konsument Text mit breiten
-Zeichen prüft und die Codepunkte dort nicht tragen (dann Alternative E); oder (e) ein Konsument die Prüfung
-für eine andere Dateiart verlangt (dann ist die Abgrenzung zu `file` neu zu ziehen, Alternative B).
+Zeichen prüft und die Codepunkte dort nicht tragen (dann Alternative E); (e) ein Konsument die Prüfung
+für eine andere Dateiart verlangt (dann ist die Abgrenzung zu `file` neu zu ziehen, Alternative B); oder (f)
+jemand eine weitere Lint-, Stil- oder Rechtschreib-Prüfung im Werkzeug wünscht. Dann wird nicht diese
+Entscheidung erweitert: Sie ist kein Präzedenzfall, und die weitere Prüfung braucht eine eigene Anforderung,
+eine eigene Ausnahme vom Ausschluss in Lastenheft §5 und eine eigene Entscheidung.
 
 ## Geschichte
 
@@ -200,6 +219,7 @@ für eine andere Dateiart verlangt (dann ist die Abgrenzung zu `file` neu zu zie
 | 2026-11-23 | Proposed, nach Review R1 fortgeschrieben: die Begründung von 5 (c) behauptet nicht mehr, jede andere überlange Zeile brächte ein Umbruch unter die Grenze (Überschriften, Präfixe der Markdown-Form); die Marker-Konsequenz gilt für jede Grenze ab 1; das Schema ist über [`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml) adressiert; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, nach Review R2 fortgeschrieben: die Konsequenz zum Präfix der Markdown-Form gilt nur für das erste Wort eines Listenpunkts oder Zitats, für Überschriften und eingerückten Code; ein späteres Wort lässt sich auf eine Fortsetzungszeile ohne Marker umbrechen; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, an die Anforderung angeglichen: das erste Wort eines Listenpunkts darf mit einem Marker oder einer Einrückung derselben Breite auf die nächste Zeile rücken, der Rand mehrerer Leerzeichen nach dem Marker ist benannt; „nicht umbrechbar“ gilt für ATX-, nicht für Setext-Überschriften; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
+| 2026-11-23 | Proposed, nach der Verifikation (V-1) fortgeschrieben: der globale Ausschluss von Lint-, Stil- und Rechtschreib-Prüfungen in Lastenheft §5 bleibt bestehen und nimmt nur die Zeilenlänge in Markdown-Dateien aus (Entscheid des Auftraggebers vom 2026-11-23); Begründung im Kontext, Alternative A als etabliertes Werkzeug (markdownlint MD013), Konsequenz und Trigger (f): kein Präzedenzfall; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
 
 Nach `Accepted` wird diese Datei **nicht mehr inhaltlich überschrieben**.
 Spätere Korrekturen oder Schärfungen entstehen als neue ADR mit
