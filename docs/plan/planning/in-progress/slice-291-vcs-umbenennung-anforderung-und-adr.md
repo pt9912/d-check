@@ -202,7 +202,8 @@ Folge-Entscheide aus dem Architect-Verdikt — der Wortlaut steht in
    teil.
 10. **Zusammenspiel der Schalter:** erst gleichsetzen, dann (mit `ignore-link-targets`)
     auf Dateiname und Anker normieren. Folge: mit beiden Schaltern wird der Nachzug von
-    einer umbenannten Quelle auf eine **gleichnamige andere** Datei Drift — die eine
+    einer umbenannten Quelle auf eine **andere** Datei mit dem alten Namen Drift, wenn die
+    Umbenennung den Dateinamen wechselt — die eine
     Stelle, an der die Welle die Grenze von `ignore-link-targets` schärft.
 11. **Kette entlang der Abstammung:** Y → Z setzt X → Y nur fort, wenn dessen Commit ein
     Vorfahr ist; ein Merge trägt die Umbenennung einer Seite weiter; das Ergebnis hängt

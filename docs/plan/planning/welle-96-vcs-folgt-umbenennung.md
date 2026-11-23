@@ -126,7 +126,8 @@ der Closure-Trigger unerreichbar wird.
   ([`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/observation.md))
   wird nicht geschärft; eine Verschärfung wäre nicht opt-in-neutral und ein eigener
   Vorgang. **Eine Ausnahme folgt aus Entscheid 10:** sind beide Schalter an und ist die
-  Quelle des Links umbenannt, ist ein Nachzug auf eine gleichnamige andere Datei Drift
+  Quelle des Links umbenannt und wechselt die Umbenennung den Dateinamen, ist ein
+  Nachzug auf eine Datei mit dem alten Namen Drift
   — die Gleichsetzung läuft vor der Normierung auf den Dateinamen.
 - **Die Umbenennung der eigenen Spec-Dateien** — gehört zur Baseline-Hebung, die sie
   verlangt, nicht zu dieser Welle.

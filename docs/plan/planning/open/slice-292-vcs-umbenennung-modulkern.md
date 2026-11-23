@@ -146,9 +146,13 @@ Liste folgt den bestätigten Entscheiden 1–14 und dem Architect-Verdikt):
 - Unveränderter Link auf eine umbenannte Datei in einer ADR, die nur einen erlaubten
   Anhang bekommt ⇒ kein Befund (seiten-gleich, Entscheid 9).
 - Tausch A ↔ B in einem Commit ⇒ kein Pfad nimmt teil (Quelle und Ende zugleich).
-- Beide Schalter, umbenannte Quelle, Nachzug auf eine gleichnamige andere Datei ⇒ Befund
+- Beide Schalter, umbenannte Quelle mit neuem Dateinamen, Nachzug auf eine andere Datei
+  mit dem alten Namen ⇒ Befund; wechselt die Umbenennung nur das Verzeichnis ⇒ kein
+  Befund (Grenze „gleicher Name, andere Datei“)
   (Entscheid 10).
 - Ende der Kette in HEAD gelöscht ⇒ keine Umbenennung.
+- Ende gelöscht und als andere Datei neu angelegt; Zwischenpfad einer Kette neu belegt ⇒
+  keine Umbenennung, Nachzug ist Befund (Neubelegung, Entscheidung 9 und 11).
 - Nur das Ausführbar-Bit geändert ⇒ gleich; Symlink gegen Datei mit gleichem Blob ⇒
   nicht gleich (Entscheid 13).
 - Link auf ein umbenanntes Verzeichnis ⇒ wie heute; Link auf eine Datei darin ⇒ folgt.
