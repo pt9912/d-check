@@ -233,6 +233,14 @@ Profils, `modules: []` und `linelength: {max-chars: 120}`, dann das mit `make bu
 mit `--network none`, `--config <datei>` und `--enable linelength`; verglichen werden die
 Bezugsmenge auf stderr und die Zahl der Befund-Zeilen auf stdout.
 
+**Plan-Änderungs-Notiz — eine Handbuch-Aufzählung ohne Spiegel-Test.** Im Handbuch zählt §5
+(Ventile, Bullet `exempt-paths`) die Module mit `exempt-paths` auf und schließt mit „Die übrigen
+Module haben keinen der beiden Schlüssel“ — mit dem registrierten Modul wäre der Satz falsch.
+`linelength` kommt dort in die Liste; die Aufzählung der Module, die `d-check:ignore` kennen,
+bleibt bei vier. Gefunden mit
+``git grep -n 'codepaths`, `diagrams`, `workflows`' -- spec docs/user README.md README.de.md harness``
+⇒ ein Treffer (`benutzerhandbuch.md`).
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
