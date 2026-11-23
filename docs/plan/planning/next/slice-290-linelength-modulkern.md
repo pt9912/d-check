@@ -23,7 +23,7 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl) und
 Glossar). Der Verweis zeigt **aufwärts**: Die Spec nennt diesen Slice nie.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912
 
 **Autor:** pt9912. **Datum:** 2026-11-22.
 
