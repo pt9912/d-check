@@ -76,7 +76,8 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       Version gehoben, Historie-Zeile nach
       [`MR-032`](../../../../harness/conventions.md#mr-032)) mit Akzeptanzkriterien je
       Entscheid (Zähleinheit, jede Ausnahme samt ihren Rändern, Grenzwert genau auf der
-      Schwelle, leere Menge, Zeile über der Grenze mit `d-check:ignore` ⇒ Befund), den Rändern
+      Schwelle, leere Menge, Zeile über der Grenze mit `d-check:ignore` ⇒ Befund bei einer Grenze
+      von mindestens 14), den Rändern
       mit Exit 2, den benannten Grenzen der geteilten Lexik und ihrem Out-of-Scope.
 - [ ] Die Spezifikation führt das Verfahren (Leseweise, Zählregel, Ausnahmen, Reihenfolge
       der Befunde, Bezugsmenge), das Schema `linelength.*` und den Grund-Code im Verfahren;
@@ -142,7 +143,9 @@ ist [ADR-0114](../../adr/0114-linelength-modul.md).
    sagt es.
 3. **Zähleinheit:** Unicode-Codepunkte der rohen Zeile ohne Zeilenende (`\n`; ein einzelnes
    `\r` am Zeilenende zählt nicht, auch am Ende einer letzten Zeile ohne `\n` — so geschärft in
-   [ADR-0114](../../adr/0114-linelength-modul.md) Entscheid 3, wie bei `pinsync` und `metrics`) —
+   [ADR-0114](../../adr/0114-linelength-modul.md) Entscheid 3, wie in [`DC-FA-PSYNC-001.a`](../../../../spec/spezifikation.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync)
+   Schritt 4; die Spezifikation von `metrics` nimmt das `\r` nur vor `\n` aus, ihr Code auch am
+   Ende einer letzten Zeile — Review R2, F-2) —
    dieselbe Einheit wie `cell-max-chars`
    (`utf8.RuneCountInString`). Ein Tab zählt als ein Zeichen. Verworfen: Bytes (ein
    Umlaut zählte doppelt) und Anzeigebreite (braucht eine Breiten-Tabelle, East-Asian
@@ -195,8 +198,12 @@ ist [ADR-0114](../../adr/0114-linelength-modul.md).
    `structure`/`file`“) widersprach dieser Anforderung, und die Präzedenz trug nicht: dort ist die
    Nullmenge ein Befund mit Exit 1 eines nicht scannenden Moduls.
 9. **Kein Zeilen-Marker** (neu nach Verdikt F-2, bestätigt 2026-11-22): `linelength` honoriert
-   `d-check:ignore` nicht; die Ventile sind (a)–(c), `scope` und `exempt-paths`. Eine Zeile über
-   der Grenze mit Marker ist ein Befund (der Marker zählt mit).
+   `d-check:ignore` nicht; die Ventile sind (a)–(c), `scope` und `exempt-paths`. Der Marker wirkt
+   nicht als Marker: Er zählt mit, und seine Wörter sind für (c) Text wie jeder andere. Eine Zeile
+   über der Grenze mit Marker ist deshalb ein Befund, solange die Grenze mindestens so groß ist wie
+   jedes Wort des Kommentars (`d-check:ignore`: 14 Zeichen); bei einer kleineren Grenze nimmt (c)
+   sie über das Marker-Wort aus. Das folgt aus Variante H (Entscheid 5 (c), 2026-11-23), nicht aus
+   einer Änderung dieses Entscheids (Review R2, F-1).
 
 **Gegenprobe vor dem Schreiben (Schritt 19 des Workflow-Skeletts):** die Zählregel läuft
 am eigenen Bestand (`awk '{ if (length($0) > 120) n++ } END { print n }'` über die
