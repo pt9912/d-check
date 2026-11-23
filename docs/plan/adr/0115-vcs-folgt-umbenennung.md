@@ -22,7 +22,7 @@ slice-291 <!-- d-check:status-provenance -->.
 
 **Schärft:**
 [`DC-FA-VCS-001.a`](../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
-Schritt 1 (Range und Vorfahren), Schritt 2 (welche Bäume gelesen werden) und Schritt 4 (Gleichsetzen der
+Schritt 2 (Commit-Menge, Basis kein Vorfahr, welche Bäume gelesen werden) und Schritt 4 (Gleichsetzen der
 Link-Ziele) sowie die Schema-Zeile des neuen Schlüssels in
 [`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml).
 
@@ -73,7 +73,9 @@ Am Gegenstand gelesen, auf das die Entscheidung baut:
 
 Wir geben dem Modul `vcs` einen **eigenen opt-in-Schlüssel `vcs.follow-renames`**, mit dem es die
 Umbenennungen der Range aus der git-Historie liest und ein Link-Ziel über sie gleichsetzt. Im Einzelnen
-(die Nummern dienen dieser Liste als Bezug; 1–14 vom Auftraggeber bestätigt, Entscheidung 5 in der seiten-gleichen Fassung nach Entscheidung 9):
+(die Nummern dienen dieser Liste als Bezug; 1–14 vom Auftraggeber am 2026-11-23 bestätigt, Entscheidung 5 in
+der seiten-gleichen Fassung nach Entscheidung 9; danach ohne erneute Bestätigung an die Spezifikation
+angeglichen — Wortlaut von 1, 2, 3, 9 und 13 — und nach Review an 9 und 11 geschärft, siehe Geschichte):
 
 1. **Erkennung: Inhalts-Gleichheit, keine Ähnlichkeits-Schwelle.** Ein Pfad A, der vor einem Schritt
    existiert und danach nicht, und ein Pfad B, der danach existiert und vorher nicht, sind eine
@@ -107,11 +109,14 @@ Umbenennungen der Range aus der git-Historie liest und ein Link-Ziel über sie g
    BASE- und HEAD-Fassung gleich, aufgelöst gegen die Vereinigung beider Pfad-Bäume wie heute. Teil hat
    ein Pfad P, wenn er Quelle einer Umbenennung der zusammengesetzten Abbildung Quelle → Ende ist
    (Entscheidung 13, nicht der Einzelschritte), deren Ende in HEAD existiert (P gilt als
-   dieses Ende), oder wenn er ein solches Ende ist. Ein Pfad, der zugleich Quelle der einen und Ende einer
+   dieses Ende), oder wenn er ein solches Ende ist. Quellen sind nur Pfade des BASE-Stands; ein
+   Zwischenpfad einer Kette ist weder Quelle noch Ende. Ein Pfad, der zugleich Quelle der einen und Ende einer
    anderen Umbenennung ist, nimmt nicht teil. Daraus folgt die Invariante: **gleicher Rohtext ergibt
    gleichen Core** — ein unveränderter Link auf eine umbenannte Datei bleibt gleich. Ohne
-   `ignore-link-targets` macht der Schalter keinen Lauf rot, der ohne ihn grün ist; mit beiden Schaltern
-   gilt das bis auf die eine Stelle, die unter Konsequenzen steht.
+   `ignore-link-targets` ergibt der Schalter keinen **Befund**, den es ohne ihn nicht gibt; mit beiden
+   Schaltern gilt das bis auf die eine Stelle, die unter Konsequenzen steht. Rot ohne Befund kann ein Lauf
+   mit Schalter trotzdem werden: ein unlesbares Objekt eines Zwischen-Commits ist Exit 2 (Entscheidung 6
+   und 13), das der Lauf ohne Schalter nicht liest.
 10. **Zusammenspiel der Schalter.** Nur `follow-renames`: ein teilnehmendes Ziel wird zu Marke,
     repo-relativem Endpfad und Anker; jedes andere bleibt roh. Beide: erst die Gleichsetzung, dann die
     bestehende Normierung von `ignore-link-targets` auf Dateiname und Anker — für ein teilnehmendes Ziel
@@ -121,6 +126,10 @@ Umbenennungen der Range aus der git-Historie liest und ein Link-Ziel über sie g
     Abstammungslinien der Range, die ihn umbenennen; eine Linie, die ihn unberührt lässt, trägt kein Ende
     bei. Genau ein Ende, das in HEAD existiert, ist eine Umbenennung; sonst keine (Entscheidung 3). Das
     Ergebnis hängt nicht von der Reihenfolge ab, in der Commits oder Einträge aufgezählt werden.
+    Verschwindet der Pfad, auf dem eine Linie steht, in einem späteren Schritt dieser Linie, ohne
+    umbenannt zu werden, endet die Linie mit „gelöscht“: das zählt als eigenes Ende, das in HEAD nie
+    existiert, und die Quelle hat keine Umbenennung — auch wenn der Pfad danach neu belegt wird. Bleibt
+    ein Pfad in einem Schritt bestehen und ändert nur seinen Inhalt, ist das keine Neubelegung.
 12. **Basis kein Vorfahr von HEAD:** die Range trägt dann **keine** Umbenennung, das Modul urteilt wie ohne
     Schalter. Kein Exit 2, keine Kette ab der Merge-Basis. Die Anforderung nennt das als Grenze.
 13. **Vertrag der neuen Port-Methode.** Sie wird nur bei aktivem Schalter gerufen. Sie liefert die
@@ -158,7 +167,7 @@ Entscheidungen 1–4 und die Wirkung von `ignore-link-targets` bleiben unveränd
 | H — Basis kein Vorfahr ⇒ Kette ab der Merge-Basis | der Schalter wirkt auch dann | falsches Grün: hat die BASE-Seite einen Pfad A neu belegt (C → A) und die HEAD-Seite das alte A nach B umbenannt, gilt ein Link auf das neue A als nachgezogen auf B |
 | I — Umbenennungs-Erkennung der Bibliothek mit `OnlyExactRenames` | weniger eigener Code | wählt bei gleichen Blobs nach Namensähnlichkeit statt Mehrdeutigkeit zu melden, verlangt gleichen Modus; der Diff-Walker darunter las ein unlesbares Objekt früher still als Ende |
 | J — `--staged` liest zusätzlich den Commit HEAD | ein Move im vorigen Commit wäre gesehen | willkürlich: ein Move zwei Commits zurück bliebe ungesehen; die CI-Range sieht beide Commits, und der Weg „Verweise im Move-Commit“ steht im Handbuch |
-| **K — gewählt: eigener Schalter, Blob-Gleichheit je Commit, Kette entlang der Abstammung, Mehrdeutigkeit und fremde Basis ohne Umbenennung, seiten-gleiche Gleichsetzung** | entscheidbar ohne Parameter, deterministisch, opt-in; ein reiner Move-Commit nach §3.3 ist genau die Form, die erkannt wird; ohne Schalter byte-identisch; ohne `ignore-link-targets` mit Schalter nie röter als ohne | liest jeden Commit der Range; Grenzen unter Konsequenzen |
+| **K — gewählt: eigener Schalter, Blob-Gleichheit je Commit, Kette entlang der Abstammung, Mehrdeutigkeit und fremde Basis ohne Umbenennung, seiten-gleiche Gleichsetzung** | entscheidbar ohne Parameter, deterministisch, opt-in; ein reiner Move-Commit nach §3.3 ist genau die Form, die erkannt wird; ohne Schalter byte-identisch; ohne `ignore-link-targets` mit Schalter kein Befund, den es ohne ihn nicht gibt (der fail-closed-Fall der Entscheidung 6 ausgenommen) | liest jeden Commit der Range; Grenzen unter Konsequenzen |
 
 ## Konsequenzen
 
@@ -188,6 +197,9 @@ Entscheidungen 1–4 und die Wirkung von `ignore-link-targets` bleiben unveränd
 - Negativ — trägt die Range einen Merge, beschreiben die Commits seiner Seiten den Weg ab der
   Merge-Basis. Belegt die andere Seite in derselben Zeit einen Pfad neu, den diese Seite umbenennt, sieht
   das Modul das nicht; ein solcher Merge ist ein Konflikt, den git ohnehin meldet.
+- Negativ — Neubelegung (Entscheidung 9 und 11): wird ein Pfad einer Kette gelöscht und später neu belegt,
+  folgt ein Link ihm nicht. Mit beiden Schaltern fällt ein solches Ziel auf die Normierung von
+  `ignore-link-targets` allein zurück — so grün oder rot wie ohne `follow-renames`, nie grüner.
 - Negativ — Laufzeit: mit Schalter liest das Modul jeden Commit der Range und die geänderten Teilbäume;
   ohne Schalter liest es nichts davon.
 - Folgepflicht: die Anforderung nennt die Grenzen oben; das Kriterium „Boundary (Pfad-Nachzug)“ wird auf
@@ -201,7 +213,7 @@ Entscheidungen 1–4 und die Wirkung von `ignore-link-targets` bleiben unveränd
 | Tooling | Regel | Make-Target |
 |---|---|---|
 | Tests des git-Adapters gegen echte git-Fixtures | Blob-Gleichheit, Kette über drei Commits, Kette nur entlang der Abstammung, Mehrdeutigkeit (Kopien, zwei Enden, zwei Linien), Merge als HEAD mit einer umbenennenden Seite, Basis kein Vorfahr ⇒ leere Abbildung, `--staged`, unlesbares Objekt eines Zwischen-Commits ⇒ Fehler | `make test` |
-| Tests der Regel | Nachzug mit Schalter kein Befund, ohne Befund; unveränderter Link auf umbenannte Datei mit erlaubtem Anhang kein Befund; beide Schalter samt gleichnamiger anderer Datei ⇒ Befund; bestehende Tests von `ignore-link-targets` unverändert grün; derselbe Lauf zehnmal byte-gleich | `make test` |
+| Tests der Regel | Nachzug mit Schalter kein Befund, ohne Befund; unveränderter Link auf umbenannte Datei mit erlaubtem Anhang kein Befund; beide Schalter samt gleichnamiger anderer Datei ⇒ Befund; Ende gelöscht und als andere Datei neu angelegt ⇒ Befund; Zwischenpfad einer Kette neu belegt und als Ziel nachgezogen ⇒ Befund; unlesbarer Zwischen-Commit ohne Schalter Exit 0, mit ihm Exit 2; bestehende Tests von `ignore-link-targets` unverändert grün; derselbe Lauf zehnmal byte-gleich | `make test` |
 | Probe am gebauten Image in einem Wegwerf-Klon | Umbenennung einer verlinkten Spec-Datei samt Nachzug: ohne Schalter je ADR ein Befund, mit ihm keiner; gelöscht und neu angelegt ⇒ Befund | `make adr-check` |
 | Vorher-/Nachher-Vergleich ohne Schalter | Ausgabe byte-gleich zur letzten Release-Version | `make blackbox-probe` |
 
@@ -223,3 +235,4 @@ Entscheidungen 1–4 und die Wirkung von `ignore-link-targets` bleiben unveränd
 | 2026-11-23 | Proposed: Entscheidung 1–8 wie vom Auftraggeber bestätigt; 9–14 als Empfehlung aus dem Architect-Verdikt (seiten-gleiche Gleichsetzung, Zusammenspiel der Schalter, Kette entlang der Abstammung, fremde Basis ohne Umbenennung, Port-Vertrag, Reihenfolge im eigenen Profil) | slice-291 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, fortgeschrieben: der Auftraggeber hat Entscheidung 9–14 bestätigt, ebenso Entscheidung 5 in der seiten-gleichen Fassung und die Schärfung des Out-of-Scope-Satzes der Anforderung | slice-291 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, an die Spezifikation angeglichen: ein Schritt ist ein Commit mit genau einem Eltern-Commit, ein Wurzel-Commit trägt keine Umbenennung bei (2); „dasselbe Blob“ heißt gleicher Eintrag aus Blob-Kennung und Art (1, 3); Teil haben in Bäumen wie im Index nur Datei, ausführbare Datei und Symlink, ein Gitlink nicht (13); „zugleich Quelle und Ende“ bezieht sich auf die zusammengesetzte Abbildung, nicht auf die Einzelschritte (9) | slice-291 <!-- d-check:status-provenance --> |
+| 2026-11-23 | Proposed, nach Review R1 zum Anforderungs-Slice geschärft: Quellen der Abbildung sind nur Pfade des BASE-Stands, ein Zwischenpfad ist weder Quelle noch Ende (9); verschwindet der Pfad einer Linie ohne Umbenennung, endet sie mit „gelöscht“, auch bei späterer Neubelegung (11); die Zusage „nie röter“ heißt „kein Befund mehr“, der fail-closed-Fall ist benannt (9, Alternative K); `Schärft:` nennt Schritt 2 statt 1; die Einleitung der Entscheidung sagt, was nach der Bestätigung angeglichen wurde | slice-291 <!-- d-check:status-provenance --> |
