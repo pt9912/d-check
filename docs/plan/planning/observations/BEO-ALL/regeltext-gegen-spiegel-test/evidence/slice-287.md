@@ -1,0 +1,2 @@
+**Vorgang:** slice-287
+**Fund:** Der Plan des Modulkerns von `pinsync` ([Stub](../../../../../../../docs/plan/planning/done/welle-94/slice-287-pinsync-modulkern.md), Volltext im Archiv der Welle) zählte in §1 „CHANGELOG, READMEs, Handbuch-Kopf, Digest-Pins“ zur Release-Prep nach [`AGENTS.md`](../../../../../../../AGENTS.md) §5 Zeile 17 und führte in der Plan-Tabelle zugleich `README.md`/`README.de.md` als Update — „Modul-Bullets (Spiegel-Test `ReadmeEn`/`ReadmeDe`)“. Dieselbe Ausnahme, im Plan neu begründet, ohne dass der Regeltext sie trug.

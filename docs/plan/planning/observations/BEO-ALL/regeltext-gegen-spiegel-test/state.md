@@ -1,1 +1,1 @@
-**Stand:** offen
+**Stand:** verkörpert — Volltext von Regel 17, [`harness/rules/dokumentations-regeln/17-changelog-release-prep.md`](../../../../../../harness/rules/dokumentations-regeln/17-changelog-release-prep.md), und die Kurzform in [`AGENTS.md`](../../../../../../AGENTS.md) §5 Zeile 17 (seit welle-95): Modul-Aufzählungen, die ein Spiegel-Test gegen die Modul-Registrierung hält, kommen mit dem Feature-Commit. Ausgang zugewiesen beim Lese-Schritt der Closure von welle-95 (3×: slice-283, slice-287, slice-290).

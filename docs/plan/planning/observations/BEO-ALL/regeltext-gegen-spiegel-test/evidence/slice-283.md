@@ -1,0 +1,2 @@
+**Vorgang:** slice-283
+**Fund:** Der Plan des Modulkerns von `metrics` nannte die Spiegel-Tests in §1 als Ausnahme von der Release-Prep und schloss Benutzerhandbuch und `operations.md` in der DoD zugleich aus; mit der Registrierung in `ValidModules()` wären genau diese Fundorte und beide READMEs rot geworden. Benannt im [Architect-Verdikt zu welle-93](../../../../../../../docs/reviews/2026-10-30-welle-93-architect-verdikt.md) F-1 (V1), der Plan nahm die Fundorte als Spiegel-Ausnahme auf. Der Regeltext von [`AGENTS.md`](../../../../../../../AGENTS.md) §5 Zeile 17 blieb.
