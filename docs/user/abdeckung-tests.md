@@ -47,7 +47,9 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-CONF-002`](../../spec/lastenheft.md) | `TestDecodeDiagramsScope` | [`internal/adapter/driven/configyaml/diagrams_test.go`](../../internal/adapter/driven/configyaml/diagrams_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestDecode_LinelengthEingabefehler` | [`internal/adapter/driven/configyaml/linelength_test.go`](../../internal/adapter/driven/configyaml/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestDecode_LinelengthOhneBlockUndOhneGrenze` | [`internal/adapter/driven/configyaml/linelength_test.go`](../../internal/adapter/driven/configyaml/linelength_test.go) |
+| [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestDecode_LinelengthSchluesselOhneWert` | [`internal/adapter/driven/configyaml/linelength_test.go`](../../internal/adapter/driven/configyaml/linelength_test.go) |
 | [`DC-FA-CONF-001`](../../spec/lastenheft.md), [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestDecode_LinelengthVollblock` | [`internal/adapter/driven/configyaml/linelength_test.go`](../../internal/adapter/driven/configyaml/linelength_test.go) |
+| [`DC-FA-LLEN-001`](../../spec/lastenheft.md), [`DC-FA-PLAN-001`](../../spec/lastenheft.md), [`DC-FA-VER-001`](../../spec/lastenheft.md) | `TestDecode_SchluesselOhneWertBeiNachbarnAbwesend` | [`internal/adapter/driven/configyaml/linelength_test.go`](../../internal/adapter/driven/configyaml/linelength_test.go) |
 | [`DC-FA-CONF-001`](../../spec/lastenheft.md) | `TestDecode_MentionsGlobValidierung` | [`internal/adapter/driven/configyaml/mentions_test.go`](../../internal/adapter/driven/configyaml/mentions_test.go) |
 | [`DC-FA-MENT-001`](../../spec/lastenheft.md) | `TestDecode_MentionsHalberBlockFailClosed` | [`internal/adapter/driven/configyaml/mentions_test.go`](../../internal/adapter/driven/configyaml/mentions_test.go) |
 | [`DC-FA-MENT-001`](../../spec/lastenheft.md) | `TestDecode_MentionsUnbekannterMatch` | [`internal/adapter/driven/configyaml/mentions_test.go`](../../internal/adapter/driven/configyaml/mentions_test.go) |
@@ -291,6 +293,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthKeinZeilenMarker` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthLeereDatei` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthLeereMenge` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
+| [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthNurEinCRFaelltWeg` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthOffenerZaunNimmtDenRestAus` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthOhneGrenze` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md), [`DC-QA-02`](../../spec/lastenheft.md) | `TestLinelengthReihenfolgeUndDeterminismus` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
@@ -298,6 +301,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthWortTrennerSindSpaceUndTab` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthZaehltCodepunkte` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthZeilenendeOhneCR` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
+| [`DC-FA-FILE-001`](../../spec/lastenheft.md), [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestTextLinesZaehltWieFile` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-QA-02`](../../spec/lastenheft.md) | `TestResolveFromDivergenzMeldungSortiert` | [`internal/hexagon/core/rules/links_resolvefrom_test.go`](../../internal/hexagon/core/rules/links_resolvefrom_test.go) |
 | [`DC-FA-LINK-001`](../../spec/lastenheft.md) | `TestPreprocessMarkdown_FenceInfozeileMitBacktickIstFliesstext` | [`internal/hexagon/core/rules/markdown_test.go`](../../internal/hexagon/core/rules/markdown_test.go) |
 | [`DC-QA-04`](../../spec/lastenheft.md) | `TestPreprocessMarkdown_MehrzeiligerSpan` | [`internal/hexagon/core/rules/markdown_test.go`](../../internal/hexagon/core/rules/markdown_test.go) |

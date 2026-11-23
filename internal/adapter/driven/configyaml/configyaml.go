@@ -3035,8 +3035,8 @@ type rawLinelength struct {
 
 // applyLinelength liest den linelength-Block und prüft ihn am Config-Rand
 // (Exit 2), auch ohne aktives Modul: Grenze eine ganze Zahl ≥ 1, Schalter
-// true oder false, Datei-Ventil segmentweise. Ein leerer Wert gilt wie ein
-// fehlender. Die fehlende Grenze prüft der Lauf des aktiven Moduls, den scope
+// true oder false, Datei-Ventil segmentweise; ein Schlüssel ohne Wert ist ein
+// Eingabefehler. Die fehlende Grenze prüft der Lauf des aktiven Moduls, den scope
 // applyScopes.
 func applyLinelength(r *rawLinelength, cfg *model.Config) error {
 	if r == nil {
@@ -3075,31 +3075,62 @@ func applyLinelength(r *rawLinelength, cfg *model.Config) error {
 	return nil
 }
 
-func yamlAbsent(n *yaml.Node) bool {
-	return n.Kind == 0 || n.Kind == yaml.ScalarNode && n.ShortTag() == "!!null"
+// linelengthSet meldet, ob der Schlüssel im Block steht. Abwesend ist nur ein
+// fehlender Schlüssel; einer ohne Wert (YAML-null) steht und ist kein gültiger
+// Wert (ADR-0114 Entscheid 4) — anders als bei versions, planning und
+// structure, wo ein Schlüssel ohne Wert als abwesend gilt.
+func linelengthSet(key string, n *yaml.Node) (bool, error) {
+	if n.Kind == 0 {
+		return false, nil
+	}
+	if n.Kind == yaml.ScalarNode && n.ShortTag() == "!!null" {
+		return true, fmt.Errorf("%s: line %d: linelength.%s steht ohne Wert (YAML-null) — ein Schlüssel ohne Wert ist gesetzt und kein gültiger Wert", FileName, n.Line, key)
+	}
+	return true, nil
+}
+
+// yamlValueKind benennt die Art eines nicht skalaren Werts für den Klartext.
+func yamlValueKind(n *yaml.Node) string {
+	switch n.Kind {
+	case yaml.SequenceNode:
+		return "eine Liste"
+	case yaml.MappingNode:
+		return "eine Abbildung"
+	case yaml.AliasNode:
+		return "ein Alias"
+	}
+	return "kein Skalar"
 }
 
 // linelengthInt liefert den Wert eines Schlüssels, der nur eine YAML-Ganzzahl
-// (Tag !!int) annimmt; nil heißt: nicht gesetzt.
+// (Tag !!int) annimmt; nil heißt: der Schlüssel fehlt.
 func linelengthInt(key string, n *yaml.Node) (*int, error) {
-	if yamlAbsent(n) {
-		return nil, nil
+	set, err := linelengthSet(key, n)
+	if !set || err != nil {
+		return nil, err
+	}
+	if n.Kind != yaml.ScalarNode {
+		return nil, fmt.Errorf("%s: line %d: linelength.%s ist %s, keine ganze Zahl", FileName, n.Line, key, yamlValueKind(n))
 	}
 	var v int
-	if n.Kind != yaml.ScalarNode || n.ShortTag() != "!!int" || n.Decode(&v) != nil {
+	if n.ShortTag() != "!!int" || n.Decode(&v) != nil {
 		return nil, fmt.Errorf("%s: line %d: linelength.%s %q ist keine ganze Zahl", FileName, n.Line, key, n.Value)
 	}
 	return &v, nil
 }
 
 // linelengthBool liefert den Wert eines Schalters, der nur true oder false
-// (Tag !!bool) annimmt; nil heißt: nicht gesetzt, der Default gilt.
+// (Tag !!bool) annimmt; nil heißt: der Schlüssel fehlt, der Default gilt.
 func linelengthBool(key string, n *yaml.Node) (*bool, error) {
-	if yamlAbsent(n) {
-		return nil, nil
+	set, err := linelengthSet(key, n)
+	if !set || err != nil {
+		return nil, err
+	}
+	if n.Kind != yaml.ScalarNode {
+		return nil, fmt.Errorf("%s: line %d: linelength.%s ist %s, kein Wahrheitswert (true oder false)", FileName, n.Line, key, yamlValueKind(n))
 	}
 	var v bool
-	if n.Kind != yaml.ScalarNode || n.ShortTag() != "!!bool" || n.Decode(&v) != nil {
+	if n.ShortTag() != "!!bool" || n.Decode(&v) != nil {
 		return nil, fmt.Errorf("%s: line %d: linelength.%s %q ist kein Wahrheitswert (true oder false)", FileName, n.Line, key, n.Value)
 	}
 	return &v, nil

@@ -1719,10 +1719,12 @@ linelength: 1 Datei(en), 40 Zeile(n) geprüft, 2 davon mit einem Wort über der 
   seiner Wörter (`d-check:ignore` hat 14 Zeichen), nimmt (c) die Zeile über dieses Wort aus.
   Die Ventile sind die drei Ausnahmen, `linelength.scope` und `linelength.exempt-paths`.
 - **Eingabefehler sind Exit 2, kein Befund:** ein aktives Modul ohne `max-chars`; ein
-  `max-chars`, das keine ganze Zahl oder kleiner als 1 ist; ein Schalter, der nicht `true` oder
-  `false` ist; ein unbekannter Schlüssel; ein leeres oder ungültiges Glob in `exempt-paths`; ein
-  `scope` ohne `roots`. Ein ungültiger Block ist Exit 2 auch ohne aktives Modul; ein gültiger
-  Block bleibt ohne aktives Modul wirkungslos.
+  `max-chars`, das keine ganze Zahl (auch `80.0` nicht) oder kleiner als 1 ist; ein Schalter, der
+  nicht `true` oder `false` ist; ein unbekannter Schlüssel; ein leeres oder ungültiges Glob in
+  `exempt-paths`; ein `scope` ohne `roots`. Ein Schlüssel des Blocks ohne Wert (YAML-`null`) ist
+  gesetzt und kein gültiger Wert ⇒ Exit 2 — anders als bei `versions`, `planning` und `structure`.
+  Ein ungültiger Block ist Exit 2 auch ohne aktives Modul; ein gültiger Block bleibt ohne aktives
+  Modul wirkungslos.
 - **Eine leere Menge ist kein Fehler.** Ohne Markdown-Datei in der Eingabemenge meldet das
   Modul nichts, die Bezugsmenge nennt `0 Datei(en)`; eine explizit leere `linelength.scope.roots`
   prüft nichts.

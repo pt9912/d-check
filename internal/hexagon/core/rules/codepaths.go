@@ -193,6 +193,22 @@ func allDigits(s string) (int, bool) {
 	return n, true
 }
 
+// textLines zerlegt einen Datei-Inhalt in Zeilen: Teilung am '\n', ein
+// einzelnes '\r' am Zeilenende fällt weg, hinter einem abschließenden '\n'
+// steht keine leere Schlusszeile, ein leerer Inhalt hat keine Zeile. Die eine
+// Zerlegung von pinsync und linelength (ADR-0113 Entscheidung 2, ADR-0114
+// Entscheid 3); ihre Zahl ist die von countLines.
+func textLines(content []byte) []string {
+	if len(content) == 0 {
+		return nil
+	}
+	lines := strings.Split(strings.TrimSuffix(string(content), "\n"), "\n")
+	for i, l := range lines {
+		lines[i] = strings.TrimSuffix(l, "\r")
+	}
+	return lines
+}
+
 // countLines zählt die Zeilen eines Datei-Inhalts; ein finaler
 // Zeilenumbruch zählt nicht als eigene Zeile (geteilt vom codepaths-
 // Zeilen-Check und citations).

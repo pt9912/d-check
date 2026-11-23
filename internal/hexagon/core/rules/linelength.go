@@ -62,22 +62,17 @@ func linelengthExempt(file string, cfg model.LinelengthConfig) bool {
 func CheckLinelength(file string, content []byte, cfg model.LinelengthConfig) ([]model.Finding, LinelengthCount) {
 	count := LinelengthCount{Files: 1}
 	limit := *cfg.MaxChars
-	raw := strings.Split(string(content), "\n")
-	n := len(raw)
-	if strings.HasSuffix(string(content), "\n") || len(content) == 0 {
-		n--
-	}
+	lines := textLines(content)
 	prose := proseLineSet(content)
 	var out []model.Finding
-	for i := 0; i < n; i++ {
+	for i, line := range lines {
 		if cfg.CodeBlocksExempt() && !prose[i+1] {
 			continue
 		}
-		if cfg.TablesExempt() && tableRowLine(raw, prose, i) {
+		if cfg.TablesExempt() && tableRowLine(lines, prose, i) {
 			continue
 		}
 		count.Lines++
-		line := strings.TrimSuffix(raw[i], "\r")
 		length := utf8.RuneCountInString(line)
 		if length <= limit {
 			continue

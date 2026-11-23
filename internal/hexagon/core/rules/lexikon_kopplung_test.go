@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"regexp"
 	"strings"
 	"testing"
 
@@ -244,11 +245,13 @@ func TestAnkerFrageHatEineAntwort(t *testing.T) {
 }
 
 // Dritte Kopplung (ADR-0054 Entscheidung 4): die Frage "liegt die Zeile
-// ausserhalb von Fenced-Code?" beantwortet proseLineSet fuer targets und
-// structure (ueber die Tabellenzeile, die nur in der Prosa-Menge zaehlt) und
-// fuer linelength (Ausnahme (a)). Die Faelle sind die Raender des
-// Fence-Automaten: Umschalten bei jeder Zaun-Zeile, jede Einrueckung vor dem
-// Zaun, keine Infozeile mit Backtick, ein Zaun hinter > schaltet nicht.
+// ausserhalb von Fenced-Code?" beantwortet proseLineSet fuer targets,
+// structure und planning.waves (ueber die Tabellenzeile, die nur in der
+// Prosa-Menge zaehlt), planning (Ruhe-Marker), vcs (immutable-when und
+// Kopf-Status-Zeile) und linelength (Ausnahme (a)). Die Faelle sind die
+// Raender des Fence-Automaten: Umschalten bei jeder Zaun-Zeile, jede
+// Einrueckung vor dem Zaun, keine Infozeile mit Backtick, ein Zaun hinter >
+// schaltet nicht.
 func fenceFaelle() []tabellenFall {
 	bt, tl := "```", "~~~"
 	return []tabellenFall{
@@ -274,14 +277,43 @@ func linelengthSiehtProsa(t *testing.T, wrap func(string) string) bool {
 	return len(llLines(res, "docs/a.md")) > 0
 }
 
-// Die Fence-Kopplung selbst: dieselbe Eingabe, eine Antwort in drei Modulen.
+// planningKenntZeile: der Ruhe-Marker im Block der Überschrift zählt genau
+// dann, wenn er außerhalb von Fenced-Code steht; ohne Slice meldet planning
+// sonst planning-drift.
+func planningKenntZeile(t *testing.T, wrap func(string) string) bool {
+	t.Helper()
+	files := map[string]string{planRoadmap: "# Roadmap\n\n## Aktuelle Welle\n\n" + wrap("Keine aktive Welle.")}
+	return len(CheckPlanning(coretest.NewMemFS(files), planCfg())) == 0
+}
+
+// vcsKenntZeile: immutable-when trifft eine Zeile genau dann, wenn sie
+// außerhalb von Fenced-Code steht.
+func vcsKenntZeile(t *testing.T, wrap func(string) string) bool {
+	t.Helper()
+	return baseImmutable([]byte("# T\n\n"+wrap("Status: Accepted")), regexp.MustCompile(`^Status: Accepted`))
+}
+
+// vcsStatusKenntZeile: die Kopf-Status-Zeile vor der ersten H2 zählt genau
+// dann, wenn sie außerhalb von Fenced-Code steht.
+func vcsStatusKenntZeile(t *testing.T, wrap func(string) string) bool {
+	t.Helper()
+	content := []byte("# T\n\n" + wrap("Status: Accepted"))
+	return vcsHeadStatusLineNo(content, splitLines(content), regexp.MustCompile(`^Status: Accepted`)) != 0
+}
+
+// Die Fence-Kopplung selbst: dieselbe Eingabe, eine Antwort in allen Modulen,
+// die proseLineSet lesen.
 func TestFencedCodeFrageHatEineAntwort(t *testing.T) {
 	for _, c := range fenceFaelle() {
 		t.Run(c.name, func(t *testing.T) {
 			antworten := map[string]bool{
-				"targets":    targetsKenntZeile(t, c.wrap),
-				"structure":  structureKenntZeile(t, c.wrap),
-				"linelength": linelengthSiehtProsa(t, c.wrap),
+				"targets":        targetsKenntZeile(t, c.wrap),
+				"structure":      structureKenntZeile(t, c.wrap),
+				"planning.waves": wavesKenntZeile(t, c.wrap),
+				"planning":       planningKenntZeile(t, c.wrap),
+				"vcs":            vcsKenntZeile(t, c.wrap),
+				"vcs.status":     vcsStatusKenntZeile(t, c.wrap),
+				"linelength":     linelengthSiehtProsa(t, c.wrap),
 			}
 			for modul, antwort := range antworten {
 				if antwort != c.gueltig {

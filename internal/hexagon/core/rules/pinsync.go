@@ -93,7 +93,7 @@ func readPinsyncSource(fsys driven.Filesystem, src model.PinsyncSource) (pinsync
 		return pinsyncRead{}, err
 	}
 	rd := pinsyncRead{src: src}
-	for i, line := range pinsyncLines(content) {
+	for i, line := range textLines(content) {
 		if v, ok := pinsyncCapture(re, line); ok {
 			if len(rd.lines) == 0 {
 				rd.value = v
@@ -127,20 +127,6 @@ func checkPinsyncPath(fsys driven.Filesystem, file string) error {
 		}
 	}
 	return nil
-}
-
-// pinsyncLines teilt am '\n', schneidet ein einzelnes '\r' am Zeilenende ab
-// und kennt keine leere Schlusszeile hinter einem abschliessenden '\n'.
-func pinsyncLines(content []byte) []string {
-	if len(content) == 0 {
-		return nil
-	}
-	text := strings.TrimSuffix(string(content), "\n")
-	lines := strings.Split(text, "\n")
-	for i, l := range lines {
-		lines[i] = strings.TrimSuffix(l, "\r")
-	}
-	return lines
 }
 
 // pinsyncCapture liefert den Wert der Fanggruppe in der ersten Passung der

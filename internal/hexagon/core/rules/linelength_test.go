@@ -136,6 +136,15 @@ func TestLinelengthZeilenendeOhneCR(t *testing.T) {
 	llWantLines(t, res, "docs/last.md")
 }
 
+// Nur ein einzelnes \r am Zeilenende fällt weg: vor \r\r\n und am Ende \r\r
+// bleibt das erste \r ein Zeichen der Zeile (DC-FA-LLEN-001).
+func TestLinelengthNurEinCRFaelltWeg(t *testing.T) {
+	files := map[string]string{
+		"docs/a.md": llWords(80) + "\r\r\n" + llWords(79) + "\r\r\n" + llWords(80) + "\r\r",
+	}
+	llWantLines(t, llRun(t, files, llCfg(80)), "docs/a.md", 1, 3)
+}
+
 // Ausnahme (a): Zeilen in Backtick-, Tilde- und eingerücktem Zaun samt der
 // Zaun-Zeile sind im Default ausgenommen, mit exempt-code-blocks: false je ein
 // Befund (DC-FA-LLEN-001).
@@ -418,5 +427,19 @@ func TestLinelengthReihenfolgeUndDeterminismus(t *testing.T) {
 		if again := llRun(t, files, llCfg(80)); !reflect.DeepEqual(first, again) {
 			t.Fatalf("Lauf %d weicht ab: %+v", i, again)
 		}
+	}
+}
+
+// Die Zeilen von pinsync und linelength (textLines) zählen wie file
+// (countLines), über die Randformen: leer, nur Zeilenende, abschließendes und
+// fehlendes \n, \r am Ende, doppeltes \r (DC-FA-LLEN-001, DC-FA-FILE-001).
+func TestTextLinesZaehltWieFile(t *testing.T) {
+	for _, c := range []string{"", "\n", "a", "a\n", "a\n\n", "\n\n", "a\r", "a\r\n", "a\r\r\n", "a\nb", "a\nb\n", "\r"} {
+		if got, want := len(textLines([]byte(c))), countLines([]byte(c)); got != want {
+			t.Errorf("%q: textLines %d Zeile(n), countLines %d", c, got, want)
+		}
+	}
+	if got := textLines([]byte("a\r\r\nb\r")); !reflect.DeepEqual(got, []string{"a\r", "b"}) {
+		t.Errorf("Zerlegung %q", got)
 	}
 }
