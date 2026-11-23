@@ -145,11 +145,15 @@ Liste folgt den bestätigten Entscheiden 1–14 und dem Architect-Verdikt):
   (Entscheid 12), kein Exit 2.
 - Unveränderter Link auf eine umbenannte Datei in einer ADR, die nur einen erlaubten
   Anhang bekommt ⇒ kein Befund (seiten-gleich, Entscheid 9).
-- Tausch A ↔ B in einem Commit ⇒ kein Pfad nimmt teil (Quelle und Ende zugleich).
-- Beide Schalter, umbenannte Quelle mit neuem Dateinamen, Nachzug auf eine andere Datei
-  mit dem alten Namen ⇒ Befund; wechselt die Umbenennung nur das Verzeichnis ⇒ kein
-  Befund (Grenze „gleicher Name, andere Datei“)
-  (Entscheid 10).
+- Tausch A ↔ B in einem Commit (A → B und B → A, gleiche Blobs gekreuzt) ⇒ kein Pfad
+  nimmt teil, weil jedes Ende in BASE existiert (Entscheid 9); Nachzug A → B ⇒ Befund.
+- A gelöscht, dann C → A, Nachzug C → A ⇒ Befund (Ende existiert in BASE, Entscheid 9).
+- Beide Schalter, Umbiegen von `d1/a.md` auf `d2/c.md`, das die Range nach `d3/a.md`
+  umbenennt ⇒ Befund (Entscheid 10).
+- Beide Schalter, `d1/x.md` → `d2/x.md`, Umbiegen auf `d3/x.md` ⇒ Befund (Entscheid 10);
+  zwei nicht teilnehmende Ziele mit gleichem Namen ⇒ wie mit `ignore-link-targets` allein.
+- A → B, danach B im selben Commit gelöscht und neu angelegt ⇒ Inhaltsänderung an Ort
+  und Stelle, der Nachzug folgt.
 - Ende der Kette in HEAD gelöscht ⇒ keine Umbenennung.
 - Ende gelöscht und als andere Datei neu angelegt; Zwischenpfad einer Kette neu belegt ⇒
   keine Umbenennung, Nachzug ist Befund (Neubelegung, Entscheidung 9 und 11).

@@ -197,14 +197,20 @@ Folge-Entscheide aus dem Architect-Verdikt — der Wortlaut steht in
 [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) §Entscheidung, hier nur der Kern:
 
 9. **Seiten-gleich:** die Gleichsetzung ist eine Funktion des aufgelösten Pfads, auf
-   BASE und HEAD gleich angewandt; Invariante „gleicher Rohtext ⇒ gleicher Core“. Ein
-   Pfad, der zugleich Quelle einer und Ende einer anderen Umbenennung ist, nimmt nicht
-   teil.
-10. **Zusammenspiel der Schalter:** erst gleichsetzen, dann (mit `ignore-link-targets`)
-    auf Dateiname und Anker normieren. Folge: mit beiden Schaltern wird der Nachzug von
-    einer umbenannten Quelle auf eine **andere** Datei mit dem alten Namen Drift, wenn die
-    Umbenennung den Dateinamen wechselt — die eine
-    Stelle, an der die Welle die Grenze von `ignore-link-targets` schärft.
+   BASE und HEAD gleich angewandt; Invariante „gleicher Rohtext ⇒ gleicher Core“. Eine
+   Umbenennung nimmt nur teil, wenn ihr Ende in HEAD existiert, in BASE **nicht**
+   existiert und Ende keiner zweiten Quelle ist (Tausch, freigemachter und neu belegter
+   Name, zwei Quellen auf ein Ende nehmen nicht teil). *Nach Review R2 in der Sache
+   geändert, nur in Richtung Drift; vom Auftraggeber am 2026-11-23 bestätigt.*
+10. **Zusammenspiel der Schalter:** ein teilnehmendes Ziel wird immer zu eigener Marke,
+    vollem Endpfad und Anker, mit `follow-renames` allein wie mit beiden Schaltern; ein
+    nicht teilnehmendes bleibt mit `follow-renames` allein roh und wird mit beiden wie mit
+    `ignore-link-targets` allein normiert. Ein teilnehmendes Ziel gleicht nur einem
+    teilnehmenden mit demselben Ende. Folge: mit beiden Schaltern entfällt ein Befund von
+    `ignore-link-targets` nur, wo beide Ziele teilnehmen und dasselbe Ende haben — die
+    Stelle, an der die Welle die Grenze von `ignore-link-targets` schärft. *Nach Review R2
+    in der Sache geändert (vorher: Normierung auf den Dateinamen des Endes), nur in
+    Richtung Drift; vom Auftraggeber am 2026-11-23 bestätigt.*
 11. **Kette entlang der Abstammung:** Y → Z setzt X → Y nur fort, wenn dessen Commit ein
     Vorfahr ist; ein Merge trägt die Umbenennung einer Seite weiter; das Ergebnis hängt
     nicht von der Aufzählungsreihenfolge ab.
