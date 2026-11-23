@@ -151,7 +151,8 @@ ist eine Lifecycle-Rücksprungkante (11).
 
 17. Doku aktualisieren, falls ein öffentlicher Vertrag berührt ist; ADR und ADR-Index trägt der
     Architect (Schritt 9). CHANGELOG, READMEs und Handbuch-Kopf sind Release-Prep, nicht der
-    Feature-Commit (`AGENTS.md` §5 Zeile 17).
+    Feature-Commit — außer den Modul-Aufzählungen, die ein Spiegel-Test hält; sie kommen mit dem
+    Commit, der das Modul registriert (`AGENTS.md` §5 Zeile 17).
 18. Die Pre-completion-Checkliste laufen: die DoD Punkt für Punkt **behaupten** und die
     **Sensor-Belege** anhängen — `make gates` **und die Nicht-Gate-Sensoren, die den Slice
     betreffen** (die dieses Repo führt — z. B. ein Mutations-Sensor, wenn Wächter neu/geändert sind;

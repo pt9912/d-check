@@ -324,7 +324,7 @@ stehen vollständig in der Tabelle, die übrigen als Volltext-Pointer
 | 14 | Vor einer Messung steht die ausgeschriebene Form ihres Gegenstands, nicht nur ihre Zahl. | [Volltext](harness/rules/dokumentations-regeln/14-messung-form-vor-zaehlung.md) |
 | 15 | Eine Commit-Botschaft/Closure-Notiz behauptet nicht mehr, als die gemessene Arbeit trägt. | [Volltext](harness/rules/dokumentations-regeln/15-commit-botschaft-nicht-mehr-behaupten.md) |
 | 16 | Eine zitierte Quelle trägt nur, was in ihrem Geltungsbereich steht — das Feld lesen, nicht den Titel. | [Volltext](harness/rules/dokumentations-regeln/16-zitierte-quelle-nur-geltungsbereich.md) |
-| 17 | `CHANGELOG.md`/READMEs/Handbuch-Kopf werden in der Release-Prep gepflegt, nicht im Feature-Commit. | [Volltext](harness/rules/dokumentations-regeln/17-changelog-release-prep.md) |
+| 17 | `CHANGELOG.md`/READMEs/Handbuch-Kopf werden in der Release-Prep gepflegt, nicht im Feature-Commit — außer Modul-Aufzählungen, die ein Spiegel-Test hält. | [Volltext](harness/rules/dokumentations-regeln/17-changelog-release-prep.md) |
 
 ## 6. Minimal Agent Workflow
 
