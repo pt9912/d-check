@@ -22,7 +22,7 @@ slice-289 <!-- d-check:status-provenance -->.
 **Schärft:**
 [`DC-FA-LLEN-001.a`](../../../spec/spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength)
 (neues Modul-Verfahren samt Grund-Code `line-chars-exceeded`) und das Schema `linelength.*` in
-[§2](../../../spec/spezifikation.md#2-datenstrukturen-und-schemas); die Zeile des Grund-Codes in
+[`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml); die Zeile des Grund-Codes in
 [§4](../../../spec/spezifikation.md#4-grund--und-fehler-codes) kommt mit dem registrierten Modul.
 
 **Regeln:** Baseline-Regelwerk
@@ -70,8 +70,10 @@ Liste als Bezug):
      beginnt mit `|`. Eine Trennzeile wird nicht verlangt, eingerückte Zeilen sind keine.
    - (c) `exempt-unbreakable`: überlange Zeilen, die ein **Wort** tragen, das allein länger als `max-chars`
      ist. Ein Wort ist eine längste Folge von Codepunkten ohne Leerraum; Leerraum sind Space und Tab, kein
-     anderes Zeichen. Eine solche Zeile bringt kein Umbruch unter die Grenze; jede andere überlange Zeile
-     bringt er darunter und ist ein Befund.
+     anderes Zeichen. Eine solche Zeile bringt kein Umbruch unter die Grenze. Umgekehrt gilt das nicht: nicht
+     jede andere überlange Zeile bringt ein Umbruch darunter — eine Überschrift lässt sich nicht umbrechen, und
+     ein Präfix der Markdown-Form kann ein kurzes Wort über die Grenze schieben (Konsequenzen). Jede andere
+     überlange Zeile ist ein Befund; die Ausnahme prüft das Wort, nicht die Form.
 6. **Befund:** je überlanger Zeile ein Befund `line-chars-exceeded`, Ort = Datei und Zeile, die Meldung nennt
    gemessene Länge und Grenze. Reihenfolge nach Pfad, dann Zeile.
 7. **Bezugsmenge:** der Lauf trägt eine Zeile mit der Zahl der geprüften Dateien, der geprüften Zeilen und der
@@ -115,7 +117,7 @@ und teilt mit `cell-max-chars` die Einheit, nicht den Gegenstand.
 | J — leere Menge ⇒ Exit 2 (Empfehlung des Plans) | kein Lauf ohne Gegenstand passiert grün | widerspricht [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) für eine explizit leere `scope.roots`; Exit 2 ist ein Eingabefehler, und eine leere Scan-Menge ist keiner — auch die übrigen scannenden Module laufen darüber ohne Fehler |
 | K — leere Menge ⇒ Befund (Exit 1), ausgenommen eine explizit leere `scope.roots` | fail-closed und mit [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) verträglich | ein Grund-Code mehr für einen Fall, den die Bezugsmenge schon zeigt; die Präzedenz (`file-no-match`) gilt Modulen, deren Regel Dateien behauptet — `linelength` behauptet keine |
 | M — (c) nach dem letzten Leerraum: ausgenommen ist eine Zeile, deren Codepunkte an den Positionen `max-chars + 1` bis Zeilenende keinen Leerraum tragen (zuerst bestätigt am 2026-11-22) | eine Zeile mit einem langen Link am Ende muss nicht vor dem Link umbrechen; eine Prüfung nur ab der Grenze | gröber, als ihr Name sagt: am eigenen Bestand (Stand `f3dc94da`) bei `max-chars: 120` über die Markdown-Dateien der Scan-Menge, nach (a) und (b), nimmt sie von 2952 überlangen Zeilen 828 aus (2124 bleiben Befunde) — von den 828 tragen 151 keinen Leerraum, 316 ein Wort über 120 und 361 keines, sodass ein Umbruch sie unter die Grenze brächte; bei 141 davon ist das letzte Wort höchstens 20 Zeichen lang, gewöhnliche Prosa, die ein Wort über die Grenze ragt |
-| **H — eigenes Modul, Codepunkte der rohen Zeile, Ausnahmen aus der geteilten Lexik, (c) nur bei einem Wort über der Grenze, leere Menge kein Fehler, kein Marker** | nimmt genau die Zeilen aus, die kein Umbruch unter die Grenze bringt; am Bestand oben nimmt H 513 Zeilen aus und lässt 2439 Befunde — 361 Zeilen, die M ausnahm, werden Befunde, und 46, die M meldete, fallen weg (ein Wort über der Grenze vor umbrechbarem Text hinter ihr), netto 315 Befunde mehr; gleicher Aufwand wie M; die Bezugsmenge sagt, was gemessen wurde | erbt die Grenzen der geteilten Lexik; eine Zeile mit umbrechbarem Text **und** einem Wort über der Grenze bleibt ganz ausgenommen (Konsequenzen) |
+| **H — eigenes Modul, Codepunkte der rohen Zeile, Ausnahmen aus der geteilten Lexik, (c) nur bei einem Wort über der Grenze, leere Menge kein Fehler, kein Marker** | nimmt nur Zeilen aus, die kein Umbruch unter die Grenze bringt; am Bestand oben nimmt H 513 Zeilen aus und lässt 2439 Befunde — 361 Zeilen, die M ausnahm, werden Befunde, und 46, die M meldete, fallen weg (ein Wort über der Grenze vor umbrechbarem Text hinter ihr), netto 315 Befunde mehr; gleicher Aufwand wie M; die Bezugsmenge sagt, was gemessen wurde | erbt die Grenzen der geteilten Lexik; eine Zeile mit umbrechbarem Text **und** einem Wort über der Grenze bleibt ganz ausgenommen (Konsequenzen) |
 
 ## Konsequenzen
 
@@ -136,13 +138,19 @@ und teilt mit `cell-max-chars` die Einheit, nicht den Gegenstand.
 - Negativ — Grenzen der Entscheidung selbst:
   - (c) nimmt eine Zeile **ganz** aus, sobald sie ein Wort über der Grenze trägt — auch wenn umbrechbarer Text
     davor oder dahinter steht, der auf eine eigene Zeile passte. Die Ausnahme prüft das Wort, nicht den Rest.
-  - Ein Wort, das erst mit seiner Einrückung über die Grenze ragt, ist nicht länger als `max-chars`; die Zeile
-    ist ein Befund, auch wenn der Umbruch sie nicht kürzer macht, weil die Einrückung bleibt.
+  - (c) liest keine Markdown-Form. Ein Wort von höchstens `max-chars` Zeichen, das erst mit dem, was vor ihm
+    stehen muss, über die Grenze ragt — Einrückung, ein Listen-Marker (`- `, `1. `), ein Zitat-Marker (`> `),
+    ein Überschriften-Marker (`## `) —, macht die Zeile zu einem Befund, den kein Umbruch behebt: der Marker
+    ist ein eigenes Wort, die Einrückung Leerraum, und beide bleiben beim Umbruch vor dem Wort. Die Reparatur
+    ist Kürzen des Worts oder der Form.
   - Eine Überschrift lässt sich nicht umbrechen; die Reparatur ist Kürzen, und Kürzen ändert ihren Anker. Die
     gebrochenen Verweise melden `links` und `anchors`.
-  - Ein `d-check:ignore`-Kommentar, den ein anderes Modul verlangt, verlängert seine Zeile und zählt mit. Seine
-    Wörter sind kurz; (c) nimmt eine solche Zeile nur aus, wenn ein anderes Wort auf ihr länger als die Grenze
-    ist — wo die Grenze im Kommentar liegt, ist dafür ohne Belang.
+  - Ein `d-check:ignore`-Kommentar, den ein anderes Modul verlangt, verlängert seine Zeile und zählt mit. Für
+    (c) ist er Text wie jeder andere: trägt er ein Wort, das länger als `max-chars` ist, nimmt (c) die Zeile über
+    dieses Wort aus. Das geschieht, sobald die Grenze kleiner ist als ein Wort des Kommentars —
+    `d-check:ignore` hat 14 Zeichen, `d-check:status-provenance` 25, ein Pfad in `d-check:cite` oft mehr;
+    zulässig ist `max-chars` ab 1. Ist die Grenze mindestens so groß wie jedes Wort des Kommentars, nimmt (c)
+    die Zeile nur aus, wenn ein anderes Wort auf ihr länger als die Grenze ist.
   - Das eigene Profil des Repos schaltet das Modul nicht ein; diese Entscheidung legt die Fähigkeit fest, nicht
     ihre Nutzung.
 - Folgepflicht: jede Randbedingung der Anforderung (Grenzwert, Einheit, jede Ausnahme an und aus, die Ränder
@@ -181,6 +189,7 @@ für eine andere Dateiart verlangt (dann ist die Abgrenzung zu `file` neu zu zie
 | 2026-11-22 | Proposed, fortgeschrieben: Entscheid 8 und 9 vom Auftraggeber bestätigt; Bezug und Schärft verlinken die Anforderung und ihr Verfahren; Entscheid 3 an die Zeilen-Zerlegung von `pinsync` angeglichen; die Konsequenz von 5 (c) gemessen und Alternative H geschärft — für 5 (c) ist eine Neu-Bestätigung empfohlen (Empfehlung H), die Fassung oben gilt bis dahin | slice-289 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, fortgeschrieben: Entscheid 5 (c) vom Auftraggeber als Alternative H neu bestätigt — ausgenommen ist nur eine Zeile mit einem Wort über der Grenze; die zuerst bestätigte Fassung ist mit ihren Messzahlen verworfene Alternative M; Konsequenzen und Trigger (c) nachgezogen | slice-289 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, berichtigt: die Zahlen zu H in den Alternativen — H nimmt am Bestand 513 Zeilen aus, nicht 467 (die 467 zählten nur innerhalb der Ausnahmen von M); netto 315 Befunde mehr; Stand der Messung benannt, die Zahl der überlangen Zeilen auf diesem Stand ist 2952 | slice-289 <!-- d-check:status-provenance --> |
+| 2026-11-23 | Proposed, nach Review R1 fortgeschrieben: die Begründung von 5 (c) behauptet nicht mehr, jede andere überlange Zeile brächte ein Umbruch unter die Grenze (Überschriften, Präfixe der Markdown-Form); die Marker-Konsequenz gilt für jede Grenze ab 1; das Schema ist über [`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml) adressiert; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
 
 Nach `Accepted` wird diese Datei **nicht mehr inhaltlich überschrieben**.
 Spätere Korrekturen oder Schärfungen entstehen als neue ADR mit
