@@ -3597,9 +3597,9 @@ Dateien seiner Scan-Menge über den Filesystem-Port, ohne git, ohne Netz und ohn
    das Modul liefert keinen Befund, und Schritt 8 nennt `0` (eine gänzlich leere Scan-Wurzel bleibt
    der Umgebungsfehler aus demselben Abschnitt, Exit 2).
 3. **Zeilen.** Der rohe Inhalt wird am Zeilenumbruch `\n` geteilt; endet er mit `\n`, entfällt
-   das leere Schlusselement. Ein einzelnes `\r` unmittelbar vor einem `\n` gehört nicht zur
-   Zeile; ein `\r` an anderer Stelle — auch am Ende einer letzten Zeile ohne `\n` — ist ein
-   Zeichen. Die Zeilennummern zählen ab 1. Die Zahl der Zeilen ist damit die von
+   das leere Schlusselement. Ein einzelnes `\r` am Zeilenende gehört nicht zur Zeile, auch am
+   Ende einer letzten Zeile ohne `\n`; ein `\r` an anderer Stelle ist ein Zeichen. Die
+   Zeilennummern zählen ab 1. Die Zahl der Zeilen ist damit die von
    [§DC-FA-FILE-001.a](#dc-fa-file-001a--zeilen--und-byte-obergrenzen-einer-ganzen-datei-file)
    Schritt 5.
 4. **Ausnahmen (a) und (b).** Ist `exempt-code-blocks` an, entfällt jede Zeile, die nicht in
@@ -3613,11 +3613,11 @@ Dateien seiner Scan-Menge über den Filesystem-Port, ohne git, ohne Netz und ohn
 5. **Länge.** Je geprüfter Zeile die Zahl ihrer Unicode-Codepunkte (dieselbe Zählung wie
    `structure[].table.column[].cell-max-chars`; eine ungültige UTF-8-Folge zählt je Byte als ein
    Codepunkt). Länge ≤ `max-chars` ⇒ befundfrei.
-6. **Ausnahme (c).** Ist die Länge größer als `max-chars` und `exempt-unbreakable` an, werden die
-   Codepunkte an den Positionen `max-chars + 1` bis zum Zeilenende (Position 1 = erster Codepunkt
-   der Zeile) auf Leerraum geprüft — Leerraum sind U+0020 und U+0009, kein anderes Zeichen. Ist
-   keiner darunter, ist die Zeile ausgenommen und zählt in `U` (Schritt 8). Sonst, und immer bei
-   `exempt-unbreakable: false`, ⇒ Schritt 7.
+6. **Ausnahme (c).** Ist die Länge größer als `max-chars` und `exempt-unbreakable` an, wird die
+   Zeile in **Wörter** zerlegt: längste Folgen von Codepunkten ohne U+0020 und U+0009 — Leerraum
+   sind diese zwei, kein anderes Zeichen. Hat mindestens ein Wort mehr als `max-chars`
+   Codepunkte, ist die Zeile ausgenommen und zählt in `U` (Schritt 8). Sonst, und immer bei
+   `exempt-unbreakable: false`, ⇒ Schritt 7. Einrückung gehört zu keinem Wort.
 7. **Befund.** `line-chars-exceeded` mit `file` = der wurzel-relative Pfad, `line` = die
    Zeilennummer, `target` = `max-chars=<N>` mit der Grenze `N`, `message` = gemessene Länge und
    Grenze. Ein `d-check:ignore`-Marker auf der Zeile wirkt nicht; er ist Teil der Zeile und zählt
@@ -3625,7 +3625,7 @@ Dateien seiner Scan-Menge über den Filesystem-Port, ohne git, ohne Netz und ohn
    Ausgabe sortiert nach Pfad, dann Zeile
    ([§DC-QA-02.a](#dc-qa-02a--determinismus-und-sortierung)).
 8. **Bezugsmenge in der Zusammenfassung.** Der Lauf trägt eine Zeile bei:
-   `linelength: <D> Datei(en), <Z> Zeile(n) geprüft, <U> davon ohne Leerraum ab der Grenze
+   `linelength: <D> Datei(en), <Z> Zeile(n) geprüft, <U> davon mit einem Wort über der Grenze
    ausgenommen`, mit `D` der Zahl der Dateien nach Schritt 2, `Z` der Zahl der geprüften Zeilen
    nach Schritt 4 und `U` der Zahl der nach Schritt 6 ausgenommenen. Sie erscheint im
    Default-Modus auf stderr und unter `--json`/`--yaml` in `summary.notes`, auch bei `D` = 0.
@@ -3650,7 +3650,7 @@ Schritt 3), nicht `linelength`. `tableRowLine` verlangt keine Trennzeile und tri
 GFM-Zeile ohne führende Pipe nicht. Mit (a) aus und (b) an liegt eine `|`-Zeile im Zaun nicht in
 `proseLineSet` und ist damit keine Tabellenzeile. Gemessen wird die rohe Zeile — Inline-Code wird
 nicht geleert, ein Byte-Order-Mark am Dateianfang zählt als Zeichen der ersten Zeile, ein
-geschütztes Leerzeichen ist für (c) kein Leerraum. Außer der Konfiguration liest das Modul keine
+geschütztes Leerzeichen trennt für (c) keine Wörter. Außer der Konfiguration liest das Modul keine
 Datei außerhalb der Eingabemenge aus Schritt 2.
 
 ---
@@ -3980,7 +3980,7 @@ Exit 2 ohne Prüfung
 | `linelength.max-chars` | int | abwesend | Obergrenze der Zeichen je Zeile (Unicode-Codepunkte der rohen Zeile ohne Zeilenende); Länge **größer** als der Wert ⇒ `line-chars-exceeded`, genau auf der Grenze befundfrei. **Pflicht**, sobald das Modul aktiv ist (fehlt ⇒ Exit 2); gesetzt und keine ganze Zahl ≥ 1 ⇒ Exit 2 ([`DC-FA-LLEN-001`](lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)) |
 | `linelength.exempt-code-blocks` | bool | `true` | Zeilen in Fenced-Code samt Zäunen werden nicht gemessen (Antwort der geteilten Lexik); `false` misst sie mit |
 | `linelength.exempt-tables` | bool | `true` | Zeilen außerhalb von Fenced-Code, die mit `\|` beginnen, werden nicht gemessen — eine Trennzeile wird nicht verlangt; `false` misst sie mit |
-| `linelength.exempt-unbreakable` | bool | `true` | eine Zeile über der Grenze ohne Leerraum (Space, Tab) an den Positionen `max-chars + 1` bis Zeilenende ist ausgenommen und zählt in der Bezugsmenge; `false` meldet sie |
+| `linelength.exempt-unbreakable` | bool | `true` | eine Zeile über der Grenze, die ein Wort (längste Folge ohne Space und Tab) mit mehr als `max-chars` Codepunkten trägt, ist ausgenommen und zählt in der Bezugsmenge; `false` meldet sie |
 | `linelength.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `linelength`-Prüfung — datei-weit, nach `linelength.scope` bzw. dem globalen Scan. **Segmentweise** validiert; leerer Eintrag oder ungültiges Segment ⇒ Exit 2 |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien **oder Glob-Muster** (Eintrag mit `*`/`?`/`[`, `matchGlob`, `**` erlaubt), aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Richtungen 1 und 2 inert (Schritt 5a läuft unabhängig); eine fehlende/unlesbare Datei, ein Glob ohne Treffer oder ein ungültiges Glob ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
@@ -4187,6 +4187,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-11-23 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) nach Neu-Bestätigung durch den Auftraggeber: Schritt 6 zerlegt die überlange Zeile in Wörter (längste Folgen ohne U+0020 und U+0009) und nimmt sie aus, wenn ein Wort mehr als `max-chars` Codepunkte hat; Schritt 8 und die Schema-Zeile `linelength.exempt-unbreakable` in §2 entsprechend. Schritt 3: ein einzelnes `\r` am Zeilenende gehört nicht zur Zeile, auch am Ende einer letzten Zeile ohne `\n` |
 | 2026-11-22 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) neu: Verfahren des opt-in-Moduls `linelength` (Config-Prüfung am Rand, Eingabemenge aus dem effektiven Scan-Scope minus `exempt-paths`, Zeilen wie bei `file`, Ausnahmen (a) und (b) aus `proseLineSet`/`tableRowLine`, Länge in Codepunkten der rohen Zeile, Ausnahme (c) über Leerraum ab Position `max-chars + 1`, kein Zeilen-Marker, Bezugsmenge auch bei leerer Menge), das Schema `linelength.*` in §2 und der Grund-Code `line-chars-exceeded` im Verfahren. Das Schema gilt für das fertige Modul; der Code steht in der Tabelle von §4, sobald das Modul ihn liefert |
 | 2026-10-31 | §[`DC-FA-PSYNC-001.a`](spezifikation.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync) Grenzen: der Selbstvergleich zweier gleichwertiger Ausdrücke derselben Datei, die FIFO/Gerätedatei/Socket als Quelle und das Verhalten eines ungültigen Blocks bei nicht aktivem Modul sind benannt |
 | 2026-10-31 | §4: die Grund-Codes `pinsync-mismatch` (`SPEC-109`), `pinsync-no-match` (`SPEC-110`) und `pinsync-ambiguous` (`SPEC-111`) stehen in der Tabelle, weil das Modul `pinsync` sie nun liefert; das Verfahren in §[`DC-FA-PSYNC-001.a`](spezifikation.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync) ist unverändert |
