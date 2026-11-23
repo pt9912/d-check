@@ -33,7 +33,7 @@ Anlass ist [Issue #18](https://github.com/pt9912/d-check/issues/18) aus dem Kurs
 eine Layout-Migration mit englischen Dateinamen (im Verzeichnis `spec/` wird `spezifikation.md` zu
 `specification.md`) trifft jede `Accepted`-ADR, die die Datei verlinkt — im
 eigenen Bestand 59 von 107 (Zählung 2026-11-23, Kommando in
-[`slice-291`](open/slice-291-vcs-umbenennung-anforderung-und-adr.md) §3).
+[`slice-291`](next/slice-291-vcs-umbenennung-anforderung-und-adr.md) §3).
 
 ## 2. Trigger (Welle startet)
 
@@ -80,8 +80,8 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [`slice-291`](open/slice-291-vcs-umbenennung-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR: `vcs` folgt einer Umbenennung; Entscheide festschreiben | [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
-| [`slice-292`](open/slice-292-vcs-umbenennung-modulkern.md) | Kern und git-Adapter: Umbenennungen der Range lesen, Link-Ziele über sie gleichsetzen, Schalter | [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) in der Fassung aus [`slice-291`](open/slice-291-vcs-umbenennung-anforderung-und-adr.md) |
+| [`slice-291`](next/slice-291-vcs-umbenennung-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR: `vcs` folgt einer Umbenennung; Entscheide festschreiben | [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
+| [`slice-292`](open/slice-292-vcs-umbenennung-modulkern.md) | Kern und git-Adapter: Umbenennungen der Range lesen, Link-Ziele über sie gleichsetzen, Schalter | [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) in der Fassung aus [`slice-291`](next/slice-291-vcs-umbenennung-anforderung-und-adr.md) |
 
 ## 5. Abhängigkeiten
 
@@ -92,11 +92,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   umbenennt, läuft ohne diese Welle mit rotem `make adr-check` in der CI.
 - Wird blockiert von: keiner.
 - **Reihenfolge der Slices ist fachlich bindend:** erst
-  [`slice-291`](open/slice-291-vcs-umbenennung-anforderung-und-adr.md) (Anforderung und
+  [`slice-291`](next/slice-291-vcs-umbenennung-anforderung-und-adr.md) (Anforderung und
   Entscheide stehen, bevor Code entsteht), dann
   [`slice-292`](open/slice-292-vcs-umbenennung-modulkern.md). Das WIP-Limit 1 hält sie
   ohnehin nacheinander.
-- **Entscheide, die [`slice-291`](open/slice-291-vcs-umbenennung-anforderung-und-adr.md)
+- **Entscheide, die [`slice-291`](next/slice-291-vcs-umbenennung-anforderung-und-adr.md)
   festschreibt** (mit Empfehlung; ohne Entscheid des Auftraggebers beginnt kein Code):
   woran eine Umbenennung erkannt wird (Inhalts-Gleichheit oder Ähnlichkeits-Schwelle),
   ob nur die Endpunkte der Range oder jeder Commit gelesen wird (und damit, ob
@@ -104,7 +104,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   mehrdeutigen Umbenennungen und Verzeichnis-Zielen geschieht, ob das eigene Profil den
   Schalter einschaltet.
 - **Entschieden mit dem Auftraggeber (2026-11-23):** die acht Entscheide in
-  [`slice-291`](open/slice-291-vcs-umbenennung-anforderung-und-adr.md) §3 mit den
+  [`slice-291`](next/slice-291-vcs-umbenennung-anforderung-und-adr.md) §3 mit den
   Empfehlungen bestätigt; nach dem Architect-Verdikt am selben Tag auch Entscheid 5 in
   der seiten-gleichen Fassung, die Folge-Entscheide 9–14 aus
   [`ADR-0115`](../adr/0115-vcs-folgt-umbenennung.md) und die Schärfung des
