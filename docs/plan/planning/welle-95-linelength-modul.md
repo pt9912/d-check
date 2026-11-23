@@ -74,7 +74,7 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 | Slice | Titel | Bezug |
 |---|---|---|
 | [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR für das Modul `linelength`; Entscheide festschreiben | neue Anforderung des Moduls (Kennung vergibt der Slice), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
-| [`slice-290`](in-progress/slice-290-linelength-modulkern.md) | Modulkern: Konfiguration lesen, Zeilen messen, Ausnahmen anwenden, Grund-Code | die Anforderung aus [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md) |
+| [`slice-290`](done/slice-290-linelength-modulkern.md) | Modulkern: Konfiguration lesen, Zeilen messen, Ausnahmen anwenden, Grund-Code | die Anforderung aus [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md) |
 
 ## 5. Abhängigkeiten
 
@@ -86,7 +86,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 - **Reihenfolge der Slices ist fachlich bindend:** erst
   [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md) (Anforderung und
   Entscheide stehen, bevor Code entsteht), dann
-  [`slice-290`](in-progress/slice-290-linelength-modulkern.md). Das WIP-Limit 1 hält sie
+  [`slice-290`](done/slice-290-linelength-modulkern.md). Das WIP-Limit 1 hält sie
   ohnehin nacheinander.
 - **Entscheide, die [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md)
   vor dem Schreiben der Anforderung festschreibt** (mit Empfehlung; ohne Entscheid

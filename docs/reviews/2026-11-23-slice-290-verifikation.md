@@ -1,7 +1,7 @@
 # Verifikation slice-290 — Modulkern `linelength`
 
 **Rolle:** Verifier (Modul 8/11) · **Gegenstand:** Plan und DoD aus
-`docs/plan/planning/in-progress/slice-290-linelength-modulkern.md`, geprüft auf dem Stand
+`docs/plan/planning/done/slice-290-linelength-modulkern.md`, geprüft auf dem Stand
 `45d651df` mit sauberem Arbeitsbaum · **Bezug:**
 [`DC-FA-LLEN-001`](../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in),
 [`DC-FA-LLEN-001.a`](../../spec/spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength),

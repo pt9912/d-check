@@ -4,7 +4,7 @@
 **Gegenstand:** [welle-95](../plan/planning/welle-95-linelength-modul.md) und ihre zwei Slice-Pläne
 [slice-289](../plan/planning/done/slice-289-linelength-anforderung-und-adr.md) (Entscheide 1–8 in §3,
 vom Auftraggeber am 2026-11-22 bestätigt) und
-[slice-290](../plan/planning/in-progress/slice-290-linelength-modulkern.md).
+[slice-290](../plan/planning/done/slice-290-linelength-modulkern.md).
 **Anlass:** Auftrag des Auftraggebers in der Sitzung vom 2026-11-22 (kein Issue).
 **Datum:** 2026-11-22.
 **Geändert wurde kein Plan.** Mit diesem Verdikt entsteht die ADR des Moduls als
