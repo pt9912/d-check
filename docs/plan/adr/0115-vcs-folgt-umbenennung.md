@@ -123,13 +123,17 @@ angeglichen — Wortlaut von 1, 2, 3, 9 und 13 — und nach Review an 9 und 11 g
     also der Dateiname des Endes. Nur `ignore-link-targets`: unverändert.
 11. **Die Kette folgt der Abstammung.** Eine Umbenennung Y → Z in einem Commit setzt X → Y aus einem
     anderen Commit nur fort, wenn dieser ein Vorfahr des ersten ist. Je Pfad zählen die Enden aller
-    Abstammungslinien der Range, die ihn umbenennen; eine Linie, die ihn unberührt lässt, trägt kein Ende
-    bei. Genau ein Ende, das in HEAD existiert, ist eine Umbenennung; sonst keine (Entscheidung 3). Das
+    Abstammungslinien der Range, die ihn umbenennen oder löschen; eine Linie, die ihn unberührt lässt, trägt kein
+    Ende bei. Genau ein Ende, das in HEAD existiert, ist eine Umbenennung; sonst keine (Entscheidung 3). Das
     Ergebnis hängt nicht von der Reihenfolge ab, in der Commits oder Einträge aufgezählt werden.
     Verschwindet der Pfad, auf dem eine Linie steht, in einem späteren Schritt dieser Linie, ohne
     umbenannt zu werden, endet die Linie mit „gelöscht“: das zählt als eigenes Ende, das in HEAD nie
     existiert, und die Quelle hat keine Umbenennung — auch wenn der Pfad danach neu belegt wird. Bleibt
     ein Pfad in einem Schritt bestehen und ändert nur seinen Inhalt, ist das keine Neubelegung.
+    Das gilt für jede Linie, auch für die Seite eines Merges, die den Pfad gar nicht umbenennt: löscht sie
+    ihn in einem Schritt und legt ihn später neu an, endet sie mit „gelöscht“, und neben der Umbenennung
+    der anderen Seite ist das Mehrdeutigkeit. Unberührt ist nur eine Linie, auf der der Pfad in jedem
+    Schritt bestehen bleibt, auch mit geändertem Inhalt.
 12. **Basis kein Vorfahr von HEAD:** die Range trägt dann **keine** Umbenennung, das Modul urteilt wie ohne
     Schalter. Kein Exit 2, keine Kette ab der Merge-Basis. Die Anforderung nennt das als Grenze.
 13. **Vertrag der neuen Port-Methode.** Sie wird nur bei aktivem Schalter gerufen. Sie liefert die
@@ -195,8 +199,10 @@ Entscheidungen 1–4 und die Wirkung von `ignore-link-targets` bleiben unveränd
   beide Commits.
 - Negativ — Basis kein Vorfahr: der Schalter wirkt nicht, der Nachzug bleibt Drift wie ohne ihn.
 - Negativ — trägt die Range einen Merge, beschreiben die Commits seiner Seiten den Weg ab der
-  Merge-Basis. Belegt die andere Seite in derselben Zeit einen Pfad neu, den diese Seite umbenennt, sieht
-  das Modul das nicht; ein solcher Merge ist ein Konflikt, den git ohnehin meldet.
+  Merge-Basis. Löscht die andere Seite einen Pfad, den diese umbenennt, und legt ihn neu an, ist das
+  Mehrdeutigkeit (Entscheidung 11). Überschreibt sie ihn an Ort und Stelle, ohne ihn zu löschen, ist das
+  eine Inhaltsänderung, und der Link folgt der Umbenennung — dieselbe Grenze wie „umbenennen, dann
+  umschreiben“: die Zusage ist Pfad-Identität, nicht Inhalts-Identität.
 - Negativ — Neubelegung (Entscheidung 9 und 11): wird ein Pfad einer Kette gelöscht und später neu belegt,
   folgt ein Link ihm nicht. Mit beiden Schaltern fällt ein solches Ziel auf die Normierung von
   `ignore-link-targets` allein zurück — so grün oder rot wie ohne `follow-renames`, nie grüner.
@@ -212,7 +218,7 @@ Entscheidungen 1–4 und die Wirkung von `ignore-link-targets` bleiben unveränd
 
 | Tooling | Regel | Make-Target |
 |---|---|---|
-| Tests des git-Adapters gegen echte git-Fixtures | Blob-Gleichheit, Kette über drei Commits, Kette nur entlang der Abstammung, Mehrdeutigkeit (Kopien, zwei Enden, zwei Linien), Merge als HEAD mit einer umbenennenden Seite, Basis kein Vorfahr ⇒ leere Abbildung, `--staged`, unlesbares Objekt eines Zwischen-Commits ⇒ Fehler | `make test` |
+| Tests des git-Adapters gegen echte git-Fixtures | Blob-Gleichheit, Kette über drei Commits, Kette nur entlang der Abstammung, Mehrdeutigkeit (Kopien, zwei Enden, zwei Linien), Merge als HEAD mit einer umbenennenden Seite, Merge mit einer Seite, die den Pfad löscht und neu anlegt ⇒ keine Umbenennung, Basis kein Vorfahr ⇒ leere Abbildung, `--staged`, unlesbares Objekt eines Zwischen-Commits ⇒ Fehler | `make test` |
 | Tests der Regel | Nachzug mit Schalter kein Befund, ohne Befund; unveränderter Link auf umbenannte Datei mit erlaubtem Anhang kein Befund; beide Schalter samt gleichnamiger anderer Datei ⇒ Befund; Ende gelöscht und als andere Datei neu angelegt ⇒ Befund; Zwischenpfad einer Kette neu belegt und als Ziel nachgezogen ⇒ Befund; unlesbarer Zwischen-Commit ohne Schalter Exit 0, mit ihm Exit 2; bestehende Tests von `ignore-link-targets` unverändert grün; derselbe Lauf zehnmal byte-gleich | `make test` |
 | Probe am gebauten Image in einem Wegwerf-Klon | Umbenennung einer verlinkten Spec-Datei samt Nachzug: ohne Schalter je ADR ein Befund, mit ihm keiner; gelöscht und neu angelegt ⇒ Befund | `make adr-check` |
 | Vorher-/Nachher-Vergleich ohne Schalter | Ausgabe byte-gleich zur letzten Release-Version | `make blackbox-probe` |
@@ -236,3 +242,4 @@ Entscheidungen 1–4 und die Wirkung von `ignore-link-targets` bleiben unveränd
 | 2026-11-23 | Proposed, fortgeschrieben: der Auftraggeber hat Entscheidung 9–14 bestätigt, ebenso Entscheidung 5 in der seiten-gleichen Fassung und die Schärfung des Out-of-Scope-Satzes der Anforderung | slice-291 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, an die Spezifikation angeglichen: ein Schritt ist ein Commit mit genau einem Eltern-Commit, ein Wurzel-Commit trägt keine Umbenennung bei (2); „dasselbe Blob“ heißt gleicher Eintrag aus Blob-Kennung und Art (1, 3); Teil haben in Bäumen wie im Index nur Datei, ausführbare Datei und Symlink, ein Gitlink nicht (13); „zugleich Quelle und Ende“ bezieht sich auf die zusammengesetzte Abbildung, nicht auf die Einzelschritte (9) | slice-291 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, nach Review R1 zum Anforderungs-Slice geschärft: Quellen der Abbildung sind nur Pfade des BASE-Stands, ein Zwischenpfad ist weder Quelle noch Ende (9); verschwindet der Pfad einer Linie ohne Umbenennung, endet sie mit „gelöscht“, auch bei späterer Neubelegung (11); die Zusage „nie röter“ heißt „kein Befund mehr“, der fail-closed-Fall ist benannt (9, Alternative K); `Schärft:` nennt Schritt 2 statt 1; die Einleitung der Entscheidung sagt, was nach der Bestätigung angeglichen wurde | slice-291 <!-- d-check:status-provenance --> |
+| 2026-11-23 | Proposed, Entscheidung 11 präzisiert: auch eine Merge-Seite, die einen Pfad nicht umbenennt, ihn aber löscht und neu anlegt, ist eine Linie zu „gelöscht“; neben der Umbenennung der anderen Seite ist das Mehrdeutigkeit. Die Merge-Grenze unter Konsequenzen gilt nur noch für das Überschreiben an Ort und Stelle | slice-291 <!-- d-check:status-provenance --> |
