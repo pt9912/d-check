@@ -229,6 +229,55 @@ immutable Datei selbst umbenannt; `--staged` mit `git mv` und Nachzug im Index; 
 die Fälle aus dem Architect-Verdikt (Liste in
 [`slice-292`](../open/slice-292-vcs-umbenennung-modulkern.md) §3).
 
+**Plan-Änderung (Implementer, 2026-11-23, vor dem Inhalt):** Drei Stellen kommen zu den in
+der Tabelle oben geführten hinzu, alle in schon geführten Abschnitten:
+
+- Spezifikation Schritt 4: die Aufzählung der Ziele, die nicht auflösen, wird vollständig
+  (am Code zusätzlich: ein Ziel mit Query, eines außerhalb des Repos). Beide Schlüssel lösen
+  über dieselbe Auflösung auf; die Liste trägt dann für beide.
+- Spezifikation §2: neben der neuen Zeile wird die Zeile `vcs.ignore-link-targets` auf
+  „ohne `vcs.follow-renames`“ eingeschränkt — sie sagt heute, ein Nachzug auf einen anderen
+  Namen bleibe Drift.
+- Spezifikation Schritt 2: der Absatz „Eine Umbenennung ist damit strukturell …“ sagt, dass
+  die Abbildung der Umbenennungen nur auf Link-Ziele wirkt, nicht auf die Kandidaten.
+
+Die Tabellenzeile „Plan von slice-292“ ist erledigt: dessen §3 trägt die Testfälle aus den
+Entscheiden 1–14 schon.
+
+**Plan-Nachtrag — am Gegenstand gezählt** (Regel 13/14 der Dokumentations-Regeln; jede
+Grenz-Aussage in Lastenheft und Spezifikation stützt sich auf diese Zählungen, gelesen am
+2026-11-23):
+
+- Datei-Arten der Pfad-Enumeration: **drei** — reguläre Datei, ausführbare Datei, Symlink;
+  ein Verzeichnis wird durchlaufen, ein Gitlink fällt durch kein `case`.
+- Im gestagten Modus nimmt die Enumeration **jeden** Index-Eintrag, ohne Filter nach Art.
+  Die Spezifikation nennt deshalb für die Umbenennungen die drei Arten ausdrücklich auch im
+  Index (ein Gitlink im Index nimmt nicht teil).
+- Commit-Menge des Ports heute (`CommitMessages`): Ausschluss = BASE samt Vorfahren, Walk ab
+  HEAD, Nicht-Merge = höchstens ein Eltern-Commit, Reihenfolge nach Kurz-SHA — nicht
+  topologisch.
+- Abstammung: `AllPaths` prüft **keine** Abstammung der Basis, nur den Leerfall; nur
+  `LineChanges` verlangt sie (**ein** Aufruf von `isAncestor`).
+- Ziele, die nicht auflösen: **sechs** Bedingungen in zwei Rückgaben — leerer Pfad (reiner
+  Anker), führendes `/`, `://`, `?`, außerhalb des Repos, nicht im Baum. Die Spezifikation
+  nannte vier davon.
+- Normalform heute: Marke, Dateiname (`path.Base`), Anker; der Baum entsteht nur mit
+  `IgnoreLinkTargets`, aus der Vereinigung beider Pfad-Mengen, und **eine** Auflösung gilt
+  für beide Fassungen.
+- Methoden des VCS-Ports heute: **fünf**; die Abbildung der Umbenennungen ist die sechste
+  (in [`slice-292`](../open/slice-292-vcs-umbenennung-modulkern.md)).
+
+```bash
+grep -n 'case filemode' internal/adapter/driven/git/git.go            # 165 Dir, 173 Regular/Executable/Symlink
+sed -n 95,98p internal/adapter/driven/git/git.go                      # Index: jeder Eintrag
+sed -n 199,226p internal/adapter/driven/git/git.go                    # Menge, <= 1 Eltern (217), Sortierung (226)
+sed -n 115,124p internal/adapter/driven/git/git.go                    # AllPaths: nur Leerfall
+grep -n 'isAncestor(' internal/adapter/driven/git/git.go               # 402 (LineChanges), 503 (Definition)
+sed -n 84,91p internal/hexagon/core/rules/vcs_link_targets.go         # sechs Bedingungen, Normalform
+sed -n 53,56p internal/hexagon/core/rules/vcs.go; sed -n 130,132p internal/hexagon/core/rules/vcs.go
+grep -nE '^	[A-Z][A-Za-z]+\(' internal/hexagon/port/driven/vcs.go      # fünf Methoden
+```
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
