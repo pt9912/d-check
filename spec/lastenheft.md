@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.113.0
+**Version:** 0.113.1
 
 **Status:** Draft
 
@@ -4613,7 +4613,7 @@ Rechtschreib-Regeln** — der Ausschluss in [§5](#5-globale-out-of-scope-punkte
 - Mathematik-/Formel-Validierung (MathJax-Rendering-Checks aus `euler-fourier-hilbert`) — Kandidat für eine spätere Version, nicht Teil von 0.x.
 - Automatisches Reparieren kaputter Referenzen (Auto-Fix) — das Tool berichtet nur.
 - Prüfung von Nicht-Markdown-Formaten (reStructuredText, AsciiDoc, HTML, Jupyter-Notebooks) als eigenständige Dateien. Inline-HTML-Anker *innerhalb* von Markdown sind hiervon ausgenommen und werden geprüft ([`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors)).
-- Rechtschreib-, Stil- oder Markdown-Lint-Prüfungen (dafür existieren etablierte Tools). **Ausgenommen** ist die Zeilenlänge in Markdown-Dateien ([`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)): Sie läuft hermetisch über dieselbe Scan-Menge und mit derselben Markdown-Lexik wie die übrigen scannenden Module, ohne ein zweites Werkzeug im Lauf. Die Ausnahme ist kein Präzedenzfall — jede weitere Prüfung dieser Art bleibt ausgeschlossen, bis eine eigene Anforderung sie aufnimmt.
+- Rechtschreib-, Stil- oder Markdown-Lint-Prüfungen (dafür existieren etablierte Tools). **Ausgenommen** ist die Zeilenlänge in Markdown-Dateien ([`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)): Sie läuft hermetisch über dieselbe Scan-Menge wie die übrigen scannenden Module und mit derselben Markdown-Lexik wie die übrigen Module, die Markdown lesen, ohne ein zweites Werkzeug im Lauf. Die Ausnahme ist kein Präzedenzfall — jede weitere Prüfung dieser Art bleibt ausgeschlossen, bis eine eigene Anforderung sie aufnimmt.
 
 ## 6. Glossar
 
@@ -4634,6 +4634,7 @@ Rechtschreib-Regeln** — der Ausschluss in [§5](#5-globale-out-of-scope-punkte
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.113.1 | 2026-11-23 | §5, Ausnahme für [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) präzisiert, keine Verhaltensänderung: dieselbe Scan-Menge wie die übrigen scannenden Module, dieselbe Markdown-Lexik wie die übrigen Module, die Markdown lesen — die Tabellenzeilen-Antwort nutzen heute nur nicht scannende Module | — |
 | 0.113.0 | 2026-11-23 | Entscheidung des Auftraggebers: §5 nimmt die Zeilenlänge in Markdown-Dateien ([`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)) vom globalen Ausschluss der Rechtschreib-, Stil- und Markdown-Lint-Prüfungen aus — sie läuft hermetisch über dieselbe Scan-Menge und Lexik, ohne zweites Werkzeug; die Ausnahme ist kein Präzedenzfall. Ihr Out-of-Scope nennt als (9) weitere Lint-, Stil- oder Rechtschreib-Regeln | — |
 | 0.112.4 | 2026-11-23 | [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) präzisiert, keine Verhaltensänderung: der Rand mehrerer Leerzeichen zwischen Listen-Marker und erstem Wort ist benannt — der Umbruch kürzt die Zeile um die überzähligen, so viel wie ihr Streichen; neues Teilkriterium dazu | — |
 | 0.112.3 | 2026-11-23 | [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) präzisiert, keine Verhaltensänderung: ein Präfix der Markdown-Form schiebt nur das **erste** Wort eines Listenpunkts oder Zitats unumbrechbar über die Grenze, dazu jedes Wort einer ATX-Überschrift und eines eingerückten Code-Blocks; ein späteres Wort lässt sich umbrechen, weil eine Fortsetzungszeile weder Marker noch Einrückung braucht. Neues Teilkriterium dazu | — |
