@@ -75,11 +75,15 @@ Liste als Bezug):
    dieselbe Zerlegung wie bei `pinsync` ([ADR-0113](0113-pinsync-modul.md) Entscheidung 2). Ein Tab ist ein
    Zeichen. Ungültiges UTF-8 zählt je Byte als ein Zeichen.
 4. **Schwelle:** `linelength.max-chars`, Pflicht bei aktivem Modul, ganzzahlig ≥ 1, sonst Exit 2. Befund bei
-   `Länge > max-chars`; genau auf der Grenze ist befundfrei. Ein Schlüssel des Blocks ohne Wert (YAML-`null`,
-   etwa `max-chars:` oder `exempt-tables: ~`) ist **gesetzt** und trägt keinen gültigen Wert ⇒ Exit 2, für
-   `max-chars` wie für die drei Schalter und auch ohne aktives Modul. Das weicht bewusst von `versions`,
-   `planning` und `structure` ab, wo ein Schlüssel ohne Wert als abwesend gilt (Alternative N): Ein Schalter
-   ohne Wert schaltete hier still eine Ausnahme ein.
+   `Länge > max-chars`; genau auf der Grenze ist befundfrei. Die vier **eigenen Werte** des Moduls —
+   `max-chars` und die drei Schalter aus Entscheid 5 — sind ohne Wert (YAML-`null`, etwa `max-chars:` oder
+   `exempt-tables: ~`) **gesetzt** und ungültig ⇒ Exit 2, auch ohne aktives Modul. Das weicht bewusst von
+   `versions`, `planning` und `structure` ab, wo ein eigener Schlüssel ohne Wert als abwesend gilt
+   (Alternative N): Ein Schalter ohne Wert schaltete hier still eine Ausnahme ein. **Nicht** unter diese Regel
+   fallen `scope` und `exempt-paths`: Sie sind die geteilten Schlüssel aller scannenden Module, und ohne Wert
+   gelten sie dort überall als abwesend — `scope:` heißt globale Scan-Menge (anders als
+   `scope: {roots: []}`, das nach [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) nichts prüft), `exempt-paths:` heißt keine Ausnahme.
+   `linelength` gibt darauf dieselbe Antwort, keine zweite; beide Fälle messen mehr, nicht weniger.
 5. **Ausnahmen, je einzeln schaltbar, Default „ausgenommen“.** Überschriften zählen mit.
    - (a) `exempt-code-blocks`: Zeilen, die nicht in `proseLineSet` liegen — Fenced-Code samt Zäunen, nach dem
      Umschalt-Automaten der geteilten Lexik.
@@ -227,6 +231,7 @@ eine eigene Ausnahme vom Ausschluss in Lastenheft §5 und eine eigene Entscheidu
 | 2026-11-23 | Proposed, an die Anforderung angeglichen: das erste Wort eines Listenpunkts darf mit einem Marker oder einer Einrückung derselben Breite auf die nächste Zeile rücken, der Rand mehrerer Leerzeichen nach dem Marker ist benannt; „nicht umbrechbar“ gilt für ATX-, nicht für Setext-Überschriften; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, nach der Verifikation (V-1) fortgeschrieben: der globale Ausschluss von Lint-, Stil- und Rechtschreib-Prüfungen in Lastenheft §5 bleibt bestehen und nimmt nur die Zeilenlänge in Markdown-Dateien aus (Entscheid des Auftraggebers vom 2026-11-23); Begründung im Kontext, Alternative A als etabliertes Werkzeug (markdownlint MD013), Konsequenz und Trigger (f): kein Präzedenzfall; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, nach Code-Review R1 fortgeschrieben: Entscheid 4 legt fest, dass ein Schlüssel ohne Wert (YAML-`null`) gesetzt und ungültig ist (Exit 2), wie die Anforderung es für einen Schalter ohne Wahrheitswert sagt; Alternative N (abwesend, wie bei den Nachbar-Modulen) verworfen; Schärft nennt [`SPEC-112`](../../../spec/spezifikation.md#4-grund--und-fehler-codes) | slice-290 <!-- d-check:status-provenance --> |
+| 2026-11-23 | Proposed, nach Code-Review R2 fortgeschrieben: Entscheid 4 gilt nur für die vier eigenen Werte (`max-chars`, drei Schalter); `scope` und `exempt-paths` ohne Wert folgen der geteilten Antwort aller scannenden Module (abwesend) | slice-290 <!-- d-check:status-provenance --> |
 
 Nach `Accepted` wird diese Datei **nicht mehr inhaltlich überschrieben**.
 Spätere Korrekturen oder Schärfungen entstehen als neue ADR mit
