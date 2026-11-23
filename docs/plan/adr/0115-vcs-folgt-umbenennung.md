@@ -77,14 +77,16 @@ Umbenennungen der Range aus der git-Historie liest und ein Link-Ziel über sie g
 
 1. **Erkennung: Inhalts-Gleichheit, keine Ähnlichkeits-Schwelle.** Ein Pfad A, der vor einem Schritt
    existiert und danach nicht, und ein Pfad B, der danach existiert und vorher nicht, sind eine
-   Umbenennung A → B genau dann, wenn beide dasselbe Blob tragen (git: `R100`).
-2. **Schritt: jeder Commit der Range, mit Kette.** Gelesen wird jeder Nicht-Merge-Commit, der von HEAD aus
-   erreichbar ist und von BASE aus nicht (dieselbe Menge wie das Modul `commits`), je gegen seinen
-   Eltern-Commit; im `--staged`-Modus ist der einzige Schritt HEAD → Index. Umbenennungen verketten sich
-   (A → B, später B → C ergibt A → C).
+   Umbenennung A → B genau dann, wenn beide dasselbe Blob tragen (git: `R100`) — gleiche Einträge im Sinne
+   von Entscheidung 13 (Blob-Kennung und Art).
+2. **Schritt: jeder Commit der Range, mit Kette.** Ein Schritt ist ein Commit mit genau einem Eltern-Commit,
+   der von HEAD aus erreichbar ist und von BASE aus nicht (aus derselben Menge wie das Modul `commits`),
+   gelesen gegen diesen Eltern-Commit; ein Merge-Commit ist kein Schritt, ein Wurzel-Commit trägt keine
+   Umbenennung bei (vor ihm existiert kein Pfad). Im `--staged`-Modus ist der einzige Schritt HEAD → Index.
+   Umbenennungen verketten sich (A → B, später B → C ergibt A → C).
 3. **Mehrdeutigkeit bleibt Drift.** Tragen in einem Schritt mehrere verschwundene oder mehrere neue Pfade
-   dasselbe Blob, oder führt die Kette von A zu zwei verschiedenen Enden, gilt für A keine Umbenennung. Ein
-   Merge-Commit trägt selbst keine Umbenennung bei.
+   einen gleichen Eintrag (Entscheidung 13), oder führt die Kette von A zu zwei verschiedenen Enden, gilt für A
+   keine Umbenennung. Ein Merge-Commit trägt selbst keine Umbenennung bei.
 4. **Eigener Schalter** `vcs.follow-renames` (bool, Default `false`), unabhängig von
    `vcs.ignore-link-targets`; aus ⇒ byte-identisch
    ([`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus)).
@@ -103,7 +105,8 @@ Umbenennungen der Range aus der git-Historie liest und ein Link-Ziel über sie g
 8. **Status:** diese ADR bleibt `Proposed`, bis der Mechanismus steht und reviewt ist.
 9. **Die Gleichsetzung ist seiten-gleich.** Sie ist **eine** Funktion des aufgelösten Pfads, angewandt auf
    BASE- und HEAD-Fassung gleich, aufgelöst gegen die Vereinigung beider Pfad-Bäume wie heute. Teil hat
-   ein Pfad P, wenn er Quelle einer eindeutigen Umbenennung ist, deren Ende in HEAD existiert (P gilt als
+   ein Pfad P, wenn er Quelle einer Umbenennung der zusammengesetzten Abbildung Quelle → Ende ist
+   (Entscheidung 13, nicht der Einzelschritte), deren Ende in HEAD existiert (P gilt als
    dieses Ende), oder wenn er ein solches Ende ist. Ein Pfad, der zugleich Quelle der einen und Ende einer
    anderen Umbenennung ist, nimmt nicht teil. Daraus folgt die Invariante: **gleicher Rohtext ergibt
    gleichen Core** — ein unveränderter Link auf eine umbenannte Datei bleibt gleich. Ohne
@@ -126,9 +129,10 @@ Umbenennungen der Range aus der git-Historie liest und ein Link-Ziel über sie g
     zwischen Commit und Eltern-Commit unterscheidet; ein Teilbaum mit gleicher Kennung auf beiden Seiten
     muss nicht gelesen werden (gleicher Inhalt, keine Umbenennung darin). Jedes Objekt, das sie dafür
     braucht und nicht lesen kann, ist ein Fehler (Exit 2) — auch wenn BASE und HEAD lesbar sind; das ist
-    die fail-closed-Politik von `AllPaths`, auf die Schritte übertragen. Teil haben die Einträge, die
-    `AllPaths` als Datei zählt (Datei, ausführbare Datei, Symlink); gleich sind zwei Einträge mit gleicher
-    Blob-Kennung und gleicher Art (Datei oder Symlink), das Ausführbar-Bit zählt nicht. Die
+    die fail-closed-Politik von `AllPaths`, auf die Schritte übertragen. Teil haben drei Arten von
+    Einträgen — Datei, ausführbare Datei, Symlink —, in Bäumen wie im Index; ein Verzeichnis und ein Gitlink
+    nehmen nicht teil (im Index nimmt `AllPaths` jeden Eintrag, die Abbildung nicht). Gleich sind zwei
+    Einträge mit gleicher Blob-Kennung und gleicher Art (Datei oder Symlink), das Ausführbar-Bit zählt nicht. Die
     Umbenennungs-Erkennung der Bibliothek wird **nicht** benutzt. Im `--staged`-Modus ist der Schritt der
     HEAD-Baum gegen den Index; ohne HEAD ist die Abbildung leer.
 14. **Reihenfolge im eigenen Profil.** Der Schalter in `.d-check.yml` landet im selben Commit wie der
@@ -218,3 +222,4 @@ Entscheidungen 1–4 und die Wirkung von `ignore-link-targets` bleiben unveränd
 |---|---|---|
 | 2026-11-23 | Proposed: Entscheidung 1–8 wie vom Auftraggeber bestätigt; 9–14 als Empfehlung aus dem Architect-Verdikt (seiten-gleiche Gleichsetzung, Zusammenspiel der Schalter, Kette entlang der Abstammung, fremde Basis ohne Umbenennung, Port-Vertrag, Reihenfolge im eigenen Profil) | slice-291 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, fortgeschrieben: der Auftraggeber hat Entscheidung 9–14 bestätigt, ebenso Entscheidung 5 in der seiten-gleichen Fassung und die Schärfung des Out-of-Scope-Satzes der Anforderung | slice-291 <!-- d-check:status-provenance --> |
+| 2026-11-23 | Proposed, an die Spezifikation angeglichen: ein Schritt ist ein Commit mit genau einem Eltern-Commit, ein Wurzel-Commit trägt keine Umbenennung bei (2); „dasselbe Blob“ heißt gleicher Eintrag aus Blob-Kennung und Art (1, 3); Teil haben in Bäumen wie im Index nur Datei, ausführbare Datei und Symlink, ein Gitlink nicht (13); „zugleich Quelle und Ende“ bezieht sich auf die zusammengesetzte Abbildung, nicht auf die Einzelschritte (9) | slice-291 <!-- d-check:status-provenance --> |
