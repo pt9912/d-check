@@ -39,7 +39,9 @@ Tabellenzelle. Der Auftraggeber hat die Prüfung auf Markdown-Dateien beschränk
 Modulname, Eingabemenge, Zähleinheit, Schlüssel, Ausnahmen, Befund, Bezugsmenge und leerer Menge
 bestätigt; das Architect-Verdikt vom selben Tag hat Entscheid 8 gegen das Lastenheft gestellt, Entscheid 9
 ergänzt und die Ränder von 5 (c) und 7 geschärft. Entscheid 8 in dieser Fassung und Entscheid 9 hat der
-Auftraggeber am 2026-11-22 bestätigt.
+Auftraggeber am 2026-11-22 bestätigt. Entscheid 5 (c) hat er am 2026-11-23 in der strengen Fassung neu
+bestätigt: Die zuerst bestätigte Fassung nahm, am eigenen Bestand gemessen, zu fast der Hälfte Zeilen aus,
+die ein Umbruch unter die Grenze gebracht hätte (Alternative M).
 
 Drei Randbedingungen gelten unabhängig davon. Ein Lauf ohne `linelength` bleibt byte-identisch. Das Modul
 schreibt nie. Und die Fragen „ist das Fenced-Code“ und „ist das eine Tabellenzeile“ hat das Produkt schon
@@ -66,10 +68,10 @@ Liste als Bezug):
      Umschalt-Automaten der geteilten Lexik.
    - (b) `exempt-tables`: Zeilen, für die `tableRowLine` gilt — außerhalb von Fenced-Code, die rohe Zeile
      beginnt mit `|`. Eine Trennzeile wird nicht verlangt, eingerückte Zeilen sind keine.
-   - (c) `exempt-unbreakable`: Zeilen, deren Codepunkte an den Positionen `max-chars + 1` bis Zeilenende
-     keinen Leerraum enthalten; Leerraum sind Space und Tab. Gleichwertig: das letzte Leerraum-Zeichen steht
-     auf einer Position ≤ `max-chars`, oder die Zeile hat keines. Die Regel prüft nicht, ob die Zeile sich
-     umbrechen ließe (Konsequenzen).
+   - (c) `exempt-unbreakable`: überlange Zeilen, die ein **Wort** tragen, das allein länger als `max-chars`
+     ist. Ein Wort ist eine längste Folge von Codepunkten ohne Leerraum; Leerraum sind Space und Tab, kein
+     anderes Zeichen. Eine solche Zeile bringt kein Umbruch unter die Grenze; jede andere überlange Zeile
+     bringt er darunter und ist ein Befund.
 6. **Befund:** je überlanger Zeile ein Befund `line-chars-exceeded`, Ort = Datei und Zeile, die Meldung nennt
    gemessene Länge und Grenze. Reihenfolge nach Pfad, dann Zeile.
 7. **Bezugsmenge:** der Lauf trägt eine Zeile mit der Zahl der geprüften Dateien, der geprüften Zeilen und der
@@ -108,17 +110,17 @@ und teilt mit `cell-max-chars` die Einheit, nicht den Gegenstand.
 | D — Zähleinheit Bytes | trivial, keine Kodierungsfrage | ein Umlaut zählte doppelt; die Grenze beschriebe die Kodierung statt den Text |
 | E — Zähleinheit Anzeigebreite | entspricht dem, was ein Editor zeigt | braucht eine Breiten-Tabelle (East-Asian-Wide, Emoji), die sich mit der Unicode-Version ändert; das gefährdet [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus) |
 | F — eigener Fence- und Tabellen-Leser nach CommonMark-strenger Lesart | schließt Zäune längengleich, erkennt GFM-Tabellen ohne führende Pipe | eine zweite Antwort neben `proseLineSet`/`tableRowLine` — genau der Defekt aus ADR-0054 Entscheidung 1; was gemessen wird, wiche von dem ab, was `links` oder `structure` als Fenced-Code und Tabelle lesen |
-| G — (c) als „nur der Teil bis zum letzten Leerzeichen zählt“ | liest sich als eigene Regel | dieselbe Bedingung wie (c), bis auf eine Randposition; **keine** eigene Option |
-| H — (c) streng: ausgenommen ist nur eine Zeile, die eine Folge ohne Leerraum trägt, die allein länger als `max-chars` ist | nimmt genau die Zeilen aus, die kein Umbruch unter die Grenze bringt, und meldet jede, die er bringt — am Bestand unten 361 Zeilen mehr; gleicher Aufwand wie (c) | eine Zeile mit umbrechbarem Text vor einer überlangen URL bleibt ausgenommen; eine Folge, die erst mit ihrer Einrückung über die Grenze ragt, gilt als umbrechbar |
+| G — (c) als „nur der Teil bis zum letzten Leerzeichen zählt“ | liest sich als eigene Regel | dieselbe Bedingung wie M, bis auf eine Randposition; **keine** eigene Option |
 | I — keine Ausnahme (c), stattdessen der Marker `d-check:ignore` | jede Ausnahme steht sichtbar an ihrer Zeile | der Marker verlängert die Zeile, die er ausnimmt; er verlässt die benannte Liste aus vier Modulen; und das Lastenheft schaltet deterministische Befunde nicht zeilenweise stumm |
 | J — leere Menge ⇒ Exit 2 (Empfehlung des Plans) | kein Lauf ohne Gegenstand passiert grün | widerspricht [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) für eine explizit leere `scope.roots`; Exit 2 ist ein Eingabefehler, und eine leere Scan-Menge ist keiner — auch die übrigen scannenden Module laufen darüber ohne Fehler |
 | K — leere Menge ⇒ Befund (Exit 1), ausgenommen eine explizit leere `scope.roots` | fail-closed und mit [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) verträglich | ein Grund-Code mehr für einen Fall, den die Bezugsmenge schon zeigt; die Präzedenz (`file-no-match`) gilt Modulen, deren Regel Dateien behauptet — `linelength` behauptet keine |
-| **L — eigenes Modul, Codepunkte der rohen Zeile, Ausnahmen aus der geteilten Lexik, (c) nach letztem Leerraum, leere Menge kein Fehler, kein Marker** | kleine Fläche, eine Antwort je Lexik-Frage, deterministisch; die Bezugsmenge sagt, was gemessen wurde | erbt die Grenzen der geteilten Lexik (Konsequenzen); (c) nimmt auch Zeilen aus, die ein Umbruch unter die Grenze brächte |
+| M — (c) nach dem letzten Leerraum: ausgenommen ist eine Zeile, deren Codepunkte an den Positionen `max-chars + 1` bis Zeilenende keinen Leerraum tragen (zuerst bestätigt am 2026-11-22) | eine Zeile mit einem langen Link am Ende muss nicht vor dem Link umbrechen; eine Prüfung nur ab der Grenze | gröber, als ihr Name sagt: am eigenen Bestand bei `max-chars: 120` über die Markdown-Dateien der Scan-Menge, nach (a) und (b), nimmt sie von 2972 überlangen Zeilen 828 aus — davon tragen 151 keinen Leerraum, 316 ein Wort über 120 und 361 keines, sodass ein Umbruch sie unter die Grenze brächte; bei 141 davon ist das letzte Wort höchstens 20 Zeichen lang, gewöhnliche Prosa, die ein Wort über die Grenze ragt |
+| **H — eigenes Modul, Codepunkte der rohen Zeile, Ausnahmen aus der geteilten Lexik, (c) nur bei einem Wort über der Grenze, leere Menge kein Fehler, kein Marker** | nimmt genau die Zeilen aus, die kein Umbruch unter die Grenze bringt; am Bestand oben blieben 467 ausgenommen, die 361 umbrechbaren werden Befunde; gleicher Aufwand wie M; die Bezugsmenge sagt, was gemessen wurde | erbt die Grenzen der geteilten Lexik; eine Zeile mit umbrechbarem Text **und** einem Wort über der Grenze bleibt ganz ausgenommen (Konsequenzen) |
 
 ## Konsequenzen
 
 - Positiv: ein Repo bekommt die Zeilen-Grenze mit einer Konfiguration; das Modul braucht keinen Port und
-  keine neue Lexik.
+  keine neue Lexik. Eine überlange Prosa-Zeile ist ein Befund, sobald ein Umbruch sie unter die Grenze bringt.
 - Negativ — Grenzen der geteilten Lexik, in der Anforderung zu nennen:
   - Der Fence-Automat schaltet bei jeder ```` ``` ````- oder `~~~`-Zeile um. Ein ````` ```` `````-Block mit einer
     inneren ```` ``` ````-Zeile und ein ```` ``` ````-Block mit einer `~~~`-Zeile schließen früh; die Zeilen dahinter
@@ -132,18 +134,15 @@ und teilt mit `cell-max-chars` die Einheit, nicht den Gegenstand.
     eine GFM-Zeile ohne führende Pipe werden gemessen. Mit (a) aus und (b) an ist eine `|`-Zeile im Zaun keine
     Tabellenzeile.
 - Negativ — Grenzen der Entscheidung selbst:
-  - (c) ist gröber, als ihr Name sagt: sie nimmt **jede** überlange Zeile aus, deren letzter Leerraum auf oder
-    vor `max-chars` steht — auch Prosa, deren letztes Wort nur über die Grenze ragt. Gemessen am eigenen
-    Bestand bei `max-chars: 120` über die Markdown-Dateien der Scan-Menge, nach (a) und (b): von 2972
-    überlangen Zeilen nimmt (c) 828 aus; davon tragen 151 keinen Leerraum, 316 eine Folge ohne Leerraum, die
-    länger als 120 ist, und 361 keine solche — jede ihrer Folgen passte auf eine eigene Zeile, bei 141 davon ist
-    das letzte Wort höchstens 20 Zeichen lang. Unter Alternative H blieben 467 ausgenommen. Die Zahl `U` der
-    Bezugsmenge macht die Ausnahme sichtbar, nicht ihre Art.
+  - (c) nimmt eine Zeile **ganz** aus, sobald sie ein Wort über der Grenze trägt — auch wenn umbrechbarer Text
+    davor oder dahinter steht, der auf eine eigene Zeile passte. Die Ausnahme prüft das Wort, nicht den Rest.
+  - Ein Wort, das erst mit seiner Einrückung über die Grenze ragt, ist nicht länger als `max-chars`; die Zeile
+    ist ein Befund, auch wenn der Umbruch sie nicht kürzer macht, weil die Einrückung bleibt.
   - Eine Überschrift lässt sich nicht umbrechen; die Reparatur ist Kürzen, und Kürzen ändert ihren Anker. Die
     gebrochenen Verweise melden `links` und `anchors`.
-  - Ein `d-check:ignore`-Kommentar, den ein anderes Modul verlangt, verlängert seine Zeile und zählt mit. (c)
-    nimmt eine solche Zeile nur aus, wenn hinter der Grenze kein Leerraum mehr steht — etwa wenn die Grenze
-    erst im schließenden `-->` liegt.
+  - Ein `d-check:ignore`-Kommentar, den ein anderes Modul verlangt, verlängert seine Zeile und zählt mit. Seine
+    Wörter sind kurz; (c) nimmt eine solche Zeile nur aus, wenn ein anderes Wort auf ihr länger als die Grenze
+    ist — wo die Grenze im Kommentar liegt, ist dafür ohne Belang.
   - Das eigene Profil des Repos schaltet das Modul nicht ein; diese Entscheidung legt die Fähigkeit fest, nicht
     ihre Nutzung.
 - Folgepflicht: jede Randbedingung der Anforderung (Grenzwert, Einheit, jede Ausnahme an und aus, die Ränder
@@ -167,11 +166,12 @@ und teilt mit `cell-max-chars` die Einheit, nicht den Gegenstand.
 Die Entscheidung wird neu geprüft, wenn (a) die geteilte Lexik ihre Fence- oder Tabellen-Antwort ändert
 (etwa längengleiches Schließen oder eine verlangte Trennzeile) — dann ändern sich (a) und (b) mit, und es ist
 zu prüfen, ob das gewollt ist; (b) ein Konsument eine Zeile ausnehmen muss, die weder Code noch Tabelle noch
-unumbrechbar ist (dann der Marker, Alternative I); (c) ein Konsument, ein Review oder eine Verifikation die
-über (c) ausgenommenen Zeilen, die ein Umbruch unter die Grenze brächte, als Mangel liest (dann Alternative H);
-(d) ein Konsument Text mit breiten Zeichen prüft und die Codepunkte dort nicht tragen (dann Alternative E);
-oder (e) ein Konsument die Prüfung für eine andere Dateiart verlangt (dann ist die Abgrenzung zu `file` neu zu
-ziehen, Alternative B).
+unumbrechbar ist (dann der Marker, Alternative I); (c) ein Konsument, ein Review oder eine Verifikation
+überlange Zeilen, die (c) wegen eines einzelnen Wortes über der Grenze ganz ausnimmt, als Mangel liest — etwa
+umbrechbaren Text vor einer langen URL (dann eine Prüfung des Rests neben dem Wort) —, oder umgekehrt den
+Umbruch vor einem langen Link am Zeilenende als Last (dann Alternative M); (d) ein Konsument Text mit breiten
+Zeichen prüft und die Codepunkte dort nicht tragen (dann Alternative E); oder (e) ein Konsument die Prüfung
+für eine andere Dateiart verlangt (dann ist die Abgrenzung zu `file` neu zu ziehen, Alternative B).
 
 ## Geschichte
 
@@ -179,6 +179,7 @@ ziehen, Alternative B).
 |---|---|---|
 | 2026-11-22 | Proposed: Entscheide 1–7 wie vom Auftraggeber bestätigt, 5 und 7 an den Rändern geschärft; Entscheid 8 gegen [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) geändert und Entscheid 9 neu — beide brauchen die Bestätigung des Auftraggebers vor `Accepted` | slice-289 <!-- d-check:status-provenance --> |
 | 2026-11-22 | Proposed, fortgeschrieben: Entscheid 8 und 9 vom Auftraggeber bestätigt; Bezug und Schärft verlinken die Anforderung und ihr Verfahren; Entscheid 3 an die Zeilen-Zerlegung von `pinsync` angeglichen; die Konsequenz von 5 (c) gemessen und Alternative H geschärft — für 5 (c) ist eine Neu-Bestätigung empfohlen (Empfehlung H), die Fassung oben gilt bis dahin | slice-289 <!-- d-check:status-provenance --> |
+| 2026-11-23 | Proposed, fortgeschrieben: Entscheid 5 (c) vom Auftraggeber als Alternative H neu bestätigt — ausgenommen ist nur eine Zeile mit einem Wort über der Grenze; die zuerst bestätigte Fassung ist mit ihren Messzahlen verworfene Alternative M; Konsequenzen und Trigger (c) nachgezogen | slice-289 <!-- d-check:status-provenance --> |
 
 Nach `Accepted` wird diese Datei **nicht mehr inhaltlich überschrieben**.
 Spätere Korrekturen oder Schärfungen entstehen als neue ADR mit
