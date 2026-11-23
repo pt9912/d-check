@@ -278,6 +278,45 @@ sed -n 53,56p internal/hexagon/core/rules/vcs.go; sed -n 130,132p internal/hexag
 grep -nE '^	[A-Z][A-Za-z]+\(' internal/hexagon/port/driven/vcs.go      # fünf Methoden
 ```
 
+**Plan-Änderung nach Review R1 (Implementer, 2026-11-23, vor dem Fix):** Die Befunde M-1 bis
+M-4 und I-1 aus `docs/reviews/2026-11-23-slice-291-vcs-umbenennung-r1.md` gehen in den Spec-Text.
+Constraint ist [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) in der Fassung nach Review
+(Entscheidung 9 und 11, §Konsequenzen). Alle Stellen liegen in den schon geführten Abschnitten:
+Absatz, Grenzen, Kriterien und Historie von
+[`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in);
+Schritt 2 und 4, Schema-Zeile und Historie der Spezifikation. Neu kommen drei Kriterien hinzu: die
+zwei aus M-3 und eines, das die Negativ-Kriterien für beide Schlüssel bindet (M-1).
+
+Aussagen-Suche (Stand vor dem Fix, Kommandos darunter), Treffer:
+
+- **M-2** — „mit beiden Schlüsseln ist ein Nachzug auf eine andere Datei mit ihrem alten Namen
+  Drift“ ohne die Bedingung „die Umbenennung wechselt den Dateinamen“: Lastenheft Z. 2312–2316,
+  Spezifikation Z. 2153–2156 (Fix hier). Das Kriterium Lastenheft Z. 2355 trägt die Bedingung
+  schon. Dieselbe Aussage ohne Bedingung steht in Planungs-Dokumenten: Welle
+  [`welle-96`](../welle-96-vcs-folgt-umbenennung.md) Z. 128–130,
+  [`slice-292`](../open/slice-292-vcs-umbenennung-modulkern.md) Z. 149, dieser Plan Z. 204–206
+  (Entscheid 10). Träger ist der Planner; hier nicht geändert.
+- **M-1** — Kriterien, die `core-drift-vcs` zusagen, ohne `vcs.ignore-link-targets` auszuschließen:
+  Lastenheft Z. 2348, 2349, 2351, 2352 (zweiter Teil), 2353, 2356 (zweiter Teil), 2359 (zweiter
+  Teil); der „Allgemein“-Satz Z. 2354. Die Kriterien Z. 2350 (Anker, Linktext), 2357 (immutable
+  Datei) und 2360 (fail-closed) gelten mit beiden Schlüsseln unverändert.
+- **M-3** — Quelle, Ende und Neubelegung: Lastenheft Z. 2271–2281 (Kette, Mehrdeutigkeit), 2288
+  (Gleichsetzung), 2323 (Merge-Grenze, die einzige zur Neubelegung), Kriterium Z. 2353;
+  Spezifikation Z. 2080–2089 (Kette), 2138–2141 (Teilnahme), Schema-Zeile Z. 3991.
+- **M-4** — „keinen Lauf rot, der ohne ihn grün ist“: Spezifikation Z. 2143–2145. Das Lastenheft
+  sagt „keinen Befund“ (Z. 2354), nennt den fail-closed-Fall dort aber nicht.
+- **I-1** — „Ein Schritt ist jeder Nicht-Merge-Commit“: Lastenheft Z. 2268 und Historie-Zeile
+  0.114.0 (Z. 4729).
+
+```bash
+grep -n 'alten Namen\|gleichnamige\|anderem Dateinamen' spec/*.md docs/plan/planning/welle-96*.md \
+  docs/plan/planning/open/slice-292*.md docs/plan/planning/in-progress/slice-291*.md
+grep -n 'Allgemein: ein Lauf\|röter\|rot, der ohne\|keinen Lauf' spec/lastenheft.md spec/spezifikation.md
+grep -n 'neu belegt\|Neubelegung\|belegt eine Seite\|Quelle einer\|Ende in HEAD\|fehlt das Ende\|Ende, das in HEAD' \
+  spec/lastenheft.md spec/spezifikation.md
+grep -n 'Nicht-Merge-Commit' spec/lastenheft.md
+```
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
