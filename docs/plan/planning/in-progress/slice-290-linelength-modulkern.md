@@ -222,7 +222,11 @@ YAML-Ganzzahl (Tag `!!int`), die drei Schalter nur als `true`/`false` (Tag `!!bo
 Dekoder kürzte `80.5` sonst still auf `80` und läse ein quotiertes `"yes"` als `true` — beides
 widerspräche „keine ganze Zahl“ bzw. „kein Wahrheitswert“ in
 [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in).
-Ein leerer Wert (`max-chars:`) gilt wie ein fehlender. Die Wort-Zerlegung für (c) ist kein
+~~Ein leerer Wert (`max-chars:`) gilt wie ein fehlender.~~ **Zurückgenommen** (Planner, nach
+[Code-Review R1](../../../reviews/2026-11-23-slice-290-code-r1.md) F-1 und dem Verdikt des Architect
+in [ADR-0114](../../adr/0114-linelength-modul.md) Entscheid 4): Ein Schlüssel des Blocks ohne Wert
+(YAML-`null`) ist gesetzt und kein gültiger Wert ⇒ Exit 2, für `max-chars` und die drei Schalter,
+auch ohne aktives Modul. Die Notiz stand gegen das Lastenheft. Die Wort-Zerlegung für (c) ist kein
 regulärer Ausdruck, aber ein Erkennungs-Muster: ihre Negativfälle (Tab, U+00A0, Einrückung,
 Marker-Kommentar, `\r` am Ende) stehen in der Testfall-Liste oben, und der Lauf über den eigenen
 Korpus ist die Gegenprobe gegen die `awk`-Zahlen aus dem Plan von
