@@ -103,7 +103,7 @@ Aussagen-Berührung steht hier gar nicht.
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | `internal/hexagon/port/driven/vcs.go` | update | neue Methode am Port, gerufen nur bei aktivem Schalter: die Abbildung Quelle → eindeutiges Ende (Vertrag nach [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) Entscheidung 13: Commit-Menge, Inhalts-Gleichheit nach Blob-Kennung und Art ohne Ausführbar-Bit, Kette entlang der Abstammung, Mehrdeutigkeit, Basis kein Vorfahr ⇒ leer, fail-closed auf jedes nötige Objekt; Kette und Mehrdeutigkeit entscheidet der Adapter, das Gleichsetzen der Kern) |
-| `internal/adapter/driven/git/git.go` | update | eigener Blob-Vergleich über die Bäume je Commit und Eltern-Commit bzw. HEAD gegen Index; Teilbäume gleicher Kennung bleiben ungelesen; die Rename-Erkennung von go-git wird **nicht** benutzt; kein Diff-Walker, der einen unlesbaren Unterbaum still überspringt |
+| `internal/adapter/driven/git/git.go` | update | eigener Blob-Vergleich über die Bäume je Commit und Eltern-Commit bzw. HEAD gegen Index; Teilbäume gleicher Kennung bleiben ungelesen; die Rename-Erkennung von go-git wird **nicht** benutzt; kein Diff-Walker, der einen unlesbaren Unterbaum still überspringt. **Dazu (Plan-Änderung nach dem Architect-Befund S-1, 2026-11-23):** `AllPaths` nimmt im gestagten Modus heute jeden Index-Eintrag, auch einen Gitlink (`git.go` Z. 95–98), die Spezifikation (§[`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2) sagt „jeder Datei-Pfad (regulär/ausführbar/symlink) … bzw. am staged Index“ — der Code folgt der Spezifikation (Rang 2): dieselben drei Arten wie im Baum, ein Filter für Enumeration und Umbenennungs-Abbildung |
 | `internal/hexagon/core/model/config.go` | update | `VCSConfig` um den Schalter |
 | `internal/adapter/driven/configyaml/configyaml.go` | update | Schlüssel lesen und am Rand prüfen (Exit 2) |
 | `internal/hexagon/core/rules/vcs.go`, `vcs_link_targets.go` | update | Umbenennungen nur bei aktivem Schalter lesen; das Gleichsetzen im Auflöser der Link-Ziele |
@@ -156,6 +156,8 @@ Liste folgt den bestätigten Entscheiden 1–14 und dem Architect-Verdikt):
 - `--staged` mit `git mv` und Nachzug im Index ⇒ kein Befund; `git mv` in einem früheren
   Commit, nur der Nachzug gestagt ⇒ Befund (benannte Grenze).
 - Unlesbares Objekt eines Commits der Range ⇒ Exit 2.
+- Gitlink im Index unter `vcs.paths` mit `--staged` ⇒ kein Kandidat (wie im Baum); ohne
+  die Angleichung wäre er einer (Rot-Beleg am Vorzustand).
 - Zehn Läufe derselben Eingabe ⇒ byte-gleiche Ausgabe (Messmethode von
   [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
 
