@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.114.0
+**Version:** 0.114.2
 
 **Status:** Draft
 
@@ -2272,39 +2272,49 @@ ohne ihn ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismu
   Schritt HEAD → Index.
 - **Kette entlang der Abstammung.** Umbenennungen verketten sich: A → B und in
   einem Nachfahren-Commit B → C ergeben A → C. Y → Z setzt X → Y nur fort, wenn
-  der Commit von X → Y ein Vorfahr des Commits von Y → Z ist. Ein Merge-Commit trägt
-  selbst keine Umbenennung bei und setzt die seiner Seiten fort; eine Seite, auf
-  der der Pfad in jedem Schritt bestehen bleibt (auch mit geändertem Inhalt),
-  trägt kein Ende bei. Das Ergebnis hängt nicht von der
+  der Commit von X → Y ein Vorfahr des Commits von Y → Z ist. Ein Merge-Commit
+  trägt selbst keine Umbenennung bei und setzt die seiner Seiten fort. Eine
+  Linie, auf der der Pfad nicht liegt oder in jedem Schritt bestehen bleibt
+  (auch mit geändertem Inhalt), ist unberührt und trägt nichts bei. Löschen und
+  Neuanlegen im selben Schritt ist kein Verschwinden, sondern eine
+  Inhaltsänderung an Ort und Stelle. Das Ergebnis hängt nicht von der
   Reihenfolge ab, in der Commits aufgezählt werden. Quelle einer Umbenennung ist
   nur ein Pfad, der in BASE existiert; ein Pfad, den eine Kette nur durchläuft,
   ist weder Quelle noch Ende. Verschwindet der Pfad, auf dem eine Kette steht, in
-  einem späteren Schritt, ohne umbenannt zu werden, endet sie ohne Ende: die
-  Quelle hat keine Umbenennung, auch wenn der Pfad danach neu angelegt wird.
-  Bleibt der Pfad in einem Schritt bestehen und ändert nur seinen Inhalt, läuft
-  die Kette weiter.
+  einem Schritt, ohne umbenannt zu werden, endet sie ohne Ende: die Quelle hat
+  keine Umbenennung, auch wenn ein späterer Schritt den Pfad neu anlegt, und auch
+  auf der Seite eines Merges, die ihn nicht umbenennt.
 - **Mehrdeutigkeit bleibt Drift.** Tragen in einem Schritt mehrere
   verschwundene oder mehrere neue Pfade denselben Inhalt, führen die Linien der
   Range von A zu zwei verschiedenen Enden, führt eine Linie zu einer Löschung
   ohne Ende und eine andere zu einem Ende, oder fehlt das Ende in HEAD, gilt für
-  A keine Umbenennung. Ein Pfad, der zugleich Quelle der einen und Ende einer
-  anderen Umbenennung ist, nimmt nicht teil.
+  A keine Umbenennung.
 - **Was gleichgesetzt wird.** Nur das aufgelöste Ziel eines Links auf eine
-  **Datei**, auf der BASE- und der HEAD-Fassung gleich: ein Ziel, das auf A oder
-  auf B auflöst, gilt als Ziel auf B. Gleicher Rohtext ergibt damit gleichen
+  **Datei**, auf der BASE- und der HEAD-Fassung gleich. Eine Umbenennung
+  Quelle → Ende nimmt nur teil, wenn ihr Ende in HEAD existiert, in BASE nicht
+  existiert und Ende keiner zweiten Quelle ist; dann nehmen Quelle und Ende teil
+  und gelten beide als das Ende. Jeder andere Pfad nimmt nicht teil — auch ein
+  Pfad, der in BASE lag und in der Range Ende einer anderen Umbenennung wird
+  (Tausch zweier Namen; ein Name, den die Range freimacht und neu belegt). Ein
+  Ziel, das auf die Quelle oder das Ende einer teilnehmenden Umbenennung
+  auflöst, gilt als Ziel auf das Ende; gleicher Rohtext ergibt damit gleichen
   Core, auch für einen unveränderten Link auf eine umbenannte Datei. Anker,
-  Linktext, Titel, übrige Zeile und Zahl der Links bleiben roh; ein Ziel, das an
-  keiner Umbenennung teilnimmt, behandelt das Modul wie ohne den Schlüssel. Ein
-  Link auf ein Verzeichnis folgt nicht; ein Link auf eine Datei darin folgt deren
-  eigener Umbenennung. Mit beiden Schlüsseln wird erst gleichgesetzt, dann auf
-  Dateiname und Anker normiert.
-- **Was gelesen wird.** Dafür liest `vcs` jeden Commit der Range und die Bäume,
-  die sich darin gegen den Eltern-Commit unterscheiden — über die Scan-Menge und
-  `vcs.paths` hinaus; eine Umbenennung irgendwo im Repository zählt. Von einer
-  Datei liest die Erkennung nur die Kennung ihres Inhalts, nicht den Inhalt.
-  Ein unlesbarer Commit oder Baum, den die Erkennung braucht, ist ein Fehler
-  (Exit 2), auch wenn BASE und HEAD lesbar sind. Ohne den Schlüssel wird nichts
-  davon gelesen. Kein neuer Grund-Code: es bleibt `core-drift-vcs`.
+  Linktext, Titel, übrige Zeile und Zahl der Links bleiben roh; ein Ziel, das
+  nicht teilnimmt, behandelt das Modul wie ohne den Schlüssel. Ein Link auf ein
+  Verzeichnis folgt nicht; ein Link auf eine Datei darin folgt deren eigener
+  Umbenennung. Mit beiden Schlüsseln wird ein teilnehmendes Ziel wie mit
+  `vcs.follow-renames` allein gleichgesetzt und jedes andere wie mit
+  `vcs.ignore-link-targets` allein auf Dateiname und Anker normiert; die beiden
+  Formen gleichen sich nie.
+- **Was gelesen wird.** Dafür liest `vcs` jeden Commit der Range, die Bäume der
+  Schritte und ihrer Eltern-Commits — auch eines Eltern-Commits vor BASE, wo eine
+  Merge-Seite vor BASE abzweigt — und die Teilbäume, die sich darin
+  unterscheiden, über die Scan-Menge und `vcs.paths` hinaus; eine Umbenennung
+  irgendwo im Repository zählt. Von einer Datei liest die Erkennung nur die
+  Kennung ihres Inhalts, nicht den Inhalt. Ein unlesbares Objekt, das die
+  Erkennung braucht, ist ein Fehler (Exit 2), auch wenn BASE und HEAD lesbar
+  sind. Ohne den Schlüssel wird nichts davon gelesen. Kein neuer Grund-Code: es
+  bleibt `core-drift-vcs`.
 
 **Grenzen von `vcs.follow-renames` (benannt):**
 
@@ -2312,23 +2322,26 @@ ohne ihn ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismu
   stabil; der Schlüssel wirkt nur auf Link-Ziele.
 - Umbenennen und im selben Commit ändern bleibt Drift, ebenso eine Umbenennung,
   bei der ein Werkzeug den Inhalt im selben Akt ersetzt. Ein reiner Move-Commit
-  und eine spätere Inhaltsänderung der umbenannten Datei gehen dagegen durch:
-  die Zusage ist Pfad-Identität entlang der Historie, nicht Inhalts-Identität
-  des Ziels. Wer eine Umbenennung vortäuscht, um einen Link auf ein anderes
-  Dokument umzubiegen, wird nicht erkannt.
-- Ein Tausch zweier Namen bleibt Drift; Dateien gleichen Inhalts (etwa leere
+  und eine spätere Inhaltsänderung der umbenannten Datei gehen dagegen durch —
+  auch durch Löschen und Neuanlegen im selben Commit: die Zusage ist
+  Pfad-Identität entlang der Historie, nicht Inhalts-Identität des Ziels. Wer
+  eine Umbenennung vortäuscht, um einen Link auf ein anderes Dokument
+  umzubiegen, wird nicht erkannt.
+- Ein Tausch zweier Namen bleibt Drift, ebenso ein Nachzug auf einen Namen, den
+  die Range freimacht und neu belegt; Dateien gleichen Inhalts (etwa leere
   Dateien) in einem umbenannten Verzeichnis sind mehrdeutig, ihre Links folgen
   nicht.
-- Mit beiden Schlüsseln ist ein Nachzug von einer umbenannten Datei auf eine
-  **andere** Datei mit ihrem alten Dateinamen Drift, wenn die Umbenennung den
-  Dateinamen wechselt — strenger als `vcs.ignore-link-targets` allein, und nur
-  dort, wo ein Ziel an einer Umbenennung teilnimmt. Behält die Umbenennung den
-  Dateinamen (sie wechselt nur das Verzeichnis), und für Ziele ohne
-  Umbenennung, bleibt die Grenze „gleicher Name, andere Datei“, wie sie ist.
-- Wird ein Pfad einer Kette in der Range gelöscht und später neu belegt, folgt
-  ein Link ihm nicht: die Quelle hat keine Umbenennung. Mit beiden Schlüsseln
-  fällt ein solches Ziel auf die Normierung von `vcs.ignore-link-targets` allein
-  zurück — so grün oder rot wie ohne `vcs.follow-renames`, nie grüner.
+- Mit beiden Schlüsseln entfällt ein Befund, den `vcs.ignore-link-targets` allein
+  meldet, nur dort, wo beide Ziele an einer Umbenennung teilnehmen und dasselbe
+  Ende haben. Ein Nachzug, bei dem nur eines der beiden Ziele teilnimmt oder
+  beide verschiedene Enden haben, ist Drift — auch bei gleichem Dateinamen, auch
+  wenn die Umbenennung nur das Verzeichnis wechselt. Die Grenze „gleicher Name,
+  andere Datei“ bleibt nur zwischen zwei Zielen, von denen keines teilnimmt.
+- Wird ein Pfad einer Kette in einem Commit gelöscht und in einem späteren neu
+  belegt, folgt ein Link ihm nicht: die Quelle hat keine Umbenennung. Ein solches
+  Ziel nimmt nicht teil; mit beiden Schlüsseln wird es wie mit
+  `vcs.ignore-link-targets` allein normiert und gleicht keinem teilnehmenden
+  Ziel.
 - `--staged` sieht nur den Schritt HEAD → Index: liegt der Move in einem
   früheren Commit und ist nur der Nachzug gestagt, bleibt er Drift; ohne HEAD
   (erster Commit) gibt es keine Umbenennung. Eine Range über beide Commits sieht
@@ -2336,9 +2349,10 @@ ohne ihn ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismu
 - Ist BASE kein Vorfahr von HEAD, trägt die Range keine Umbenennung: das Modul
   urteilt wie ohne den Schlüssel, ohne Exit 2.
 - Trägt die Range einen Merge und überschreibt eine Seite einen Pfad, den die
-  andere umbenennt, an Ort und Stelle, ohne ihn zu löschen, ist das eine
-  Inhaltsänderung: der Link folgt der Umbenennung. Löscht die Seite den Pfad und
-  legt ihn neu an, ist das Mehrdeutigkeit, und der Nachzug bleibt Drift.
+  andere umbenennt, an Ort und Stelle, ohne ihn zu löschen — auch durch Löschen
+  und Neuanlegen im selben Commit —, ist das eine Inhaltsänderung: der Link folgt
+  der Umbenennung. Löscht die Seite den Pfad in einem Commit und legt ihn in
+  einem späteren neu an, ist das Mehrdeutigkeit, und der Nachzug bleibt Drift.
 - Mit dem Schlüssel liest das Modul jeden Commit der Range; die Laufzeit wächst
   mit ihrer Länge.
 
@@ -2368,17 +2382,21 @@ menschliche Entscheidung, kein eindeutig ableitbarer Fix; vgl.
 - **Negative (umbenennen und ändern):** Given `vcs.follow-renames: true` ohne `vcs.ignore-link-targets` und eine Range, in der A im **selben** Commit nach B umbenannt und inhaltlich geändert wird, samt Nachzug, when das Modul läuft, then `core-drift-vcs`; folgt die Inhaltsänderung in einem **späteren** Commit auf einen reinen Move-Commit, then kein `core-drift-vcs`.
 - **Boundary (Kette):** Given `vcs.follow-renames: true` ohne `vcs.ignore-link-targets` und eine Range, in der A → B und in einem Nachfahren-Commit B → C umbenannt wird, samt Nachzug von A auf C, when das Modul läuft, then kein `core-drift-vcs`. Liegen X → Y und Y → Z auf zwei Seiten eines Merges, von denen keine ein Vorfahr der anderen ist, then setzt sich die Kette nicht fort und der Nachzug von X auf Z ist `core-drift-vcs`. Ist HEAD ein Merge, dessen eine Seite A nach B umbenennt und auf dessen anderer A in jedem Schritt bestehen bleibt (auch mit geändertem Inhalt), then ist der Nachzug von A auf B kein `core-drift-vcs`. Derselbe Lauf zehnmal ergibt byte-gleiche Ausgabe ([`DC-QA-02`](#dc-qa-02--determinismus)).
 - **Negative (Mehrdeutigkeit):** Given `vcs.follow-renames: true` ohne `vcs.ignore-link-targets` und ein Nachzug von A auf B, when in einem Schritt ein zweiter verschwundener oder neuer Pfad denselben Inhalt trägt wie A und B, oder die Range A zu zwei verschiedenen Enden führt, oder eine Linie zu einer Löschung ohne Ende und eine andere zu einem Ende führt, oder das Ende in HEAD gelöscht ist, then `core-drift-vcs`. Ein Tausch zweier Namen samt Nachzug ist `core-drift-vcs`.
-- **Negative (Merge-Seite löscht und legt neu an):** Given `vcs.follow-renames: true` ohne `vcs.ignore-link-targets` und HEAD ist ein Merge, dessen eine Seite A nach B umbenennt und dessen andere A in einem Commit löscht und in einem späteren neu anlegt, samt Nachzug von A auf B, when das Modul läuft, then `core-drift-vcs`.
-- **Negative (Ende gelöscht und neu angelegt):** Given `vcs.follow-renames: true` ohne `vcs.ignore-link-targets` und eine Range, in der A nach B umbenannt, B in einem späteren Commit gelöscht und als **andere** Datei neu angelegt wird, samt Nachzug von A auf B, when das Modul läuft, then `core-drift-vcs`.
+- **Negative (Merge-Seite löscht, legt später neu an):** Given `vcs.follow-renames: true` ohne `vcs.ignore-link-targets` und HEAD ist ein Merge, dessen eine Seite A nach B umbenennt und dessen andere A in einem Commit löscht und in einem späteren neu anlegt, samt Nachzug von A auf B, when das Modul läuft, then `core-drift-vcs`.
+- **Negative (Ende gelöscht und neu angelegt):** Given `vcs.follow-renames: true` ohne `vcs.ignore-link-targets` und eine Range, in der A nach B umbenannt, B in einem späteren Commit gelöscht und in einem noch späteren als **andere** Datei neu angelegt wird, samt Nachzug von A auf B, when das Modul läuft, then `core-drift-vcs`.
 - **Negative (Zwischenpfad neu belegt):** Given `vcs.follow-renames: true` ohne `vcs.ignore-link-targets` und eine Range, in der A → B → D umbenannt und danach ein **neues** B angelegt wird, samt Nachzug von A auf B, when das Modul läuft, then `core-drift-vcs`.
-- **Boundary (seiten-gleich):** Given `vcs.follow-renames: true`, ohne `vcs.ignore-link-targets`, und eine Range, in der A nach B umbenannt wird, während eine immutable Datei mit einem **unveränderten** Link auf A nur einen Anhang in einem `vcs.exclude-sections`-Abschnitt erhält, when das Modul läuft, then kein `core-drift-vcs`. Allgemein, **ohne** `vcs.ignore-link-targets`: der Schlüssel ergibt keinen Befund, den es ohne ihn nicht gibt; mit ihm rot ohne Befund wird ein Lauf nur im Fall „fail-closed (Zwischen-Commit)“ (Exit 2).
+- **Boundary (seiten-gleich):** Given `vcs.follow-renames: true`, ohne `vcs.ignore-link-targets`, und eine Range, in der A nach B umbenannt wird, während eine immutable Datei mit einem **unveränderten** Link auf A nur einen Anhang in einem `vcs.exclude-sections`-Abschnitt erhält, when das Modul läuft, then kein `core-drift-vcs`. Allgemein, **ohne** `vcs.ignore-link-targets`: der Schlüssel ergibt keinen Befund, den es ohne ihn nicht gibt; mit ihm rot ohne Befund wird ein Lauf nur, wenn ein Objekt nicht lesbar ist, das allein der Schlüssel liest: ein Commit der Range, der Baum eines Schritts oder seines Eltern-Commits — auch eines Eltern-Commits vor BASE, wo eine Merge-Seite vor BASE abzweigt — oder ein geänderter Teilbaum (Exit 2, Kriterium „fail-closed (Zwischen-Commit)“).
 - **Boundary (beide Schlüssel):** Given `vcs.follow-renames: true` und `vcs.ignore-link-targets: true` und eine Range, in der A nach B mit anderem Dateinamen umbenannt wird und ein Link von A auf eine **andere** Datei mit dem Dateinamen von A umgebogen wird, when das Modul läuft, then `core-drift-vcs` (mit `vcs.ignore-link-targets` allein: kein Befund).
-- **Boundary (Negativ-Kriterien mit beiden Schlüsseln):** Given `vcs.follow-renames: true` und `vcs.ignore-link-targets: true`, when ein Fall eines der Kriterien oben läuft, die `core-drift-vcs` unter „ohne `vcs.ignore-link-targets`“ zusagen, then gilt die Zusage nur, wenn die beiden Ziele nach der Gleichsetzung verschiedene Dateinamen tragen (ein Ziel, das an einer Umbenennung teilnimmt, trägt den Dateinamen ihres Endes); sonst gilt die Grenze „gleicher Name, andere Datei“ wie mit `vcs.ignore-link-targets` allein — kein Befund.
+- **Boundary (Negativ-Kriterien mit beiden Schlüsseln):** Given `vcs.follow-renames: true` und `vcs.ignore-link-targets: true`, when ein Fall eines der Kriterien oben läuft, die `core-drift-vcs` unter „ohne `vcs.ignore-link-targets`“ zusagen, then gilt die Zusage, mit einer Ausnahme: tragen beide Ziele denselben Dateinamen, gilt die Grenze „gleicher Name, andere Datei“ wie mit `vcs.ignore-link-targets` allein — kein Befund, sofern keines der beiden Ziele teilnimmt. Nimmt eines teil, ist der Fall Drift (ein teilnehmendes Ziel gleicht nur einem teilnehmenden mit demselben Ende).
+- **Negative (beide Schlüssel, Umbiegen auf den alten Namen):** Given `vcs.follow-renames: true` und `vcs.ignore-link-targets: true` und eine Range, in der `d2/c.md` nach `d3/a.md` umbenannt wird, und ein Link, der von `d1/a.md` auf `d2/c.md` umgebogen wird, when das Modul läuft, then `core-drift-vcs` (mit `vcs.ignore-link-targets` allein ebenso).
+- **Negative (beide Schlüssel, Umbenennung ohne Namenswechsel):** Given `vcs.follow-renames: true` und `vcs.ignore-link-targets: true` und eine Range, in der `d1/x.md` nach `d2/x.md` umbenannt wird, und ein Link, der von `d1/x.md` auf eine andere Datei `d3/x.md` umgebogen wird, when das Modul läuft, then `core-drift-vcs` (mit `vcs.ignore-link-targets` allein: kein Befund).
+- **Negative (Name freigemacht und neu belegt):** Given `vcs.follow-renames: true` ohne `vcs.ignore-link-targets` und eine Range, in der A (aus BASE) in einem Commit gelöscht und in einem späteren C (aus BASE) nach A umbenannt wird, samt Nachzug von C auf A, when das Modul läuft, then `core-drift-vcs`.
+- **Boundary (Löschen und Neuanlegen im selben Commit):** Given `vcs.follow-renames: true` und eine Range, in der A nach B umbenannt wird und ein späterer Commit B löscht und im **selben** Commit neu anlegt, samt Nachzug von A auf B, when das Modul läuft, then folgt der Nachzug der Umbenennung (kein `core-drift-vcs`) — das ist eine Inhaltsänderung an Ort und Stelle.
 - **Boundary (Art des Eintrags, Verzeichnis):** Given `vcs.follow-renames: true` ohne `vcs.ignore-link-targets`, when eine Umbenennung nur das Ausführbar-Bit ändert, then folgt ein Nachzug ihr (kein `core-drift-vcs`); when eine Datei verschwindet und ein Symlink mit demselben Blob erscheint, oder ein Link auf ein umbenanntes **Verzeichnis** auf dessen neuen Namen nachgezogen wird, then `core-drift-vcs`.
 - **Negative (immutable Datei umbenannt):** Given `vcs.follow-renames: true` und eine Range, in der eine immutable Datei selbst umbenannt wird, when das Modul läuft, then `core-drift-vcs` wie ohne den Schlüssel.
 - **Boundary (Basis kein Vorfahr):** Given `vcs.follow-renames: true` und eine Range, deren BASE kein Vorfahr von HEAD ist, when das Modul läuft, then trägt die Range keine Umbenennung und der Befundsatz ist derselbe wie ohne den Schlüssel — kein Exit 2 aus diesem Grund.
 - **Boundary (`--staged`):** Given `vcs.follow-renames: true` ohne `vcs.ignore-link-targets`, when `git mv` und Nachzug zusammen gestagt sind und `d-check --enable vcs --staged` läuft, then kein `core-drift-vcs`; liegt der Move in einem früheren Commit und ist nur der Nachzug gestagt, then `core-drift-vcs`.
-- **fail-closed (Zwischen-Commit):** Given `vcs.follow-renames: true` und eine Range, in der ein Commit oder Baum zwischen BASE und HEAD nicht lesbar ist, BASE und HEAD aber lesbar sind, when das Modul läuft, then Exit 2 mit Hinweis auf stderr; **ohne** den Schlüssel liest das Modul diesen Commit nicht.
+- **fail-closed (Zwischen-Commit):** Given `vcs.follow-renames: true` und eine Range, in der ein Objekt nicht lesbar ist, das allein der Schlüssel liest — ein Commit der Range, der Baum eines Schritts oder seines Eltern-Commits (auch vor BASE) oder ein geänderter Teilbaum —, BASE und HEAD aber lesbar sind, when das Modul läuft, then Exit 2 mit Hinweis auf stderr; **ohne** den Schlüssel liest das Modul dieses Objekt nicht.
 - **Boundary (ohne `vcs.follow-renames` byte-identisch):** Given `vcs` aktiv ohne `vcs.follow-renames`, when `d-check --enable vcs --range <base>..<head>` läuft, then ist der Befundsatz byte-identisch zur Fassung vor dieser Erweiterung ([`DC-QA-02`](#dc-qa-02--determinismus)), und kein Commit zwischen BASE und HEAD wird gelesen.
 
 **Grenze (benannt, nicht mechanisiert):** Die Abschnitts-Maske von
@@ -4747,7 +4765,9 @@ Rechtschreib-Regeln** — der Ausschluss in [§5](#5-globale-out-of-scope-punkte
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
-| 0.114.0 | 2026-11-23 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in): neuer opt-in-Schlüssel `vcs.follow-renames` — `vcs` liest die Umbenennungen der Range aus der git-Historie (Inhalts-Gleichheit je Commit mit genau einem Eltern-Commit gegen diesen, mit `--staged` HEAD → Index; Kette entlang der Abstammung, Quelle nur ein Pfad aus BASE, eine Kette, deren Pfad ohne Umbenennung verschwindet, endet ohne Ende, auch bei Neuanlage und auch auf einer Merge-Seite, die den Pfad nicht umbenennt; Mehrdeutigkeit, fehlendes Ende und eine Basis, die kein Vorfahr ist, ergeben keine Umbenennung) und setzt ein aufgelöstes Datei-Ziel auf beiden Fassungen gleich auf das Ende: ein Link-Nachzug auf den neuen Namen ist keine Drift. Unabhängig von `vcs.ignore-link-targets`, mit ihm erst gleichgesetzt, dann normiert; ein unlesbarer Commit oder Baum der Range ist Exit 2; kein neuer Grund-Code; ohne den Schlüssel byte-identisch. Die Grenzen stehen in der Anforderung (die immutable Datei selbst, umbenennen und ändern in einem Commit, Tausch, gleiche Inhalte, beide Schlüssel nur bei wechselndem Dateinamen, Neubelegung, `--staged`, fremde Basis, Merge: Überschreiben an Ort und Stelle folgt, Löschen und Neuanlegen auf einer Seite ist Mehrdeutigkeit). Das Kriterium „Boundary (Pfad-Nachzug)“ gilt nur noch ohne den Schlüssel, die Sätze zum anderen Namen und zu „dieselbe Datei“ sind darauf eingeschränkt, neunzehn Kriterien kommen hinzu, die Negativ-Kriterien ohne `vcs.ignore-link-targets` und eines, das sie für beide Schlüssel an verschiedene Dateinamen bindet; der Out-of-Scope-Satz trennt die Umbenennung der immutablen Datei von der Ähnlichkeits-Erkennung. Gegen §5 gehalten: kein globaler Ausschluss getroffen — von Dateien außerhalb des Markdown-Baums liest die Erkennung nur die Kennung des Inhalts. Anlass: Feldmeldung eines Adopters (GitHub-Issue 18). Begründung in begleitender ADR | — |
+| 0.114.2 | 2026-11-23 | Nachzug nach Review an [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) (`vcs.follow-renames`): eine Umbenennung nimmt nur teil, wenn ihr Ende in HEAD existiert, in BASE nicht und Ende keiner zweiten Quelle ist — ein Tausch zweier Namen und ein Name, den die Range freimacht und neu belegt, nehmen nicht teil. Mit beiden Schlüsseln wird ein teilnehmendes Ziel wie mit `vcs.follow-renames` allein gleichgesetzt und jedes andere wie mit `vcs.ignore-link-targets` allein normiert; die beiden Formen gleichen sich nie, ein Befund von `vcs.ignore-link-targets` allein entfällt nur, wo beide Ziele teilnehmen und dasselbe Ende haben, und die Bedingung „die Umbenennung wechselt den Dateinamen“ entfällt. Eine Linie, auf der der Pfad nicht liegt oder in jedem Schritt bestehen bleibt, ist unberührt; Löschen und Neuanlegen im selben Schritt ist eine Inhaltsänderung an Ort und Stelle, die Neubelegung und die Merge-Grenze verlangen ein Löschen in einem Commit und ein Neuanlegen in einem späteren. Gelesen werden auch die Bäume der Eltern-Commits vor BASE; der fail-closed-Fall nennt jedes Objekt, das allein der Schlüssel liest. Vier Kriterien kommen hinzu, fünf sind angeglichen. Anlass: Review | — |
+| 0.114.1 | 2026-11-23 | Nachzug nach Review an [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) (`vcs.follow-renames`): ein Schritt ist ein Commit mit genau einem Eltern-Commit. Quelle einer Umbenennung ist nur ein Pfad aus BASE, ein Zwischenpfad einer Kette ist weder Quelle noch Ende; eine Kette, deren Pfad ohne Umbenennung verschwindet, endet ohne Ende, auch bei späterer Neuanlage und auf einer Merge-Seite, die ihn nicht umbenennt — neben einem Ende ist das Mehrdeutigkeit. Die Kriterien, die `core-drift-vcs` zusagen, gelten ohne `vcs.ignore-link-targets`, ein Kriterium bindet sie für beide Schlüssel; der Satz „ohne den Schlüssel kein Befund, mit ihm keiner“ steht unter seinem Given und nennt den fail-closed-Fall. Die Grenze mit beiden Schlüsseln gilt nur bei wechselndem Dateinamen; neue Grenzen zur Neubelegung und zum Merge (Überschreiben an Ort und Stelle folgt, Löschen und Neuanlegen auf einer Seite ist Mehrdeutigkeit). Vier Kriterien kommen hinzu. Anlass: Review | — |
+| 0.114.0 | 2026-11-23 | [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in): neuer opt-in-Schlüssel `vcs.follow-renames` — `vcs` liest die Umbenennungen der Range aus der git-Historie (Inhalts-Gleichheit je Nicht-Merge-Commit gegen seinen Eltern-Commit, mit `--staged` HEAD → Index; Kette entlang der Abstammung; Mehrdeutigkeit, fehlendes Ende und eine Basis, die kein Vorfahr ist, ergeben keine Umbenennung) und setzt ein aufgelöstes Datei-Ziel auf beiden Fassungen gleich auf das Ende: ein Link-Nachzug auf den neuen Namen ist keine Drift. Unabhängig von `vcs.ignore-link-targets`, mit ihm erst gleichgesetzt, dann normiert; ein unlesbarer Commit oder Baum der Range ist Exit 2; kein neuer Grund-Code; ohne den Schlüssel byte-identisch. Die Grenzen stehen in der Anforderung (die immutable Datei selbst, umbenennen und ändern in einem Commit, Tausch, gleiche Inhalte, `--staged`, fremde Basis, Merge). Das Kriterium „Boundary (Pfad-Nachzug)“ gilt nur noch ohne den Schlüssel, die Sätze zum anderen Namen und zu „dieselbe Datei“ sind darauf eingeschränkt, fünfzehn Kriterien kommen hinzu; der Out-of-Scope-Satz trennt die Umbenennung der immutablen Datei von der Ähnlichkeits-Erkennung. Gegen §5 gehalten: kein globaler Ausschluss getroffen — von Dateien außerhalb des Markdown-Baums liest die Erkennung nur die Kennung des Inhalts. Anlass: Feldmeldung eines Adopters (GitHub-Issue 18). Begründung in begleitender ADR | — |
 | 0.113.2 | 2026-11-23 | Registrierung des Moduls `linelength` (Nachzug zu 0.112.0, keine Verhaltensänderung der Anforderung): der Modulsatz in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) und das Glossar nennen `linelength`, sobald es registriert ist | — |
 | 0.113.1 | 2026-11-23 | §5, Ausnahme für [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) präzisiert, keine Verhaltensänderung: dieselbe Scan-Menge wie die übrigen scannenden Module, dieselbe Markdown-Lexik wie die übrigen Module, die Markdown lesen — die Tabellenzeilen-Antwort nutzen heute nur nicht scannende Module | — |
 | 0.113.0 | 2026-11-23 | Entscheidung des Auftraggebers: §5 nimmt die Zeilenlänge in Markdown-Dateien ([`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)) vom globalen Ausschluss der Rechtschreib-, Stil- und Markdown-Lint-Prüfungen aus — sie läuft hermetisch über dieselbe Scan-Menge und Lexik, ohne zweites Werkzeug; die Ausnahme ist kein Präzedenzfall. Ihr Out-of-Scope nennt als (9) weitere Lint-, Stil- oder Rechtschreib-Regeln | — |
