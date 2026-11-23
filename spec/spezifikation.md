@@ -2081,12 +2081,20 @@ abdeckt:
      fort, wenn der Commit von X → Y ein Vorfahr des Commits von Y → Z ist.
      Je Pfad zählen die Enden aller Abstammungslinien der Range, die ihn
      umbenennen; eine Linie, die ihn unberührt lässt, trägt kein Ende bei, und
-     ein Merge setzt die Linien seiner Seiten fort. Führen alle Linien zu genau
-     einem Ende und existiert es in HEAD (bzw. im Index), gilt Quelle → Ende;
-     zwei verschiedene Enden oder ein Ende, das in HEAD fehlt, ergeben für die
-     Quelle keine Umbenennung. Das Ergebnis hängt nicht von der Reihenfolge ab,
-     in der Commits oder Einträge aufgezählt werden; eine Aufzählung nach
-     Commit-Kennung, wie sie das Modul `commits` liest, ist nicht topologisch.
+     ein Merge setzt die Linien seiner Seiten fort. Quelle einer Umbenennung
+     ist nur ein Pfad, der in BASE existiert; ein Pfad, den eine Kette nur
+     durchläuft, ist weder Quelle noch Ende. Verschwindet der Pfad, auf dem
+     eine Linie steht, in einem späteren Schritt dieser Linie, ohne umbenannt
+     zu werden, endet sie ohne Ende („gelöscht“): die Quelle hat keine
+     Umbenennung, auch wenn der Pfad danach neu angelegt wird. Bleibt der Pfad
+     in einem Schritt bestehen und ändert nur seinen Inhalt, läuft die Linie
+     weiter. Führen alle Linien zu genau einem Ende und existiert es in HEAD
+     (bzw. im Index), gilt Quelle → Ende; zwei verschiedene Enden, eine Linie
+     mit „gelöscht“ neben einer mit Ende oder ein Ende, das in HEAD fehlt,
+     ergeben für die Quelle keine Umbenennung. Das Ergebnis hängt nicht von der
+     Reihenfolge ab, in der Commits oder Einträge aufgezählt werden; eine
+     Aufzählung nach Commit-Kennung, wie sie das Modul `commits` liest, ist
+     nicht topologisch.
    - *Gelesen und fail-closed.* Gelesen werden jeder Commit der Menge und jeder
      Teilbaum, der sich zwischen einem Schritt und seinem Eltern-Commit
      unterscheidet; ein Teilbaum mit gleicher Kennung auf beiden Seiten muss
@@ -2136,13 +2144,20 @@ abdeckt:
      andere wie mit `vcs.ignore-link-targets` allein.
 
    Teil hat ein Pfad, der Quelle einer Umbenennung der Abbildung ist (er gilt
-   als ihr Ende), oder ein solches Ende; ein Pfad, der zugleich Quelle der einen
-   und Ende einer anderen Umbenennung ist, nimmt nicht teil (ein Tausch zweier
-   Namen bleibt Drift). Ein Verzeichnis nimmt nie teil — ein Link auf ein
-   umbenanntes Verzeichnis bleibt, wie er ohne `vcs.follow-renames` wäre; ein
-   Link auf eine Datei darin folgt deren eigener Umbenennung. Ohne
-   `vcs.ignore-link-targets` macht `vcs.follow-renames` deshalb keinen Lauf
-   rot, der ohne ihn grün ist.
+   als ihr Ende), oder ein solches Ende — Quellen sind nur Pfade aus BASE, ein
+   Zwischenpfad einer Kette nimmt nicht teil; ein Pfad, der zugleich Quelle der
+   einen und Ende einer anderen Umbenennung ist, nimmt nicht teil (ein Tausch
+   zweier Namen bleibt Drift). Ein Pfad, dessen Kette mit „gelöscht“ endet,
+   nimmt ebenfalls nicht teil, auch wenn er neu angelegt wird; mit beiden
+   Schlüsseln fällt ein Ziel auf ihn auf die Normierung von
+   `vcs.ignore-link-targets` allein zurück. Ein Verzeichnis nimmt nie teil — ein
+   Link auf ein umbenanntes Verzeichnis bleibt, wie er ohne
+   `vcs.follow-renames` wäre; ein Link auf eine Datei darin folgt deren eigener
+   Umbenennung. Ohne `vcs.ignore-link-targets` ergibt `vcs.follow-renames`
+   deshalb keinen **Befund**, den es ohne ihn nicht gibt. Rot ohne Befund kann
+   ein Lauf mit dem Schlüssel trotzdem werden: ein unlesbares Objekt eines
+   Zwischen-Commits ist Exit 2 (Schritt 2), und ohne den Schlüssel liest der
+   Lauf es nicht.
    Trägt eine der beiden Fassungen das Zeichen NUL, wird mit keinem der beiden
    Schlüssel normiert — ein Ziel, das nur wie eine normierte Form aussieht,
    gleicht ihr so nie. Ein **reiner Pfad-Nachzug** einer umgezogenen Datei
@@ -2152,8 +2167,11 @@ abdeckt:
    Abbildung trägt, eine Anker-Änderung und jede Änderung am Linktext, an der
    übrigen Zeile, am Titel oder an der Zahl der Links bleiben Drift. Mit beiden
    Schlüsseln ist ein Nachzug von einer umbenannten Datei auf eine **andere**
-   Datei mit ihrem alten Namen Drift — strenger als `vcs.ignore-link-targets`
-   allein, und nur, wo ein Ziel teilnimmt. Was ein
+   Datei mit ihrem alten Dateinamen Drift, wenn die Umbenennung den Dateinamen
+   wechselt — strenger als `vcs.ignore-link-targets` allein, und nur, wo ein
+   Ziel teilnimmt. Behält die Umbenennung den Dateinamen (sie wechselt nur das
+   Verzeichnis), normieren beide Ziele auf denselben Dateinamen, und es gilt
+   die Grenze „gleicher Name, andere Datei“ wie ohne `vcs.follow-renames`. Was ein
    Link ist, liest die Link-Erkennung von
    [§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
    — dieselbe Vorverarbeitung (Fenced-Code entfällt, Code-Spans werden
@@ -3988,7 +4006,7 @@ Exit 2 ohne Prüfung
 | `vcs.status-line` | string | leer | Zeilen-Regex der **Kopf**-Status-Zeile; ihr erstes Vorkommen **vor** der ersten `## `-H2 wird aus dem Core entfernt (eine gleichlautende Körper-Zeile bleibt); leer ⇒ keine Status-Zeile gestrippt |
 | `vcs.head-allow` | string | leer | Zeilen-Regex; die HEAD-Status-Zeile (erstes Vorkommen) muss matchen, sonst `core-drift-vcs` (unzulässiger Status-Übergang); leer ⇒ keine Status-Übergangs-Prüfung |
 | `vcs.ignore-link-targets` | bool | `false` | normiert beim Bilden des Core jedes Link-Ziel, das in BASE oder HEAD auflöst, auf Dateiname und Anker (Links nach der Erkennung des Moduls `links`): ein reiner Pfad-Nachzug einer umgezogenen Datei ist keine Drift, ein Nachzug auf eine Datei mit anderem Namen (ohne `vcs.follow-renames`) und jede Änderung am Linktext oder an der übrigen Zeile bleiben eine; Grenzen in [§`DC-FA-VCS-001.a`](#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4. Aus ⇒ byte-identisch |
-| `vcs.follow-renames` | bool | `false` | liest die Umbenennungen der Range aus der git-Historie — Inhalts-Gleichheit (Blob-Kennung und Art) je Commit mit einem Eltern-Commit, mit `--staged` HEAD → Index; Kette entlang der Abstammung; Mehrdeutigkeit, ein Ende, das in HEAD fehlt, und eine Basis, die kein Vorfahr von HEAD ist, ergeben keine Umbenennung — und setzt beim Bilden des Core ein Link-Ziel, dessen Pfad an einer teilnimmt, auf BASE- und HEAD-Seite gleich auf das Ende: ein Nachzug auf den neuen Namen ist keine Drift. Unabhängig von `vcs.ignore-link-targets`; mit beiden wird erst gleichgesetzt, dann normiert. Ein unlesbarer Commit oder Baum der Range ⇒ Exit 2. Verfahren und Grenzen in [§`DC-FA-VCS-001.a`](#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 und 4. Aus ⇒ byte-identisch, kein Commit zwischen BASE und HEAD wird gelesen |
+| `vcs.follow-renames` | bool | `false` | liest die Umbenennungen der Range aus der git-Historie — Inhalts-Gleichheit (Blob-Kennung und Art) je Commit mit einem Eltern-Commit, mit `--staged` HEAD → Index; Kette entlang der Abstammung, Quelle nur ein Pfad aus BASE; Mehrdeutigkeit, eine Kette, deren Pfad ohne Umbenennung verschwindet, ein Ende, das in HEAD fehlt, und eine Basis, die kein Vorfahr von HEAD ist, ergeben keine Umbenennung — und setzt beim Bilden des Core ein Link-Ziel, dessen Pfad an einer teilnimmt, auf BASE- und HEAD-Seite gleich auf das Ende: ein Nachzug auf den neuen Namen ist keine Drift. Unabhängig von `vcs.ignore-link-targets`; mit beiden wird erst gleichgesetzt, dann normiert. Ein unlesbarer Commit oder Baum der Range ⇒ Exit 2. Verfahren und Grenzen in [§`DC-FA-VCS-001.a`](#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 und 4. Aus ⇒ byte-identisch, kein Commit zwischen BASE und HEAD wird gelesen |
 | `commits.id-patterns` | string[] | leer | Regex-Liste der gültigen Traceability-Kennungen; eine bereinigte Message ohne Match auf **irgendein** Muster ⇒ `commit-untraceable`; jedes Muster muss kompilieren (sonst Exit 2); leer ⇒ Modul inert (Range-Modus) bzw. Exit 2 (Message-Modus, nichts zu prüfen) ([`DC-FA-COMMITS-001`](lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)) |
 | `commits.exempt-pattern` | string | leer | Zeilen-Regex gegen den **Betreff** (erste Zeile); Match ⇒ Message kennungs-frei erlaubt (Selbstkonfig `^(Merge \|Revert )`); muss kompilieren (sonst Exit 2); leer ⇒ keine Ausnahme |
 | `planning.roadmap` | string | leer | `datei` (Wurzel-relativ, innerhalb der Repo-Wurzel); die Roadmap-Datei mit dem Aktiv-Status-Abschnitt. Ihr Verzeichnis ist das Slice-Verzeichnis. Leer ⇒ Modul inert ([`DC-FA-PLAN-001`](lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |
@@ -4287,7 +4305,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
-| 2026-11-23 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) und §2-Schema: der opt-in-Schlüssel `vcs.follow-renames` ([`DC-FA-VCS-001`](lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) 0.114.0). Schritt 2 führt die Abbildung der Umbenennungen der Range: Commit-Menge (von HEAD erreichbar, von BASE nicht; ein Schritt ist ein Commit mit genau einem Eltern-Commit, mit `--staged` HEAD → Index), Basis kein Vorfahr ⇒ leere Abbildung ohne Exit 2, Umbenennung an gleicher Blob-Kennung und Art (drei Arten, auch im Index; das Ausführbar-Bit zählt nicht), Mehrdeutigkeit ohne Umbenennung, Kette entlang der Abstammung unabhängig von der Aufzählungsreihenfolge, fail-closed auf jedes nötige Objekt; die Kandidaten-Mengen bleiben unberührt. Schritt 4 setzt ein teilnehmendes Ziel auf beiden Seiten gleich auf das Ende, mit beiden Schlüsseln vor der Normierung auf den Dateinamen; die Liste der Ziele, die nicht auflösen, nennt jetzt auch Query und Ziel außerhalb des Repos; die Sätze zum anderen Namen, zu „dieselbe Datei“ und zur Umbenennung beim Umzug sind auf den Schlüssel bezogen. §2: neue Zeile `vcs.follow-renames`, die Zeile `vcs.ignore-link-targets` nennt den anderen Namen nur noch ohne ihn. Kein neuer Grund-Code. Das Verfahren gilt für das fertige Modul |
+| 2026-11-23 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) und §2-Schema: der opt-in-Schlüssel `vcs.follow-renames` ([`DC-FA-VCS-001`](lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) 0.114.0). Schritt 2 führt die Abbildung der Umbenennungen der Range: Commit-Menge (von HEAD erreichbar, von BASE nicht; ein Schritt ist ein Commit mit genau einem Eltern-Commit, mit `--staged` HEAD → Index), Basis kein Vorfahr ⇒ leere Abbildung ohne Exit 2, Umbenennung an gleicher Blob-Kennung und Art (drei Arten, auch im Index; das Ausführbar-Bit zählt nicht), Mehrdeutigkeit ohne Umbenennung, Kette entlang der Abstammung unabhängig von der Aufzählungsreihenfolge (Quelle nur ein Pfad aus BASE, ein Zwischenpfad weder Quelle noch Ende, eine Linie, deren Pfad ohne Umbenennung verschwindet, endet mit „gelöscht“, auch bei Neuanlage), fail-closed auf jedes nötige Objekt; die Kandidaten-Mengen bleiben unberührt. Schritt 4 setzt ein teilnehmendes Ziel auf beiden Seiten gleich auf das Ende, mit beiden Schlüsseln vor der Normierung auf den Dateinamen (Drift für einen Nachzug auf eine gleichnamige andere Datei nur, wenn die Umbenennung den Dateinamen wechselt); ohne `vcs.ignore-link-targets` kein zusätzlicher Befund, der fail-closed-Fall eines Zwischen-Commits ist benannt; die Liste der Ziele, die nicht auflösen, nennt jetzt auch Query und Ziel außerhalb des Repos; die Sätze zum anderen Namen, zu „dieselbe Datei“ und zur Umbenennung beim Umzug sind auf den Schlüssel bezogen. §2: neue Zeile `vcs.follow-renames`, die Zeile `vcs.ignore-link-targets` nennt den anderen Namen nur noch ohne ihn. Kein neuer Grund-Code. Das Verfahren gilt für das fertige Modul |
 | 2026-11-23 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) Schritt 1: die Regel zum Schlüssel ohne Wert gilt nur für die vier eigenen Werte (`max-chars` und die drei Schalter); `scope` und `exempt-paths` ohne Wert gelten wie bei jedem scannenden Modul als abwesend. Die Grenzen nennen, dass ein YAML-Alias zu seinem Anker aufgelöst und dort geprüft wird |
 | 2026-11-23 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) Schritt 1: ein Schlüssel des Blocks ohne Wert (YAML-`null`) ist gesetzt und kein gültiger Wert ⇒ Exit 2 — anders als bei `versions`, `planning` und `structure`; die Grenzen nennen, dass Schritt 1 den YAML-Typ liest, nicht den Zahlwert (`80.0` ⇒ Exit 2) |
 | 2026-11-23 | §4: der Grund-Code `line-chars-exceeded` (`SPEC-112`) steht in der Tabelle, weil das Modul `linelength` ihn nun liefert; das Verfahren in §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) ist unverändert |
