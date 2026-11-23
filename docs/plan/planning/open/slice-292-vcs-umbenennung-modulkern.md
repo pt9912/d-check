@@ -153,6 +153,9 @@ Liste folgt den bestätigten Entscheiden 1–14 und dem Architect-Verdikt):
 - Ende der Kette in HEAD gelöscht ⇒ keine Umbenennung.
 - Ende gelöscht und als andere Datei neu angelegt; Zwischenpfad einer Kette neu belegt ⇒
   keine Umbenennung, Nachzug ist Befund (Neubelegung, Entscheidung 9 und 11).
+- Merge, eine Seite benennt A nach B um, die andere löscht A und legt es später neu an ⇒
+  Mehrdeutigkeit, Befund; überschreibt die andere Seite A an Ort und Stelle ⇒ folgt
+  (Entscheidung 11).
 - Nur das Ausführbar-Bit geändert ⇒ gleich; Symlink gegen Datei mit gleichem Blob ⇒
   nicht gleich (Entscheid 13).
 - Link auf ein umbenanntes Verzeichnis ⇒ wie heute; Link auf eine Datei darin ⇒ folgt.
