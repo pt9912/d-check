@@ -71,7 +71,7 @@ Liste als Bezug):
    - (c) `exempt-unbreakable`: überlange Zeilen, die ein **Wort** tragen, das allein länger als `max-chars`
      ist. Ein Wort ist eine längste Folge von Codepunkten ohne Leerraum; Leerraum sind Space und Tab, kein
      anderes Zeichen. Eine solche Zeile bringt kein Umbruch unter die Grenze. Umgekehrt gilt das nicht: nicht
-     jede andere überlange Zeile bringt ein Umbruch darunter — eine Überschrift lässt sich nicht umbrechen, und
+     jede andere überlange Zeile bringt ein Umbruch darunter — eine ATX-Überschrift lässt sich nicht umbrechen, und
      ein Präfix der Markdown-Form kann das erste Wort eines Listenpunkts oder Zitats über die Grenze schieben
      (Konsequenzen). Jede andere überlange Zeile ist ein Befund; die Ausnahme prüft das Wort, nicht die Form.
 6. **Befund:** je überlanger Zeile ein Befund `line-chars-exceeded`, Ort = Datei und Zeile, die Meldung nennt
@@ -140,14 +140,19 @@ und teilt mit `cell-max-chars` die Einheit, nicht den Gegenstand.
     davor oder dahinter steht, der auf eine eigene Zeile passte. Die Ausnahme prüft das Wort, nicht den Rest.
   - (c) liest keine Markdown-Form. Ein Wort von höchstens `max-chars` Zeichen, das das **erste** Wort hinter
     einem Listen- oder Zitat-Marker (`- `, `1. `, `> `) ist und erst mit dem Marker und der Einrückung davor
-    über die Grenze ragt, macht die Zeile zu einem Befund, den kein Umbruch behebt: das erste Wort bleibt auf
-    der Zeile seines Markers. Dasselbe gilt für jedes Wort einer Überschrift, die sich nicht umbrechen lässt,
-    und für jedes Wort eines eingerückten Code-Blocks, dessen Zeilen alle ihre Einrückung tragen. Ein späteres
-    Wort eines Listenpunkts oder Zitats lässt sich dagegen umbrechen: eine Fortsetzungszeile braucht nach
-    CommonMark (*lazy continuation*) weder Marker noch Einrückung. Die Reparatur der Befunde, die kein
-    Umbruch behebt, ist Kürzen des Worts oder der Form.
-  - Eine Überschrift lässt sich nicht umbrechen; die Reparatur ist Kürzen, und Kürzen ändert ihren Anker. Die
-    gebrochenen Verweise melden `links` und `anchors`.
+    über die Grenze ragt, macht die Zeile zu einem Befund, den kein Umbruch behebt: das erste Wort bleibt
+    hinter seinem Marker, oder es rückt, wo CommonMark das erlaubt (ein Listenpunkt darf mit einer leeren
+    Zeile beginnen), mit einem Marker oder einer Einrückung derselben Breite auf die nächste Zeile. Ein Rand:
+    stehen zwischen Listen-Marker und Wort mehrere Leerzeichen (`-   wort`), ist die Einrückung auf der
+    nächsten Zeile schmaler, und ein solcher Umbruch kürzt die Zeile um die überzähligen — so viel wie ihr
+    Streichen, also eine Reparatur der Form. Dasselbe wie für das erste Wort gilt für jedes Wort einer
+    ATX-Überschrift (`#` bis `######`), die sich nicht umbrechen lässt, und für jedes Wort eines eingerückten
+    Code-Blocks, dessen Zeilen alle ihre Einrückung tragen; eine Setext-Überschrift darf über mehrere Zeilen
+    laufen und lässt sich umbrechen. Ein späteres Wort eines Listenpunkts oder Zitats lässt sich ebenfalls
+    umbrechen: eine Fortsetzungszeile braucht nach CommonMark (*lazy continuation*) weder Marker noch
+    Einrückung. Die Reparatur der Befunde, die kein Umbruch behebt, ist Kürzen des Worts oder der Form.
+  - Eine ATX-Überschrift lässt sich nicht umbrechen; die Reparatur ist Kürzen, und Kürzen ändert ihren Anker.
+    Die gebrochenen Verweise melden `links` und `anchors`.
   - Ein `d-check:ignore`-Kommentar, den ein anderes Modul verlangt, verlängert seine Zeile und zählt mit. Für
     (c) ist er Text wie jeder andere: trägt er ein Wort, das länger als `max-chars` ist, nimmt (c) die Zeile über
     dieses Wort aus. Das geschieht, sobald die Grenze kleiner ist als ein Wort des Kommentars —
@@ -194,6 +199,7 @@ für eine andere Dateiart verlangt (dann ist die Abgrenzung zu `file` neu zu zie
 | 2026-11-23 | Proposed, berichtigt: die Zahlen zu H in den Alternativen — H nimmt am Bestand 513 Zeilen aus, nicht 467 (die 467 zählten nur innerhalb der Ausnahmen von M); netto 315 Befunde mehr; Stand der Messung benannt, die Zahl der überlangen Zeilen auf diesem Stand ist 2952 | slice-289 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, nach Review R1 fortgeschrieben: die Begründung von 5 (c) behauptet nicht mehr, jede andere überlange Zeile brächte ein Umbruch unter die Grenze (Überschriften, Präfixe der Markdown-Form); die Marker-Konsequenz gilt für jede Grenze ab 1; das Schema ist über [`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml) adressiert; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, nach Review R2 fortgeschrieben: die Konsequenz zum Präfix der Markdown-Form gilt nur für das erste Wort eines Listenpunkts oder Zitats, für Überschriften und eingerückten Code; ein späteres Wort lässt sich auf eine Fortsetzungszeile ohne Marker umbrechen; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
+| 2026-11-23 | Proposed, an die Anforderung angeglichen: das erste Wort eines Listenpunkts darf mit einem Marker oder einer Einrückung derselben Breite auf die nächste Zeile rücken, der Rand mehrerer Leerzeichen nach dem Marker ist benannt; „nicht umbrechbar“ gilt für ATX-, nicht für Setext-Überschriften; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
 
 Nach `Accepted` wird diese Datei **nicht mehr inhaltlich überschrieben**.
 Spätere Korrekturen oder Schärfungen entstehen als neue ADR mit
