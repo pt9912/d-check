@@ -12,14 +12,14 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 **Welle:** [`welle-96-vcs-folgt-umbenennung`](../welle-96-vcs-folgt-umbenennung.md).
 
 **Bezug:** [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
-in der Fassung aus [`slice-291`](../next/slice-291-vcs-umbenennung-anforderung-und-adr.md)
+in der Fassung aus [`slice-291`](../in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md)
 und [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md), [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus),
 [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit),
 [`ADR-0024`](../../adr/0024-vcs-immutable-gate.md),
 [`ADR-0103`](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md).
 
 **Berührte Spec-Stellen:** — (Verfahren und Schema schreibt
-[`slice-291`](../next/slice-291-vcs-umbenennung-anforderung-und-adr.md); kein neuer
+[`slice-291`](../in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md); kein neuer
 Grund-Code, §4 der Spezifikation bleibt). Der Verweis zeigt **aufwärts**: Die Spec
 nennt diesen Slice nie.
 
@@ -40,7 +40,7 @@ zusammen mit der Begründungs-Pflicht je Punkt.
 
 **Ziel:** Mit `vcs.follow-renames` liest das Modul die Umbenennungen der Range über den
 git-Port (fail-closed), setzt ein Link-Ziel über sie gleich, wie
-[`slice-291`](../next/slice-291-vcs-umbenennung-anforderung-und-adr.md) es festschreibt, und
+[`slice-291`](../in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md) es festschreibt, und
 ein reiner Nachzug auf die umbenannte Datei ist keine Drift mehr — ohne den Schlüssel
 byte-identisch; jede Randbedingung der Anforderung hat einen Test, der ohne die Regel aus
 dem richtigen Grund rot läuft, und die ADR ist `Accepted`.
@@ -48,7 +48,7 @@ dem richtigen Grund rot läuft, und die ADR ist `Accepted`.
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Anforderung, Verfahren, ADR-Wortlaut ändern** — gehören
-  [`slice-291`](../next/slice-291-vcs-umbenennung-anforderung-und-adr.md). Zeigt der Code,
+  [`slice-291`](../in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md). Zeigt der Code,
   dass ein Entscheid nicht trägt, geht das als Plan-Änderung an den Architect, nicht als
   stille Abweichung im Code; die ADR ändert nur der Architect.
 - **`metrics`, `tracked`, `commits`** — lesen git, folgen aber keiner Umbenennung;
@@ -71,7 +71,7 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 - [ ] Regel und Konfigurations-Rand: `vcs.follow-renames` wird gelesen (falscher Typ ⇒
       Exit 2), das Gleichsetzen trägt jedes Akzeptanzkriterium der Anforderung, ohne
       Schlüssel ist die Ausgabe byte-identisch; die Negativfälle aus dem Plan von
-      [`slice-291`](../next/slice-291-vcs-umbenennung-anforderung-und-adr.md) stehen als
+      [`slice-291`](../in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md) stehen als
       Testfälle, und für jeden Test ist ein Rot ohne die Regel gezeigt
       (Baseline-Regelwerk `modul-11-verification.md` §Bewusstes Brechen).
 - [ ] Spiegel und Profil: `--print-config`, Handbuch-Abschnitt des Moduls, READMEs und
@@ -164,7 +164,7 @@ Liste folgt den bestätigten Entscheiden 1–14 und dem Architect-Verdikt):
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
-**Start** (`next` → `in-progress`): [`slice-291`](../next/slice-291-vcs-umbenennung-anforderung-und-adr.md)
+**Start** (`next` → `in-progress`): [`slice-291`](../in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md)
 liegt in `done/` (Anforderung, Spezifikation und ADR stehen, die Entscheide sind bestätigt),
 das Architect-Verdikt zu diesem Plan liegt unter `docs/reviews/`, und das WIP-Limit ist
 frei.
@@ -271,7 +271,7 @@ Modus-Deklaration (`tools/harness/` bleibt unberührt).
 [`BEO-ALL/module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md)
 (verkörpert in [`AGENTS.md`](../../../../AGENTS.md) §3.8 — der Port liest Bäume
 außerhalb der Scan-Menge; die Zusage dort schreibt
-[`slice-291`](../next/slice-291-vcs-umbenennung-anforderung-und-adr.md) fest). Der Zähler
+[`slice-291`](../in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md) fest). Der Zähler
 folgt aus den Dateien der Closure.
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
