@@ -266,6 +266,28 @@ Fixture-Dateien unter `tools/blackbox-probe/fixtures/`, die `citations.scope` ni
 - Den Zeilen-Marker honorieren vier Module (`codepaths`, `ids`, `versions`, `diagrams`):
   `grep -n 'ignoreMarker nimmt' -A1 internal/hexagon/core/rules/codepaths.go`.
 
+**Plan-Nachtrag — Gegenprobe unter Variante H (2026-11-23, Implementer).** Dieselbe Menge auf
+demselben Stand `f3dc94da` (aus `git archive f3dc94da` in ein leeres Verzeichnis entpackt; Menge
+und Zeilenzahl wie oben: 1237 · 86275), Ausnahme (c) jetzt nach der Wort-Regel: ausgenommen ist eine
+überlange Zeile, wenn eines ihrer Wörter (längste Folge ohne Space und Tab) mehr als 120 Codepunkte
+trägt.
+
+| Größe | Fassung „Teil ab der Grenze“ | Variante H |
+|---|---|---|
+| über (c) ausgenommen | 828 | 513 |
+| Befunde mit allen drei Ausnahmen an (Default) | 2124 | 2439 |
+
+Die Zeilen mit Fenced-Code, ohne Fenced-Code und die Tabellenzeilen bleiben bei 6108, 6082 und
+3130. Die `\r`-Regel (ein `\r` am Zeilenende gehört nie zur Zeile, auch am Ende einer letzten Zeile
+ohne `\n`) misst das Kommando schon so, `sub(/\r$/, "", raw)` gilt für jede Zeile. Kommando: das
+obige, die Zeile `else if (substr(raw, G + 1) ~ /[ \t]/) hit++ else unbreak++` ersetzt durch
+
+```sh
+        else { n = split(raw, w, /[ \t]+/); long = 0
+          for (i = 1; i <= n; i++) if (length(w[i]) > G) long = 1
+          if (long) unbreak++; else hit++ }
+```
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
