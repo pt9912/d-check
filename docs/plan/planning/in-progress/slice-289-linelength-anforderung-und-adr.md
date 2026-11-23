@@ -72,29 +72,29 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] Die Anforderung steht im Lastenheft (Bereichs-Kürzel in der Liste ergänzt,
+- [x] Die Anforderung steht im Lastenheft (Bereichs-Kürzel in der Liste ergänzt,
       Version gehoben, Historie-Zeile nach
       [`MR-032`](../../../../harness/conventions.md#mr-032)) mit Akzeptanzkriterien je
       Entscheid (Zähleinheit, jede Ausnahme samt ihren Rändern, Grenzwert genau auf der
       Schwelle, leere Menge, Zeile über der Grenze mit `d-check:ignore` ⇒ Befund bei einer Grenze
       von mindestens 14), den Rändern
       mit Exit 2, den benannten Grenzen der geteilten Lexik und ihrem Out-of-Scope.
-- [ ] Die Spezifikation führt das Verfahren (Leseweise, Zählregel, Ausnahmen, Reihenfolge
+- [x] Die Spezifikation führt das Verfahren (Leseweise, Zählregel, Ausnahmen, Reihenfolge
       der Befunde, Bezugsmenge), das Schema `linelength.*` und den Grund-Code im Verfahren;
       jede Aussage über die Grenzen (welche Eingaben das Modul liest, [`AGENTS.md`](../../../../AGENTS.md)
       §3.8) ist am Gegenstand gezählt oder gemessen, nicht aus der Beschreibung übernommen.
-- [ ] [ADR-0114](../../adr/0114-linelength-modul.md) liegt `Proposed` vor, ist im
+- [x] [ADR-0114](../../adr/0114-linelength-modul.md) liegt `Proposed` vor, ist im
       [ADR-Index](../../adr/README.md) geführt, trägt `## Re-Evaluierungs-Trigger`, und die
       Anforderungs-Kennung und das `Schärft:`-Feld sind verlinkt (Architect). `Accepted` wird sie
       mit der Closure von [`slice-290`](../open/slice-290-linelength-modulkern.md) (Verdikt F-8).
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure.
 
 ## 3. Plan (vor Code)
 
@@ -338,32 +338,33 @@ dasteht.
 
 - Die Ausnahme (c) „kein Leerzeichen ab der Grenze“ ist zu grob: eine Zeile mit langem
   Link **und** umbrechbarem Text davor wird ausgenommen, obwohl sie kürzbar wäre —
-  **Ausgang:** *entfallen*, wenn die Anforderung diese Grenze der Ausnahme ausdrücklich
-  nennt und die ADR die strenge Variante (nur ein Wort, das allein länger als die Grenze ist,
-  wird ausgenommen) verglichen hat — die früher hier genannte Alternative „nur der Überschuss
-  nach dem letzten Leerzeichen zählt“ ist bis auf eine Randposition dieselbe Regel (Verdikt F-5);
-  *weiter offen* ins Register, wenn Review oder Verifikation die Grenze als Mangel lesen.
-  **Stand 2026-11-23:** gemessen war (c) gröber als hier beschrieben (auch Prosa mit kurzem
-  Überhang); der Auftraggeber hat die strenge Variante H gewählt. Die Anforderung nennt deren
-  verbleibende Grenze (eine Zeile mit umbrechbarem Text **und** einem überlangen Wort bleibt
-  ausgenommen).
+  **Ausgang:** *entfallen* — gemessen war (c) gröber als hier beschrieben (auch Prosa mit
+  kurzem Überhang); der Auftraggeber hat am 2026-11-23 die strenge Variante H gewählt. Die
+  Anforderung nennt deren verbleibende Grenze (eine Zeile mit umbrechbarem Text **und** einem
+  überlangen Wort bleibt ganz ausgenommen), [ADR-0114](../../adr/0114-linelength-modul.md) hat
+  beide Fassungen verglichen (die erste als Alternative M), und weder
+  [Review R1](../../../reviews/2026-11-23-slice-289-review-r1.md) und
+  [R2](../../../reviews/2026-11-23-slice-289-review-r2.md) noch die
+  [Verifikation](../../../reviews/2026-11-23-slice-289-verifikation.md) lesen diese Grenze als
+  Mangel.
 - Ein vergessener Schluss-Fence macht für die geteilte Lexik den Rest der Datei zu Code
   (die Fence-Hälfte von
   [`BEO-ALL/prosa-verschwindet-in-inline-code-spanne`](../observations/BEO-ALL/prosa-verschwindet-in-inline-code-spanne/observation.md),
   2×); nimmt das Modul Fenced-Code über dieselbe Lexik aus, fällt jede überlange Zeile
   danach still aus der Prüfung — ein dritter Beleg wäre die Schwelle. Die
   Inline-Code-Hälfte trifft das Modul nicht: es misst die rohe Zeile —
-  **Ausgang:** *entfallen*, wenn die Anforderung das Verhalten beim offenen Fence festlegt,
-  als Grenze benennt und für die Meldung auf `spans` (`fence-unclosed`) verweist — ein zweiter
-  Wächter in `linelength` wäre eine zweite Antwort (Verdikt F-3; der Test dazu ist Lieferung von
-  [`slice-290`](../open/slice-290-linelength-modulkern.md)); *weiter offen* — ein Beleg in
-  `BEO-ALL/prosa-verschwindet-in-inline-code-spanne`, der den Zähler auf 3× hebt —, wenn
-  sie es offen lässt.
+  **Ausgang:** *entfallen* — die Anforderung legt das Verhalten beim offenen Fence fest (der
+  Rest der Datei ist ausgenommen), nennt es als Grenze der geteilten Lexik und verweist für die
+  Meldung auf `spans` (`fence-unclosed`); ein zweiter Wächter in `linelength` wäre eine zweite
+  Antwort (Verdikt F-3). Der Test dazu ist Lieferung von
+  [`slice-290`](../open/slice-290-linelength-modulkern.md); kein Beleg in
+  `BEO-ALL/prosa-verschwindet-in-inline-code-spanne`, der Ausfall ist benannt und gemeldet.
 - Der Name `linelength` liest sich neben `file.max-lines` und `structure.max-lines` als
-  vierte Längen-Achse und wird verwechselt — **Ausgang:** *entfallen*, wenn Anforderung und
-  ADR die Längen-Achsen gegeneinander abgrenzen und das Review dazu keinen Befund meldet;
-  *weiter offen* — ein Beleg in `BEO-ALL/max-lines-namenskollision-structure-file` —, wenn
-  es einen meldet.
+  vierte Längen-Achse und wird verwechselt — **Ausgang:** *entfallen* — die Beschreibung der
+  Anforderung grenzt die Breite einer Zeile gegen die Höhe einer Datei oder eines Abschnitts und
+  die Länge einer Tabellenzelle ab, [ADR-0114](../../adr/0114-linelength-modul.md) führt die
+  Tabelle „Abgrenzung der Längen-Achsen“, und keine der beiden Review-Runden meldet dazu einen
+  Befund; kein Beleg in `BEO-ALL/max-lines-namenskollision-structure-file`.
 
 ## 7. Closure-Notiz
 
@@ -379,7 +380,62 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-*(Wird bei der Closure gefüllt.)*
+- **Was hat funktioniert:** Die Gegenprobe am eigenen Bestand hat die Entscheidung getragen,
+  nicht nur belegt. Ihre Aufschlüsselung der Ausnahmen (c) zeigte, dass 44 % der zuerst
+  bestätigten Fassung umbrechbare Prosa war; der Auftraggeber hat daraufhin Variante H
+  gewählt. Die Rollen-Trennung fand, was eine Rolle allein nicht sah: Der Architect den
+  Widerspruch von Entscheid 8 zu
+  [`DC-FA-CONF-002`](../../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope),
+  die Reviews die Grenzen der Ausnahme (c) am Gegenstand (CommonMark), die Verifikation, die
+  gegen die Spec statt gegen den Plan liest, den Widerspruch zum Lint-Ausschluss in
+  [Lastenheft §5](../../../../spec/lastenheft.md#5-globale-out-of-scope-punkte).
+- **Was ging anders als geplant:** **(1) Rollenfolge.** Der Slice ging nach `in-progress/`,
+  bevor ein Architect-Verdikt vorlag, und die ADR war zuerst dem Implementer zugedacht
+  (Modul 8: „Architect schreibt; Implementer liest als Constraint“). Der Auftraggeber hat es
+  bemerkt, bevor etwas geschrieben war; der Implementer wurde gestoppt, und die Folge lief
+  danach regelkonform: Architect-Verdikt, Plan-Änderung, Implementer, zwei Review-Runden,
+  Verifikation mit Nachprüfung. Das [Verdikt](../../../reviews/2026-11-22-welle-95-architect-verdikt.md)
+  führt die Abweichung als einmaliges akzeptiertes Negativ. Das Workflow-Skelett
+  `.claude/commands/implement-slice.md` nennt den Architect-Schritt und den Schreiber der ADR
+  inzwischen ausdrücklich — eine Anpassung des Auftraggebers, keine aus der 3×-Schwelle
+  verkörperte Regel, deshalb ohne `liegt in` und ohne Anker. **(2) Drei Entscheide neu
+  bestätigt:** 8 (leere Menge ist kein Fehler), 9 (kein Zeilen-Marker, neu) und 5 (c)
+  (Variante H); dazu §5 des Lastenhefts geschärft (Auftraggeber, 2026-11-23). **(3) Eine
+  vorgelegte Zahl war ein Proxy:** Für H wurden 467 ausgenommene Zeilen genannt, gezählt nur
+  innerhalb der 828 der alten Fassung; direkt gemessen sind es 513 — die Wahl blieb richtig.
+  **(4) Die Grenzen von (c) wuchsen über vier Runden**, jede fand die nächste am Gegenstand.
+  Die Fixes nach R1 gingen über die Befunde hinaus; R2 las genau diese Fix-Commits
+  (Workflow-Skelett, seit slice-258).
+- **Steering-Loop-Eintrag:** mit diesem Slice ist keine Regel, kein Sensor und keine benannte
+  Spec-Lücke verkörpert. Die neue Lehre — eine neue Anforderung wird gegen die globalen
+  Ausschlüsse des Lastenhefts gehalten, bevor sie geschrieben wird — steht als Beobachtung im
+  Register (1×), nicht als Regel.
+- **Beobachtungs-Register (`../observations/`):** drei weitere Belege an bestehenden Klassen
+  ([`BEO-ALL/begruendung-traegt-entscheidung-nicht`](../observations/BEO-ALL/begruendung-traegt-entscheidung-nicht/observation.md),
+  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md),
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md)
+  — alle drei schon verkörpert, kein neuer Lese-Schritt) und drei neue Einträge, je 1×:
+  [`BEO-ALL/neue-anforderung-gegen-globalen-ausschluss-ungeprueft`](../observations/BEO-ALL/neue-anforderung-gegen-globalen-ausschluss-ungeprueft/observation.md)
+  (Verifikation V-1),
+  [`BEO-ALL/grenze-der-scan-menge-nur-bei-einem-modul-benannt`](../observations/BEO-ALL/grenze-der-scan-menge-nur-bei-einem-modul-benannt/observation.md)
+  (FIFO in der Scan-Menge; Review R1 F-10, Verifikation V-3) und
+  [`BEO-ALL/spezifikation-und-code-weichen-am-rand-ab`](../observations/BEO-ALL/spezifikation-und-code-weichen-am-rand-ab/observation.md)
+  (`\r`-Rand bei `metrics`; Review R2 F-2). Die Zähler folgen aus den Dateien.
+- **Folge-Slices:** keine neuen. [`slice-290`](../open/slice-290-linelength-modulkern.md) trägt
+  die Testfälle zu jedem Akzeptanzkriterium und den Übergang von
+  [ADR-0114](../../adr/0114-linelength-modul.md) auf `Accepted`, samt der `SPEC-<NNN>`-Kennung
+  der §4-Zeile im `Schärft:`-Feld (Review R1 F-11).
+- **Risiken aus §6:** alle drei *entfallen* — siehe §6.
+- **Trigger-Audit:** läuft mit der Closure von welle-95 (Welle-Plan §3); dieser Slice setzt
+  keinen Carveout, kein bootstrap-aware Gate, keine `Accepted`-ADR und keine Hard Rule.
+- **Drei Paarungen:** getragen von der Closure von welle-95 — kein Anker (nichts verkörpert),
+  Folge-Slice slice-290, Register die sechs Einträge oben.
+- **Reviews und Verifikation:** [Architect-Verdikt](../../../reviews/2026-11-22-welle-95-architect-verdikt.md)
+  (F-1–F-8, eingearbeitet), [Review R1](../../../reviews/2026-11-23-slice-289-review-r1.md)
+  (0 HIGH, 4 MEDIUM, 4 LOW, 3 INFO — alle MEDIUM/LOW behoben, F-10 ins Register),
+  [Review R2](../../../reviews/2026-11-23-slice-289-review-r2.md) über die Fix-Commits (1 MEDIUM,
+  2 LOW, 1 INFO — behoben), [Verifikation](../../../reviews/2026-11-23-slice-289-verifikation.md)
+  mit Nachprüfung (Liefer-Punkte bestätigt; V-1, V-2, V-4 behoben, V-3 ins Register).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
