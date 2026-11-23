@@ -173,6 +173,13 @@ die Anforderung, sobald sie steht):
   (Review R1 zu slice-289, F-1).
 - Bezugsmenge: Datei mit und ohne abschließendes `\n` ⇒ dieselbe Zeilenzahl wie bei `file`;
   die über (c) ausgenommenen Zeilen stehen als eigene Zahl (Verdikt F-7).
+- Aus der Verifikation zu slice-289 (V-2), je ein Akzeptanzkriterium der Anforderung: ein Wort, das
+  nur mit seiner Einrückung über die Grenze reicht ⇒ Befund; eine überlange ATX-Überschrift ⇒
+  Befund; eine Datei unter `linelength.exempt-paths` und eine außerhalb von `linelength.scope` ⇒
+  nicht gemessen; ohne `linelength`-Block und ohne `--enable linelength` ⇒ byte-identische Ausgabe
+  zu einem Lauf ohne das Modul. Dazu als eigene Testfälle, nicht nur über die DoD: (b) aus, die
+  Typfehler `"80"` für `max-chars` und `"nein"` für einen Schalter ⇒ Exit 2, und der Ausgabekanal
+  der Bezugsmenge (stderr im Default, `summary.notes` unter `--json`/`--yaml`).
 - Zwei Dateien mit Befunden ⇒ Reihenfolge Pfad, dann Zeile; zweimal derselbe Lauf ⇒
   byte-gleiche Ausgabe.
 - Keine Markdown-Datei in der Menge ⇒ kein Befund, Exit 0, Bezugsmenge `0`; explizit leere
