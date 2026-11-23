@@ -162,7 +162,13 @@ die Anforderung, sobald sie steht):
   aus kurzen Wörtern, deren letztes über die Grenze ragt ⇒ Befund; ein Tab trennt Wörter wie ein
   Space; ein geschütztes Leerzeichen (U+00A0) trennt nicht; letzte Zeile `…\r` ohne `\n` mit
   genau `max-chars` Zeichen ⇒ befundfrei ([ADR-0114](../../adr/0114-linelength-modul.md) Entscheid 3).
-- Zeile über der Grenze mit `<!-- d-check:ignore … -->` ⇒ Befund (Entscheid 9).
+- Zeile über der Grenze mit `<!-- d-check:ignore -->` bei einer Grenze von mindestens 14 ⇒ Befund
+  (Entscheid 9); bei `max-chars: 10` und sonst nur kurzen Wörtern ⇒ kein Befund, (c) nimmt die
+  Zeile über das Marker-Wort aus (Review R1 zu slice-289, F-8).
+- Form-Präfix (Review R1 zu slice-289, F-2): bei `max-chars: 120` eine Zeile aus `- ` und einem Wort
+  mit 119 Zeichen ⇒ Befund; dasselbe mit `> ` ⇒ Befund.
+- Leere Markdown-Datei als einzige Datei ⇒ kein Befund, Bezugsmenge `1 Datei(en), 0 Zeile(n)`
+  (Review R1 zu slice-289, F-1).
 - Bezugsmenge: Datei mit und ohne abschließendes `\n` ⇒ dieselbe Zeilenzahl wie bei `file`;
   die über (c) ausgenommenen Zeilen stehen als eigene Zahl (Verdikt F-7).
 - Zwei Dateien mit Befunden ⇒ Reihenfolge Pfad, dann Zeile; zweimal derselbe Lauf ⇒
