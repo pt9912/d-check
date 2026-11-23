@@ -118,7 +118,8 @@ Die Reihenfolge war nicht regelkonform: der Slice lag in `in-progress/`, bevor d
 
 **Festzuschreibende Entscheide** — vom Auftraggeber am 2026-11-22 bestätigt: 1–7 mit den
 Empfehlungen (1, 5 und 7 danach vom Architect am Gegenstand geschärft, ohne die Wahl zu ändern),
-8 in der neuen Fassung und 9 neu, beide nach dem Architect-Verdikt. Maßgeblich für die Begründung
+8 in der neuen Fassung und 9 neu, beide nach dem Architect-Verdikt; 5 (c) am 2026-11-23 neu
+gefasst (Variante H, siehe dort). Maßgeblich für die Begründung
 ist [ADR-0114](../../adr/0114-linelength-modul.md).
 
 1. **Eigenes Modul statt Bedingung.** Modul `linelength`, Bereichs-Kürzel `LLEN`
@@ -152,10 +153,14 @@ ist [ADR-0114](../../adr/0114-linelength-modul.md).
 5. **Ausnahmen, je einzeln schaltbar, Default „ausgenommen“:** (a) Zeilen in
    Fenced-Code-Blöcken samt ihrer Zäune (`exempt-code-blocks`), (b) Zeilen außerhalb von
    Fenced-Code, die mit `|` beginnen (`exempt-tables`; die Lexik verlangt keine Trennzeile und
-   trimmt nicht — Verdikt F-4), (c) Zeilen, deren Teil ab der Grenze keinen Leerraum enthält —
-   Leerraum sind Space und Tab, geprüft werden die Codepunkte an den Positionen `max-chars + 1`
-   bis Zeilenende; eine lange URL, ein langer Link, ein langer Inline-Code-Pfad lässt sich
-   nicht umbrechen (`exempt-unbreakable`; Verdikt F-5). Überschriften zählen mit. Die Erkennung von
+   trimmt nicht — Verdikt F-4), (c) Zeilen, die ein Wort tragen, das allein länger als
+   `max-chars` ist — ein Wort ist eine längste Folge ohne Leerraum, Leerraum sind Space und Tab;
+   eine lange URL, ein langer Link, ein langer Inline-Code-Pfad lässt sich nicht umbrechen, und
+   kein Umbruch brächte eine solche Zeile unter die Grenze (`exempt-unbreakable`; **Variante H**,
+   vom Auftraggeber am 2026-11-23 neu bestätigt). Die zuerst bestätigte Fassung („der Teil ab der
+   Grenze enthält keinen Leerraum“, Verdikt F-5) nahm am eigenen Bestand bei 120 auch 361
+   umbrechbare Prosa-Zeilen aus — 44 % ihrer 828 Ausnahmen (Befund A3 des Implementers, vom
+   Architect nachgemessen); H nimmt dort 467 Zeilen aus. Überschriften zählen mit. Die Erkennung von
    Fenced-Code und Tabellenzeile nimmt das Modul aus der geteilten Lexik
    (`proseLineSet`, `tableRowLine`), kein eigenes Muster daneben
    ([`BEO-ALL/gemeinsame-leser-sind-zwei-familien`](../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md));
@@ -301,6 +306,10 @@ dasteht.
   wird ausgenommen) verglichen hat — die früher hier genannte Alternative „nur der Überschuss
   nach dem letzten Leerzeichen zählt“ ist bis auf eine Randposition dieselbe Regel (Verdikt F-5);
   *weiter offen* ins Register, wenn Review oder Verifikation die Grenze als Mangel lesen.
+  **Stand 2026-11-23:** gemessen war (c) gröber als hier beschrieben (auch Prosa mit kurzem
+  Überhang); der Auftraggeber hat die strenge Variante H gewählt. Die Anforderung nennt deren
+  verbleibende Grenze (eine Zeile mit umbrechbarem Text **und** einem überlangen Wort bleibt
+  ausgenommen).
 - Ein vergessener Schluss-Fence macht für die geteilte Lexik den Rest der Datei zu Code
   (die Fence-Hälfte von
   [`BEO-ALL/prosa-verschwindet-in-inline-code-spanne`](../observations/BEO-ALL/prosa-verschwindet-in-inline-code-spanne/observation.md),

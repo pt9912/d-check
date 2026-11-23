@@ -151,9 +151,13 @@ die Anforderung, sobald sie steht):
   eingerückte `|`-Zeile, Zeile in einem Zitat (`> |`) und GFM-Zeile ohne führende Pipe ⇒
   gemessen; `exempt-code-blocks: false` mit `exempt-tables: true` ⇒ eine `|`-Zeile im Zaun wird
   gemessen (Verdikt F-4).
-- Zeile mit langer URL ohne Leerraum ab der Grenze ⇒ ausgenommen; Leerzeichen genau auf Position
-  `max-chars + 1` ⇒ Befund; letztes Leerzeichen auf Position `max-chars` ⇒ ausgenommen; Tab nach
-  der Grenze ⇒ Befund (Verdikt F-5).
+- Ausnahme (c) nach Variante H (Entscheid 5 (c), neu bestätigt 2026-11-23): Zeile mit einem Wort
+  (längste Folge ohne Space und Tab), das allein länger als `max-chars` ist (lange URL) ⇒
+  ausgenommen, auch mit umbrechbarem Text davor; Zeile über der Grenze, deren längstes Wort genau
+  `max-chars` lang ist ⇒ Befund; Zeile nur
+  aus kurzen Wörtern, deren letztes über die Grenze ragt ⇒ Befund; ein Tab trennt Wörter wie ein
+  Space; ein geschütztes Leerzeichen (U+00A0) trennt nicht; letzte Zeile `…\r` ohne `\n` mit
+  genau `max-chars` Zeichen ⇒ befundfrei (Architect-Befund A5).
 - Zeile über der Grenze mit `<!-- d-check:ignore … -->` ⇒ Befund (Entscheid 9).
 - Bezugsmenge: Datei mit und ohne abschließendes `\n` ⇒ dieselbe Zeilenzahl wie bei `file`;
   die über (c) ausgenommenen Zeilen stehen als eigene Zahl (Verdikt F-7).
