@@ -160,3 +160,78 @@ Beobachtungs-Register, Ausgänge der Risiken aus §6 und die drei Paarungen.
 Artefakten überein, die Grenz-Aussagen stimmen am Code und die Zahlen beider Plan-Nachträge sind
 reproduziert. Offen bleiben ein Widerspruch im Lastenheft (V-1, Architect) und eine Lücke im
 Testfall-Nachzug von slice-290 (V-2, Planner).
+
+## Nachprüfung (2026-11-23)
+
+**Gegenstand:** die Fix-Commits `2a31c906` (Planner, slice-290 §3), `5f23e03b` (Architect,
+ADR-0114) und `0b2ba617` (Implementer, Lastenheft 0.113.0), geprüft auf `0b2ba617`.
+
+**`make gates`** habe ich selbst gefahren, Exit 0. Die Ausgabe: `fetch-baseline-cache: verify ok
+(54 Dateien, vollständig)`; workflow-pins `1240 Datei(en) geprüft, 0 Befund(e)`; doc-check
+`1246 Datei(en) geprüft, 0 Befund(e)`; lint `0 issues.`; `coverage-gate: OK — Coverage 94.90%
+erfüllt Schwelle 93%`; Semgrep `0 findings`. Die Schlusszeile lautet `[gates] baseline-verify +
+workflow-pins + doc-check + lint + test + arch-check + coverage-gate + semgrep + gate-consistency +
+planning-check green`. Während des Laufs legte eine andere Sitzung ungetrackte Register-Dateien
+unter `docs/plan/planning/observations/` an. gate-consistency und planning-check zählten deshalb
+1252 Dateien und waren grün. doc-check lief vorher, auf dem reinen Stand von `HEAD`: 1240 +
+6 Fixtures = 1246.
+
+### V-1 — aufgelöst
+
+- **Lastenheft §5** hält den Ausschluss und nimmt nur die Zeilenlänge in Markdown-Dateien aus,
+  mit Link auf `DC-FA-LLEN-001` und dem Satz „kein Präzedenzfall“.
+- **Out-of-Scope von `DC-FA-LLEN-001`** trägt als (9) den Rückverweis auf §5.
+- **Version und Historie:** Der Kopf steht auf 0.113.0, die Historie-Zeile 0.113.0 hat als
+  Verweis `—` ([`MR-032`](../../harness/conventions.md#mr-032)). Die bestehenden Zeilen sind
+  unverändert, laut Diff nur `+`-Zeilen in der Historie.
+- **ADR-0114** nennt §5 im `Bezug:`-Feld, begründet die Ausnahme im Kontext und führt
+  Alternative A jetzt als markdownlint MD013. Hinzu kommen die Konsequenz „kein Präzedenzfall“ und
+  Trigger (f). Die Entscheidung 1–9 ist unverändert, der Status bleibt `Proposed`, die Geschichte
+  ist um eine Zeile ergänzt.
+- **Weitere Fundstellen:** Andere Spiegel des Ausschlusses gibt es nicht. Die Suche
+  `grep -i 'markdown-lint\|lint-prüf\|Stil-'` über Spezifikation, Architektur, READMEs und
+  `docs/user/` hat keinen Treffer. Die Spezifikation bleibt zu Recht unberührt, denn §5 legt kein
+  Verfahren fest.
+
+### V-2 — aufgelöst
+
+Der neue Absatz in slice-290 §3 nennt alle sieben Lücken meiner Tabelle als eigene Testfälle:
+
+- den Einrückungs-Rand von (c);
+- die ATX-Überschrift;
+- `exempt-paths` und `scope`;
+- die byte-identische Ausgabe im Default;
+- (b) aus;
+- die Typfehler `"80"` und `"nein"`;
+- den Ausgabekanal der Bezugsmenge.
+
+Damit hat jedes der 17 Akzeptanzkriterien einen Testfall in §3. Die übrigen Negativfälle (leeres
+Glob, `scope` ohne `roots`, unbekannter Schlüssel, fehlendes oder zu kleines `max-chars`) trägt
+DoD 1 von slice-290 namentlich. Das neue Out-of-Scope (9) ist kein Kriterium und braucht keinen
+Test.
+
+### Neue Widersprüche
+
+- **LOW — V-4, Grenz-Aussage in §5 am Gegenstand zu eng.** §5 sagt, die Prüfung laufe
+  „mit derselben Markdown-Lexik wie die übrigen **scannenden** Module“.
+  - **Code:** Die Fence-Antwort (`proseLines`) teilen die scannenden Module, etwa `links`, `ids`,
+    `codepaths` und `spans`. Die Tabellen-Antwort (`tableRowLine`) rufen dagegen nur `targets`,
+    `planning` (Wellen) und `structure`, also genau die Module, die `DC-FA-CONF-002` als nicht
+    scannend führt: `grep -rn 'tableRowLine(' internal --include=*.go` findet `targets.go`,
+    `planning_waves.go`, `structure_tablecell.go` und `structure_tableorder.go`.
+  - **Wortlaut:** `DC-FA-LLEN-001` sagt richtig „dieselbe Antwort, die die übrigen Module …
+    geben“, ADR-0114 im Kontext ebenso „wie die übrigen Module“. Die Präzisierung im Commit
+    `0b2ba617` stimmt für die Scan-Menge, für die Lexik verengt sie den Satz. Laut
+    Commit-Botschaft war sie Absicht, nur eben mit Blick auf die Scan-Menge.
+  - **Vorschlag:** „über dieselbe Scan-Menge wie die übrigen scannenden Module und mit derselben
+    Markdown-Lexik wie die übrigen Module“.
+  - **Kein Widerspruch in der Sache:** Ausnahme, Verweis und Präzedenz-Sperre stimmen zwischen
+    Lastenheft und ADR überein.
+  - **Träger:** Implementer (Lastenheft §5, neue Historie-Zeile). Der Fehler sperrt weder die
+    Closure noch einen DoD-Punkt.
+- Ansonsten keine. Lastenheft, ADR-0114, Spezifikation und die Testfälle von slice-290 stimmen
+  überein. Die Entscheide 1–9 berühren die Fixes nicht.
+
+**Gesamturteil:** Die DoD-Liefer-Punkte 1–3 von slice-289 und der Punkt „`make gates` grün“ sind
+bestätigt. V-1 und V-2 sind aufgelöst. Offen bleibt nur V-4 (LOW, Implementer) als Schärfung des
+Wortlauts.
