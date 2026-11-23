@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.113.1
+**Version:** 0.113.2
 
 **Status:** Draft
 
@@ -111,7 +111,7 @@ verweist für das Konfigurations-Format auf
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
 `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`, `reviews`, `mentions`, `file`, `metrics`, `pinsync`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
+`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`, `reviews`, `mentions`, `file`, `metrics`, `pinsync`, `linelength`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -4620,7 +4620,7 @@ Rechtschreib-Regeln** — der Ausschluss in [§5](#5-globale-out-of-scope-punkte
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`, `reviews`, `mentions`, `file`, `metrics`, `pinsync`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`, `reviews`, `mentions`, `file`, `metrics`, `pinsync`, `linelength`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -4634,6 +4634,7 @@ Rechtschreib-Regeln** — der Ausschluss in [§5](#5-globale-out-of-scope-punkte
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.113.2 | 2026-11-23 | Registrierung des Moduls `linelength` (Nachzug zu 0.112.0, keine Verhaltensänderung der Anforderung): der Modulsatz in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) und das Glossar nennen `linelength`, sobald es registriert ist | — |
 | 0.113.1 | 2026-11-23 | §5, Ausnahme für [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) präzisiert, keine Verhaltensänderung: dieselbe Scan-Menge wie die übrigen scannenden Module, dieselbe Markdown-Lexik wie die übrigen Module, die Markdown lesen — die Tabellenzeilen-Antwort nutzen heute nur nicht scannende Module | — |
 | 0.113.0 | 2026-11-23 | Entscheidung des Auftraggebers: §5 nimmt die Zeilenlänge in Markdown-Dateien ([`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)) vom globalen Ausschluss der Rechtschreib-, Stil- und Markdown-Lint-Prüfungen aus — sie läuft hermetisch über dieselbe Scan-Menge und Lexik, ohne zweites Werkzeug; die Ausnahme ist kein Präzedenzfall. Ihr Out-of-Scope nennt als (9) weitere Lint-, Stil- oder Rechtschreib-Regeln | — |
 | 0.112.4 | 2026-11-23 | [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) präzisiert, keine Verhaltensänderung: der Rand mehrerer Leerzeichen zwischen Listen-Marker und erstem Wort ist benannt — der Umbruch kürzt die Zeile um die überzähligen, so viel wie ihr Streichen; neues Teilkriterium dazu | — |

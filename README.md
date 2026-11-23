@@ -209,6 +209,13 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   as a source are exit 2; the sources are named files outside the scan set.
   Hermetic, opt-in
   ([`DC-FA-PSYNC-001`](spec/lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in))
+- `linelength` — characters per line in the Markdown files of the scan set
+  (`linelength.scope`, `exempt-paths`): a line with more Unicode code points
+  than `max-chars` is a finding; fenced code, lines starting with `|` and a
+  line carrying a word longer than the limit are exempt by default, each
+  switchable. No line marker; a missing or invalid `max-chars` is exit 2.
+  Hermetic, opt-in
+  ([`DC-FA-LLEN-001`](spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in))
 - `workflows` — declaration consistency of the `uses:` references of CI
   workflows below a **configured** directory (`workflows.dir` — not hard-wired,
   because the location is CI-system specific), opt-in. A **foreign** reference

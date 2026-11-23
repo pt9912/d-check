@@ -110,6 +110,7 @@ func AllReasons() []string {
 		rules.ReasonMetricsLimitMismatch, rules.ReasonMetricsReasonEmpty, rules.ReasonMetricsCutReasonMissing,
 		rules.ReasonMetricsOverLimit, rules.ReasonMetricsEstimateMismatch,
 		rules.ReasonPinsyncMismatch, rules.ReasonPinsyncNoMatch, rules.ReasonPinsyncAmbiguous,
+		rules.ReasonLineCharsExceeded,
 	}
 }
 
@@ -200,6 +201,7 @@ func reasonTexts() map[string]string {
 		rules.ReasonPinsyncMismatch:               "Eine Quelle des Pins fängt einen anderen Wert als die erste Quelle mit genau einem Treffer",
 		rules.ReasonPinsyncNoMatch:                "Der Ausdruck einer Quelle trifft in ihrer Datei keine Zeile mit nicht leerem Wert (die Zeilenangabe 1 ist nur eine Konvention und keine Fundstelle)",
 		rules.ReasonPinsyncAmbiguous:              "Der Ausdruck einer Quelle trifft mehr als eine Zeile ihrer Datei; die Meldung nennt alle Zeilen",
+		rules.ReasonLineCharsExceeded:             "Eine Zeile einer Markdown-Datei trägt mehr Zeichen (Codepunkte der rohen Zeile), als linelength.max-chars erlaubt",
 	}
 }
 

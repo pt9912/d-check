@@ -210,6 +210,13 @@ Dokuments:
   Quelle und ein Symlink als Quelle sind Exit 2; die Quellen sind benannte
   Dateien außerhalb der Scan-Menge. Hermetisch, opt-in
   ([`DC-FA-PSYNC-001`](spec/lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in))
+- `linelength` — Zeichen je Zeile in den Markdown-Dateien der Scan-Menge
+  (`linelength.scope`, `exempt-paths`): eine Zeile mit mehr Unicode-Codepunkten
+  als `max-chars` ist ein Befund; Fenced-Code, Zeilen, die mit `|` beginnen,
+  und eine Zeile mit einem Wort über der Grenze sind im Default ausgenommen,
+  je einzeln schaltbar. Kein Zeilen-Marker; ein fehlendes oder ungültiges
+  `max-chars` ist Exit 2. Hermetisch, opt-in
+  ([`DC-FA-LLEN-001`](spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in))
 - `workflows` — Deklarations-Konsistenz der `uses:`-Referenzen von CI-Workflows
   unterhalb eines **konfigurierten** Verzeichnisses (`workflows.dir` — nicht
   verdrahtet, weil CI-System-spezifisch), opt-in. Eine **fremde** Referenz nennt

@@ -3406,3 +3406,83 @@ func TestCLIPinsyncEnable(t *testing.T) {
 		t.Fatalf("fehlende Quelle: Exit=%d stderr=%s", code, stderr)
 	}
 }
+
+// DC-FA-LLEN-001: der auskommentierte linelength-Block der Vorlage ergibt,
+// entkommentiert, einen gültigen Block mit Grenze.
+func TestPrintConfigLinelengthBlockIstGueltig(t *testing.T) {
+	_, stdout, _ := run(t, "--print-config")
+	var block []string
+	in := false
+	for _, l := range strings.Split(stdout, "\n") {
+		switch {
+		case l == "# linelength:":
+			in = true
+			block = append(block, "linelength:")
+		case in && strings.HasPrefix(l, "#   "):
+			block = append(block, strings.TrimPrefix(l, "# "))
+		case in:
+			in = false
+		}
+	}
+	if len(block) < 6 {
+		t.Fatalf("linelength-Block der Vorlage fehlt oder ist zu kurz: %q", block)
+	}
+	cfg, err := configyaml.Decode([]byte(strings.Join(block, "\n") + "\n"))
+	if err != nil || cfg.Linelength.MaxChars == nil || *cfg.Linelength.MaxChars != 120 {
+		t.Fatalf("Beispiel der Vorlage ist kein gültiger Block: err=%v cfg=%+v", err, cfg.Linelength)
+	}
+}
+
+// DC-FA-LLEN-001: --enable linelength meldet eine überlange Zeile (Exit 1);
+// die Bezugsmenge steht im Default-Modus auf stderr, unter --json und --yaml in
+// summary.notes. Ohne max-chars und mit ungültigem Block Exit 2 ohne Befund.
+func TestCLILinelengthEnable(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "README.md", "kurz\n"+strings.Repeat("abcd ", 10)+"\n")
+	write(t, root, ".d-check.yml", "linelength:\n  max-chars: 20\n")
+	note := "linelength: 1 Datei(en), 2 Zeile(n) geprüft, 0 davon mit einem Wort über der Grenze ausgenommen"
+
+	code, stdout, stderr := run(t, "--enable", "linelength", root)
+	if code != 1 || !strings.Contains(stdout, "line-chars-exceeded") || !strings.Contains(stdout, "README.md:2") ||
+		!strings.Contains(stderr, note) || strings.Contains(stdout, note) {
+		t.Fatalf("Default: Exit=%d stdout=%s stderr=%s", code, stdout, stderr)
+	}
+	for _, format := range []string{"--json", "--yaml"} {
+		code, stdout, stderr := run(t, "--enable", "linelength", format, root)
+		if code != 1 || !strings.Contains(stdout, "notes") || !strings.Contains(stdout, note) || !strings.Contains(stdout, "max-chars=20") {
+			t.Fatalf("%s: Exit=%d stdout=%s stderr=%s", format, code, stdout, stderr)
+		}
+	}
+
+	write(t, root, ".d-check.yml", "linelength:\n  exempt-tables: true\n")
+	if code, stdout, stderr := run(t, "--enable", "linelength", root); code != 2 || stdout != "" || !strings.Contains(stderr, "linelength.max-chars") {
+		t.Fatalf("ohne max-chars: Exit=%d stdout=%s stderr=%s", code, stdout, stderr)
+	}
+	write(t, root, ".d-check.yml", "linelength:\n  max-chars: \"80\"\n")
+	if code, stdout, stderr := run(t, root); code != 2 || stdout != "" || !strings.Contains(stderr, "linelength.max-chars") {
+		t.Fatalf("ungültiger Block ohne aktives Modul: Exit=%d stdout=%s stderr=%s", code, stdout, stderr)
+	}
+}
+
+// DC-FA-LLEN-001: ohne aktives Modul ist der Lauf mit gültigem Block
+// byte-identisch zum Lauf ohne Block, und zwei gleiche Läufe mit aktivem Modul
+// liefern dieselbe Ausgabe (DC-QA-02).
+func TestCLILinelengthByteIdentisch(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/b.md", strings.Repeat("abcd ", 10)+"\n[x](fehlt.md)\n")
+	write(t, root, "docs/a.md", strings.Repeat("abcd ", 10)+"\n")
+	c1, o1, e1 := run(t, root)
+	write(t, root, ".d-check.yml", "linelength:\n  max-chars: 20\n")
+	c2, o2, e2 := run(t, root)
+	if c1 != c2 || o1 != o2 || e1 != e2 || strings.Contains(e2, "linelength") {
+		t.Fatalf("Block ohne aktives Modul verändert den Lauf: %d/%d\n%s\n%s\n%s\n%s", c1, c2, o1, o2, e1, e2)
+	}
+	ca, oa, ea := run(t, "--enable", "linelength", root)
+	cb, ob, eb := run(t, "--enable", "linelength", root)
+	if ca != 1 || ca != cb || oa != ob || ea != eb {
+		t.Fatalf("zwei Läufe weichen ab: %d/%d\n%s\n%s", ca, cb, oa, ob)
+	}
+	if i, j := strings.Index(oa, "docs/a.md:1"), strings.Index(oa, "docs/b.md:1"); i < 0 || j < i {
+		t.Fatalf("Reihenfolge nach Pfad verletzt:\n%s", oa)
+	}
+}

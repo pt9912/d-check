@@ -828,6 +828,7 @@ type raw struct {
 	Mentions  *rawMentions  `yaml:"mentions"`
 	Metrics   *rawMetrics   `yaml:"metrics"`
 	Pinsync   *rawPinsync   `yaml:"pinsync"`
+	Linelength *rawLinelength `yaml:"linelength"`
 	File      []rawFile     `yaml:"file"`
 	// Sources ist eine bare Liste `sources[]` (spec/spezifikation.md §2;
 	// KEIN Map mit scope — das Modul nutzt den globalen Scan-Scope).
@@ -930,6 +931,9 @@ func applyModules(r *raw, cfg *model.Config) error {
 		return err
 	}
 	if err := applyVersions(r, cfg); err != nil {
+		return err
+	}
+	if err := applyLinelength(r.Linelength, cfg); err != nil {
 		return err
 	}
 	applyImmutable(r, cfg)
@@ -2182,6 +2186,7 @@ func applyScopes(r *raw, cfg *model.Config) error {
 		{"commits", scopeOfCommits(r.Commits)},
 		{"tracked", scopeOfTracked(r.Tracked)},
 		{"citations", scopeOf(r.Citations)},
+		{"linelength", scopeOfLinelength(r.Linelength)},
 	}
 	for _, sc := range scopes {
 		if sc.scope == nil {
@@ -3012,4 +3017,97 @@ func applyPinsync(r *rawPinsync) (model.PinsyncConfig, error) {
 		return model.PinsyncConfig{}, fmt.Errorf("%s: pinsync: %v", FileName, err)
 	}
 	return cfg, nil
+}
+
+// rawLinelength trägt scope, Grenze, die drei Ausnahme-Schalter und das
+// Datei-Ventil des Moduls linelength (DC-FA-LLEN-001). Grenze und Schalter
+// bleiben Knoten, damit applyLinelength den YAML-Typ prüft: der Dekoder
+// schreibt eine Gleitkommazahl abgeschnitten in ein int und liest eine
+// Zeichenkette wie "yes" als Wahrheitswert.
+type rawLinelength struct {
+	Scope             *rawScope `yaml:"scope"`
+	MaxChars          yaml.Node `yaml:"max-chars"`
+	ExemptCodeBlocks  yaml.Node `yaml:"exempt-code-blocks"`
+	ExemptTables      yaml.Node `yaml:"exempt-tables"`
+	ExemptUnbreakable yaml.Node `yaml:"exempt-unbreakable"`
+	ExemptPaths       []string  `yaml:"exempt-paths"`
+}
+
+// applyLinelength liest den linelength-Block und prüft ihn am Config-Rand
+// (Exit 2), auch ohne aktives Modul: Grenze eine ganze Zahl ≥ 1, Schalter
+// true oder false, Datei-Ventil segmentweise. Ein leerer Wert gilt wie ein
+// fehlender. Die fehlende Grenze prüft der Lauf des aktiven Moduls, den scope
+// applyScopes.
+func applyLinelength(r *rawLinelength, cfg *model.Config) error {
+	if r == nil {
+		return nil
+	}
+	var ll model.LinelengthConfig
+	maxChars, err := linelengthInt("max-chars", &r.MaxChars)
+	if err != nil {
+		return err
+	}
+	if maxChars != nil && *maxChars < 1 {
+		return fmt.Errorf("%s: linelength.max-chars %d muss >= 1 sein", FileName, *maxChars)
+	}
+	ll.MaxChars = maxChars
+	switches := []struct {
+		key string
+		n   *yaml.Node
+		out **bool
+	}{
+		{"exempt-code-blocks", &r.ExemptCodeBlocks, &ll.ExemptCodeBlocks},
+		{"exempt-tables", &r.ExemptTables, &ll.ExemptTables},
+		{"exempt-unbreakable", &r.ExemptUnbreakable, &ll.ExemptUnbreakable},
+	}
+	for _, s := range switches {
+		b, berr := linelengthBool(s.key, s.n)
+		if berr != nil {
+			return berr
+		}
+		*s.out = b
+	}
+	if err := validateSegmentGlobs("linelength.exempt-paths", r.ExemptPaths); err != nil {
+		return err
+	}
+	ll.ExemptPaths = r.ExemptPaths
+	cfg.Linelength = ll
+	return nil
+}
+
+func yamlAbsent(n *yaml.Node) bool {
+	return n.Kind == 0 || n.Kind == yaml.ScalarNode && n.ShortTag() == "!!null"
+}
+
+// linelengthInt liefert den Wert eines Schlüssels, der nur eine YAML-Ganzzahl
+// (Tag !!int) annimmt; nil heißt: nicht gesetzt.
+func linelengthInt(key string, n *yaml.Node) (*int, error) {
+	if yamlAbsent(n) {
+		return nil, nil
+	}
+	var v int
+	if n.Kind != yaml.ScalarNode || n.ShortTag() != "!!int" || n.Decode(&v) != nil {
+		return nil, fmt.Errorf("%s: line %d: linelength.%s %q ist keine ganze Zahl", FileName, n.Line, key, n.Value)
+	}
+	return &v, nil
+}
+
+// linelengthBool liefert den Wert eines Schalters, der nur true oder false
+// (Tag !!bool) annimmt; nil heißt: nicht gesetzt, der Default gilt.
+func linelengthBool(key string, n *yaml.Node) (*bool, error) {
+	if yamlAbsent(n) {
+		return nil, nil
+	}
+	var v bool
+	if n.Kind != yaml.ScalarNode || n.ShortTag() != "!!bool" || n.Decode(&v) != nil {
+		return nil, fmt.Errorf("%s: line %d: linelength.%s %q ist kein Wahrheitswert (true oder false)", FileName, n.Line, key, n.Value)
+	}
+	return &v, nil
+}
+
+func scopeOfLinelength(v *rawLinelength) *rawScope {
+	if v == nil {
+		return nil
+	}
+	return v.Scope
 }

@@ -106,10 +106,10 @@ func pinsKenntAnker(t *testing.T, ziel, anker string) bool {
 // Zweite Kopplung, seit die Chronologie-Bedingung der dritte Konsument ist
 // (ADR-0057, Form aus ADR-0054): die Frage "zaehlt diese Zeile als
 // Tabellenzeile?" muss von targets (gate-phantom aus Doku-Tabellen),
-// planning.waves (Registerzeilen) und structure (Datenzeilen der
-// Chronologie-Bedingung) GLEICH beantwortet werden. Drei Schreibweisen, drei
-// gemeinsame Antworten — eine Zeile im Fence ist ein Beispiel, eine
-// eingerueckte Zeile ist keine Spalte-0-Tabellenzeile.
+// planning.waves (Registerzeilen), structure (Datenzeilen der
+// Chronologie-Bedingung) und linelength (Ausnahme (b)) GLEICH beantwortet
+// werden. Drei Schreibweisen, drei gemeinsame Antworten — eine Zeile im Fence
+// ist ein Beispiel, eine eingerueckte Zeile ist keine Spalte-0-Tabellenzeile.
 //
 // Reichweiten-Notiz (Review F-3): die Kopf-/Trennzeilen-Antwort
 // (tableHeaderOrSeparator) und die Zell-Antwort (tableCells) haben heute je
@@ -191,7 +191,19 @@ func structureKenntZeile(t *testing.T, wrap func(string) string) bool {
 	return false
 }
 
-// Die Tabellen-Kopplung selbst: alle drei Konsumenten, eine Antwort.
+// linelengthKenntZeile: eine überlange Zeile ist ausgenommen genau dann, wenn
+// sie als Tabellenzeile zählt. Ausnahme (a) und (c) sind aus, damit nur (b)
+// antwortet: eine Zeile im Zaun ist dann keine Tabellenzeile.
+func linelengthKenntZeile(t *testing.T, wrap func(string) string) bool {
+	t.Helper()
+	cfg := llCfg(10)
+	cfg.Linelength.ExemptCodeBlocks = llOff()
+	cfg.Linelength.ExemptUnbreakable = llOff()
+	res := llRun(t, map[string]string{"docs/a.md": "# T\n\n" + wrap("| zelle | zweite zelle |")}, cfg)
+	return len(llLines(res, "docs/a.md")) == 0
+}
+
+// Die Tabellen-Kopplung selbst: alle vier Konsumenten, eine Antwort.
 func TestTabellenzeilenFrageHatEineAntwort(t *testing.T) {
 	for _, c := range tabellenFaelle() {
 		t.Run(c.name, func(t *testing.T) {
@@ -199,6 +211,7 @@ func TestTabellenzeilenFrageHatEineAntwort(t *testing.T) {
 				"targets":        targetsKenntZeile(t, c.wrap),
 				"planning.waves": wavesKenntZeile(t, c.wrap),
 				"structure":      structureKenntZeile(t, c.wrap),
+				"linelength":     linelengthKenntZeile(t, c.wrap),
 			}
 			for modul, antwort := range antworten {
 				if antwort != c.gueltig {
@@ -224,6 +237,56 @@ func TestAnkerFrageHatEineAntwort(t *testing.T) {
 				if antwort != f.gueltig {
 					t.Fatalf("%s antwortet %v, gemeinsam erwartet %v (Antworten: %v)",
 						modul, antwort, f.gueltig, antworten)
+				}
+			}
+		})
+	}
+}
+
+// Dritte Kopplung (ADR-0054 Entscheidung 4): die Frage "liegt die Zeile
+// ausserhalb von Fenced-Code?" beantwortet proseLineSet fuer targets und
+// structure (ueber die Tabellenzeile, die nur in der Prosa-Menge zaehlt) und
+// fuer linelength (Ausnahme (a)). Die Faelle sind die Raender des
+// Fence-Automaten: Umschalten bei jeder Zaun-Zeile, jede Einrueckung vor dem
+// Zaun, keine Infozeile mit Backtick, ein Zaun hinter > schaltet nicht.
+func fenceFaelle() []tabellenFall {
+	bt, tl := "```", "~~~"
+	return []tabellenFall{
+		{"Backtick-Zaun", func(r string) string { return bt + "\n" + r + "\n" + bt + "\n" }, false},
+		{"Tilde-Zaun", func(r string) string { return tl + "\n" + r + "\n" + tl + "\n" }, false},
+		{"eingerueckter Zaun", func(r string) string { return "    " + bt + "\n" + r + "\n    " + bt + "\n" }, false},
+		{"Tilde schliesst Backtick-Block", func(r string) string { return bt + "\nx\n" + tl + "\n" + r + "\n" }, true},
+		{"Backtick in der Infozeile", func(r string) string { return bt + "a`b\n" + r + "\n" }, true},
+		{"offener Zaun", func(r string) string { return bt + "\n" + r + "\n" }, false},
+		{"Zaun im Zitat", func(r string) string { return "> " + bt + "\n\n" + r + "\n\n> " + bt + "\n" }, true},
+	}
+}
+
+// linelengthSiehtProsa: mit Ausnahme (a) an und (b), (c) aus wird eine
+// ueberlange Zeile genau dann gemessen, wenn sie ausserhalb von Fenced-Code
+// liegt.
+func linelengthSiehtProsa(t *testing.T, wrap func(string) string) bool {
+	t.Helper()
+	cfg := llCfg(10)
+	cfg.Linelength.ExemptTables = llOff()
+	cfg.Linelength.ExemptUnbreakable = llOff()
+	res := llRun(t, map[string]string{"docs/a.md": "# T\n\n" + wrap("| zelle | zweite zelle |")}, cfg)
+	return len(llLines(res, "docs/a.md")) > 0
+}
+
+// Die Fence-Kopplung selbst: dieselbe Eingabe, eine Antwort in drei Modulen.
+func TestFencedCodeFrageHatEineAntwort(t *testing.T) {
+	for _, c := range fenceFaelle() {
+		t.Run(c.name, func(t *testing.T) {
+			antworten := map[string]bool{
+				"targets":    targetsKenntZeile(t, c.wrap),
+				"structure":  structureKenntZeile(t, c.wrap),
+				"linelength": linelengthSiehtProsa(t, c.wrap),
+			}
+			for modul, antwort := range antworten {
+				if antwort != c.gueltig {
+					t.Fatalf("%s antwortet %v, gemeinsam erwartet %v (Antworten: %v)",
+						modul, antwort, c.gueltig, antworten)
 				}
 			}
 		})

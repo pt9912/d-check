@@ -22,7 +22,7 @@ type ResolveFromGroup struct {
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure", "workflows", "reviews", "mentions", "file", "metrics", "pinsync"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure", "workflows", "reviews", "mentions", "file", "metrics", "pinsync", "linelength"}
 }
 
 // ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
@@ -91,6 +91,8 @@ type Config struct {
 	Metrics MetricsConfig
 	// Pinsync: Parameter des Moduls pinsync (DC-FA-PSYNC-001).
 	Pinsync PinsyncConfig
+	// Linelength: Parameter des Moduls linelength (DC-FA-LLEN-001).
+	Linelength LinelengthConfig
 	// File: Regeln des Moduls file (DC-FA-FILE-001) — Zeilen-/Byte-
 	// Obergrenzen ganzer Dateien.
 	File []FileRule
@@ -1421,3 +1423,29 @@ func (p PinsyncPin) validate() error {
 	}
 	return nil
 }
+
+// LinelengthConfig sind die Parameter des Moduls linelength
+// (DC-FA-LLEN-001): die Grenze der Zeichen je Zeile, drei Ausnahmen und das
+// Datei-Ventil. Ein nil-Schalter ist der Default „ausgenommen“.
+type LinelengthConfig struct {
+	// MaxChars ist die Grenze in Codepunkten; nil heißt: nicht gesetzt (bei
+	// aktivem Modul ein Eingabefehler).
+	MaxChars          *int
+	ExemptCodeBlocks  *bool
+	ExemptTables      *bool
+	ExemptUnbreakable *bool
+	ExemptPaths       []string
+}
+
+// CodeBlocksExempt meldet Ausnahme (a): Fenced-Code samt Zäunen wird nicht
+// gemessen.
+func (c LinelengthConfig) CodeBlocksExempt() bool { return defaultTrue(c.ExemptCodeBlocks) }
+
+// TablesExempt meldet Ausnahme (b): Tabellenzeilen werden nicht gemessen.
+func (c LinelengthConfig) TablesExempt() bool { return defaultTrue(c.ExemptTables) }
+
+// UnbreakableExempt meldet Ausnahme (c): eine Zeile mit einem Wort über der
+// Grenze ist ausgenommen.
+func (c LinelengthConfig) UnbreakableExempt() bool { return defaultTrue(c.ExemptUnbreakable) }
+
+func defaultTrue(b *bool) bool { return b == nil || *b }

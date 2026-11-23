@@ -53,6 +53,11 @@ func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS
 	if err := ensureDiagramsDefinedInExist(fsys, cfg.Diagrams); err != nil {
 		return res, err
 	}
+	// Modul linelength: ein aktives Modul ohne Grenze ist ein Eingabefehler vor
+	// dem Lauf (DC-FA-LLEN-001.a Schritt 1, Exit 2).
+	if err := ensureActiveLinelength(cfg.Linelength, active); err != nil {
+		return res, err
+	}
 	// Modul versions: je Paar die aktuelle Version aus seiner current-from-
 	// Quelle auflösen (DC-FA-VER-001.a; fail-closed → Exit 2). Nur wenn aktiv;
 	// ohne Paar bleibt die Liste leer und das Modul wirkungslos.
@@ -118,7 +123,7 @@ func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS
 		return res, perr
 	}
 	res.Findings = append(res.Findings, post...)
-	res.Notes = notes
+	res.Notes = append(notes, st.linelengthNotes()...)
 	res.Findings = model.SortFindings(res.Findings)
 	return res, nil
 }
@@ -216,6 +221,9 @@ type runState struct {
 	// tracked: die einmal je Lauf geladene git-Index-Menge (Modul tracked,
 	// DC-FA-TRK-001.a Schritt 2); nil, wenn das Modul inaktiv ist.
 	tracked map[string]bool
+	// linelength: die Bezugsmenge des Moduls linelength über alle Dateien
+	// seiner Eingabemenge (DC-FA-LLEN-001.a Schritt 8).
+	linelength LinelengthCount
 }
 
 // applies: Modul aktiv und Datei in dessen effektivem Scope
@@ -254,6 +262,7 @@ func (st *runState) checkFile(file string) error {
 	if err := st.appendSourceRefs(file, content, lines); err != nil {
 		return err
 	}
+	st.appendLinelength(file, content)
 	st.appendTailFindings(file, content, lines)
 	return nil
 }
@@ -464,4 +473,35 @@ func runNoteModules(fsys driven.Filesystem, vcs driven.VCS, cfg model.Config, ac
 		notes = append(notes, pr.Note())
 	}
 	return out, notes, nil
+}
+
+// ensureActiveLinelength prüft die Grenze nur, wenn das Modul aktiv ist; ein
+// gültiger Block ohne aktives Modul bleibt inert.
+func ensureActiveLinelength(cfg model.LinelengthConfig, active map[string]bool) error {
+	if !active["linelength"] {
+		return nil
+	}
+	return checkLinelengthConfig(cfg)
+}
+
+// appendLinelength misst eine Datei, wenn sie im Scope des Moduls liegt und
+// exempt-paths sie nicht trifft, und zählt sie in die Bezugsmenge.
+func (st *runState) appendLinelength(file string, content []byte) {
+	if !st.applies("linelength", file) || linelengthExempt(file, st.cfg.Linelength) {
+		return
+	}
+	f, c := CheckLinelength(file, content, st.cfg.Linelength)
+	st.findings = append(st.findings, f...)
+	st.linelength.Files += c.Files
+	st.linelength.Lines += c.Lines
+	st.linelength.Unbreakable += c.Unbreakable
+}
+
+// linelengthNotes liefert die Zeile der Bezugsmenge, wenn das Modul aktiv
+// ist — auch bei einer leeren Eingabemenge.
+func (st *runState) linelengthNotes() []string {
+	if !st.active["linelength"] {
+		return nil
+	}
+	return []string{st.linelength.Note()}
 }

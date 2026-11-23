@@ -18,7 +18,7 @@ scan:
   # ignore: ["pfad/**"]   # Glob, relativ zur Wurzel (prunt den Abstieg)
 
 modules: [links, anchors]
-# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, citations, structure, workflows, reviews, mentions, file, metrics, pinsync, external, sources
+# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, citations, structure, workflows, reviews, mentions, file, metrics, pinsync, linelength, external, sources
 # (external und sources sind die einzigen Netzwerk-Türen — beide strikt opt-in
 #  (external prüft http(s)-Erreichbarkeit, sources Upstream-Content-Drift); vcs und commits sind
 #  git-basiert und brauchen .git + eine Commit-Range — strikt opt-in; tracked ist
@@ -303,6 +303,16 @@ modules: [links, anchors]
 #       sources:                                 # mindestens zwei
 #         - {file: Dockerfile, pattern: '^ARG GO_VERSION=v?(\S+)'}
 #         - {file: Makefile, pattern: '^GO_VERSION\s*[:?]?=\s*v?(\S+)'}
+
+# --- linelength: Zeichen je Zeile in Markdown-Dateien — opt-in ---
+#   (Aufruf über --enable linelength. NICHT in modules: oben. Gemessen werden die Markdown-Dateien
+#    der Scan-Menge (linelength.scope ersetzt sie), in Codepunkten der rohen Zeile; kein Zeilen-Marker.)
+# linelength:
+#   max-chars: 120                               # Pflicht, sobald das Modul aktiv ist; ganze Zahl >= 1
+#   exempt-code-blocks: true                     # Fenced-Code samt Zäunen nicht messen
+#   exempt-tables: true                          # Zeilen, die mit | beginnen, nicht messen
+#   exempt-unbreakable: true                     # Zeile mit einem Wort über der Grenze nicht melden
+#   exempt-paths: [CHANGELOG.md]                 # Glob wie scan.ignore; Dateien ganz ohne Prüfung
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---
 # external:
