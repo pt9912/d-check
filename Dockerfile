@@ -28,14 +28,14 @@
 # im Body.
 # ---------------------------------------------------------------------------
 
-ARG GO_VERSION=1.27.3
+ARG GO_VERSION=1.27.4
 ARG GOLANGCI_LINT_VERSION=v2.15.0
 
 # ---- deps ------------------------------------------------------------------
 # Die Go-Stufen laufen auf der Build-Plattform (kein QEMU) und kompilieren
 # in `build` für die Ziel-Plattform; erst die Runtime-Stufe trägt die
 # Ziel-Plattform (DC-FA-DIST-001, ADR-0102).
-FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}@sha256:2920bb124f1a2e12a1d39f0cab756ae0068441ee1da7655dec7f5e374944095b AS deps
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}@sha256:205c7636d74e0ffbe3d007162df7d74f859f5a8c8322dfb9f907977686c126cf AS deps
 
 WORKDIR /src
 ENV GOFLAGS="-mod=readonly -buildvcs=false" \
