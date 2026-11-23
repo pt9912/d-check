@@ -117,8 +117,8 @@ echo "$acc" | wc -l                                                  # 107
 echo "$acc" | xargs grep -lE '\]\([^)]*spec/spezifikation\.md' | wc -l  # 59
 ```
 
-**Festzuschreibende Entscheide** — Empfehlungen; offen bis zum Entscheid des
-Auftraggebers, ohne ihn beginnt kein Code:
+**Festzuschreibende Entscheide** — vom Auftraggeber am 2026-11-23 mit den
+Empfehlungen bestätigt (unverändert 1–8):
 
 1. **Woran eine Umbenennung erkannt wird: Inhalts-Gleichheit, keine
    Ähnlichkeits-Schwelle.** Ein Pfad A, der vor einem Schritt existiert und danach

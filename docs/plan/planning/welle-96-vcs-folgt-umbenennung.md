@@ -103,6 +103,9 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   A → B → C zählt), eigener Schalter oder Erweiterung von `ignore-link-targets`, was mit
   mehrdeutigen Umbenennungen und Verzeichnis-Zielen geschieht, ob das eigene Profil den
   Schalter einschaltet.
+- **Entschieden mit dem Auftraggeber (2026-11-23):** die acht Entscheide in
+  [`slice-291`](open/slice-291-vcs-umbenennung-anforderung-und-adr.md) §3 mit den
+  Empfehlungen bestätigt.
 
 ## 6. Out-of-Scope für diese Welle
 
