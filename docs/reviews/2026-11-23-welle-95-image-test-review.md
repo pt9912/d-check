@@ -17,8 +17,8 @@ Image“). Vorbild ist die `pinsync`-Phase (8) aus `5b669af0`.
 - Welle-Plan `welle-95` §3 (Closure-Trigger, die verlangten Proben)
 - `DC-FA-LLEN-001` (Zählregel, Ausnahmen, Befund, Bezugsmenge, Akzeptanzkriterien), `DC-FA-LLEN-001.a`
   Schritte 3 bis 8, [ADR-0114](../plan/adr/0114-linelength-modul.md)
-- Vorbefunde am Modul: Code-Review [R1](2026-11-23-slice-290-code-r1.md) und
-  [R2](2026-11-23-slice-290-code-r2.md) zu `slice-290`
+- Vorbefunde am Modul: Code-Review R1 (im Archiv von welle-95) und
+  R2 (im Archiv von welle-95) zu `slice-290`
 - `AGENTS.md` §3.1, §3.7, §4 und §5 (Regeln 13, 15)
 - Die drei Restpunkte, die der Implementer selbst nennt: kein Lauf mit Exit 0, kein Vergleich `:ro`
   gegen beschreibbar, Meldungstext nur lose geprüft

@@ -7,7 +7,7 @@ auf `f98ca836` mit sauberem Arbeitsbaum · **Bezug:**
 [ADR-0114](../plan/adr/0114-linelength-modul.md) · Datum 2026-11-23.
 Jeder Beleg stammt aus einem Lauf, den ich selbst gefahren habe. Das Trigger-Audit ist Schritt 2
 (Planner/Architect) und hier nicht geprüft. Der Beleg geht über die DoDs der Slices hinaus; die
-Slice-Verifikation steht in [2026-11-23-slice-290-verifikation.md](2026-11-23-slice-290-verifikation.md).
+Slice-Verifikation steht in 2026-11-23-slice-290-verifikation.md (im Archiv von welle-95).
 
 ## Trigger-Punkte
 
