@@ -245,6 +245,42 @@ bleibt bei vier. Gefunden mit
 ``git grep -n 'codepaths`, `diagrams`, `workflows`' -- spec docs/user README.md README.de.md harness``
 ⇒ ein Treffer (`benutzerhandbuch.md`).
 
+**Plan-Änderungs-Notiz — Fix nach [Code-Review R1](../../../reviews/2026-11-23-slice-290-code-r1.md)
+(F-1 bis F-4, F-7; Implementer).** Was der Fix-Commit tut, je Befund, mit den Dateien:
+
+- **F-1** (Verdikt in [ADR-0114](../../adr/0114-linelength-modul.md) Entscheid 4): Ein Schlüssel des
+  Blocks ohne Wert ist gesetzt und ungültig ⇒ Exit 2, für `max-chars` und die drei Schalter, auch
+  ohne aktives Modul; abwesend ist nur ein fehlender Schlüssel. `configyaml.go` bekommt dafür eine
+  eigene Abwesenheits-Prüfung für `linelength`, die übrigen Module bleiben unverändert. Tests in
+  `configyaml/linelength_test.go`, dazu die Gegenprobe, dass bei `versions` (`current-from:`) und
+  `planning` (`marker:`) ein Schlüssel ohne Wert abwesend bleibt. Die Spezifikation
+  ([`DC-FA-LLEN-001.a`](../../../../spec/spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength)
+  Schritt 1, Historie) und das Handbuch §4.28 bekommen den Satz des Architect; das Lastenheft
+  bleibt unverändert.
+- **F-2:** gewählt ist die **gemeinsame Funktion**, nicht nur ein Test: `pinsyncLines` wird zu
+  `textLines` und steht neben `countLines` in `rules/codepaths.go`; `pinsync` und `linelength`
+  zerlegen beide damit (neu im Plan: `rules/pinsync.go`, `rules/codepaths.go`). Grund: [ADR-0114](../../adr/0114-linelength-modul.md)
+  Entscheid 3 sagt „dieselbe Zerlegung“ — eine Funktion macht das zum Bau, ein Test nur zur
+  Beobachtung. `countLines` bleibt, wie es ist, weil `codepaths`, `citations` und `file` es
+  nutzen und dieser Slice deren Code nicht ändert; ein Test in `rules/linelength_test.go` hält
+  `len(textLines(x)) == countLines(x)` über die Randformen.
+- **F-3:** ein Test für `\r\r\n` und für eine letzte Zeile auf `\r\r`: nur das letzte `\r` fällt
+  weg (`rules/linelength_test.go`).
+- **F-4:** die Fence-Kopplung fragt zusätzlich `planning.waves` (Registerzeile, vorhandene
+  Probe), `planning` (Ruhe-Marker im Block der Überschrift) und `vcs` (`baseImmutable` und
+  `vcsHeadStatusLineNo`). Gezählt mit
+  `git grep -n 'proseLineSet(content)' -- internal/hexagon/core/rules ':!*_test.go'` ⇒ 8 Aufrufe
+  in fünf Modulen. Nicht gefragt wird `waveBijection` (`planning_waves.go`, Kennungen im Block):
+  dasselbe Modul und dieselbe Prosa-Menge wie die Registerzeile, aber eine Probe bräuchte die
+  flachen Wellendokumente samt Verzeichnis — der Gewinn ist eine zweite Lesestelle desselben
+  Moduls, keine neue Antwort.
+- **F-7:** der Klartext nennt bei einem nicht skalaren Wert dessen Art (Liste, Abbildung, Alias)
+  statt eines leeren Zitats; die Grenzen von Schritt 1 sagen, dass der YAML-Typ zählt, nicht der
+  Zahlwert (`80.0` ⇒ Exit 2).
+
+Die Suche nach der Aussage jedes Befunds steht im Bericht des Implementers; außerhalb von
+`linelength` trägt keiner der Treffer dieselbe Aussage.
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
