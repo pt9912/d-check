@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.112.4
+**Version:** 0.113.0
 
 **Status:** Draft
 
@@ -4579,7 +4579,8 @@ der geteilten. (5) **Schreibende Wege** — Umbrechen oder Kürzen:
 [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) schließt sie aus.
 (6) **Front-Matter als eigene Form.** (7) **Verschiedene Grenzen** je Datei, Verzeichnis oder
 Zeilenart in einem Lauf. (8) **Eine Grenze für die Markdown-Dateien dieses Repos** — diese
-Anforderung legt die Fähigkeit fest, nicht ihre Nutzung.
+Anforderung legt die Fähigkeit fest, nicht ihre Nutzung. (9) **Weitere Lint-, Stil- oder
+Rechtschreib-Regeln** — der Ausschluss in [§5](#5-globale-out-of-scope-punkte) gilt für sie weiter.
 
 ---
 
@@ -4612,7 +4613,7 @@ Anforderung legt die Fähigkeit fest, nicht ihre Nutzung.
 - Mathematik-/Formel-Validierung (MathJax-Rendering-Checks aus `euler-fourier-hilbert`) — Kandidat für eine spätere Version, nicht Teil von 0.x.
 - Automatisches Reparieren kaputter Referenzen (Auto-Fix) — das Tool berichtet nur.
 - Prüfung von Nicht-Markdown-Formaten (reStructuredText, AsciiDoc, HTML, Jupyter-Notebooks) als eigenständige Dateien. Inline-HTML-Anker *innerhalb* von Markdown sind hiervon ausgenommen und werden geprüft ([`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors)).
-- Rechtschreib-, Stil- oder Markdown-Lint-Prüfungen (dafür existieren etablierte Tools).
+- Rechtschreib-, Stil- oder Markdown-Lint-Prüfungen (dafür existieren etablierte Tools). **Ausgenommen** ist die Zeilenlänge in Markdown-Dateien ([`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)): Sie läuft hermetisch über dieselbe Scan-Menge und mit derselben Markdown-Lexik wie die übrigen scannenden Module, ohne ein zweites Werkzeug im Lauf. Die Ausnahme ist kein Präzedenzfall — jede weitere Prüfung dieser Art bleibt ausgeschlossen, bis eine eigene Anforderung sie aufnimmt.
 
 ## 6. Glossar
 
@@ -4633,6 +4634,7 @@ Anforderung legt die Fähigkeit fest, nicht ihre Nutzung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.113.0 | 2026-11-23 | Entscheidung des Auftraggebers: §5 nimmt die Zeilenlänge in Markdown-Dateien ([`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)) vom globalen Ausschluss der Rechtschreib-, Stil- und Markdown-Lint-Prüfungen aus — sie läuft hermetisch über dieselbe Scan-Menge und Lexik, ohne zweites Werkzeug; die Ausnahme ist kein Präzedenzfall. Ihr Out-of-Scope nennt als (9) weitere Lint-, Stil- oder Rechtschreib-Regeln | — |
 | 0.112.4 | 2026-11-23 | [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) präzisiert, keine Verhaltensänderung: der Rand mehrerer Leerzeichen zwischen Listen-Marker und erstem Wort ist benannt — der Umbruch kürzt die Zeile um die überzähligen, so viel wie ihr Streichen; neues Teilkriterium dazu | — |
 | 0.112.3 | 2026-11-23 | [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) präzisiert, keine Verhaltensänderung: ein Präfix der Markdown-Form schiebt nur das **erste** Wort eines Listenpunkts oder Zitats unumbrechbar über die Grenze, dazu jedes Wort einer ATX-Überschrift und eines eingerückten Code-Blocks; ein späteres Wort lässt sich umbrechen, weil eine Fortsetzungszeile weder Marker noch Einrückung braucht. Neues Teilkriterium dazu | — |
 | 0.112.2 | 2026-11-23 | [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) präzisiert, keine Verhaltensänderung der Ausnahmen: nicht jede andere überlange Zeile bringt ein Umbruch unter die Grenze — ein Präfix der Markdown-Form (Einrückung, Listen-, Zitat-, Überschriften-Marker) kann ein kurzes Wort über die Grenze schieben, die Zeile bleibt ein Befund; ein Marker-Kommentar nimmt die Zeile über (c) aus, sobald eines seiner Wörter länger als `max-chars` ist. Eine leere Datei hat keine Zeile. Kriterien für Listen- und Zitat-Präfix, für die Marker-Zeile bei kleiner Grenze und für die leere Datei | — |
