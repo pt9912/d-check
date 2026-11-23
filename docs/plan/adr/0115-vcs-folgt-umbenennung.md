@@ -47,7 +47,7 @@ verschwindet und ein anderer mit **demselben Blob** erscheint, ist eine Umbenenn
 Auftraggeber hat am 2026-11-23 die acht Entscheide des Anforderungs-Slice mit den Empfehlungen bestätigt
 (Entscheidung 1–8 unten). Das Architect-Verdikt vom selben Tag (unter `docs/reviews/`) hat am
 Gegenstand Stellen gefunden, die der Code sonst stillschweigend entschiede; sie stehen als Entscheidung
-9–14 und sind **Empfehlung**, bis der Auftraggeber sie bestätigt.
+9–14; der Auftraggeber hat sie am 2026-11-23 bestätigt, ebenso Entscheidung 5 in der seiten-gleichen Fassung.
 
 Am Gegenstand gelesen, auf das die Entscheidung baut:
 
@@ -73,7 +73,7 @@ Am Gegenstand gelesen, auf das die Entscheidung baut:
 
 Wir geben dem Modul `vcs` einen **eigenen opt-in-Schlüssel `vcs.follow-renames`**, mit dem es die
 Umbenennungen der Range aus der git-Historie liest und ein Link-Ziel über sie gleichsetzt. Im Einzelnen
-(die Nummern dienen dieser Liste als Bezug; 1–8 vom Auftraggeber bestätigt, 9–14 Empfehlung):
+(die Nummern dienen dieser Liste als Bezug; 1–14 vom Auftraggeber bestätigt, Entscheidung 5 in der seiten-gleichen Fassung nach Entscheidung 9):
 
 1. **Erkennung: Inhalts-Gleichheit, keine Ähnlichkeits-Schwelle.** Ein Pfad A, der vor einem Schritt
    existiert und danach nicht, und ein Pfad B, der danach existiert und vorher nicht, sind eine
@@ -217,3 +217,4 @@ Entscheidungen 1–4 und die Wirkung von `ignore-link-targets` bleiben unveränd
 | Datum | Ereignis | Verweis |
 |---|---|---|
 | 2026-11-23 | Proposed: Entscheidung 1–8 wie vom Auftraggeber bestätigt; 9–14 als Empfehlung aus dem Architect-Verdikt (seiten-gleiche Gleichsetzung, Zusammenspiel der Schalter, Kette entlang der Abstammung, fremde Basis ohne Umbenennung, Port-Vertrag, Reihenfolge im eigenen Profil) | slice-291 <!-- d-check:status-provenance --> |
+| 2026-11-23 | Proposed, fortgeschrieben: der Auftraggeber hat Entscheidung 9–14 bestätigt, ebenso Entscheidung 5 in der seiten-gleichen Fassung und die Schärfung des Out-of-Scope-Satzes der Anforderung | slice-291 <!-- d-check:status-provenance --> |
