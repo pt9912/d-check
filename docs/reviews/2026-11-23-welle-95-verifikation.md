@@ -1,7 +1,7 @@
 # Verifikation welle-95 — Closure-Trigger, Schritt 1
 
 **Rolle:** Verifier (Modul 8, §Rollen-Sequenz für eine Welle: Verifier → Planner) ·
-**Gegenstand:** Closure-Trigger aus `docs/plan/planning/welle-95-linelength-modul.md` §3, geprüft
+**Gegenstand:** Closure-Trigger aus `docs/plan/planning/done/welle-95-linelength-modul.md` §3, geprüft
 auf `f98ca836` mit sauberem Arbeitsbaum · **Bezug:**
 [`DC-FA-LLEN-001`](../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in),
 [ADR-0114](../plan/adr/0114-linelength-modul.md) · Datum 2026-11-23.

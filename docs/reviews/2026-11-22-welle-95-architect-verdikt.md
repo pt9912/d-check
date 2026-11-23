@@ -1,7 +1,7 @@
 # Architect-Verdikt — welle-95 (Modul `linelength`), Plan gegen Entscheidungslage
 
 **Rolle:** Architect (Modul 8), frischer Kontext, **vor** Code.
-**Gegenstand:** [welle-95](../plan/planning/welle-95-linelength-modul.md) und ihre zwei Slice-Pläne
+**Gegenstand:** [welle-95](../plan/planning/done/welle-95-linelength-modul.md) und ihre zwei Slice-Pläne
 [slice-289](../plan/planning/done/slice-289-linelength-anforderung-und-adr.md) (Entscheide 1–8 in §3,
 vom Auftraggeber am 2026-11-22 bestätigt) und
 [slice-290](../plan/planning/done/slice-290-linelength-modulkern.md).

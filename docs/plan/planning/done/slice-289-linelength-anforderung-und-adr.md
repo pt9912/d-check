@@ -9,7 +9,7 @@ aus `open/` oder `next/` nach `done/` — §7 nennt in der Zeile `Gegenstand:`
 Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 (§Ein Slice, dessen Gegenstand ein anderer übernimmt).
 
-**Welle:** [`welle-95-linelength-modul`](../welle-95-linelength-modul.md).
+**Welle:** [`welle-95-linelength-modul`](welle-95-linelength-modul.md).
 
 **Bezug:** [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) — die Anforderung des Moduls
 `linelength`, die dieser Slice ins Lastenheft schreibt (Bereichs-Kürzel `LLEN`),

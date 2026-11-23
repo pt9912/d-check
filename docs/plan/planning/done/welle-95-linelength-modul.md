@@ -73,8 +73,8 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR für das Modul `linelength`; Entscheide festschreiben | neue Anforderung des Moduls (Kennung vergibt der Slice), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
-| [`slice-290`](done/slice-290-linelength-modulkern.md) | Modulkern: Konfiguration lesen, Zeilen messen, Ausnahmen anwenden, Grund-Code | die Anforderung aus [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md) |
+| [`slice-289`](slice-289-linelength-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR für das Modul `linelength`; Entscheide festschreiben | neue Anforderung des Moduls (Kennung vergibt der Slice), [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
+| [`slice-290`](slice-290-linelength-modulkern.md) | Modulkern: Konfiguration lesen, Zeilen messen, Ausnahmen anwenden, Grund-Code | die Anforderung aus [`slice-289`](slice-289-linelength-anforderung-und-adr.md) |
 
 ## 5. Abhängigkeiten
 
@@ -84,18 +84,18 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 - Blockiert: keine Welle.
 - Wird blockiert von: keiner.
 - **Reihenfolge der Slices ist fachlich bindend:** erst
-  [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md) (Anforderung und
+  [`slice-289`](slice-289-linelength-anforderung-und-adr.md) (Anforderung und
   Entscheide stehen, bevor Code entsteht), dann
-  [`slice-290`](done/slice-290-linelength-modulkern.md). Das WIP-Limit 1 hält sie
+  [`slice-290`](slice-290-linelength-modulkern.md). Das WIP-Limit 1 hält sie
   ohnehin nacheinander.
-- **Entscheide, die [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md)
+- **Entscheide, die [`slice-289`](slice-289-linelength-anforderung-und-adr.md)
   vor dem Schreiben der Anforderung festschreibt** (mit Empfehlung; ohne Entscheid
   des Auftraggebers beginnt kein Code): Modulname und Kürzel, eigenes Modul statt
   Bedingung in `file` oder `structure`, Zähleinheit (Zeichen, Bytes oder
   Anzeigebreite), welche Zeilen ausgenommen sind und ob schaltbar, Name des
   Schwellen-Schlüssels (Abstand zu `max-lines`), Grund-Code und Befund-Ort.
 - **Entschieden mit dem Auftraggeber (2026-11-22):** nur Markdown-Dateien; die acht
-  Entscheide in [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md) §3 mit den
+  Entscheide in [`slice-289`](slice-289-linelength-anforderung-und-adr.md) §3 mit den
   Empfehlungen bestätigt.
 
 ## 6. Out-of-Scope für diese Welle
@@ -108,14 +108,14 @@ der Closure-Trigger unerreichbar wird.
 - **Andere Dateiarten** (Go, YAML, Skripte, …) — vom Auftraggeber ausgeschlossen
   (2026-11-22); die Anforderung nennt es in ihrem Out-of-Scope.
 - **Automatisches Umbrechen oder ein Reparatur-Patch** — d-check ist ein Lese-Werkzeug
-  ([`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit));
+  ([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit));
   ob `--fix-patch` das Modul später kennt, ist ein eigener Vorgang.
 - **Das Modul im eigenen Profil scharf schalten** — die Repo-Doku führt bewusst
   Absätze und Tabellenzeilen auf einer Zeile; eine Grenze dort wäre eine Umformatierung
   des Bestands, kein Teil der Fähigkeit. Bleibt eine Entscheidung des Auftraggebers
   nach der Welle.
 - **Release, Tag, Release-Prep** (CHANGELOG, READMEs, Handbuch-Kopf, Digest-Pins) —
-  eigener Vorgang nach der Welle ([`AGENTS.md`](../../../AGENTS.md) §5 Zeile 17).
+  eigener Vorgang nach der Welle ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 17).
 - **Die roten Nachtläufe vom 2026-11-22** (fünf veraltete Pins, behebbare CVEs im
   publizierten Image) — eigene Pin-Hebungen außerhalb der Welle; sie berühren das
   Modul nicht, gehören aber vor das nächste Release.
@@ -128,4 +128,4 @@ beiden Zeiger unten sind so zu schreiben, wie sie vom Ruheort `done/` auflösen,
 nicht vom Schreibort.
 
 Ergebnis: `welle-95-results.md` (Geschwister im Ruheort `done/`, entsteht bei der Closure)
-Zähler: [Beobachtungs-Register](observations/README.md)
+Zähler: [Beobachtungs-Register](../observations/README.md)

@@ -1,7 +1,7 @@
 # Trigger-Audit welle-95 — Zweige ADR und Hard Rule (Architect)
 
 **Rolle:** Architect (Modul 8, §Rollen-Sequenz für eine Welle, Closure-Schritt 2: Planner → Architect → Planner).
-**Gegenstand:** [welle-95](../plan/planning/welle-95-linelength-modul.md) mit
+**Gegenstand:** [welle-95](../plan/planning/done/welle-95-linelength-modul.md) mit
 [slice-289](../plan/planning/done/slice-289-linelength-anforderung-und-adr.md) und
 [slice-290](../plan/planning/done/slice-290-linelength-modulkern.md).
 **Eingang:** Audit-Vorlage des Planners; Verifikations-Beleg der Welle
