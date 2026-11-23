@@ -71,11 +71,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] Konfigurations-Rand: der Block `linelength` wird gelesen, jede Fehlkonfiguration der
+- [x] Konfigurations-Rand: der Block `linelength` wird gelesen, jede Fehlkonfiguration der
       Anforderung (fehlende oder < 1 Schwelle, unbekannter Schlüssel, ungültiger
       `scope`/`exempt-paths`) ist Exit 2 mit Test; `--print-config` und `--enable` kennen
       das Modul.
-- [ ] Regel: Zählung in Codepunkten, Grenze genau auf der Schwelle befundfrei, jede
+- [x] Regel: Zählung in Codepunkten, Grenze genau auf der Schwelle befundfrei, jede
       Ausnahme einzeln schaltbar und getestet (an und aus), ein Befund je Zeile mit Ort,
       Länge und Grenze, Reihenfolge nach Pfad und Zeile, Bezugsmenge (Zeilen wie bei `file`
       gezählt, die über (c) ausgenommenen als eigene Zahl), leere Menge kein Fehler; die
@@ -86,25 +86,25 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       durch `linelength` und die bisherigen Konsumenten von `proseLineSet`/`tableRowLine` —
       Pflicht nach [ADR-0054](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md)
       Entscheidung 4, keine Option (Architect-Verdikt F-3).
-- [ ] Spiegel: Grund-Code in `AllReasons()`/Diagnose-Klartext und §4 der Spezifikation,
+- [x] Spiegel: Grund-Code in `AllReasons()`/Diagnose-Klartext und §4 der Spezifikation,
       Modul in der Aufzählung von
       [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl),
       im Glossar, in den READMEs und im Handbuch — die Spiegel-Deckungstests sind grün und
       fangen das neue Modul (vor dem Editieren aufgelistet,
       [`MR-025`](../../../../harness/conventions.md#mr-025)).
-- [ ] `make gates` grün.
-- [ ] [ADR-0114](../../adr/0114-linelength-modul.md) `Accepted`, Index nachgezogen — der
+- [x] `make gates` grün.
+- [x] [ADR-0114](../../adr/0114-linelength-modul.md) `Accepted`, Index nachgezogen — der
       Status-Übergang durch den Architect, nachdem Review und Verifikation dieses Slice keine
       Änderung an der Entscheidung mehr verlangen (Architect-Verdikt F-8); vorher nennt das
       `Schärft:`-Feld die `SPEC-<NNN>`-Kennung der neuen §4-Zeile des Grund-Codes (Review R1 zu
       slice-289, F-11).
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure.
 
 ## 3. Plan (vor Code)
 
@@ -362,23 +362,29 @@ dasteht.
 - Ein nicht geschlossener Fence nimmt über die geteilte Lexik den Rest der Datei aus der
   Prüfung — ein stilles Grün über einem Teil der Datei
   ([`BEO-ALL/prosa-verschwindet-in-inline-code-spanne`](../observations/BEO-ALL/prosa-verschwindet-in-inline-code-spanne/observation.md),
-  Fence-Hälfte, 2×) — **Ausgang:** *entfallen*, wenn ein Test das in der Anforderung
-  festgelegte Verhalten beim offenen Fence belegt und die Anforderung für die Meldung auf
-  `spans` (`fence-unclosed`) verweist — ein zweiter Wächter in `linelength` wäre eine zweite
-  Antwort (Architect-Verdikt F-3); *weiter offen* — ein Beleg, der den Zähler auf 3× hebt —,
-  wenn der Ausfall in keinem Modul sichtbar wird.
+  Fence-Hälfte, 2×) — **Ausgang:** *entfallen* — `TestLinelengthOffenerZaunNimmtDenRestAus`
+  belegt das in der Anforderung festgelegte Verhalten (der Rest der Datei ist ausgenommen,
+  `linelength` meldet kein `fence-unclosed`), und die Anforderung verweist für die Meldung auf
+  `spans`; die [Verifikation](../../../reviews/2026-11-23-slice-290-verifikation.md) zeigt das Rot
+  der Mutation M04. Kein Beleg in `BEO-ALL/prosa-verschwindet-in-inline-code-spanne`.
 - `proseLineSet`/`tableRowLine` sind paket-interne Helfer anderer Module; sie für ein neues
   Modul zu nutzen bindet dessen Verhalten an deren Änderungen
   ([`BEO-ALL/shared-lexicon-drifts-at-edges`](../observations/BEO-ALL/shared-lexicon-drifts-at-edges/observation.md),
   verkörpert über Kopplungs-Tests; Pflicht nach [ADR-0054](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md) Entscheidung 4, DoD-Punkt 2) —
-  **Ausgang:** *entfallen*, wenn der Kopplungs-Test
-  dieselbe Eingabe durch `linelength` und die bisherigen Konsumenten fährt; *eingetreten*
-  (Rückführung nach `next`, §4), wenn die Helfer für das Modul geändert werden müssten.
+  **Ausgang:** *entfallen* — `TestTabellenzeilenFrageHatEineAntwort` (vier Konsumenten) und
+  `TestFencedCodeFrageHatEineAntwort` (sieben der acht Aufrufe von `proseLineSet`, der achte
+  begründet ausgenommen) fahren dieselbe Eingabe durch `linelength` und die bisherigen
+  Konsumenten; `proseLineSet` und `tableRowLine` blieben unverändert (Code-Review
+  [R1](../../../reviews/2026-11-23-slice-290-code-r1.md) F-4,
+  [R2](../../../reviews/2026-11-23-slice-290-code-r2.md)).
 - Eine Randbedingung der Anforderung bleibt ohne Test
   ([`BEO-ALL/spec-randbedingung-ohne-test`](../observations/BEO-ALL/spec-randbedingung-ohne-test/observation.md),
-  1×) — **Ausgang:** *entfallen*, wenn jede Randbedingung der Anforderung einen Test mit
-  gezeigtem Rot hat (Zuordnung im Plan-Nachtrag); *weiter offen* — ein Beleg in diesem
-  Eintrag —, wenn eine fehlt.
+  1×) — **Ausgang:** *entfallen* — jedes der 17 Akzeptanzkriterien hat einen Test mit gezeigtem
+  Rot; die Zuordnung Kriterium → Test → Mutation steht im
+  [Verifikationsbericht](../../../reviews/2026-11-23-slice-290-verifikation.md) (24 Mutationen,
+  alle rot), nicht wie hier vorgesehen im Plan-Nachtrag — dort standen die Rot-Belege nur als
+  Behauptung in den Commit-Botschaften (Verifikation V-1). Kein Beleg in
+  `BEO-ALL/spec-randbedingung-ohne-test`.
 
 ## 7. Closure-Notiz
 
@@ -394,7 +400,55 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-*(Wird bei der Closure gefüllt.)*
+- **Was hat funktioniert:** Die Anforderung aus slice-289 trug den Code: Die Testfall-Liste in
+  §3 übersetzte sich eins zu eins in Tests, und die Korpus-Gegenprobe am gebauten Image traf die
+  `awk`-Zahlen aus slice-289 exakt (1237 Dateien, 513 ausgenommen, 2439 Befunde am Stand
+  `f3dc94da`). Die geteilte Lexik blieb unverändert; das Modul liest `proseLineSet` und
+  `tableRowLine` und baut nichts nach, die Kopplungs-Tests halten es fest. Implementer,
+  Reviewer und Verifier haben das Rot je Testfall unabhängig voneinander gezeigt (30, 20 und 24
+  Mutationen).
+- **Was ging anders als geplant:** **(1)** Eine Plan-Notiz des Implementers („ein leerer Wert
+  gilt wie ein fehlender“) stand gegen das Lastenheft, der Code folgte ihr. Code-Review R1 F-1
+  fand es, der Architect entschied V1 ([ADR-0114](../../adr/0114-linelength-modul.md)
+  Entscheid 4), die Notiz ist zurückgenommen. Review R2 fand dann die Reichweite zu pauschal
+  formuliert; der Architect begrenzte Entscheid 4 auf die vier eigenen Werte. Das ist das
+  zweite Auftreten dieser Klasse in welle-95 (Register unten). **(2)** Die Zeilen-Zerlegung
+  ist jetzt eine geteilte Funktion (`textLines`, R1 F-2) statt einer Kopie bei `pinsync`. **(3)**
+  `make slice-mv` scheiterte am eigenen pre-commit-Hook; die Übergänge liefen von Hand.
+  **(4)** Die Zuordnung Testfall → Rot stand nicht im Plan-Nachtrag, sondern nur behauptet in den
+  Commit-Botschaften; der Verifier hat sie nachgeliefert (V-1).
+- **Steering-Loop-Eintrag:** mit diesem Slice ist keine Regel, kein Sensor und keine benannte
+  Spec-Lücke verkörpert. Die Klasse „Plan-Festlegung gegen das Lastenheft“ steht bei 2× im
+  Register; ein drittes Auftreten ist die Schwelle für den Lese-Schritt der Welle-Closure.
+- **Beobachtungs-Register (`../observations/`):** neu
+  [`BEO-ALL/plan-entscheid-steht-gegen-lastenheft`](../observations/BEO-ALL/plan-entscheid-steht-gegen-lastenheft/observation.md)
+  (2×: slice-289 und slice-290),
+  [`BEO-ALL/yaml-dekoder-kuerzt-zahlen-still`](../observations/BEO-ALL/yaml-dekoder-kuerzt-zahlen-still/observation.md)
+  (Code-Review R1 F-5),
+  [`BEO-ALL/regeltext-gegen-spiegel-test`](../observations/BEO-ALL/regeltext-gegen-spiegel-test/observation.md)
+  (R1 F-6: [`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 17 gegen den Spiegel-Test der READMEs)
+  und
+  [`BEO-HARN/slice-mv-scheitert-am-pre-commit-doc-check`](../observations/BEO-HARN/slice-mv-scheitert-am-pre-commit-doc-check/observation.md),
+  je 1× außer dem ersten. Die Zähler folgen aus den Dateien.
+- **Akzeptierte Negative:** Verifikation V-2 — der Reihenfolge-Test von `linelength` bleibt
+  grün, wenn `SortFindings` wegfällt, weil die Reihenfolge schon aus Datei- und Zeilen-Reihenfolge
+  entsteht; den Ausfall der gemeinsamen Sortierung fangen acht Tests anderer Module. V-3 und V-4
+  (INFO) ohne Träger: das Rot von M11 als nil-Panic ist der reale Vorzustand, die Meldung zum
+  unbekannten Schlüssel ist die geteilte strikte Dekodierung.
+- **Folge-Slices:** keine. Release-Prep (CHANGELOG, Handbuch-Kopf, Image-Tags) ist ein eigener
+  Vorgang nach der Welle.
+- **Risiken aus §6:** alle drei *entfallen* — siehe §6.
+- **Trigger-Audit:** läuft mit der Closure von welle-95; dieser Slice setzt keinen Carveout und
+  kein bootstrap-aware Gate. [ADR-0114](../../adr/0114-linelength-modul.md) ist mit ihm
+  `Accepted` geworden; ihre Re-Evaluierungs-Trigger (a)–(f) sind nicht eingetreten.
+- **Drei Paarungen:** getragen von der Closure von welle-95 — kein Anker (nichts verkörpert),
+  kein Folge-Slice, Register die vier Einträge oben.
+- **Reviews und Verifikation:** [Code-Review R1](../../../reviews/2026-11-23-slice-290-code-r1.md)
+  (1 MEDIUM, 3 LOW, 3 INFO — MEDIUM und LOW behoben, F-5/F-6 ins Register),
+  [Code-Review R2](../../../reviews/2026-11-23-slice-290-code-r2.md) über die Fix-Commits
+  (1 MEDIUM, 1 LOW, 2 INFO — behoben),
+  [Verifikation](../../../reviews/2026-11-23-slice-290-verifikation.md) (DoD 1–4 bestätigt,
+  Probe am Image, Byte-Identität gegen v0.91.0 über 20 Vergleiche).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

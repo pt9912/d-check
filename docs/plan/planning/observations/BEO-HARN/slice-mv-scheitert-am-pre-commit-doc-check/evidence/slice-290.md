@@ -1,0 +1,2 @@
+**Vorgang:** slice-290
+**Fund:** `make slice-mv SLICE=slice-290 TO=next` endete mit Exit 2: `doc-check` meldete 13 `target-missing` auf die alte Lage in `open/` (slice-289, Welle, Architect-Verdikt). Liegen blieb ein gestagter Rename; der Planner zog die Verweise von Hand nach und committete Move und Verweise zusammen (`2fda4d3f`). Die übrigen Übergänge der Welle liefen von vornherein von Hand. Das Werkzeug ist aus ai-harness-init adoptiert (seit slice-245).
