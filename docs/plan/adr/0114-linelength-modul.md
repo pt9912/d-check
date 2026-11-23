@@ -72,8 +72,8 @@ Liste als Bezug):
      ist. Ein Wort ist eine längste Folge von Codepunkten ohne Leerraum; Leerraum sind Space und Tab, kein
      anderes Zeichen. Eine solche Zeile bringt kein Umbruch unter die Grenze. Umgekehrt gilt das nicht: nicht
      jede andere überlange Zeile bringt ein Umbruch darunter — eine Überschrift lässt sich nicht umbrechen, und
-     ein Präfix der Markdown-Form kann ein kurzes Wort über die Grenze schieben (Konsequenzen). Jede andere
-     überlange Zeile ist ein Befund; die Ausnahme prüft das Wort, nicht die Form.
+     ein Präfix der Markdown-Form kann das erste Wort eines Listenpunkts oder Zitats über die Grenze schieben
+     (Konsequenzen). Jede andere überlange Zeile ist ein Befund; die Ausnahme prüft das Wort, nicht die Form.
 6. **Befund:** je überlanger Zeile ein Befund `line-chars-exceeded`, Ort = Datei und Zeile, die Meldung nennt
    gemessene Länge und Grenze. Reihenfolge nach Pfad, dann Zeile.
 7. **Bezugsmenge:** der Lauf trägt eine Zeile mit der Zahl der geprüften Dateien, der geprüften Zeilen und der
@@ -138,11 +138,14 @@ und teilt mit `cell-max-chars` die Einheit, nicht den Gegenstand.
 - Negativ — Grenzen der Entscheidung selbst:
   - (c) nimmt eine Zeile **ganz** aus, sobald sie ein Wort über der Grenze trägt — auch wenn umbrechbarer Text
     davor oder dahinter steht, der auf eine eigene Zeile passte. Die Ausnahme prüft das Wort, nicht den Rest.
-  - (c) liest keine Markdown-Form. Ein Wort von höchstens `max-chars` Zeichen, das erst mit dem, was vor ihm
-    stehen muss, über die Grenze ragt — Einrückung, ein Listen-Marker (`- `, `1. `), ein Zitat-Marker (`> `),
-    ein Überschriften-Marker (`## `) —, macht die Zeile zu einem Befund, den kein Umbruch behebt: der Marker
-    ist ein eigenes Wort, die Einrückung Leerraum, und beide bleiben beim Umbruch vor dem Wort. Die Reparatur
-    ist Kürzen des Worts oder der Form.
+  - (c) liest keine Markdown-Form. Ein Wort von höchstens `max-chars` Zeichen, das das **erste** Wort hinter
+    einem Listen- oder Zitat-Marker (`- `, `1. `, `> `) ist und erst mit dem Marker und der Einrückung davor
+    über die Grenze ragt, macht die Zeile zu einem Befund, den kein Umbruch behebt: das erste Wort bleibt auf
+    der Zeile seines Markers. Dasselbe gilt für jedes Wort einer Überschrift, die sich nicht umbrechen lässt,
+    und für jedes Wort eines eingerückten Code-Blocks, dessen Zeilen alle ihre Einrückung tragen. Ein späteres
+    Wort eines Listenpunkts oder Zitats lässt sich dagegen umbrechen: eine Fortsetzungszeile braucht nach
+    CommonMark (*lazy continuation*) weder Marker noch Einrückung. Die Reparatur der Befunde, die kein
+    Umbruch behebt, ist Kürzen des Worts oder der Form.
   - Eine Überschrift lässt sich nicht umbrechen; die Reparatur ist Kürzen, und Kürzen ändert ihren Anker. Die
     gebrochenen Verweise melden `links` und `anchors`.
   - Ein `d-check:ignore`-Kommentar, den ein anderes Modul verlangt, verlängert seine Zeile und zählt mit. Für
@@ -190,6 +193,7 @@ für eine andere Dateiart verlangt (dann ist die Abgrenzung zu `file` neu zu zie
 | 2026-11-23 | Proposed, fortgeschrieben: Entscheid 5 (c) vom Auftraggeber als Alternative H neu bestätigt — ausgenommen ist nur eine Zeile mit einem Wort über der Grenze; die zuerst bestätigte Fassung ist mit ihren Messzahlen verworfene Alternative M; Konsequenzen und Trigger (c) nachgezogen | slice-289 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, berichtigt: die Zahlen zu H in den Alternativen — H nimmt am Bestand 513 Zeilen aus, nicht 467 (die 467 zählten nur innerhalb der Ausnahmen von M); netto 315 Befunde mehr; Stand der Messung benannt, die Zahl der überlangen Zeilen auf diesem Stand ist 2952 | slice-289 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, nach Review R1 fortgeschrieben: die Begründung von 5 (c) behauptet nicht mehr, jede andere überlange Zeile brächte ein Umbruch unter die Grenze (Überschriften, Präfixe der Markdown-Form); die Marker-Konsequenz gilt für jede Grenze ab 1; das Schema ist über [`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml) adressiert; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
+| 2026-11-23 | Proposed, nach Review R2 fortgeschrieben: die Konsequenz zum Präfix der Markdown-Form gilt nur für das erste Wort eines Listenpunkts oder Zitats, für Überschriften und eingerückten Code; ein späteres Wort lässt sich auf eine Fortsetzungszeile ohne Marker umbrechen; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
 
 Nach `Accepted` wird diese Datei **nicht mehr inhaltlich überschrieben**.
 Spätere Korrekturen oder Schärfungen entstehen als neue ADR mit
