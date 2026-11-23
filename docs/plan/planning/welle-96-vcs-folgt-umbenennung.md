@@ -105,7 +105,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   Schalter einschaltet.
 - **Entschieden mit dem Auftraggeber (2026-11-23):** die acht Entscheide in
   [`slice-291`](open/slice-291-vcs-umbenennung-anforderung-und-adr.md) §3 mit den
-  Empfehlungen bestätigt.
+  Empfehlungen bestätigt; nach dem Architect-Verdikt am selben Tag auch Entscheid 5 in
+  der seiten-gleichen Fassung, die Folge-Entscheide 9–14 aus
+  [`ADR-0115`](../adr/0115-vcs-folgt-umbenennung.md) und die Schärfung des
+  Out-of-Scope-Satzes von
+  [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in).
 
 ## 6. Out-of-Scope für diese Welle
 
@@ -121,7 +125,9 @@ der Closure-Trigger unerreichbar wird.
   `ignore-link-targets`
   ([`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/observation.md))
   wird nicht geschärft; eine Verschärfung wäre nicht opt-in-neutral und ein eigener
-  Vorgang.
+  Vorgang. **Eine Ausnahme folgt aus Entscheid 10:** sind beide Schalter an und ist die
+  Quelle des Links umbenannt, ist ein Nachzug auf eine gleichnamige andere Datei Drift
+  — die Gleichsetzung läuft vor der Normierung auf den Dateinamen.
 - **Die Umbenennung der eigenen Spec-Dateien** — gehört zur Baseline-Hebung, die sie
   verlangt, nicht zu dieser Welle.
 - **Andere Module, die git lesen** (`metrics`, `tracked`, `commits`) — `metrics` zählt

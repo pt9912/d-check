@@ -13,8 +13,7 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 
 **Bezug:** [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
 in der Fassung aus [`slice-291`](../open/slice-291-vcs-umbenennung-anforderung-und-adr.md)
-und dessen ADR (Kennung vergibt jener Slice; dieser Kopf zieht sie nach, sobald sie
-steht), [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus),
+und [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md), [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus),
 [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit),
 [`ADR-0024`](../../adr/0024-vcs-immutable-gate.md),
 [`ADR-0103`](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md).
@@ -79,8 +78,12 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       [`harness/sensors/adr-check.md`](../../../../harness/sensors/adr-check.md) nennen den
       Schlüssel (vor dem Editieren aufgelistet,
       [`MR-025`](../../../../harness/conventions.md#mr-025)); `.d-check.yml` schaltet ihn
-      ein, falls Entscheid 7 bestätigt ist; die ADR ist `Accepted` und im Index
-      nachgezogen.
+      ein **im selben Commit**, der
+      [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) auf `Accepted` hebt und den
+      Index nachzieht (Entscheid 14); [`AGENTS.md`](../../../../AGENTS.md) §3.5 und
+      [`harness/README.md`](../../../../harness/README.md) §Traceability rules nennen
+      [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) neben
+      [`ADR-0103`](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md).
 - [ ] `make gates` grün.
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
@@ -99,15 +102,17 @@ Aussagen-Berührung steht hier gar nicht.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `internal/hexagon/port/driven/vcs.go` | update | neue Methode am Port: die Umbenennungen der Range (Vertrag im Kommentar: Commit-Menge, Inhalts-Gleichheit, Mehrdeutigkeit, fail-closed) |
-| `internal/adapter/driven/git/git.go` | update | Umsetzung über die Bäume je Commit und Eltern-Commit bzw. HEAD gegen Index; kein Diff-Walker, der einen unlesbaren Unterbaum still überspringt |
+| `internal/hexagon/port/driven/vcs.go` | update | neue Methode am Port, gerufen nur bei aktivem Schalter: die Abbildung Quelle → eindeutiges Ende (Vertrag nach [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) Entscheidung 13: Commit-Menge, Inhalts-Gleichheit nach Blob-Kennung und Art ohne Ausführbar-Bit, Kette entlang der Abstammung, Mehrdeutigkeit, Basis kein Vorfahr ⇒ leer, fail-closed auf jedes nötige Objekt; Kette und Mehrdeutigkeit entscheidet der Adapter, das Gleichsetzen der Kern) |
+| `internal/adapter/driven/git/git.go` | update | eigener Blob-Vergleich über die Bäume je Commit und Eltern-Commit bzw. HEAD gegen Index; Teilbäume gleicher Kennung bleiben ungelesen; die Rename-Erkennung von go-git wird **nicht** benutzt; kein Diff-Walker, der einen unlesbaren Unterbaum still überspringt |
 | `internal/hexagon/core/model/config.go` | update | `VCSConfig` um den Schalter |
 | `internal/adapter/driven/configyaml/configyaml.go` | update | Schlüssel lesen und am Rand prüfen (Exit 2) |
 | `internal/hexagon/core/rules/vcs.go`, `vcs_link_targets.go` | update | Umbenennungen nur bei aktivem Schalter lesen; das Gleichsetzen im Auflöser der Link-Ziele |
 | `internal/adapter/driving/cli/config_template.go` | update | `--print-config`: Zeile des Schlüssels im `vcs`-Block |
-| `.d-check.yml` | update | `follow-renames: true` im `vcs`-Block, falls Entscheid 7 bestätigt; Kommentar nennt die ADR |
-| `README.md`, `README.de.md`, `docs/user/benutzerhandbuch.md`, `harness/sensors/adr-check.md` | update | nennen `ignore-link-targets` heute und damit die Grenze „anderer Name bleibt Drift“, die der Schalter ändert (Workflow-Skelett `implement-slice` Schritt 17); der Handbuch-Kopf bleibt Release-Prep |
-| ADR aus [`slice-291`](../open/slice-291-vcs-umbenennung-anforderung-und-adr.md), `docs/plan/adr/README.md` | update | Status `Accepted` und Index — durch den Architect |
+| `.d-check.yml` | update | `follow-renames: true` im `vcs`-Block (Entscheid 7), im selben Commit wie der Übergang der ADR nach `Accepted` (Entscheid 14); Kommentar nennt die ADR |
+| `docs/user/benutzerhandbuch.md`, `harness/sensors/adr-check.md` | update | nennen `ignore-link-targets` und die Grenze „anderer Name bleibt Drift“, die der Schalter ändert (Workflow-Skelett `implement-slice` Schritt 17); der Handbuch-Kopf bleibt Release-Prep |
+| `README.md`, `README.de.md` | — | nennen die Grenze „anderer Name“ nicht; ein Satz zum neuen Schalter ist README-Prosa und gehört in die Release-Prep ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 17), außer ein Spiegel-Test verlangt ihn schon hier |
+| [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md), `docs/plan/adr/README.md` | update | Status `Accepted` und Index — durch den Architect |
+| `AGENTS.md` §3.5, `harness/README.md` §Traceability rules | update | nennen [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) neben [`ADR-0103`](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md) (Entscheid 14) |
 | `docs/user/abdeckung-tests.md` | update | von `make abdeckung` abgeleitet; `make test` hält sie gegen die Ableitung |
 | Testdateien neben Adapter, Regel und Konfigurations-Rand; der Test-Doppelgänger des Ports in `internal/hexagon/core/rules/vcs_test.go` | neu / update | Happy/Boundary/Negative je Kriterium von [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in); jeder Implementierer des Ports folgt der neuen Methode |
 
@@ -123,7 +128,7 @@ grep -rln "ignore-link-targets\|IgnoreLinkTargets" --exclude-dir=.git --exclude-
 ```
 
 **Testfälle aus der Anforderung** (Negativliste nach Schritt 19 des Workflow-Skeletts; die
-endgültige Liste folgt den bestätigten Entscheiden):
+Liste folgt den bestätigten Entscheiden 1–14 und dem Architect-Verdikt):
 
 - `git mv A B` und Nachzug in derselben `Accepted`-ADR, ein Commit ⇒ mit Schalter kein
   Befund, ohne Schalter `core-drift-vcs` (heutiges Verhalten, byte-identisch).
@@ -131,17 +136,28 @@ endgültige Liste folgt den bestätigten Entscheiden):
 - Umbiegen von A auf eine bestehende, nicht umbenannte Datei C ⇒ Befund.
 - Nachzug mit geändertem Anker oder Linktext ⇒ Befund.
 - Umbenennen und im selben Commit ändern ⇒ Befund (keine Inhalts-Gleichheit).
-- Kette über drei Commits (A → B, Inhaltsänderung an B, B → C) ⇒ nach Entscheid 2.
+- Kette über drei Commits (A → B, Inhaltsänderung an B, B → C) ⇒ folgt (Entscheid 2).
 - Zwei verschwundene oder zwei neue Pfade mit demselben Blob; Kette mit zwei Enden ⇒
   Befund (Mehrdeutigkeit).
-- Umbenennung nur in einem Merge-Commit; Basis kein Vorfahr von HEAD ⇒ nach der
-  Spezifikation (fail-closed Exit 2 oder benannte Menge).
+- Merge als HEAD mit einer umbenennenden Seite ⇒ die Umbenennung trägt (Entscheid 11);
+  parallele Linien, die denselben Pfad verschieden umbenennen ⇒ Befund.
+- Basis kein Vorfahr von HEAD ⇒ keine Umbenennung, Urteil wie ohne Schalter
+  (Entscheid 12), kein Exit 2.
+- Unveränderter Link auf eine umbenannte Datei in einer ADR, die nur einen erlaubten
+  Anhang bekommt ⇒ kein Befund (seiten-gleich, Entscheid 9).
+- Tausch A ↔ B in einem Commit ⇒ kein Pfad nimmt teil (Quelle und Ende zugleich).
+- Beide Schalter, umbenannte Quelle, Nachzug auf eine gleichnamige andere Datei ⇒ Befund
+  (Entscheid 10).
+- Ende der Kette in HEAD gelöscht ⇒ keine Umbenennung.
+- Nur das Ausführbar-Bit geändert ⇒ gleich; Symlink gegen Datei mit gleichem Blob ⇒
+  nicht gleich (Entscheid 13).
 - Link auf ein umbenanntes Verzeichnis ⇒ wie heute; Link auf eine Datei darin ⇒ folgt.
 - Die immutable Datei selbst umbenannt ⇒ Befund wie heute.
 - `--staged` mit `git mv` und Nachzug im Index ⇒ kein Befund; `git mv` in einem früheren
   Commit, nur der Nachzug gestagt ⇒ Befund (benannte Grenze).
 - Unlesbares Objekt eines Commits der Range ⇒ Exit 2.
-- Zweimal derselbe Lauf ⇒ byte-gleiche Ausgabe.
+- Zehn Läufe derselben Eingabe ⇒ byte-gleiche Ausgabe (Messmethode von
+  [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
 
 ## 4. Trigger
 

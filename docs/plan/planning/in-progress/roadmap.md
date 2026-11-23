@@ -45,7 +45,7 @@ und geschätzter Aufwand (S/M/L, kein Termin).
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| — keine — | | | |
+| welle-97 — `linelength` nimmt eingerückte Tabellenzeilen aus ([Issue #20](https://github.com/pt9912/d-check/issues/20)) | welle-96 geschlossen (ihre Welle-Datei liegt in `done/`) | Anforderung [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) und Folge-ADR zu [`ADR-0114`](../../adr/0114-linelength-modul.md) (`supersedes`), dann der Kern | M |
 
 ## Meilensteine
 

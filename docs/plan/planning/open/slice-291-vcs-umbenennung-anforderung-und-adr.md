@@ -19,9 +19,12 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 [`ADR-0103`](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md).
 
 **Berührte Spec-Stellen:** [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
-(Absatz „Pfad-Nachzug (opt-in)“, Akzeptanzkriterien, Version und Historie);
+(Absatz „Pfad-Nachzug (opt-in)“ samt den Sätzen zum Nachzug auf einen anderen Namen und
+zur Grenze „ob es dieselbe Datei ist“, Akzeptanzkriterien, der Out-of-Scope-Satz
+„Umbenennungs-Erkennung über Inhalts-Ähnlichkeit“, Version und Historie);
 `spezifikation.md` §[`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 und 4 (Lesen der Umbenennungen,
-Normierung) und §2 (Schema `vcs.*`); `architecture.md` bleibt unberührt (die Rolle
+Normierung, dazu die Sätze von Schritt 4 zum anderen Namen und zur Grenze „dieselbe
+Datei“) und §2 (Schema `vcs.*`); `architecture.md` bleibt unberührt (die Rolle
 „git-Port“ besteht). Der Verweis zeigt **aufwärts**: Die Spec nennt diesen Slice nie.
 
 **Verantwortlich:** —
@@ -70,10 +73,13 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 - [ ] [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
       ist im Lastenheft geändert (Version gehoben, Historie-Zeile nach
       [`MR-032`](../../../../harness/conventions.md#mr-032)): der Absatz zum Pfad-Nachzug
-      nennt das Folgen einer Umbenennung samt Grenzen, das Kriterium „Boundary
-      (Pfad-Nachzug)“ widerspricht ihm nicht mehr, und je Entscheid steht ein
-      Akzeptanzkriterium — mindestens die vier aus dem Issue, die Kette, die
-      Mehrdeutigkeit und „ohne Schalter byte-identisch“.
+      nennt das Folgen einer Umbenennung samt Grenzen; das Kriterium „Boundary
+      (Pfad-Nachzug)“ gilt eingeschränkt auf „ohne `vcs.follow-renames`“, ein neues
+      Kriterium steht daneben; der Out-of-Scope-Satz zur Umbenennungs-Erkennung ist
+      geschärft (Ähnlichkeit bleibt ausgeschlossen, die Umbenennung der immutablen Datei
+      selbst bleibt Drift); je Entscheid steht ein Akzeptanzkriterium — mindestens die
+      vier aus dem Issue, die Kette, die Mehrdeutigkeit, „Basis kein Vorfahr“ und „ohne
+      Schalter byte-identisch“.
 - [ ] Die Spezifikation führt das Verfahren (welche Commits und Bäume gelesen werden,
       woran eine Umbenennung erkannt wird, wie ein Ziel über sie gleichgesetzt wird,
       fail-closed-Fälle) und den Schlüssel im Schema; jede Aussage über die Grenzen
@@ -100,10 +106,10 @@ Aussagen-Berührung steht hier gar nicht.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `spec/lastenheft.md` | update | [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in): Absatz, Kriterien, Version und Historie |
-| `spec/spezifikation.md` | update | §[`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 und 4, Schema-Zeile des neuen Schlüssels, Historie |
-| ADR im Verzeichnis `docs/plan/adr/` (nächste freie Nummer, Titel „vcs-folgt-umbenennung“) | neu | Entscheidung samt Alternativen; `Proposed` |
-| `docs/plan/adr/README.md` | update | ADR-Index ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 4) |
+| `spec/lastenheft.md` | update | [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in): Absatz samt den Sätzen zum anderen Namen und zur Grenze „dieselbe Datei“, Kriterien, Out-of-Scope-Satz, Version und Historie |
+| `spec/spezifikation.md` | update | §[`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 und 4 (samt den Sätzen zum anderen Namen und zur Grenze „dieselbe Datei“), Schema-Zeile des neuen Schlüssels, Historie |
+| [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) | liegt vor (`Proposed`, vom Architect mit dem Verdikt angelegt) | der Architect gleicht sie an, wenn das Schreiben der Anforderung eine Entscheidung verschiebt |
+| `docs/plan/adr/README.md` | liegt vor | ADR-Index ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 4) |
 | Plan von [`slice-292`](../open/slice-292-vcs-umbenennung-modulkern.md) | update | die Testfälle, die aus den bestätigten Entscheiden folgen |
 
 **Anlass gezählt** (Regel 14/18 der Dokumentations-Regeln — Form vor Zahl): eine
@@ -118,19 +124,24 @@ echo "$acc" | xargs grep -lE '\]\([^)]*spec/spezifikation\.md' | wc -l  # 59
 ```
 
 **Festzuschreibende Entscheide** — vom Auftraggeber am 2026-11-23 mit den
-Empfehlungen bestätigt (unverändert 1–8):
+Empfehlungen bestätigt (1–8); nach dem Architect-Verdikt
+(`docs/reviews/2026-11-23-welle-96-architect-verdikt.md`) am selben Tag bestätigt:
+Entscheid 5 in der seiten-gleichen Fassung, die Folge-Entscheide 9–14 und die
+Schärfung des Out-of-Scope-Satzes. Träger ist
+[`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) (`Proposed`):
 
 1. **Woran eine Umbenennung erkannt wird: Inhalts-Gleichheit, keine
    Ähnlichkeits-Schwelle.** Ein Pfad A, der vor einem Schritt existiert und danach
    nicht, und ein Pfad B, der danach existiert und vorher nicht, sind eine
    Umbenennung A → B genau dann, wenn beide dasselbe Blob tragen (git: `R100`).
    Verworfen: eine Ähnlichkeits-Schwelle (git-Default 50 %; die Vorbelegung der
-   Rename-Erkennung von go-git ist am Gegenstand nachzulesen, nicht zu übernehmen) —
-   sie ließe „umbenennen und umschreiben“ durch, und genau das ist das Umbiegen auf
-   ein anderes Dokument, das die Anforderung als Drift hält; außerdem wäre die
-   Schwelle ein Parameter, den niemand entschieden hat. Die eigene Hard Rule
-   ([`AGENTS.md`](../../../../AGENTS.md) §3.3) macht den Move-Commit rein — die
-   Form, die Inhalts-Gleichheit erkennt.
+   Rename-Erkennung von go-git ist 60 %, gelesen im Modul-Cache des Test-Images) —
+   die Schwelle wäre ein Parameter, den niemand entschieden hat, und kein
+   Kriterium, das ein Mensch beim Lesen des Diffs nachprüfen kann. Die eigene Hard
+   Rule ([`AGENTS.md`](../../../../AGENTS.md) §3.3) macht den Move-Commit rein — die
+   Form, die Inhalts-Gleichheit erkennt. **Akzeptiertes Negativ:** „umbenennen und
+   umschreiben“ bleibt nur **innerhalb eines Commits** Drift; über zwei Commits
+   (reiner Move, dann Inhalt) lässt Entscheid 2 es bewusst durch.
 2. **Was ein „Schritt“ ist: jeder Commit der Range, mit Kette.** Gelesen wird jeder
    Nicht-Merge-Commit, der von HEAD aus erreichbar ist und von BASE aus nicht
    (dieselbe Menge wie das Modul `commits`), je gegen seinen Eltern-Commit; im
@@ -142,17 +153,19 @@ Empfehlungen bestätigt (unverändert 1–8):
    sauber ist.
 3. **Mehrdeutigkeit bleibt Drift.** Tragen in einem Schritt mehrere verschwundene
    oder mehrere neue Pfade dasselbe Blob, oder führt die Kette von A zu zwei
-   verschiedenen Enden, gilt für A keine Umbenennung. Ein Merge-Commit trägt selbst
-   keine Umbenennung bei (seine Seiten stehen als eigene Commits in der Menge).
+   verschiedenen Enden, gilt für A keine Umbenennung. Wie Ketten über Merges laufen,
+   regelt Entscheid 11.
 4. **Eigener Schalter `vcs.follow-renames`** (bool, Default `false`), unabhängig von
    `vcs.ignore-link-targets`; aus ⇒ byte-identisch
    ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)). Verworfen:
    die Bedeutung von `ignore-link-targets` erweitern (Vorschlag 1 des Issues) — das
    lockerte das Gate jedes Repos, das den Schlüssel schon setzt, ohne dass es darum
    gebeten hat ([`AGENTS.md`](../../../../AGENTS.md) §3.6).
-5. **Was gleichgesetzt wird: nur das aufgelöste Ziel.** Ein Link-Ziel, das in BASE
-   auf den Pfad A auflöst, gilt als Ziel auf B, wenn die Range A → B führt; mit HEAD
-   verglichen wird der aufgelöste Pfad samt Anker, sonst nichts. Anker, Linktext,
+5. **Was gleichgesetzt wird: nur das aufgelöste Ziel, auf beiden Seiten gleich.** Ein
+   Link-Ziel, das auf den Pfad A oder auf B auflöst, gilt als Ziel auf B, wenn die Range
+   A → B führt — in der BASE- **und** der HEAD-Fassung durch dieselbe Funktion
+   (Entscheid 9), sodass ein unveränderter Link auf eine umbenannte Datei gleich
+   bleibt; verglichen wird der aufgelöste Pfad samt Anker, sonst nichts. Anker, Linktext,
    Titel, übrige Zeile und Zahl der Links bleiben roh wie heute; ein Ziel, das an
    keiner Umbenennung teilnimmt, behandelt das Modul wie bisher (roh oder, mit
    `ignore-link-targets`, auf Dateiname und Anker normiert). Was ein Link ist,
@@ -164,9 +177,10 @@ Empfehlungen bestätigt (unverändert 1–8):
    liest dafür Bäume jedes Commits der Range, über die Scan-Menge und `vcs.paths`
    hinaus — eine Umbenennung irgendwo im Repo zählt. Die Zusage gilt dort nur für
    Inhalts-Gleichheit, nicht für „derselbe Gegenstand“. Ein unlesbarer Commit oder
-   Baum ist ein Fehler (Exit 2), keine stille Lücke — dieselbe Politik wie
-   `AllPaths`. Kein neuer Grund-Code: es bleibt `core-drift-vcs`. Die Umbenennung
-   der immutablen Datei selbst bleibt Drift.
+   Baum, den die Erkennung braucht, ist ein Fehler (Exit 2), keine stille Lücke —
+   dieselbe Politik wie `AllPaths` (Einzelheiten Entscheid 13); eine Basis, die kein
+   Vorfahr ist, regelt Entscheid 12. Kein neuer Grund-Code: es bleibt `core-drift-vcs`.
+   Die Umbenennung der immutablen Datei selbst bleibt Drift.
 7. **Eigenes Profil:** `.d-check.yml` schaltet `follow-renames: true` im `vcs`-Block
    ein ([`slice-292`](../open/slice-292-vcs-umbenennung-modulkern.md)). Begründung:
    [`ADR-0103`](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md) hat für dieses
@@ -179,13 +193,41 @@ Empfehlungen bestätigt (unverändert 1–8):
    ([`BEO-ALL/adr-accepted-bevor-der-mechanismus-steht`](../observations/BEO-ALL/adr-accepted-bevor-der-mechanismus-steht/observation.md),
    2×).
 
+Folge-Entscheide aus dem Architect-Verdikt — der Wortlaut steht in
+[`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) §Entscheidung, hier nur der Kern:
+
+9. **Seiten-gleich:** die Gleichsetzung ist eine Funktion des aufgelösten Pfads, auf
+   BASE und HEAD gleich angewandt; Invariante „gleicher Rohtext ⇒ gleicher Core“. Ein
+   Pfad, der zugleich Quelle einer und Ende einer anderen Umbenennung ist, nimmt nicht
+   teil.
+10. **Zusammenspiel der Schalter:** erst gleichsetzen, dann (mit `ignore-link-targets`)
+    auf Dateiname und Anker normieren. Folge: mit beiden Schaltern wird der Nachzug von
+    einer umbenannten Quelle auf eine **gleichnamige andere** Datei Drift — die eine
+    Stelle, an der die Welle die Grenze von `ignore-link-targets` schärft.
+11. **Kette entlang der Abstammung:** Y → Z setzt X → Y nur fort, wenn dessen Commit ein
+    Vorfahr ist; ein Merge trägt die Umbenennung einer Seite weiter; das Ergebnis hängt
+    nicht von der Aufzählungsreihenfolge ab.
+12. **Basis kein Vorfahr von HEAD:** die Range trägt keine Umbenennung, das Modul urteilt
+    wie ohne Schalter — kein Exit 2 (sonst würde der CI-Rückfall nach
+    [`ADR-0109`](../../adr/0109-ci-push-range-faellt-bei-force-push-zurueck.md) rot).
+13. **Port-Vertrag:** eigener Blob-Vergleich, die Rename-Erkennung von go-git wird nicht
+    benutzt; fail-closed auf jedes nötige Objekt; gleich sind Einträge mit gleicher
+    Blob-Kennung und gleicher Art (Datei oder Symlink), das Ausführbar-Bit zählt nicht.
+14. **Reihenfolge im eigenen Profil:** der Schalter in `.d-check.yml` landet im selben
+    Commit, der [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) auf `Accepted`
+    hebt; [`AGENTS.md`](../../../../AGENTS.md) §3.5 und
+    [`harness/README.md`](../../../../harness/README.md) §Traceability rules nennen sie
+    dann neben [`ADR-0103`](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md).
+
 **Gegenprobe vor dem Schreiben (Schritt 19 des Workflow-Skeletts):** die Negativfälle
 stehen als Testfälle für [`slice-292`](../open/slice-292-vcs-umbenennung-modulkern.md) —
 Umbiegen auf eine bestehende Datei C; Löschen und neu Anlegen mit anderem Inhalt;
 umbenennen und im selben Commit ändern; zwei Kopien desselben Blobs; Kette über drei
 Commits; Kette mit Verzweigung; Anker- oder Linktext-Änderung zusammen mit dem
 Nachzug; Link auf ein umbenanntes Verzeichnis; Umbenennung in einem Merge; die
-immutable Datei selbst umbenannt; `--staged` mit `git mv` und Nachzug im Index.
+immutable Datei selbst umbenannt; `--staged` mit `git mv` und Nachzug im Index; dazu
+die Fälle aus dem Architect-Verdikt (Liste in
+[`slice-292`](../open/slice-292-vcs-umbenennung-modulkern.md) §3).
 
 ## 4. Trigger
 
@@ -202,8 +244,9 @@ ist frei (`in-progress/` trägt nur die Roadmap).
   Entscheid 2 verlangt eine eigene Anforderung an den git-Port, die über
   [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
   hinausgeht.
-- `in-progress` → `open` (blockiert): der Auftraggeber entscheidet einen der Punkte
-  1, 2 oder 4 nicht; ohne Entscheid beginnt kein Code.
+- `in-progress` → `open` (blockiert): der Auftraggeber widerruft einen der Entscheide
+  1, 2, 4 oder 9–13, oder das Schreiben der Anforderung zeigt, dass einer davon gegen
+  eine andere Lastenheft-Anforderung steht; ohne tragenden Entscheid beginnt kein Code.
 
 ## 5. Closure-Trigger
 
@@ -241,7 +284,8 @@ dasteht.
   oder einer Basis, die kein Vorfahr ist, eine andere als erwartet
   ([`ADR-0109`](../../adr/0109-ci-push-range-faellt-bei-force-push-zurueck.md) regelt
   die CI-Range) — **Ausgang:** *entfallen*, wenn die Spezifikation die Commit-Menge
-  und den Fall „Basis kein Vorfahr“ (fail-closed, Exit 2) festschreibt und
+  und den Fall „Basis kein Vorfahr ⇒ keine Umbenennung, Urteil wie ohne Schalter“
+  (Entscheid 12) festschreibt und
   [`slice-292`](../open/slice-292-vcs-umbenennung-modulkern.md) einen Test dafür trägt.
 
 ## 7. Closure-Notiz
