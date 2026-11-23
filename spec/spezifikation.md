@@ -2080,21 +2080,24 @@ abdeckt:
    - *Kette entlang der Abstammung.* Eine Umbenennung Y → Z setzt X → Y nur
      fort, wenn der Commit von X → Y ein Vorfahr des Commits von Y → Z ist.
      Je Pfad zählen die Enden aller Abstammungslinien der Range, die ihn
-     umbenennen; eine Linie, die ihn unberührt lässt, trägt kein Ende bei, und
-     ein Merge setzt die Linien seiner Seiten fort. Quelle einer Umbenennung
-     ist nur ein Pfad, der in BASE existiert; ein Pfad, den eine Kette nur
-     durchläuft, ist weder Quelle noch Ende. Verschwindet der Pfad, auf dem
-     eine Linie steht, in einem späteren Schritt dieser Linie, ohne umbenannt
-     zu werden, endet sie ohne Ende („gelöscht“): die Quelle hat keine
+     umbenennen oder löschen; eine Linie, die ihn unberührt lässt, trägt kein
+     Ende bei, und ein Merge setzt die Linien seiner Seiten fort. Quelle einer
+     Umbenennung ist nur ein Pfad, der in BASE existiert; ein Pfad, den eine
+     Kette nur durchläuft, ist weder Quelle noch Ende. Verschwindet der Pfad,
+     auf dem eine Linie steht, in einem späteren Schritt dieser Linie, ohne
+     umbenannt zu werden, endet sie ohne Ende („gelöscht“): die Quelle hat keine
      Umbenennung, auch wenn der Pfad danach neu angelegt wird. Bleibt der Pfad
      in einem Schritt bestehen und ändert nur seinen Inhalt, läuft die Linie
-     weiter. Führen alle Linien zu genau einem Ende und existiert es in HEAD
-     (bzw. im Index), gilt Quelle → Ende; zwei verschiedene Enden, eine Linie
-     mit „gelöscht“ neben einer mit Ende oder ein Ende, das in HEAD fehlt,
-     ergeben für die Quelle keine Umbenennung. Das Ergebnis hängt nicht von der
-     Reihenfolge ab, in der Commits oder Einträge aufgezählt werden; eine
-     Aufzählung nach Commit-Kennung, wie sie das Modul `commits` liest, ist
-     nicht topologisch.
+     weiter. Das gilt für jede Linie, auch für die Seite eines Merges, die den
+     Pfad nicht umbenennt: löscht sie ihn in einem Schritt und legt ihn später
+     neu an, endet sie mit „gelöscht“. Unberührt ist nur eine Linie, auf der der
+     Pfad in jedem Schritt bestehen bleibt, auch mit geändertem Inhalt. Führen
+     alle Linien zu genau einem Ende und existiert es in HEAD (bzw. im Index),
+     gilt Quelle → Ende; zwei verschiedene Enden, eine Linie mit „gelöscht“
+     neben einer mit Ende oder ein Ende, das in HEAD fehlt, ergeben für die
+     Quelle keine Umbenennung. Das Ergebnis hängt nicht von der Reihenfolge ab,
+     in der Commits oder Einträge aufgezählt werden; eine Aufzählung nach
+     Commit-Kennung, wie sie das Modul `commits` liest, ist nicht topologisch.
    - *Gelesen und fail-closed.* Gelesen werden jeder Commit der Menge und jeder
      Teilbaum, der sich zwischen einem Schritt und seinem Eltern-Commit
      unterscheidet; ein Teilbaum mit gleicher Kennung auf beiden Seiten muss
@@ -4305,7 +4308,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
-| 2026-11-23 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) und §2-Schema: der opt-in-Schlüssel `vcs.follow-renames` ([`DC-FA-VCS-001`](lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) 0.114.0). Schritt 2 führt die Abbildung der Umbenennungen der Range: Commit-Menge (von HEAD erreichbar, von BASE nicht; ein Schritt ist ein Commit mit genau einem Eltern-Commit, mit `--staged` HEAD → Index), Basis kein Vorfahr ⇒ leere Abbildung ohne Exit 2, Umbenennung an gleicher Blob-Kennung und Art (drei Arten, auch im Index; das Ausführbar-Bit zählt nicht), Mehrdeutigkeit ohne Umbenennung, Kette entlang der Abstammung unabhängig von der Aufzählungsreihenfolge (Quelle nur ein Pfad aus BASE, ein Zwischenpfad weder Quelle noch Ende, eine Linie, deren Pfad ohne Umbenennung verschwindet, endet mit „gelöscht“, auch bei Neuanlage), fail-closed auf jedes nötige Objekt; die Kandidaten-Mengen bleiben unberührt. Schritt 4 setzt ein teilnehmendes Ziel auf beiden Seiten gleich auf das Ende, mit beiden Schlüsseln vor der Normierung auf den Dateinamen (Drift für einen Nachzug auf eine gleichnamige andere Datei nur, wenn die Umbenennung den Dateinamen wechselt); ohne `vcs.ignore-link-targets` kein zusätzlicher Befund, der fail-closed-Fall eines Zwischen-Commits ist benannt; die Liste der Ziele, die nicht auflösen, nennt jetzt auch Query und Ziel außerhalb des Repos; die Sätze zum anderen Namen, zu „dieselbe Datei“ und zur Umbenennung beim Umzug sind auf den Schlüssel bezogen. §2: neue Zeile `vcs.follow-renames`, die Zeile `vcs.ignore-link-targets` nennt den anderen Namen nur noch ohne ihn. Kein neuer Grund-Code. Das Verfahren gilt für das fertige Modul |
+| 2026-11-23 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) und §2-Schema: der opt-in-Schlüssel `vcs.follow-renames` ([`DC-FA-VCS-001`](lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) 0.114.0). Schritt 2 führt die Abbildung der Umbenennungen der Range: Commit-Menge (von HEAD erreichbar, von BASE nicht; ein Schritt ist ein Commit mit genau einem Eltern-Commit, mit `--staged` HEAD → Index), Basis kein Vorfahr ⇒ leere Abbildung ohne Exit 2, Umbenennung an gleicher Blob-Kennung und Art (drei Arten, auch im Index; das Ausführbar-Bit zählt nicht), Mehrdeutigkeit ohne Umbenennung, Kette entlang der Abstammung unabhängig von der Aufzählungsreihenfolge (Quelle nur ein Pfad aus BASE, ein Zwischenpfad weder Quelle noch Ende, eine Linie, deren Pfad ohne Umbenennung verschwindet, endet mit „gelöscht“, auch bei Neuanlage und auch auf der Seite eines Merges, die den Pfad nicht umbenennt; unberührt ist nur eine Linie, auf der der Pfad in jedem Schritt bestehen bleibt), fail-closed auf jedes nötige Objekt; die Kandidaten-Mengen bleiben unberührt. Schritt 4 setzt ein teilnehmendes Ziel auf beiden Seiten gleich auf das Ende, mit beiden Schlüsseln vor der Normierung auf den Dateinamen (Drift für einen Nachzug auf eine gleichnamige andere Datei nur, wenn die Umbenennung den Dateinamen wechselt); ohne `vcs.ignore-link-targets` kein zusätzlicher Befund, der fail-closed-Fall eines Zwischen-Commits ist benannt; die Liste der Ziele, die nicht auflösen, nennt jetzt auch Query und Ziel außerhalb des Repos; die Sätze zum anderen Namen, zu „dieselbe Datei“ und zur Umbenennung beim Umzug sind auf den Schlüssel bezogen. §2: neue Zeile `vcs.follow-renames`, die Zeile `vcs.ignore-link-targets` nennt den anderen Namen nur noch ohne ihn. Kein neuer Grund-Code. Das Verfahren gilt für das fertige Modul |
 | 2026-11-23 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) Schritt 1: die Regel zum Schlüssel ohne Wert gilt nur für die vier eigenen Werte (`max-chars` und die drei Schalter); `scope` und `exempt-paths` ohne Wert gelten wie bei jedem scannenden Modul als abwesend. Die Grenzen nennen, dass ein YAML-Alias zu seinem Anker aufgelöst und dort geprüft wird |
 | 2026-11-23 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) Schritt 1: ein Schlüssel des Blocks ohne Wert (YAML-`null`) ist gesetzt und kein gültiger Wert ⇒ Exit 2 — anders als bei `versions`, `planning` und `structure`; die Grenzen nennen, dass Schritt 1 den YAML-Typ liest, nicht den Zahlwert (`80.0` ⇒ Exit 2) |
 | 2026-11-23 | §4: der Grund-Code `line-chars-exceeded` (`SPEC-112`) steht in der Tabelle, weil das Modul `linelength` ihn nun liefert; das Verfahren in §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) ist unverändert |
