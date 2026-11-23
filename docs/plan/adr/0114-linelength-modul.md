@@ -1,6 +1,6 @@
 # ADR-0114: Das Modul `linelength` begrenzt die Zeichen je Zeile in den Markdown-Dateien der Scan-Menge
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-11-22
 
@@ -232,6 +232,7 @@ eine eigene Ausnahme vom Ausschluss in Lastenheft §5 und eine eigene Entscheidu
 | 2026-11-23 | Proposed, nach der Verifikation (V-1) fortgeschrieben: der globale Ausschluss von Lint-, Stil- und Rechtschreib-Prüfungen in Lastenheft §5 bleibt bestehen und nimmt nur die Zeilenlänge in Markdown-Dateien aus (Entscheid des Auftraggebers vom 2026-11-23); Begründung im Kontext, Alternative A als etabliertes Werkzeug (markdownlint MD013), Konsequenz und Trigger (f): kein Präzedenzfall; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, nach Code-Review R1 fortgeschrieben: Entscheid 4 legt fest, dass ein Schlüssel ohne Wert (YAML-`null`) gesetzt und ungültig ist (Exit 2), wie die Anforderung es für einen Schalter ohne Wahrheitswert sagt; Alternative N (abwesend, wie bei den Nachbar-Modulen) verworfen; Schärft nennt [`SPEC-112`](../../../spec/spezifikation.md#4-grund--und-fehler-codes) | slice-290 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, nach Code-Review R2 fortgeschrieben: Entscheid 4 gilt nur für die vier eigenen Werte (`max-chars`, drei Schalter); `scope` und `exempt-paths` ohne Wert folgen der geteilten Antwort aller scannenden Module (abwesend) | slice-290 <!-- d-check:status-provenance --> |
+| 2026-11-23 | Accepted: slice-290 ist verifiziert, Code-Review R1 und R2 sind aufgelöst; die Entscheide 1–9 tragen am Code und am gebauten Image, ohne inhaltliche Änderung gegenüber der letzten Fassung | slice-290 <!-- d-check:status-provenance --> |
 
 Nach `Accepted` wird diese Datei **nicht mehr inhaltlich überschrieben**.
 Spätere Korrekturen oder Schärfungen entstehen als neue ADR mit
