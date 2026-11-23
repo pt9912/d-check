@@ -23,8 +23,9 @@ slice-289 <!-- d-check:status-provenance -->.
 **Schärft:**
 [`DC-FA-LLEN-001.a`](../../../spec/spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength)
 (neues Modul-Verfahren samt Grund-Code `line-chars-exceeded`) und das Schema `linelength.*` in
-[`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml); die Zeile des Grund-Codes in
-[§4](../../../spec/spezifikation.md#4-grund--und-fehler-codes) kommt mit dem registrierten Modul.
+[`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml) sowie die Zeile des Grund-Codes,
+[`SPEC-112`](../../../spec/spezifikation.md#4-grund--und-fehler-codes); diese Kennung steht in einer
+Tabellenzelle ohne eigenen Anker, der Link zeigt auf ihre Sektion.
 
 **Regeln:** Baseline-Regelwerk
 [`modul-04-adrs.md` §Ziel-Form: ADR (MADR)](../../../.harness/baseline/v6.18.1/regelwerk/modul-04-adrs.md).
@@ -74,7 +75,11 @@ Liste als Bezug):
    dieselbe Zerlegung wie bei `pinsync` ([ADR-0113](0113-pinsync-modul.md) Entscheidung 2). Ein Tab ist ein
    Zeichen. Ungültiges UTF-8 zählt je Byte als ein Zeichen.
 4. **Schwelle:** `linelength.max-chars`, Pflicht bei aktivem Modul, ganzzahlig ≥ 1, sonst Exit 2. Befund bei
-   `Länge > max-chars`; genau auf der Grenze ist befundfrei.
+   `Länge > max-chars`; genau auf der Grenze ist befundfrei. Ein Schlüssel des Blocks ohne Wert (YAML-`null`,
+   etwa `max-chars:` oder `exempt-tables: ~`) ist **gesetzt** und trägt keinen gültigen Wert ⇒ Exit 2, für
+   `max-chars` wie für die drei Schalter und auch ohne aktives Modul. Das weicht bewusst von `versions`,
+   `planning` und `structure` ab, wo ein Schlüssel ohne Wert als abwesend gilt (Alternative N): Ein Schalter
+   ohne Wert schaltete hier still eine Ausnahme ein.
 5. **Ausnahmen, je einzeln schaltbar, Default „ausgenommen“.** Überschriften zählen mit.
    - (a) `exempt-code-blocks`: Zeilen, die nicht in `proseLineSet` liegen — Fenced-Code samt Zäunen, nach dem
      Umschalt-Automaten der geteilten Lexik.
@@ -129,6 +134,7 @@ und teilt mit `cell-max-chars` die Einheit, nicht den Gegenstand.
 | J — leere Menge ⇒ Exit 2 (Empfehlung des Plans) | kein Lauf ohne Gegenstand passiert grün | widerspricht [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) für eine explizit leere `scope.roots`; Exit 2 ist ein Eingabefehler, und eine leere Scan-Menge ist keiner — auch die übrigen scannenden Module laufen darüber ohne Fehler |
 | K — leere Menge ⇒ Befund (Exit 1), ausgenommen eine explizit leere `scope.roots` | fail-closed und mit [`DC-FA-CONF-002`](../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope) verträglich | ein Grund-Code mehr für einen Fall, den die Bezugsmenge schon zeigt; die Präzedenz (`file-no-match`) gilt Modulen, deren Regel Dateien behauptet — `linelength` behauptet keine |
 | M — (c) nach dem letzten Leerraum: ausgenommen ist eine Zeile, deren Codepunkte an den Positionen `max-chars + 1` bis Zeilenende keinen Leerraum tragen (zuerst bestätigt am 2026-11-22) | eine Zeile mit einem langen Link am Ende muss nicht vor dem Link umbrechen; eine Prüfung nur ab der Grenze | gröber, als ihr Name sagt: am eigenen Bestand (Stand `f3dc94da`) bei `max-chars: 120` über die Markdown-Dateien der Scan-Menge, nach (a) und (b), nimmt sie von 2952 überlangen Zeilen 828 aus (2124 bleiben Befunde) — von den 828 tragen 151 keinen Leerraum, 316 ein Wort über 120 und 361 keines, sodass ein Umbruch sie unter die Grenze brächte; bei 141 davon ist das letzte Wort höchstens 20 Zeichen lang, gewöhnliche Prosa, die ein Wort über die Grenze ragt |
+| N — ein Schlüssel ohne Wert (YAML-`null`) gilt als abwesend, wie bei `versions`, `planning` und `structure` | dieselbe Lesart wie die Nachbar-Module; `exempt-tables:` verhält sich wie ein fehlender Schalter | ein Schalter ohne Wert schaltet still den Default „ausgenommen“ ein, und Zeilen fallen ungemessen aus dem Lauf; die Anforderung nennt jeden Schalter, der kein Wahrheitswert ist, einen Eingabefehler, und das Modul liest seine Werte ohnehin strenger als die Nachbarn (nur YAML-Ganzzahl, nur `true`/`false`) |
 | **H — eigenes Modul, Codepunkte der rohen Zeile, Ausnahmen aus der geteilten Lexik, (c) nur bei einem Wort über der Grenze, leere Menge kein Fehler, kein Marker** | nimmt nur Zeilen aus, die kein Umbruch unter die Grenze bringt; am Bestand oben nimmt H 513 Zeilen aus und lässt 2439 Befunde — 361 Zeilen, die M ausnahm, werden Befunde, und 46, die M meldete, fallen weg (ein Wort über der Grenze vor umbrechbarem Text hinter ihr), netto 315 Befunde mehr; gleicher Aufwand wie M; die Bezugsmenge sagt, was gemessen wurde | erbt die Grenzen der geteilten Lexik; eine Zeile mit umbrechbarem Text **und** einem Wort über der Grenze bleibt ganz ausgenommen (Konsequenzen) |
 
 ## Konsequenzen
@@ -220,6 +226,7 @@ eine eigene Ausnahme vom Ausschluss in Lastenheft §5 und eine eigene Entscheidu
 | 2026-11-23 | Proposed, nach Review R2 fortgeschrieben: die Konsequenz zum Präfix der Markdown-Form gilt nur für das erste Wort eines Listenpunkts oder Zitats, für Überschriften und eingerückten Code; ein späteres Wort lässt sich auf eine Fortsetzungszeile ohne Marker umbrechen; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, an die Anforderung angeglichen: das erste Wort eines Listenpunkts darf mit einem Marker oder einer Einrückung derselben Breite auf die nächste Zeile rücken, der Rand mehrerer Leerzeichen nach dem Marker ist benannt; „nicht umbrechbar“ gilt für ATX-, nicht für Setext-Überschriften; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, nach der Verifikation (V-1) fortgeschrieben: der globale Ausschluss von Lint-, Stil- und Rechtschreib-Prüfungen in Lastenheft §5 bleibt bestehen und nimmt nur die Zeilenlänge in Markdown-Dateien aus (Entscheid des Auftraggebers vom 2026-11-23); Begründung im Kontext, Alternative A als etabliertes Werkzeug (markdownlint MD013), Konsequenz und Trigger (f): kein Präzedenzfall; die Entscheidung ist unverändert | slice-289 <!-- d-check:status-provenance --> |
+| 2026-11-23 | Proposed, nach Code-Review R1 fortgeschrieben: Entscheid 4 legt fest, dass ein Schlüssel ohne Wert (YAML-`null`) gesetzt und ungültig ist (Exit 2), wie die Anforderung es für einen Schalter ohne Wahrheitswert sagt; Alternative N (abwesend, wie bei den Nachbar-Modulen) verworfen; Schärft nennt [`SPEC-112`](../../../spec/spezifikation.md#4-grund--und-fehler-codes) | slice-290 <!-- d-check:status-provenance --> |
 
 Nach `Accepted` wird diese Datei **nicht mehr inhaltlich überschrieben**.
 Spätere Korrekturen oder Schärfungen entstehen als neue ADR mit
