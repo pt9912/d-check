@@ -1,6 +1,7 @@
 package configyaml_test
 
 import (
+	"reflect"
 	"strings"
 	"testing"
 
@@ -81,9 +82,9 @@ func TestDecode_LinelengthEingabefehler(t *testing.T) {
 	}
 }
 
-// Ein Schlüssel des Blocks ohne Wert (YAML-null) ist gesetzt und kein
-// gültiger Wert: Exit 2 am Rand, auch ohne aktives Modul; abwesend ist nur
-// ein fehlender Schlüssel (DC-FA-LLEN-001).
+// Einer der vier eigenen Werte (max-chars, drei Schalter) ohne Wert (YAML-null)
+// ist gesetzt und ungültig: Exit 2 am Rand, auch ohne aktives Modul; abwesend
+// ist nur ein fehlender Schlüssel (DC-FA-LLEN-001).
 func TestDecode_LinelengthSchluesselOhneWert(t *testing.T) {
 	cases := map[string]struct{ in, key string }{
 		"Schalter leer":      {"linelength:\n  max-chars: 80\n  exempt-code-blocks:\n", "exempt-code-blocks"},
@@ -102,10 +103,12 @@ func TestDecode_LinelengthSchluesselOhneWert(t *testing.T) {
 	}
 }
 
-// Gegenprobe: bei versions (pin-pattern: neben patterns ist keine Mischform)
-// und planning (marker: ergibt den Default) bleibt ein Schlüssel ohne Wert
-// abwesend — die strenge Lesart gilt nur für linelength (DC-FA-LLEN-001,
-// DC-FA-VER-001, DC-FA-PLAN-001).
+// Gegenprobe: bei versions (pin-pattern: neben patterns ist keine Mischform),
+// planning (marker: ergibt den Default), structure (max-lines:) und ids
+// (scope: ist die globale Scan-Menge) bleibt ein Schlüssel ohne Wert
+// abwesend — die strenge Lesart gilt nur für die vier eigenen Werte von
+// linelength (DC-FA-LLEN-001, DC-FA-VER-001, DC-FA-PLAN-001, DC-FA-STRUCT-001,
+// DC-FA-CONF-002).
 func TestDecode_SchluesselOhneWertBeiNachbarnAbwesend(t *testing.T) {
 	cfg, err := configyaml.Decode([]byte("versions:\n  pin-pattern:\n  patterns:\n    - {pin-pattern: 'x:(v\\d+\\.\\d+\\.\\d+)'}\n"))
 	if err != nil || len(cfg.Versions.Patterns) != 1 {
@@ -114,5 +117,53 @@ func TestDecode_SchluesselOhneWertBeiNachbarnAbwesend(t *testing.T) {
 	cfg, err = configyaml.Decode([]byte("planning:\n  roadmap: r.md\n  marker:\n"))
 	if err != nil || cfg.Planning.Marker != "" || cfg.Planning.EffectiveMarker() != "Keine aktive Welle" {
 		t.Fatalf("planning: err=%v cfg=%+v", err, cfg.Planning)
+	}
+	cfg, err = configyaml.Decode([]byte("structure:\n  - files: 'a/*.md'\n    section: '## H'\n    non-empty: true\n    max-lines:\n"))
+	if err != nil || len(cfg.Structure) != 1 || cfg.Structure[0].MaxLines != nil {
+		t.Fatalf("structure: err=%v cfg=%+v", err, cfg.Structure)
+	}
+	cfg, err = configyaml.Decode([]byte("ids:\n  scope:\n"))
+	if err != nil || cfg.Scopes["ids"] != nil {
+		t.Fatalf("ids: err=%v scopes=%+v", err, cfg.Scopes)
+	}
+}
+
+// scope und exempt-paths ohne Wert gelten wie bei jedem scannenden Modul als
+// abwesend: dieselbe Konfiguration wie ohne den Schlüssel, also die globale
+// Scan-Menge und keine Ausnahme (DC-FA-LLEN-001, DC-FA-CONF-002).
+func TestDecode_LinelengthScopeUndExemptPathsOhneWert(t *testing.T) {
+	ohne, err := configyaml.Decode([]byte("linelength:\n  max-chars: 80\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, in := range []string{"linelength:\n  max-chars: 80\n  scope:\n", "linelength:\n  max-chars: 80\n  exempt-paths:\n"} {
+		mit, err := configyaml.Decode([]byte(in))
+		if err != nil || !reflect.DeepEqual(ohne, mit) {
+			t.Fatalf("%q: err=%v\nohne %+v\nmit  %+v", in, err, ohne, mit)
+		}
+		if mit.Scopes["linelength"] != nil || len(mit.Linelength.ExemptPaths) != 0 {
+			t.Fatalf("%q: scope oder Ausnahme gesetzt: %+v", in, mit)
+		}
+	}
+}
+
+// Ein YAML-Alias steht für den Wert seines Ankers und wird an ihm geprüft:
+// eine ganze Zahl und ein Wahrheitswert sind gültig, eine Liste meldet ihre
+// Art, ein Anker ohne Wert ist ein Schlüssel ohne Wert (DC-FA-LLEN-001).
+func TestDecode_LinelengthAlias(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte("file:\n  - files: '*.md'\n    max-lines: &g 20\nlinelength:\n  exempt-code-blocks: &b false\n  exempt-tables: *b\n  max-chars: *g\n"))
+	if err != nil || cfg.Linelength.MaxChars == nil || *cfg.Linelength.MaxChars != 20 || cfg.Linelength.TablesExempt() {
+		t.Fatalf("Alias auf Zahl und Wahrheitswert: err=%v cfg=%+v", err, cfg.Linelength)
+	}
+	cases := map[string]struct{ in, want string }{
+		"Liste": {"scan:\n  roots: &r [docs]\nlinelength:\n  max-chars: *r\n", "linelength.max-chars ist eine Liste, keine ganze Zahl"},
+		"null":  {"scan:\n  ignore: &n\nlinelength:\n  max-chars: 80\n  exempt-tables: *n\n", "linelength.exempt-tables steht ohne Wert (YAML-null)"},
+	}
+	for name, c := range cases {
+		t.Run(name, func(t *testing.T) {
+			if _, err := configyaml.Decode([]byte(c.in)); err == nil || !strings.Contains(err.Error(), c.want) {
+				t.Fatalf("err = %v, erwartet %q", err, c.want)
+			}
+		})
 	}
 }

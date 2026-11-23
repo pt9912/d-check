@@ -3587,8 +3587,12 @@ Dateien seiner Scan-Menge über den Filesystem-Port, ohne git, ohne Netz und ohn
    am Konfigurations-Rand, auch ohne aktives Modul. Ist das Modul aktiv und fehlt `max-chars`,
    ⇒ **Exit 2**. Ohne Block bleibt die Konfiguration leer; ohne aktives Modul bleibt ein gültiger
    Block inert, ohne Messung und ohne Zeile in den Hinweisen.
-   Ein Schlüssel des Blocks ohne Wert (YAML-`null`) ist gesetzt und kein gültiger Wert ⇒ **Exit 2**
-   — anders als bei `versions`, `planning` und `structure`.
+   Ein eigener Schlüssel des Blocks ohne Wert (YAML-`null`) — `max-chars`, `exempt-code-blocks`,
+   `exempt-tables` oder `exempt-unbreakable` — ist gesetzt und ungültig ⇒ **Exit 2**, auch ohne
+   aktives Modul; anders als bei `versions`, `planning` und `structure`. `scope` und `exempt-paths`
+   ohne Wert gelten wie bei jedem scannenden Modul als abwesend: globale Scan-Menge bzw. keine
+   Ausnahme (`scope: {roots: []}` dagegen prüft nach
+   [§DC-FA-CONF-002.a](#dc-fa-conf-002a--effektiver-scan-scope-pro-modul) nichts).
 2. **Eingabemenge.** Die Dateien des effektiven Scan-Scopes des Moduls
    ([§DC-FA-CONF-002.a](#dc-fa-conf-002a--effektiver-scan-scope-pro-modul)): `linelength.scope`,
    sonst `scan.roots`/`scan.ignore` — nur Einträge der Art Datei mit der Endung `.md`, kein
@@ -3658,7 +3662,9 @@ nicht geleert, ein Byte-Order-Mark am Dateianfang zählt als Zeichen der ersten 
 geschütztes Leerzeichen trennt für (c) keine Wörter. Außer der Konfiguration liest das Modul keine
 Datei außerhalb der Eingabemenge aus Schritt 2. Schritt 1 liest den YAML-Typ, nicht den Zahlwert:
 `max-chars: 80.0` und `max-chars: "80"` sind keine ganze Zahl ⇒ Exit 2, ein Schalter nimmt nur
-`true` oder `false`, und der Klartext nennt bei einer Liste oder Abbildung deren Art.
+`true` oder `false`, und der Klartext nennt bei einer Liste oder Abbildung deren Art. Ein YAML-Alias
+steht für den Wert seines Ankers und wird an ihm geprüft: `max-chars: *g` auf eine ganze Zahl ist
+gültig, ein Alias auf einen Anker ohne Wert ist ein Schlüssel ohne Wert.
 
 ---
 
@@ -4195,6 +4201,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-11-23 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) Schritt 1: die Regel zum Schlüssel ohne Wert gilt nur für die vier eigenen Werte (`max-chars` und die drei Schalter); `scope` und `exempt-paths` ohne Wert gelten wie bei jedem scannenden Modul als abwesend. Die Grenzen nennen, dass ein YAML-Alias zu seinem Anker aufgelöst und dort geprüft wird |
 | 2026-11-23 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) Schritt 1: ein Schlüssel des Blocks ohne Wert (YAML-`null`) ist gesetzt und kein gültiger Wert ⇒ Exit 2 — anders als bei `versions`, `planning` und `structure`; die Grenzen nennen, dass Schritt 1 den YAML-Typ liest, nicht den Zahlwert (`80.0` ⇒ Exit 2) |
 | 2026-11-23 | §4: der Grund-Code `line-chars-exceeded` (`SPEC-112`) steht in der Tabelle, weil das Modul `linelength` ihn nun liefert; das Verfahren in §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) ist unverändert |
 | 2026-11-23 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength): die Aussage über die Wörter eines Kommentars steht in Schritt 6, wo die Zeile zerlegt wird, und gilt für jeden Kommentar, nicht nur für `d-check:ignore`; Schritt 7 nennt nur noch, dass der Marker nicht wirkt und mitzählt |
