@@ -187,6 +187,52 @@ die Anforderung, sobald sie steht):
   [`DC-FA-CONF-002`](../../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope));
   Nicht-Markdown-Datei in `scan.roots` mit langer Zeile ⇒ kein Befund.
 
+**Plan-Änderungs-Notiz — Spiegel-Suche vor dem ersten Edit (2026-11-23, Implementer).**
+Kommando aus der Repo-Wurzel:
+`git grep -l pinsync -- . ':!docs/plan/planning/done' ':!docs/reviews' ':!docs/plan/planning/observations'`
+⇒ 30 Dateien. Der Grund-Code steht in `diagnose.go` als Konstante (`ReasonPinsync…`) und fällt
+deshalb aus diesem Muster; die Tabelle führt die Datei schon. Zuordnung:
+
+- **In der Tabelle oben** (14): `model/config.go`, `configyaml.go`, `rules/run.go`,
+  `config_template.go`, `spezifikation.md`, `lastenheft.md`, `README.md`, `README.de.md`,
+  `benutzerhandbuch.md`, `operations.md`, `abdeckung-tests.md` sowie Regel-Datei und Testdateien
+  des Moduls (`rules/pinsync.go`, `rules/pinsync_test.go`, `configyaml/pinsync_test.go` als Muster
+  der neuen Dateien). Im Handbuch heißt das: ein Modul-Abschnitt §4.28 und die Zeile in §6;
+  Kopf und §11 bleiben Release-Prep.
+- **Neu in den Plan** (zwei Testdateien, beide `update`):
+  `internal/adapter/driving/cli/cli_acceptance_test.go` — die Vorlage von `--print-config`
+  (der Block `linelength` entkommentiert ist gültig), `--enable linelength` am echten Lauf
+  (Bezugsmenge auf stderr und in `summary.notes`, Exit 2 ohne `max-chars`) und der byte-identische
+  Lauf ohne Modul; `internal/hexagon/core/rules/lexikon_kopplung_test.go` — der Kopplungs-Test aus
+  DoD-Punkt 2 hängt `linelength` als Konsument an die Tabellenzeilen-Frage und stellt die
+  Fence-Frage („liegt die Zeile außerhalb von Fenced-Code?“) an `linelength`, `targets` und
+  `structure` mit derselben Eingabe.
+- **Bleibt unberührt** (14), je mit Grund: `CHANGELOG.md` und `packaging/dockerhub/overview.md`
+  (Modul-Liste ohne Spiegel-Test; Release-Prep, wie bei `pinsync` in der Release-Prep von v0.91.0);
+  `.d-check.yml`, `Makefile` (`doc-check`-Kommentar, `FOCUS_DISABLE`),
+  `configyaml/gate_consistency_test.go`, `harness/README.md`, `harness/sensors/doc-check.md`
+  (das eigene Profil — sie spiegeln dessen `modules:`, nicht `ValidModules()`, und das Modul wird
+  dort nicht eingeschaltet, §1); `tools/image-test.sh`, `harness/sensors/image-test.md`,
+  `docs/user/abdeckung-e2e.md` (der Container-Lauf von `pinsync`; dieser Plan verlangt keinen
+  Container-Fall für `linelength`); [ADR-0113](../../adr/0113-pinsync-modul.md), [ADR-0114](../../adr/0114-linelength-modul.md) und der ADR-Index (Architect);
+  Roadmap und diese Datei (Planung).
+
+**Plan-Änderungs-Notiz — zwei Festlegungen am Konfigurations-Rand.** `max-chars` gilt nur als
+YAML-Ganzzahl (Tag `!!int`), die drei Schalter nur als `true`/`false` (Tag `!!bool`): der
+Dekoder kürzte `80.5` sonst still auf `80` und läse ein quotiertes `"yes"` als `true` — beides
+widerspräche „keine ganze Zahl“ bzw. „kein Wahrheitswert“ in
+[`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in).
+Ein leerer Wert (`max-chars:`) gilt wie ein fehlender. Die Wort-Zerlegung für (c) ist kein
+regulärer Ausdruck, aber ein Erkennungs-Muster: ihre Negativfälle (Tab, U+00A0, Einrückung,
+Marker-Kommentar, `\r` am Ende) stehen in der Testfall-Liste oben, und der Lauf über den eigenen
+Korpus ist die Gegenprobe gegen die `awk`-Zahlen aus dem Plan von
+[`slice-289`](../done/slice-289-linelength-anforderung-und-adr.md) (Stand `f3dc94da`, `max-chars: 120`:
+1237 Dateien, 513 über (c) ausgenommen, 2439 Befunde). Kommando: `git archive f3dc94da` in ein
+leeres Verzeichnis entpackt, dort eine Konfigurationsdatei mit dem `scan`-Block des damaligen
+Profils, `modules: []` und `linelength: {max-chars: 120}`, dann das mit `make build` gebaute Image
+mit `--network none`, `--config <datei>` und `--enable linelength`; verglichen werden die
+Bezugsmenge auf stderr und die Zahl der Befund-Zeilen auf stdout.
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
