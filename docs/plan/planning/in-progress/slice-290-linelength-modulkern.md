@@ -278,8 +278,51 @@ bleibt bei vier. Gefunden mit
   statt eines leeren Zitats; die Grenzen von Schritt 1 sagen, dass der YAML-Typ zählt, nicht der
   Zahlwert (`80.0` ⇒ Exit 2).
 
-Die Suche nach der Aussage jedes Befunds steht im Bericht des Implementers; außerhalb von
-`linelength` trägt keiner der Treffer dieselbe Aussage.
+Die Suche nach der Aussage jedes Befunds (R1): außerhalb von `linelength` trug keiner der Treffer
+dieselbe Aussage. F-1 (`!!null`, „ohne Wert“): sonst nur die eigenen Null-Prüfungen von `trace`
+und `targets`, `versions` (`pin-pattern:`), `reviews.promise-pattern` und ein Flag ohne Wert in
+der CLI. F-2 (Zerlegung am `\n`): `immutable`, `matrix`, `pins`, `sources`, `versions`,
+`markdown`, `repair`, `trace_table` und `vcs` zerlegen roh, ohne `\r`-Regel, und behaupten keine
+Gleichheit mit `pinsync`. F-3 (`TrimSuffix … "\r"`): sonst `metrics_table.go`, eine eigene
+Tabellenzeile. F-4: [ADR-0114](../../adr/0114-linelength-modul.md) und §2/§6 dieses Plans. F-7: die zwei Meldungen in `configyaml.go`.
+Die Treffer für R2 stehen in der folgenden Notiz.
+
+**Plan-Änderungs-Notiz — Fix nach [Code-Review R2](../../../reviews/2026-11-23-slice-290-code-r2.md)
+(F-1 bis F-4; Implementer).** Was der Fix-Commit tut, je Befund:
+
+- **F-1** (Verdikt in [ADR-0114](../../adr/0114-linelength-modul.md) Entscheid 4, eingeengt auf die
+  vier eigenen Werte): Am Verhalten ändert sich nichts. Der Code prüft schon nur `max-chars` und die
+  drei Schalter; `scope:` und `exempt-paths:` ohne Wert sind abwesend, wie bei jedem scannenden
+  Modul. Eingeengt werden die Sätze, die mehr sagen:
+  [`DC-FA-LLEN-001.a`](../../../../spec/spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength)
+  Schritt 1 (Wortlaut des Architect, am Code geprüft) mit Historie-Zeile, Handbuch §4.28, der
+  Kommentar an `applyLinelength`/`linelengthSet` und der Klartext („ein Schlüssel ohne Wert ist
+  gesetzt“ wird zu „gesetzt, aber kein gültiger Wert“). Das Lastenheft trägt keine pauschale Form
+  (`grep -c 'ohne Wert' spec/lastenheft.md` ⇒ 2, beide zu `reviews.promise-pattern`)
+  und bleibt unverändert. Neue Tests in `configyaml/linelength_test.go` und
+  `rules/linelength_test.go`: `scope:` ohne Wert ⇒ dieselbe Menge wie ohne `scope`;
+  `exempt-paths:` ohne Wert ⇒ keine Datei ausgenommen; Gegenprobe `ids` mit `scope:` ⇒ abwesend.
+- **F-2:** gewählt ist **Auflösen**: ein Alias wird auf seinen Zielknoten aufgelöst und dieser
+  geprüft — `max-chars: *g` auf eine ganze Zahl ist gültig, ein Alias auf eine Liste meldet
+  „eine Liste“, einer auf `null` ist ohne Wert. Grund: ein Alias steht in YAML für denselben Wert,
+  und der Klartext soll die wirkliche Ursache nennen; dieselbe Auflösung machen `targets.authority`
+  und `trace.requirements` am Config-Rand. Die Grenzen von Schritt 1 sagen es.
+- **F-3:** die Gegenprobe bekommt `structure` (`max-lines:` ohne Wert ⇒ abwesend).
+- **F-4:** der Satz oben verweist jetzt auf Repo-Artefakte statt auf den Bericht.
+
+Treffer der Suche nach der Aussage (R2), vor dem Fix-Commit:
+
+- F-1, „Schlüssel des Blocks ohne Wert“/„Schlüssel ohne Wert“ über `spec docs/user internal
+  harness docs/plan`: pauschal sind `spezifikation.md` Schritt 1 und Historie-Zeile, Handbuch
+  §4.28, der Kommentar an `applyLinelength`, der Klartext in `linelengthSet` und der Kommentar an
+  `TestDecode_LinelengthSchluesselOhneWert` — alle eingeengt. Die ADR hat der Architect schon
+  eingeengt; `configyaml.go` (versions, `pin-pattern:`) und `spezifikation.md` (`patterns:`)
+  sagen anderes und bleiben.
+- F-2, „ein Alias“: nur `yamlValueKind` in `configyaml.go`.
+- F-3, „`versions`, `planning` und `structure`“: Spezifikation, Handbuch, [ADR-0114](../../adr/0114-linelength-modul.md) und der
+  Kommentar an `linelengthSet` — die Aussage stimmt am Code (`rawStructure` mit `*int`), der Test
+  kommt dazu.
+- F-4, „Bericht des Implementers“: nur dieser Plan.
 
 ## 4. Trigger
 
