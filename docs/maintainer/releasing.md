@@ -73,8 +73,10 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
      Vollausbau (N Module inkl. …)") **und** eine Enumeration, und beide zählen
      die Module der [`.d-check.yml`](../../.d-check.yml), nicht alle
      existierenden; und (b) die **Modul-Liste** unter §Was ist d-check
-     ergänzen — bei einer neuen **Bedingung** des Moduls `structure` zusätzlich
-     deren Anzahl („bis zu N Bedingungen") in derselben Aufzählung. Das
+     prüfen — sie liegt schon mit dem Feature-Commit vor, weil ein Spiegel-Test sie
+     hält ([Regel 17](../../harness/rules/dokumentations-regeln/17-changelog-release-prep.md));
+     bei einer neuen **Bedingung** des Moduls `structure` zusätzlich
+     deren Anzahl („bis zu N Bedingungen") in derselben Aufzählung ergänzen. Das
      Intro-Framing prüfen, falls ein
      Nicht-Referenz-Modul (Content-Drift/Immutabilität/Versions/Traceability/Planning)
      neu ist. d-check prüft `links`/`anchors`/`ids`/`versions` in beiden READMEs, aber

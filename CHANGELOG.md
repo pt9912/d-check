@@ -4,6 +4,48 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.92.0] — 2026-11-23
+
+### Added
+
+- **Neues Modul `linelength`: Zeichen je Zeile in Markdown-Dateien begrenzen**
+  ([`DC-FA-LLEN-001`](spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in),
+  Lastenheft 0.113.2, [ADR-0114](docs/plan/adr/0114-linelength-modul.md), opt-in über
+  `--enable linelength`). Eine Zeile einer `.md`-Datei der Scan-Menge mit mehr Unicode-Codepunkten
+  als `linelength.max-chars` ist ein Befund `line-chars-exceeded`; die Meldung nennt gemessene Länge
+  und Grenze. Gezählt wird die rohe Zeile samt Einrückung, Inline-Code, Link-Zielen und HTML; ein
+  `\r` am Zeilenende zählt nicht, eine Zeile genau auf der Grenze ist befundfrei. Drei Ausnahmen,
+  jede im Default an und einzeln abschaltbar: Fenced-Code samt Zäunen (`exempt-code-blocks`), Zeilen
+  außerhalb von Fenced-Code, die mit `|` beginnen (`exempt-tables`), und Zeilen mit einem Wort, das
+  allein länger als die Grenze ist, etwa eine lange URL (`exempt-unbreakable`). Fenced-Code und
+  Tabellenzeile erkennt das Modul wie die übrigen Module. Kein Zeilen-Marker: `d-check:ignore` wirkt
+  nicht. Eingabefehler sind Exit 2: `max-chars` fehlt, ist keine ganze Zahl oder kleiner als 1, ein
+  Schalter ist nicht `true`/`false`, einer der vier eigenen Werte steht ohne Wert da, ein Schlüssel
+  ist unbekannt — auch ohne aktives Modul. Eine leere Menge ist kein Fehler. Die Bezugsmenge auf
+  stderr nennt Dateien, Zeilen und die über ein Wort ausgenommenen Zeilen. Neue Schlüssel
+  `linelength.*`; `--print-config` führt sie. Ohne `linelength`-Konfiguration ist der Lauf
+  byte-identisch zu v0.91.0 (`make blackbox-probe`, 20 Vergleiche). Lastenheft §5 nimmt die
+  Zeilenlänge vom Ausschluss der Markdown-Lint-Prüfungen aus. Handbuch §4.28.
+
+### Security
+
+- Abhängigkeiten gehoben ([ADR-0067](docs/plan/adr/0067-dependabot-als-hebender-kanal.md),
+  Dependabot-PR #19): `golang.org/x/net` v0.62.0 behebt CVE-2026-78661 (HIGH), die der Nachtlauf
+  `image-scan` im Image v0.91.0 meldete; dazu `golang.org/x/crypto` v0.59.0, `golang.org/x/sys`
+  v0.50.0, `github.com/sergi/go-diff` v1.4.5. Compiler-Toolchain im Image auf Go 1.27.4
+  ([ADR-0011](docs/plan/adr/0011-digest-pins-build-gate-images.md)). Keine Änderung der
+  Konfiguration, der Grund-Codes oder der Ausgabe des Werkzeugs.
+
+### Changed (Repo-intern)
+
+- **`make image-test` fährt eine Phase für `linelength`:** Grenze, Zähleinheit und die drei
+  Ausnahmen unter `:ro`, mit fremdem Benutzer und ohne Netz.
+- Dependabot-PR #16: `docker/login-action` 4.8.0 in der Release-Pipeline
+  ([ADR-0067](docs/plan/adr/0067-dependabot-als-hebender-kanal.md)).
+- Gate-Werkzeuge gehoben: `semgrep` 1.186.0
+  ([ADR-0010](docs/plan/adr/0010-semgrep-hermetisches-gate.md)) und `a-check` v0.24.0
+  ([ADR-0029](docs/plan/adr/0029-arch-check-via-a-check.md)), je mit unveränderten Befunden.
+
 ## [0.91.0] — 2026-10-31
 
 ### Added
