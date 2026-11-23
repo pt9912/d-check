@@ -1,7 +1,7 @@
 # Verifikation slice-289 — Anforderung, Spezifikation und ADR für das Modul `linelength`
 
 **Rolle:** Verifier (Modul 8/11) · **Gegenstand:** Plan und DoD aus
-`docs/plan/planning/in-progress/slice-289-linelength-anforderung-und-adr.md`, geprüft auf dem
+`docs/plan/planning/done/slice-289-linelength-anforderung-und-adr.md`, geprüft auf dem
 Stand `01849cfa` · **Bezug:**
 [`DC-FA-LLEN-001`](../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in),
 [`DC-FA-LLEN-001.a`](../../spec/spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength),

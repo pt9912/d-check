@@ -73,8 +73,8 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [`slice-289`](in-progress/slice-289-linelength-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR für das Modul `linelength`; Entscheide festschreiben | neue Anforderung des Moduls (Kennung vergibt der Slice), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
-| [`slice-290`](open/slice-290-linelength-modulkern.md) | Modulkern: Konfiguration lesen, Zeilen messen, Ausnahmen anwenden, Grund-Code | die Anforderung aus [`slice-289`](in-progress/slice-289-linelength-anforderung-und-adr.md) |
+| [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR für das Modul `linelength`; Entscheide festschreiben | neue Anforderung des Moduls (Kennung vergibt der Slice), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
+| [`slice-290`](open/slice-290-linelength-modulkern.md) | Modulkern: Konfiguration lesen, Zeilen messen, Ausnahmen anwenden, Grund-Code | die Anforderung aus [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md) |
 
 ## 5. Abhängigkeiten
 
@@ -84,18 +84,18 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 - Blockiert: keine Welle.
 - Wird blockiert von: keiner.
 - **Reihenfolge der Slices ist fachlich bindend:** erst
-  [`slice-289`](in-progress/slice-289-linelength-anforderung-und-adr.md) (Anforderung und
+  [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md) (Anforderung und
   Entscheide stehen, bevor Code entsteht), dann
   [`slice-290`](open/slice-290-linelength-modulkern.md). Das WIP-Limit 1 hält sie
   ohnehin nacheinander.
-- **Entscheide, die [`slice-289`](in-progress/slice-289-linelength-anforderung-und-adr.md)
+- **Entscheide, die [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md)
   vor dem Schreiben der Anforderung festschreibt** (mit Empfehlung; ohne Entscheid
   des Auftraggebers beginnt kein Code): Modulname und Kürzel, eigenes Modul statt
   Bedingung in `file` oder `structure`, Zähleinheit (Zeichen, Bytes oder
   Anzeigebreite), welche Zeilen ausgenommen sind und ob schaltbar, Name des
   Schwellen-Schlüssels (Abstand zu `max-lines`), Grund-Code und Befund-Ort.
 - **Entschieden mit dem Auftraggeber (2026-11-22):** nur Markdown-Dateien; die acht
-  Entscheide in [`slice-289`](in-progress/slice-289-linelength-anforderung-und-adr.md) §3 mit den
+  Entscheide in [`slice-289`](done/slice-289-linelength-anforderung-und-adr.md) §3 mit den
   Empfehlungen bestätigt.
 
 ## 6. Out-of-Scope für diese Welle

@@ -2,7 +2,7 @@
 
 **Rolle:** Architect (Modul 8), frischer Kontext, **vor** Code.
 **Gegenstand:** [welle-95](../plan/planning/welle-95-linelength-modul.md) und ihre zwei Slice-Pläne
-[slice-289](../plan/planning/in-progress/slice-289-linelength-anforderung-und-adr.md) (Entscheide 1–8 in §3,
+[slice-289](../plan/planning/done/slice-289-linelength-anforderung-und-adr.md) (Entscheide 1–8 in §3,
 vom Auftraggeber am 2026-11-22 bestätigt) und
 [slice-290](../plan/planning/open/slice-290-linelength-modulkern.md).
 **Anlass:** Auftrag des Auftraggebers in der Sitzung vom 2026-11-22 (kein Issue).
@@ -30,7 +30,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
 ### F-1 — Entscheid 8 (leere Kandidaten-Menge ⇒ Exit 2) widerspricht `DC-FA-CONF-002` und beruft sich auf eine falsche Präzedenz — **V1**
 
 - Entscheid 2 macht `linelength` zu einem **scannenden** Modul mit modul-lokalem `scope`
-  ([slice-289](../plan/planning/in-progress/slice-289-linelength-anforderung-und-adr.md) Z. 117–123). Für jedes
+  ([slice-289](../plan/planning/done/slice-289-linelength-anforderung-und-adr.md) Z. 117–123). Für jedes
   scannende Modul sagt das Lastenheft (Rang 1) zu: „Given ein Modul-`scope` mit explizit leerer `roots`-Liste
   … then prüft dieses Modul nichts — bewusste Setzung, kein Fehler“
   ([lastenheft.md](../../spec/lastenheft.md) Z. 4074, Beschreibung Z. 4066–4068). Entscheid 8
