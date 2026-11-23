@@ -135,7 +135,9 @@ Liste folgt den bestätigten Entscheiden 1–9 und dem
 [Architect-Verdikt](../../../reviews/2026-11-22-welle-95-architect-verdikt.md); maßgeblich ist
 die Anforderung, sobald sie steht):
 
-- Zeile mit `max-chars` Zeichen ⇒ befundfrei; mit `max-chars + 1` ⇒ ein Befund.
+- Zeile mit `max-chars` Zeichen ⇒ befundfrei; mit `max-chars + 1` ⇒ ein Befund — mit
+  `exempt-unbreakable: false` oder ohne Wort über der Grenze; eine Zeile aus einem einzigen Wort
+  mit `max-chars + 1` Zeichen ist unter Variante H im Default ausgenommen (Implementer-Hinweis).
 - Zeile aus Mehrbyte-Zeichen (Umlaut, Emoji) an der Grenze ⇒ gezählt in Codepunkten,
   nicht in Bytes.
 - `\r\n`-Zeilenende ⇒ das `\r` zählt nicht; Tab zählt als ein Zeichen; ungültiges UTF-8

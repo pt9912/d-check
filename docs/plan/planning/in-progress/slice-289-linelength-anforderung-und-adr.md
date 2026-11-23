@@ -160,7 +160,9 @@ ist [ADR-0114](../../adr/0114-linelength-modul.md).
    vom Auftraggeber am 2026-11-23 neu bestätigt). Die zuerst bestätigte Fassung („der Teil ab der
    Grenze enthält keinen Leerraum“, Verdikt F-5) nahm am eigenen Bestand bei 120 auch 361
    umbrechbare Prosa-Zeilen aus — 44 % ihrer 828 Ausnahmen (Befund A3 des Implementers, vom
-   Architect nachgemessen); H nimmt dort 467 Zeilen aus. Überschriften zählen mit. Die Erkennung von
+   Architect nachgemessen); H nimmt dort 513 Zeilen aus (direkt gemessen, zweiter Plan-Nachtrag —
+   die zuerst genannte 467 zählte nur innerhalb der 828 und übersah Zeilen mit dem langen Wort vor
+   umbrechbarem Text). Überschriften zählen mit. Die Erkennung von
    Fenced-Code und Tabellenzeile nimmt das Modul aus der geteilten Lexik
    (`proseLineSet`, `tableRowLine`), kein eigenes Muster daneben
    ([`BEO-ALL/gemeinsame-leser-sind-zwei-familien`](../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md));
