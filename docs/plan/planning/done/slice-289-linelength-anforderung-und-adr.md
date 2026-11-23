@@ -45,19 +45,19 @@ zusammen mit der Begründungs-Pflicht je Punkt.
 **Ziel:** Die Anforderung des Moduls `linelength` steht im Lastenheft, ihr Verfahren,
 ihr Schema und ihr Grund-Code in der Spezifikation und die Entscheidung in einer ADR, die
 `Proposed` vorliegt und mit der Closure von
-[`slice-290`](../open/slice-290-linelength-modulkern.md) `Accepted` wird (Architect-Verdikt F-8)
+[`slice-290`](../next/slice-290-linelength-modulkern.md) `Accepted` wird (Architect-Verdikt F-8)
 — und die Entscheide unten sind **vor dem ersten Code** vom Auftraggeber bestätigt und
 festgeschrieben.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Code, Konfigurations-Rand, Tests des Moduls** — gehören
-  [`slice-290`](../open/slice-290-linelength-modulkern.md); dieser Slice schreibt, was der Code
+  [`slice-290`](../next/slice-290-linelength-modulkern.md); dieser Slice schreibt, was der Code
   einlösen soll, damit die Reviews dort gegen eine Anforderung prüfen.
 - **Die Zeile in der Grund-Code-Tabelle (§4) und die Modul-Aufzählung in
   [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl) und
   im Glossar** — kommen mit dem Code in
-  [`slice-290`](../open/slice-290-linelength-modulkern.md): die Spiegel-Tests halten beide gegen
+  [`slice-290`](../next/slice-290-linelength-modulkern.md): die Spiegel-Tests halten beide gegen
   das registrierte Modul und wären vorher rot (bei `pinsync` gemessen).
 - **Andere Dateiarten** — vom Auftraggeber ausgeschlossen (2026-11-22); die Anforderung
   nennt es in ihrem Out-of-Scope, damit es nicht über `file` oder einen Glob-Schalter
@@ -86,7 +86,7 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 - [x] [ADR-0114](../../adr/0114-linelength-modul.md) liegt `Proposed` vor, ist im
       [ADR-Index](../../adr/README.md) geführt, trägt `## Re-Evaluierungs-Trigger`, und die
       Anforderungs-Kennung und das `Schärft:`-Feld sind verlinkt (Architect). `Accepted` wird sie
-      mit der Closure von [`slice-290`](../open/slice-290-linelength-modulkern.md) (Verdikt F-8).
+      mit der Closure von [`slice-290`](../next/slice-290-linelength-modulkern.md) (Verdikt F-8).
 - [x] `make gates` grün.
 - [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
@@ -108,14 +108,14 @@ Aussagen-Berührung steht hier gar nicht.
 | `spec/lastenheft.md` | update | neue Anforderung, Kürzel in der Liste, Version und Historie |
 | `spec/spezifikation.md` | update | Verfahren, Schema `linelength.*`, Grund-Code im Verfahren |
 | [ADR-0114](../../adr/0114-linelength-modul.md) | update — **schreibt der Architect** | liegt `Proposed` vor (vom Architect geschrieben, samt Index-Zeile); nachzuziehen sind die Verlinkung der Anforderungs-Kennung und das `Schärft:`-Feld, sobald die Anforderung im Lastenheft steht. Der Implementer liest die ADR als Constraint und meldet eine nötige Änderung als Befund an den Architect |
-| Plan von [`slice-290`](../open/slice-290-linelength-modulkern.md) | update — Planner | die Testfälle, die aus den bestätigten Entscheiden und dem Architect-Verdikt folgen, und die zwei mit dem Code kommenden Spiegel-Stellen |
+| Plan von [`slice-290`](../next/slice-290-linelength-modulkern.md) | update — Planner | die Testfälle, die aus den bestätigten Entscheiden und dem Architect-Verdikt folgen, und die zwei mit dem Code kommenden Spiegel-Stellen |
 
 **Plan-Änderung nach dem Architect-Verdikt (2026-11-22).** Das
 [Architect-Verdikt](../../../reviews/2026-11-22-welle-95-architect-verdikt.md) (F-1 bis F-8)
 ist eingearbeitet: Entscheid 1, 5 und 7 sind am Gegenstand korrigiert bzw. präzisiert, Entscheid 8
 ist gegen [`DC-FA-CONF-002`](../../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope)
 neu gefasst, Entscheid 9 ist neu, und die ADR bleibt `Proposed` bis zur Closure von
-[`slice-290`](../open/slice-290-linelength-modulkern.md) (F-8). Die ADR schreibt der Architect,
+[`slice-290`](../next/slice-290-linelength-modulkern.md) (F-8). Die ADR schreibt der Architect,
 nicht dieser Slice (Modul 8 §Rollen-Regeln); die Zeile „ADR-Index“ entfällt deshalb aus der Tabelle.
 Die Reihenfolge war nicht regelkonform: der Slice lag in `in-progress/`, bevor das Verdikt vorlag
 (dort als einmaliges akzeptiertes Negativ geführt; kein Code war entstanden).
@@ -212,7 +212,7 @@ Plan-Nachtrag) — das belegt die Out-of-Scope-Aussage „eigenes Profil nicht s
 einer Zahl statt einer Vermutung. Die Negativfälle (Zeile genau auf der Grenze,
 Umlaut/Emoji, `\r\n`, Tab, nicht geschlossener Fence bis Dateiende, Tabellenzeile ohne
 Trennzeile, URL mit Leerzeichen davor) stehen als Testfälle für
-[`slice-290`](../open/slice-290-linelength-modulkern.md).
+[`slice-290`](../next/slice-290-linelength-modulkern.md).
 
 **Plan-Nachtrag — Gegenprobe gelaufen (2026-11-22, Implementer).** Gemessen auf dem Stand `f3dc94da` (vor diesem Nachtrag) über die
 **globale** Scan-Menge des eigenen Profils (`scan.roots: ["."]`, die drei `scan.ignore`-Muster,
@@ -357,7 +357,7 @@ dasteht.
   Rest der Datei ist ausgenommen), nennt es als Grenze der geteilten Lexik und verweist für die
   Meldung auf `spans` (`fence-unclosed`); ein zweiter Wächter in `linelength` wäre eine zweite
   Antwort (Verdikt F-3). Der Test dazu ist Lieferung von
-  [`slice-290`](../open/slice-290-linelength-modulkern.md); kein Beleg in
+  [`slice-290`](../next/slice-290-linelength-modulkern.md); kein Beleg in
   `BEO-ALL/prosa-verschwindet-in-inline-code-spanne`, der Ausfall ist benannt und gemeldet.
 - Der Name `linelength` liest sich neben `file.max-lines` und `structure.max-lines` als
   vierte Längen-Achse und wird verwechselt — **Ausgang:** *entfallen* — die Beschreibung der
@@ -421,7 +421,7 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   (FIFO in der Scan-Menge; Review R1 F-10, Verifikation V-3) und
   [`BEO-ALL/spezifikation-und-code-weichen-am-rand-ab`](../observations/BEO-ALL/spezifikation-und-code-weichen-am-rand-ab/observation.md)
   (`\r`-Rand bei `metrics`; Review R2 F-2). Die Zähler folgen aus den Dateien.
-- **Folge-Slices:** keine neuen. [`slice-290`](../open/slice-290-linelength-modulkern.md) trägt
+- **Folge-Slices:** keine neuen. [`slice-290`](../next/slice-290-linelength-modulkern.md) trägt
   die Testfälle zu jedem Akzeptanzkriterium und den Übergang von
   [ADR-0114](../../adr/0114-linelength-modul.md) auf `Accepted`, samt der `SPEC-<NNN>`-Kennung
   der §4-Zeile im `Schärft:`-Feld (Review R1 F-11).
@@ -474,7 +474,7 @@ Lastenheft, Spezifikation, ADR; keine Sub-Area mit eigener Modus-Deklaration
 (offen, 2× — Entscheid 5 verlangt die geteilte Lexik),
 [`BEO-ALL/spec-randbedingung-ohne-test`](../observations/BEO-ALL/spec-randbedingung-ohne-test/observation.md)
 (offen, 1× — jede Randbedingung der Anforderung braucht in
-[`slice-290`](../open/slice-290-linelength-modulkern.md) einen Test) und
+[`slice-290`](../next/slice-290-linelength-modulkern.md) einen Test) und
 [`BEO-ALL/module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md)
 (verkörpert in [`AGENTS.md`](../../../../AGENTS.md) §3.8 — Entscheid 2 beantwortet die
 Frage). Der Zähler folgt aus den Dateien der Closure.
