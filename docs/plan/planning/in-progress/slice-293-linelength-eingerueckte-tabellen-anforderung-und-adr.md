@@ -181,6 +181,63 @@ Handbuch §4.28 den Satz zur eingerückten `|`-Zeile (Slice 294); in der ADR Kon
 (unveränderlich). Der Implementer zählt vor dem Editieren **neu** — die Zahlen sind ein Stand, kein
 Vertrag.
 
+### Plan-Nachtrag des Implementers (2026-11-24, vor dem Inhalts-Commit)
+
+**Gemessen, bevor editiert wurde** ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 13 und 14): was die
+Lexik heute für eine eingerückte `|`-Zeile liefert. Quelle des Messbilds ist das gebaute Image
+(`d-check:latest`, erzeugt 2026-11-24T06:50:53+01:00; `markdown.go` und `linelength.go` ändern sich zuletzt
+am 2026-11-23, der Code des Moduls ist im Image also der Stand von `HEAD`). Eine Datei mit je einer überlangen
+Zeile (`max-chars: 10`, `exempt-unbreakable: false`, damit nur (b) antwortet):
+
+```bash
+# Fixture: ein Verzeichnis mit .d-check.yml (linelength: max-chars 10, exempt-unbreakable false)
+# und f.md mit je einer Zeile  `| a | b | c |`  mit 1, 2, 3, 4 Leerzeichen, Tab, U+00A0, `> `,
+# `a | b | c | d | e`, `- | a | b | c |`, `10. | a | b | c |`, Spalte 0, `   | prosa ohne tabelle`
+# und einem Zaun mit zwei `|`-Zeilen (drei Leerzeichen, Spalte 0).
+docker run --rm -v "$FIXTURE":/repo:ro d-check:latest -enable linelength
+```
+
+| Zeile | Default (heute) | `exempt-tables: false` | `exempt-code-blocks: false` (heute) |
+|---|---|---|---|
+| 1, 2, 3 Leerzeichen vor `\|` | **Befund** | Befund | Befund |
+| 4 Leerzeichen, Tab, U+00A0 vor `\|` | Befund | Befund | Befund |
+| `> \|`, `a \| b \| c`, `- \| a \| b \|`, `10. \| a \| b \|` | Befund | Befund | Befund |
+| Spalte 0 (`\| a \| b \| c \| d \|`) | kein Befund | Befund | kein Befund außerhalb, im Zaun Befund |
+| Prosa-Zeile, drei Leerzeichen, `\|` ohne Tabelle | **Befund** | Befund | Befund |
+| Prosa-Zeile `\| prosa ohne tabelle` in Spalte 0 | kein Befund | — | — |
+| drei Leerzeichen und `\|` im Zaun | kein Befund (Zaun) | kein Befund (Zaun) | Befund |
+
+Gelesen: Heute misst `linelength` jede eingerückte `|`-Zeile (erste und fünfte Tabellenzeile; diese
+Fälle ändern sich mit der Anforderung), und die Spalte-0-Prosa-Zeile ist schon heute ausgenommen — Grenze 1 („wie
+heute in Spalte 0“) stimmt. Die Zeilen mit vier Leerzeichen, Tab, U+00A0, `> `, ohne führende Pipe und
+`- |` bleiben nach der Änderung gemessen und ändern ihr Messbild nicht. Die Bezugsmenge nennt am Fixture
+25 geprüfte Zeilen im Default und 26 mit `exempt-tables: false` (die Spalte-0-Zeile). Die Kopplung der
+anderen Module steht in `lexikon_kopplung_test.go` (`tabellenFaelle`, Fall „eingerueckt“ mit zwei
+Leerzeichen, Antwort „keine Tabellenzeile“ für alle vier Konsumenten); ein eigenes Messbild für `targets`,
+`planning.waves` und `structure` entsteht dort mit `slice-294`, nicht hier. **Nicht gemessen:** dass eine
+Tabelle unter `10. ` oder in einer verschachtelten Liste mit vier und mehr Leerzeichen steht — das ist die
+Aussage der ADR und des Verdikts über CommonMark, kein Messergebnis des Werkzeugs.
+
+**Zählung vor dem Editieren** (zweite Suche aus §3, neu gezählt am 2026-11-24): `git grep -c 'exempt-tables'`
+mit den Ausschlüssen aus §3 liefert **12 Dateien, 35 Zeilen**; die beiden Mehrzeilen gegen die 10 Dateien,
+27 Zeilen des Plans sind [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) (7) und der
+ADR-Index (1), beide seit dem Plan hinzugekommen. Die Stände der anderen Dateien decken sich mit dem Plan.
+
+**Wortlaut gegen die Plan-Fassung** (keine Plan-Änderung, zwei Ausformungen):
+
+- Kriterium 2 behält den zweiten Fall des heutigen Kriteriums (Spalte-0-`|`-Zeile im Zaun bei
+  `exempt-code-blocks: false`, ⇒ Befund): „das Gegenstück ohne Einrückung bleibt in 2“ (§3, Kriterium 3).
+- Out-of-Scope (4) nimmt zusätzlich die **Listen-Erkennung** für die Einrückung vor `|` auf, mit der Bedingung
+  „die geteilte Lexik kennt keinen Listenkontext“ ([`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md)
+  Alternative D und Entscheid 3). Die Fassung wiederholt, was §1 und die Alternativen der ADR schon ausschließen.
+- Die drei Grenzen stehen als Sätze im Punkt „Tabellenzeile heißt …“ und in der Spezifikation („Grenzen, am
+  Gegenstand gelesen“), **ohne** neue Kriterien (F-4); die Fälle `- | a | b |` und die Prosa-Zeile prüft
+  `slice-294` als Zusatz zu Kriterium 2.
+- Gegen Lastenheft §5 gehalten ([`BEO-ALL/neue-anforderung-gegen-globalen-ausschluss-ungeprueft`](../observations/BEO-ALL/neue-anforderung-gegen-globalen-ausschluss-ungeprueft/observation.md)):
+  keiner der sechs Ausschlüsse (Architektur-/Build-/Mathematik-Prüfung, Auto-Fix, Nicht-Markdown-Formate,
+  Rechtschreib-/Stil-/Lint-Prüfung) trifft die Änderung; die Ausnahme „mit derselben Markdown-Lexik wie die
+  übrigen Module, die Markdown lesen“ bleibt wahr, weil die Frage in der geteilten Lexik wohnt (Verdikt F-3).
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
