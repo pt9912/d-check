@@ -203,13 +203,15 @@ Folge-Entscheide aus dem Architect-Verdikt — der Wortlaut steht in
    Name, zwei Quellen auf ein Ende nehmen nicht teil). *Nach Review R2 in der Sache
    geändert. Kein Befund entfällt, den es ohne `follow-renames` gibt, außer über eine
    teilnehmende Umbenennung. Gegenüber der Fassung, die der Auftraggeber zuerst bestätigt
-   hatte, ist sie in drei Fällen nachsichtiger — dort gilt das Ergebnis wie ohne den
-   Schalter, nicht Drift: (1) A gelöscht, dann C → A — C nimmt nicht teil; (2) zwei
-   Quellen auf ein Ende (Merge A → E und B → E) — keine nimmt teil; (3) Rotation A → X,
-   danach C → A — C nimmt nicht teil, auch mit `follow-renames` allein. Die erste
-   Vorlage („nur in Richtung Drift“) und die erste Berichtigung trafen das nicht
-   (Review R3, M-1); der Auftraggeber hat die Fassung am 2026-11-24 mit diesen drei
-   Fällen bestätigt.*
+   hatte, ist sie in drei Fällen nachsichtiger (freigemachter Name, zwei Quellen auf ein
+   Ende, Rotation). Was in jedem Fall mit welchem Schalter gilt, steht **nur** in der
+   Grenze „Drei Fälle lassen etwas durch …“ von
+   [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
+   (0.114.3) und gleichlautend in
+   [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) §Konsequenzen; der Plan erzählt
+   es nicht nach. Zwei Nacherzählungen im Plan trafen es nicht (Review R3 M-1, Review R4
+   M-1); der Auftraggeber hat am 2026-11-24 die Fassung des Lastenhefts 0.114.3
+   bestätigt.*
 10. **Zusammenspiel der Schalter:** ein teilnehmendes Ziel wird immer zu eigener Marke,
     vollem Endpfad und Anker, mit `follow-renames` allein wie mit beiden Schaltern; ein
     nicht teilnehmendes bleibt mit `follow-renames` allein roh und wird mit beiden wie mit

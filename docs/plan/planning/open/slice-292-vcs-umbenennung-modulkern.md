@@ -147,11 +147,17 @@ Liste folgt den bestätigten Entscheiden 1–14 und dem Architect-Verdikt):
   Anhang bekommt ⇒ kein Befund (seiten-gleich, Entscheid 9).
 - Tausch über einen Zwischennamen (A → T, B → A, T → B in drei Commits) ⇒ kein Pfad
   nimmt teil, weil jedes Ende in BASE existiert (Entscheid 9); Nachzug A → B ⇒ Befund.
-  Rot-Beleg: ohne die BASE-Bedingung wäre der Nachzug grün. Ein Tausch der Inhalte in
+  Den Rot-Beleg für die BASE-Bedingung trägt der nächste Fall, nicht dieser (ohne die
+  Bedingung hätten A und B hier eine Doppelrolle). Ein Tausch der Inhalte in
   einem Commit ist keine Umbenennung (beide Pfade bestehen weiter) ⇒ Inhaltsänderung.
 - A gelöscht, dann C → A, Nachzug C → A ⇒ Befund (Ende existiert in BASE, Entscheid 9).
 - Rotation A → X, danach C → A ⇒ A nimmt teil (Ende X), C nicht; Nachzug A → X ⇒ kein
-  Befund, Nachzug C → A ⇒ Befund.
+  Befund, Nachzug C → A ⇒ Befund — mit `follow-renames` allein und mit beiden.
+- Die nachsichtige Hälfte der drei Fälle mit beiden Schaltern (Grenze „Drei Fälle lassen
+  etwas durch …“ im Lastenheft): freigemachter Name, Umbiegen von C auf eine andere Datei
+  mit dem Dateinamen von C ⇒ kein Befund; zwei Quellen auf ein Ende, Umbiegen von A auf
+  eine andere Datei mit dem Dateinamen von A ⇒ kein Befund; mit `follow-renames` allein
+  sind beide Fälle Befund.
 - Zwei Quellen auf ein Ende (Merge, A → E und B → E), A und B mit verschiedenen
   Dateinamen, Umbiegen von A auf B ⇒ Befund, mit `follow-renames` allein und mit beiden
   (Ende keiner zweiten Quelle, Entscheid 9); ohne die Klausel wäre es grün.
