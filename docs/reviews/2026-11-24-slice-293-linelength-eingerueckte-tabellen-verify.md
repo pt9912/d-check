@@ -1,7 +1,7 @@
 # Verifikations-Report — slice-293 (Anforderung, Spezifikation und Folge-ADR: eingerückte Tabellenzeilen in `linelength`)
 
 **Rolle:** Verifier (Modul 11) — „Bauen wir es richtig?“, gegen DoD und Spec, nicht gegen den Plan-Stil
-**Gegenstand:** [`slice-293`](../plan/planning/in-progress/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md), `git log 686c9dbd..HEAD` auf `main` (lokal): `78b0131e`, `835907f5`, `11bc17d8`, `fe741033` (Review R1), `a3b06428` (Nachbesserung F-1), `c1b63fcf` (Plan-Nachtrag dazu). Die Folge-ADR [`ADR-0116`](../plan/adr/0116-linelength-eingerueckte-tabellenzeilen.md) liegt seit `6cb9c261`, also **vor** dem Start-Move `686c9dbd`, und ist im Diff unverändert.
+**Gegenstand:** [`slice-293`](../plan/planning/done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md), `git log 686c9dbd..HEAD` auf `main` (lokal): `78b0131e`, `835907f5`, `11bc17d8`, `fe741033` (Review R1), `a3b06428` (Nachbesserung F-1), `c1b63fcf` (Plan-Nachtrag dazu). Die Folge-ADR [`ADR-0116`](../plan/adr/0116-linelength-eingerueckte-tabellenzeilen.md) liegt seit `6cb9c261`, also **vor** dem Start-Move `686c9dbd`, und ist im Diff unverändert.
 **Eingang:** Plan §1 bis §3 und §6, Review [R1](2026-11-24-slice-293-linelength-eingerueckte-tabellen-r1.md), Architect-Verdikt [welle-97](2026-11-24-welle-97-architect-verdikt.md), Lastenheft [`DC-FA-LLEN-001`](../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) 0.115.1, [`DC-FA-LLEN-001.a`](../../spec/spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength).
 **Datum:** 2026-11-24 · **Modell-ID:** claude-sonnet-5-5
 

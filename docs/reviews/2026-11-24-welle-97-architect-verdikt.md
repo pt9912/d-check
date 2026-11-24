@@ -2,7 +2,7 @@
 
 **Rolle:** Architect (Modul 8), frischer Kontext, **vor** Code. Rolleninhaber: pt9912.
 **Gegenstand:** [welle-97](../plan/planning/welle-97-linelength-eingerueckte-tabellen.md) und ihre zwei
-Slice-Pläne [slice-293](../plan/planning/in-progress/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md)
+Slice-Pläne [slice-293](../plan/planning/done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md)
 und [slice-294](../plan/planning/open/slice-294-linelength-eingerueckte-tabellen-kern.md), Stand `c9379511`.
 Die Fragen 1 bis 3 der Welle (§5) hat der Auftraggeber am 2026-11-24 bestätigt, Frage 3 als „höchstens drei
 Leerzeichen, kein Listenkontext“.

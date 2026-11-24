@@ -90,7 +90,7 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     Tabelle in einem Listenpunkt: Vorher ein Befund, Nachher keiner, und Nachher mit
     `exempt-tables: false` wieder derselbe Befund wie Vorher. Die Bezugsmengen-Zeile auf stderr
     nennt dort Nachher eine kleinere Zahl geprüfter Zeilen — gewollt, Kriterium „Bezugsmenge“ in
-    [`slice-293`](in-progress/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) §3.
+    [`slice-293`](done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) §3.
   - **(b) Der Anlass trägt am gebauten Image.** Ein Wegwerf-Fixture aus der Form des Issues: ein
     nummerierter Listenpunkt, darunter eine Tabelle mit drei Leerzeichen Einrückung und einer
     überlangen Zeile. Default: kein Befund. Mit `exempt-tables: false`: ein Befund. Dieselbe Tabelle
@@ -117,8 +117,8 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [`slice-293`](in-progress/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) | Anforderung, Spezifikation und Folge-ADR zu [`ADR-0114`](../adr/0114-linelength-modul.md): `exempt-tables` nimmt eine `\|`-Zeile mit bis zu drei Leerzeichen davor aus; Entscheide festschreiben | [`DC-FA-LLEN-001`](../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) |
-| [`slice-294`](open/slice-294-linelength-eingerueckte-tabellen-kern.md) | Kern und Tests: die Erkennung in `linelength`, Kopplungs-Test, Handbuch und Abdeckung | [`DC-FA-LLEN-001`](../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) in der Fassung aus [`slice-293`](in-progress/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) |
+| [`slice-293`](done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) | Anforderung, Spezifikation und Folge-ADR zu [`ADR-0114`](../adr/0114-linelength-modul.md): `exempt-tables` nimmt eine `\|`-Zeile mit bis zu drei Leerzeichen davor aus; Entscheide festschreiben | [`DC-FA-LLEN-001`](../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) |
+| [`slice-294`](open/slice-294-linelength-eingerueckte-tabellen-kern.md) | Kern und Tests: die Erkennung in `linelength`, Kopplungs-Test, Handbuch und Abdeckung | [`DC-FA-LLEN-001`](../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) in der Fassung aus [`slice-293`](done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) |
 
 ## 5. Abhängigkeiten
 
@@ -129,7 +129,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   Issue sind ein eigener Vorgang nach der Welle (§6).
 - Wird blockiert von: keiner.
 - **Reihenfolge der Slices ist fachlich bindend:** erst
-  [`slice-293`](in-progress/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) (Anforderung
+  [`slice-293`](done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) (Anforderung
   und Entscheide stehen, bevor Code entsteht), dann
   [`slice-294`](open/slice-294-linelength-eingerueckte-tabellen-kern.md). Das WIP-Limit 1 hält sie
   ohnehin nacheinander.
@@ -137,7 +137,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   trägt, und ihrem Preis. Die Lehre aus
   [`BEO-ALL/empfehlung-weitet-anforderung-ueber-den-anlass`](observations/BEO-ALL/empfehlung-weitet-anforderung-ueber-den-anlass/observation.md)
   verlangt, sie vor der Empfehlung auszuschreiben; die größere Antwort steht daneben, damit der
-  Auftraggeber ihren Mehraufwand sieht, bevor er bestätigt. [`slice-293`](in-progress/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md)
+  Auftraggeber ihren Mehraufwand sieht, bevor er bestätigt. [`slice-293`](done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md)
   schreibt sie fest; ohne Bestätigung beginnt kein Code.
   1. *Eigener Schalter (etwa `exempt-indented-tables`) oder `exempt-tables` erweitern?* —
      **„`linelength.exempt-tables` wird selbst erweitert; es gibt keinen neuen Schlüssel.“** Trägt:
@@ -181,7 +181,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
      Preis: Die Zusage „dieselbe Antwort, die die übrigen Module auf diese Frage geben, keine zweite“
      (Anforderung, Absatz „Was Fenced-Code und was eine Tabellenzeile ist …“; Out-of-Scope (4);
      [`ADR-0114`](../adr/0114-linelength-modul.md) Kontext) gilt für diese Frage dann nicht mehr
-     wörtlich; sie wird in [`slice-293`](in-progress/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md)
+     wörtlich; sie wird in [`slice-293`](done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md)
      **umgeschrieben**, nicht neben einem Widerspruch stehen gelassen
      ([`BEO-ALL/plan-entscheid-steht-gegen-lastenheft`](observations/BEO-ALL/plan-entscheid-steht-gegen-lastenheft/observation.md)).
      Die Alternative — `tableRowLine` selbst weiten — hält die eine Antwort, verschiebt aber drei

@@ -35,7 +35,7 @@
 ### F-2 — LOW — Zählung der Ausformungen: Plan-Text und Commit-Botschaft sagen Verschiedenes
 
 - **kategorie:** LOW · **quelle:** [`AGENTS.md`](../../AGENTS.md) §5 Regel 15 (eine Botschaft behauptet nicht mehr, als die Arbeit trägt) · **klasse:** zaehlangabe-widerspricht-aufzaehlung · **verifizierbar:** ja (`git show 78b0131e`)
-- **pfad:** `docs/plan/planning/in-progress/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md` · „keine Plan-Änderung, zwei Ausformungen“ (vier Spiegelstriche darunter); Botschaft von `78b0131e` · „drei Ausformungen des Wortlauts gegenueber dem Plan“
+- **pfad:** `docs/plan/planning/done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md` · „keine Plan-Änderung, zwei Ausformungen“ (vier Spiegelstriche darunter); Botschaft von `78b0131e` · „drei Ausformungen des Wortlauts gegenueber dem Plan“
 - **befund:** Derselbe Nachtrag heißt im Plan „zwei Ausformungen“, führt vier Punkte (Kriterium 2, Out-of-Scope (4), die drei Grenzen als Sätze, die Prüfung gegen §5) und heißt in der Botschaft „drei“. Der Inhalt der Punkte ist richtig; die Zahl stimmt an keiner der beiden Stellen mit der Aufzählung.
 
 ### F-3 — INFO — Die Schema-Zeile führt eine kürzere Grenzen-Aufzählung
