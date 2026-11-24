@@ -32,6 +32,8 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
+- [`welle-97-linelength-eingerueckte-tabellen`](../welle-97-linelength-eingerueckte-tabellen.md)
+
 Nichts in Arbeit.
 
 ## Nächste Wellen
@@ -43,7 +45,7 @@ und geschätzter Aufwand (S/M/L, kein Termin).
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| welle-97 — `linelength` nimmt eingerückte Tabellenzeilen aus ([Issue #20](https://github.com/pt9912/d-check/issues/20)) | welle-96 geschlossen (ihre Welle-Datei liegt in `done/`) | Anforderung [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) und Folge-ADR zu [`ADR-0114`](../../adr/0114-linelength-modul.md) (`supersedes`), dann der Kern | M |
+| — keine — | | | |
 
 ## Meilensteine
 
