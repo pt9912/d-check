@@ -1518,7 +1518,7 @@ Die Konfiguration nennt Block, Formel und Tabellenformat; die Zahlen sind Ihre, 
 trägt keine:
 
 ```yaml
-modules: [links, anchors]      # metrics läuft über --enable, nicht über modules:
+modules: [links, anchors]      # metrics ist opt-in: hier per --enable metrics zugeschaltet (alternativ modules: [..., metrics])
 metrics:
   plans-dir: docs/plan/planning/in-progress   # slice-*.md unmittelbar darin, nicht rekursiv
   block: groessenmarke
@@ -1593,7 +1593,7 @@ ist eine Datei und ein regulärer Ausdruck (RE2) mit **genau einer** Fanggruppe 
 Gruppe ist der Wert.
 
 ```yaml
-modules: [links, anchors]      # pinsync läuft über --enable, nicht über modules:
+modules: [links, anchors]      # pinsync ist opt-in: hier per --enable pinsync zugeschaltet (alternativ modules: [..., pinsync])
 pinsync:
   pins:
     - name: go-version
@@ -1672,7 +1672,7 @@ Datei (`file`) oder eines Abschnitts (`structure`).
 „ausgenommen“ und lassen sich einzeln ausschalten.
 
 ```yaml
-modules: [links, anchors]      # linelength läuft über --enable, nicht über modules:
+modules: [links, anchors]      # linelength ist opt-in: hier per --enable linelength zugeschaltet (alternativ modules: [..., linelength])
 linelength:
   max-chars: 120
   exempt-code-blocks: true     # Fenced-Code samt Zäunen nicht messen
