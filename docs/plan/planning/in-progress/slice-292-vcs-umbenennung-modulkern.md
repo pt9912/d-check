@@ -83,14 +83,14 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] git-Port und -Adapter liefern die Umbenennungen der Range nach der Anforderung
+- [x] git-Port und -Adapter liefern die Umbenennungen der Range nach der Anforderung
       (Commit-Menge, Inhalts-Gleichheit, Kette, Mehrdeutigkeit, die Bedingung an das
       Ende — in HEAD, nicht in BASE, Ende keiner zweiten Quelle
       ([`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) Entscheidung 9) —, Basis kein
       Vorfahr ⇒ leere Abbildung (Entscheidung 12), `--staged`); die Index-Enumeration nimmt
       dieselben drei Arten wie der Baum (Entscheidung 13, §3 Zeile `git.go`); ein
       unlesbarer Commit oder Baum ist Exit 2; Tests gegen echte git-Fixtures.
-- [ ] Regel und Konfigurations-Rand: `vcs.follow-renames` wird gelesen (falscher Typ ⇒
+- [x] Regel und Konfigurations-Rand: `vcs.follow-renames` wird gelesen (falscher Typ ⇒
       Exit 2), das Gleichsetzen trägt jedes Akzeptanzkriterium der Anforderung, ohne
       Schlüssel ist die Ausgabe byte-identisch, außer der einen gewollten Abweichung mit
       `--staged` (§3 Zeile `git.go`); die Negativfälle aus dem Plan von
@@ -99,7 +99,7 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       (Baseline-Regelwerk `modul-11-verification.md` §Bewusstes Brechen) — ausgenommen
       allein der zweite Lauf eines Negativ-Falls mit beiden Schlüsseln, wo §3 ihn als Netz
       ohne eigenen Rot-Beleg benennt.
-- [ ] Spiegel und Profil: `--print-config`, Handbuch-Abschnitt des Moduls und
+- [x] Spiegel und Profil: `--print-config`, Handbuch-Abschnitt des Moduls und
       [`harness/sensors/adr-check.md`](../../../../harness/sensors/adr-check.md) nennen den
       Schlüssel (vor dem Editieren aufgelistet,
       [`MR-025`](../../../../harness/conventions.md#mr-025)); `.d-check.yml` schaltet ihn
@@ -109,14 +109,14 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       [`harness/README.md`](../../../../harness/README.md) §Traceability rules nennen
       [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) neben
       [`ADR-0103`](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md).
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
 ## 3. Plan (vor Code)
 
