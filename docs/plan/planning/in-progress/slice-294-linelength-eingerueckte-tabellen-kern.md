@@ -236,25 +236,28 @@ dasteht.
 - Der neue Helfer liegt in der geteilten Lexik; ein Zugriff dort verschiebt andere Module
   ([`BEO-ALL/gemeinsame-leser-sind-zwei-familien`](../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md),
   2×; [`BEO-ALL/shared-lexicon-drifts-at-edges`](../observations/BEO-ALL/shared-lexicon-drifts-at-edges/observation.md),
-  verkörpert) — **Ausgang:** *entfallen*, wenn der Diff von `markdown.go` nur Neues neben
-  `tableRowLine` zeigt und der Kopplungs-Test beide Richtungen trägt; sonst *eingetreten* mit einer
-  Evidenz-Datei im Register.
+  verkörpert) — **Ausgang:** *entfallen.* Der Diff von `markdown.go` besteht aus 28 hinzugefügten
+  Zeilen und keiner entfernten, kein Konsument von `tableRowLine` steht im Diff, und der
+  Kopplungs-Test trägt beide Richtungen (Review R1, Verifikation Punkt 1 und 3).
 - Ein Test läuft grün, ohne die Regel zu fahren
   ([`BEO-ALL/testfall-faehrt-seine-regel-nicht`](../observations/BEO-ALL/testfall-faehrt-seine-regel-nicht/observation.md),
-  2×) — **Ausgang:** *entfallen*, wenn die Closure-Notiz je Test die Mutation und die gelesene
-  Meldung nennt und jede rot war; sonst *eingetreten* mit einer Evidenz-Datei (dann 3×).
+  2×) — **Ausgang:** *entfallen.* Implementer (10), Reviewer (12) und Verifier (19 Mutationen, 72
+  Teiltests) setzten die Mutationen je einzeln und lasen die Meldung; jede wurde rot außer den zwei
+  äquivalenten (Doppelaufruf von Helfer und `tableRowLine`; die Bedingung `indent >= 1`), die kein
+  Verhaltenstest rot machen kann. Die Doppelaufruf-Variante wird zusammen mit „Helfer ruft
+  `tableRowLine` nicht“ rot (Review R1, Verifikation Punkt 2).
 - Eine Randbedingung der Anforderung (Grenze 3 und 4, Tab, U+00A0, Zaun, Bezugsmenge) hat keinen
   Test ([`BEO-ALL/spec-randbedingung-ohne-test`](../observations/BEO-ALL/spec-randbedingung-ohne-test/observation.md),
-  2×) — **Ausgang:** *entfallen*, wenn die Verifikation zu jeder Grenze der Anforderung einen Test
-  findet, der sie umdreht; sonst *eingetreten* mit einer Evidenz-Datei (dann 3×).
+  2×) — **Ausgang:** *entfallen.* Die Verifikation fand zu jeder Grenze der Anforderung einen Test,
+  der sie umdreht (Tabelle Kriterium → Test → Mutation im Verifikations-Report, Punkt 2).
 - Die Negativfälle fehlen, weil die Regel zwei Seiten hat (Einrückung **und** erstes Zeichen)
   ([`BEO-ALL/negativtest-deckt-nur-eine-regelseite`](../observations/BEO-ALL/negativtest-deckt-nur-eine-regelseite/observation.md),
-  1×) — **Ausgang:** *entfallen*, wenn je Seite ein eigener Fall rot wird (siehe die Tabelle in §3);
-  sonst *eingetreten* mit einer Evidenz-Datei.
+  1×) — **Ausgang:** *entfallen.* Je Seite wird ein eigener Fall rot: die Einrückungs-Seite
+  (Schwelle, Tab, U+00A0) und die Erstes-Zeichen-Seite (`Contains` statt `HasPrefix`, `>`, `a | b`).
 - Die Bezugsmenge zählt nach der Änderung anders (weniger geprüfte Zeilen bei eingerückten
-  Tabellenzeilen), und eine Konsumenten-Probe liest die Zahl — **Ausgang:** *entfallen*, wenn
-  `make gates` grün ist und Kriterium 4 die Zahl festhält; die Abweichung ist gewollt und steht in
-  der Probe der Welle als eigene Zeile.
+  Tabellenzeilen), und eine Konsumenten-Probe liest die Zahl — **Ausgang:** *entfallen.* `make gates`
+  ist grün, Kriterium 4 hält die Zahl (Default 9 gegen 12 Zeilen mit `exempt-tables: false`,
+  Mutation rot); die Abweichung ist gewollt und steht in der Probe der Welle als eigene Zeile.
 
 ## 7. Closure-Notiz
 
@@ -270,7 +273,35 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-*(Wird bei der Closure gefüllt.)*
+- **Was hat funktioniert:** Der Zuschnitt hielt: Eine Review-Runde ohne HIGH und MEDIUM, die
+  Verifikation ohne blockierenden Befund. Die Mutation trug auch hier die Prüfung, an drei Rollen
+  unabhängig (10 · 12 · 19). Den Vorher-Vergleich fuhr der Verifier gegen ein Image aus `69c53e0f`
+  über vier Fixtures ohne eingerückte `|`-Zeile (120 Vergleiche, drei Ausgabeformen, 0 Abweichungen);
+  die gewollte Abweichung ist die einzige. Die Form aus Issue #20 am gebauten Image: Tabelle mit drei
+  Leerzeichen — default kein Befund, mit `exempt-tables: false` ein Befund, mit vier Leerzeichen
+  weiter ein Befund; das Vorher-Image meldete bei drei Leerzeichen.
+- **Was ging anders als geplant:** **(1) Der Helfer heißt `unbreakableTableRow`**, die Konstante
+  `maxTableIndent`. **(2) Der Kopplungs-Test hat zwei Funktionen** statt einer. **(3) Die
+  Abdeckungs-Datei kam schon mit dem ersten Code-Commit,** weil `make test` sie gegen ihre Ableitung
+  hält. **(4) Der Handbuch-Punkt „Fenced-Code und Tabellenzeile“ wurde in zwei Punkte getrennt,** die
+  Aufzählung heißt „Acht Dinge“. **(5) Zwei äquivalente Mutanten** blieben grün (Doppelaufruf; die
+  Bedingung `indent >= 1` ist tot, weil `tableRowLine` für Einrückung null schon antwortet).
+- **Steering-Loop-Eintrag:** mit diesem Slice ist keine Regel, kein Sensor und keine benannte
+  Spec-Lücke verkörpert.
+  [`BEO-ALL/grenz-aussage-ohne-ihre-bedingung`](../observations/BEO-ALL/grenz-aussage-ohne-ihre-bedingung/observation.md)
+  erreicht mit diesem Slice 3×; den Ausgang entscheidet der Lese-Schritt der Closure von welle-97.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-294.md` in
+  [`BEO-ALL/grenz-aussage-ohne-ihre-bedingung`](../observations/BEO-ALL/grenz-aussage-ohne-ihre-bedingung/observation.md)
+  (3×: die Kommentare in `linelength.go` und `markdown.go` begründen Tab, U+00A0 und `>` mit „die
+  Lexik hat keinen Listenkontext“, was nur für vier und mehr Leerzeichen trägt; Review R1 F-1).
+  Benannt, nicht gezählt: der Kommentar von `tableRowLine` sagt weiter „die EINE Antwort“ ohne
+  Zeiger auf den Helfer (F-2); die Bedingung `indent >= 1` im Helfer ist tot (Verifikation V-1);
+  Handbuch Z. 1707 hat 133 Zeichen bei höchstens 96 der Nachbarzeilen (V-2); der Test
+  `TestLinelengthEingerueckteTabellenzeileZaehltNichtInU` trägt keine DC-Kennung im Kommentar und
+  fehlt deshalb in der Abdeckungs-Datei.
+- **Folge-Slices:** keine neuen. Der Architect-Akt ([`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) `Accepted`, Vermerk „teil-superseded“
+  bei [`ADR-0114`](../../adr/0114-linelength-modul.md)) läuft als eigener Commit derselben Welle.
+- **Risiken aus §6:** alle fünf *entfallen* — siehe §6.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
