@@ -157,6 +157,41 @@ Zeile), 3135 (die Modul-Tabelle in §6), Vorlage Z. 314. **Unverändert bleiben*
 Historie-Zeile gehört der Release-Prep). Die READMEs tragen dieselbe Beschreibung und gehören der
 Release-Prep. Der Implementer zählt vor dem Editieren **neu**.
 
+**Plan-Nachtrag (Implementer, 2026-11-24)** — Zählungen, Spiegel-Suche und Abweichungen; kein neuer
+Plan-Inhalt:
+
+- **Zählung neu, vor dem Editieren:** das Kommando oben lieferte dieselben fünf Stellen (Handbuch Z. 1679,
+  1706, 1713, 3135; Vorlage Z. 314) plus die unverändert bleibenden Z. 1725 und Z. 3369.
+- **Alte Aussagen über ihren Inhalt gesucht:**
+
+  ```bash
+  git grep -n -i -E 'eingerückte[^.]{0,60}(sind keine|ist keine|keine Tabellen)|mit `\|` beginn|Spalte 0|Spalte-0|dieselbe Antwort|wie die übrigen Module|so, wie es die übrigen' -- ':!docs/plan' ':!docs/reviews' ':!CHANGELOG.md' ':!.harness' ':!*_test.go'
+  ```
+
+  **Geändert:** Handbuch §4.28 (YAML-Zeile, Beschreibung von (b), der Punkt „Fenced-Code und
+  Tabellenzeile kennt das Modul so, wie es die übrigen Module kennen“) und die Modul-Tabelle §6;
+  [`config_template.go`](../../../../internal/adapter/driving/cli/config_template.go) Z. 314; der Dateikopf von
+  [`linelength.go`](../../../../internal/hexagon/core/rules/linelength.go); der Kopf-Kommentar von
+  [`lexikon_kopplung_test.go`](../../../../internal/hexagon/core/rules/lexikon_kopplung_test.go).
+  **Unverändert, weil sie ein anderes Modul oder eine Spalte-0-Zusage betreffen:** Handbuch Z. 1574
+  (`metrics`), 2455 und 2540 (`anchors`-Antwort), 3324 (Historie); die Kommentare in
+  [`metrics_table.go`](../../../../internal/hexagon/core/rules/metrics_table.go),
+  [`structure_tableorder.go`](../../../../internal/hexagon/core/rules/structure_tableorder.go) und
+  [`targets.go`](../../../../internal/hexagon/core/rules/targets.go) (die Spalte-0-Zusagen von `metrics`,
+  `structure`, `targets`); [`.githooks/pre-commit`](../../../../.githooks/pre-commit) (VCS-Frage).
+  **Nicht angefasst, Release-Prep:** die Beschreibung „Zeilen, die mit `|` beginnen“ in
+  [`README.de.md`](../../../../README.de.md) Z. 215 und [`README.md`](../../../../README.md) Z. 212–216 bleibt
+  bis dahin ungenau; ebenso die Handbuch-Historie Z. 3369 und der Handbuch-Kopf.
+- **Abweichungen vom Plan, ohne Auswirkung auf die Abgrenzung:** (1) Das Handbuch trennt den Punkt „Fenced-Code
+  und Tabellenzeile“ in zwei; die Aufzählung zählt nun acht Punkte, die Überschrift „Sieben Dinge“ heißt
+  „Acht Dinge“ (Z. 1699), die Modul-Tabelle steht auf Z. 3148. (2) Der Helfer heißt `unbreakableTableRow`,
+  seine Schwelle `maxTableIndent`. (3) Die Kopplung hat zwei Tests:
+  `TestTabellenzeilenFrageHatEineAntwort` (`targets`, `planning.waves`, `structure` und `tableRowLine` auf
+  einer Antwort; die Fälle mit ein, zwei und drei Leerzeichen, vier Leerzeichen und Tab eingeschlossen) und
+  `TestTabellenzeilenFrageVonLinelengthHatEineAntwort` (`linelength` und der Helfer, dazu die Prüfung, dass der
+  Helfer `tableRowLine` einschließt). (4) Die Abdeckungsdatei reist im ersten Code-Commit mit, weil `make test`
+  sie gegen ihre Ableitung hält.
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
