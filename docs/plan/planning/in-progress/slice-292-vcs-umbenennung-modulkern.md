@@ -343,19 +343,22 @@ dasteht.
   (Reports `docs/reviews/2026-10-09-slice-267-vcs-pfad-nachzug-r1.md` bis `-r8.md`); eine
   zweite Gleichsetzung an derselben Stelle kann die Filter dort verschieben
   ([`BEO-ALL/shared-lexicon-drifts-at-edges`](../observations/BEO-ALL/shared-lexicon-drifts-at-edges/observation.md))
-  — **Ausgang:** *entfallen*, wenn die bestehenden Tests von
-  `vcs_pfad_nachzug_test.go` unverändert grün bleiben und ein Test beide Schalter
-  zusammen fährt.
+  — **Ausgang:** *entfallen.* Die bestehenden Tests von
+  `vcs_pfad_nachzug_test.go` sind unverändert und grün, mehrere Tests fahren beide Schalter
+  zusammen (Verifikation, Punkt 2).
 - git-Fixtures, die Inhalt gleicher Länge in einem Zug neu schreiben, fallen sporadisch
   aus ([`BEO-ALL/racily-clean-git-fixture`](../observations/BEO-ALL/racily-clean-git-fixture/observation.md))
   — Umbenennungs-Fixtures mit gleichen Blobs liegen nahe an dieser Klasse —
-  **Ausgang:** *entfallen*, wenn jedes neue Fixture über die Helfer von
-  `internal/hexagon/core/coretest/` läuft und keines dieselbe Datei gleich lang neu
-  schreibt.
+  **Ausgang:** *entfallen.* Die Adapter-Fixtures liegen im Speicher, die CLI-Fixtures laufen über die Helfer von
+  `internal/hexagon/core/coretest/`, und kein Fall schreibt dieselbe Datei gleich lang neu
+  (Review R2, Verifikation).
 - Der Commit-Walk liest mehr Objekte als heute; ein großer Push-Bereich in der CI wird
-  langsamer — **Ausgang:** *entfallen*, wenn `make adr-check` über eine Range von
-  100 Commits dieses Repos mit Schalter höchstens doppelt so lange läuft wie ohne
-  (Messung in der Closure-Notiz); sonst *eingetreten* mit Folge-Slice. **Bedingung der
+  langsamer — **Ausgang:** *entfallen.* Gemessen in der Verifikation über 100 Commits mit
+  einem Merge, dessen eine Seite vor BASE abzweigt: Median 1,139 s ohne, 1,562 s mit
+  `follow-renames`, Faktor 1,37 gegen die Schwelle 2 (fünf Läufe je Konfiguration,
+  Kommando im
+  [Verifikations-Report](../../../reviews/2026-11-24-slice-292-vcs-umbenennung-verify.md)).
+  **Bedingung der
   Messung (Architect-Verdikt F-7):** die Range enthält einen Merge, dessen eine Seite vor
   BASE abzweigt — sonst liest der Lauf keinen Baum eines Eltern-Commits vor BASE
   ([`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) Entscheidung 13) und misst den
@@ -365,11 +368,10 @@ dasteht.
 - Die Angleichung der Index-Enumeration ändert ohne den Schalter ein Ergebnis im gestagten
   Modus (Gitlink ersetzt eine immutable Datei: Exit 2 → `core-drift-vcs`, §3 Zeile
   `git.go`); Welle-Probe oder Verifier könnten das als Bruch von „ohne den Schalter nichts
-  Neues“ lesen (Architect-Verdikt F-4) — **Ausgang:** *entfallen*, wenn der Testfall
-  „immutable Datei durch Gitlink ersetzt“ im gestagten Modus grün läuft, mit Rot am
-  Vorzustand, und der Closure-Trigger der
-  [Welle](../welle-96-vcs-folgt-umbenennung.md) §3 die Abweichung benennt; sonst
-  *eingetreten*.
+  Neues“ lesen (Architect-Verdikt F-4) — **Ausgang:** *entfallen.* Der Testfall
+  „immutable Datei durch Gitlink ersetzt“ läuft in beiden Modi grün, das Rot am
+  Vorzustand ist gemessen (Exit 2 statt `core-drift-vcs`), und der Closure-Trigger der
+  [Welle](../welle-96-vcs-folgt-umbenennung.md) §3 benennt die Abweichung.
 
 ## 7. Closure-Notiz
 
@@ -385,7 +387,48 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-*(Wird bei der Closure gefüllt.)*
+- **Was hat funktioniert:** Der Code folgte der fertigen Spec und brauchte zwei Review-Runden
+  statt der vier der Spec; R1 fand keinen Befund im Produktcode, nur zwei fehlende Tests
+  (M-1, M-2), die R2 schloss. Das Gegenmittel war die Mutation: Der Implementer fuhr 22,
+  der Reviewer weitere 22, der Verifier elf, jede einzeln gesetzt und zurückgenommen; sie
+  fand beide Test-Lücken und zeigte, welche Zweige nur äquivalente Optimierung sind. Der
+  Anlass aus Issue #18 trägt am gebauten Image: Umbenennung von `spec/spezifikation.md`,
+  nur Link-Ziele nachgezogen — 58 `core-drift-vcs` ohne den Schalter, 0 mit ihm, 58 bei der
+  Gegenprobe (gelöscht und mit anderem Inhalt neu angelegt).
+- **Was ging anders als geplant:** **(1) Eine Datei statt zwei:** der Adapter-Code liegt in
+  `git.go`, die Datei wuchs auf über 1000 Zeilen; ein eigenes `renames.go` stand nicht in
+  der Tabelle. **(2) Stufen:** Stufe 1 trug schon den ganzen Mechanismus, weil er eine
+  Funktion ist; Stufe 2 trug die Randfall-Tests, Spezifikation und Doku. **(3) Der
+  Rest-Satz der Spezifikation fiel:** ein Test bestätigte die Lesart des Codes zum Gitlink,
+  deshalb fiel der Satz „bleibt unbemerkt“ zusammen mit dem Nebensatz aus V-1 der
+  Verifikation von slice-291. **(4) Ein Satz der Welle** („Ohne den Schalter nichts
+  Neues“) musste die eine gewollte Abweichung im gestagten Modus nennen, und die
+  Blackbox-Probe fährt `vcs` gar nicht (Default-`PROBE_FORMS` ohne `--range`/`--staged`);
+  die Gleichheit ohne Schalter trägt der Verifier mit einem Vorher-Image, die Probe
+  gehört nicht dazu. **(5) Aufwand:** Der Auftraggeber hat die rund acht Stunden bis zum
+  Spec-Stand beanstandet und das Zurückschneiden der Spec verworfen. Gemessen: Der
+  Implementer-Lauf für Code, Tests und Doku dauerte rund 46 Minuten, die Review-Runden
+  R1 und R2 zusammen rund 22 Minuten; ob ein kleinerer Umfang schneller gewesen wäre,
+  ist nicht gemessen.
+- **Steering-Loop-Eintrag:** mit diesem Slice ist keine Regel, kein Sensor und keine
+  benannte Spec-Lücke verkörpert. Zwei Beobachtungen erreichen 2×
+  ([`BEO-ALL/spec-randbedingung-ohne-test`](../observations/BEO-ALL/spec-randbedingung-ohne-test/observation.md),
+  [`BEO-ALL/testfall-faehrt-seine-regel-nicht`](../observations/BEO-ALL/testfall-faehrt-seine-regel-nicht/observation.md)).
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-292.md` in den zwei
+  genannten Einträgen; neu angelegt, 1×:
+  [`BEO-ALL/empfehlung-weitet-anforderung-ueber-den-anlass`](../observations/BEO-ALL/empfehlung-weitet-anforderung-ueber-den-anlass/observation.md)
+  (Beleg: slice-291, die acht Stunden Spec). Benannt, nicht gezählt: Handbuch und
+  Sensor-Datei sagen „Laufzeit wächst mit der Länge der Range“, der `isAncestor`-Walk
+  liest bei fremder Basis zusätzlich die Historie vor BASE (R1 I-2); der Gitlink-Satz
+  gilt auch ohne den Schlüssel, steht im Handbuch aber nur im Schlüssel-Absatz (I-4);
+  `entryUnreadable` führt die drei Datei-Arten ein zweites Mal neben `isFileMode`;
+  der Teilbaum-Skip bei gleicher Kennung ist äquivalente Optimierung ohne Test (I-1);
+  `TestVCS_FollowRenamesAusByteIdentisch` belegt nur, dass fehlender Schlüssel und
+  `false` gleich laufen (I-3).
+- **Folge-Slices:** keine neuen. Der Architect-Akt nach Entscheidung 14 ([`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) auf
+  `Accepted`, `.d-check.yml`, AGENTS.md §3.5, harness/README.md) läuft als eigener Commit
+  derselben Welle; die Probe am Image gehört in `welle-96-results.md`.
+- **Risiken aus §6:** alle vier *entfallen* — siehe §6.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 

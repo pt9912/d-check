@@ -1,0 +1,2 @@
+**Vorgang:** slice-292
+**Fund:** Review R1 fand zwei zugesagte Randbedingungen von [`DC-FA-VCS-001`](../../../../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) ohne Test: die Commit-Menge „von HEAD erreichbar, von BASE nicht“ (M-1) und die doppelte Marke des teilnehmenden Ziels (M-2); beide Mutationen blieben grün, die Tests kamen in R2. Dazu blieben zwei Lesepfade und ein Zweig der Kette ohne Rot-Beleg (R1 L-1, L-2) und ein Plan-Testfall ohne Test (Verifikation V-1).
