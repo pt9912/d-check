@@ -2,13 +2,13 @@
 
 **Rolle:** Architect (Modul 8, §Rollen-Sequenz für eine Welle: Closure-Schritt 2 und 3b, Planner → Architect →
 Planner). Rolleninhaber: pt9912.
-**Gegenstand:** [welle-97](../plan/planning/done/welle-97-linelength-eingerueckte-tabellen.md) mit
-[slice-293](../plan/planning/done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) und
-[slice-294](../plan/planning/done/slice-294-linelength-eingerueckte-tabellen-kern.md), Range `cb164eaa^..HEAD`
+**Gegenstand:** [welle-97](../plan/planning/done/welle-97/welle-97-linelength-eingerueckte-tabellen.md) mit
+[slice-293](../plan/planning/done/welle-97/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) und
+[slice-294](../plan/planning/done/welle-97/slice-294-linelength-eingerueckte-tabellen-kern.md), Range `cb164eaa^..HEAD`
 (28 Commits, Spitze `5c8ded99`).
 **Eingang:** Audit-Vorlage des Planners; Review und Verifikation von slice-294
-([R1](2026-11-24-slice-294-linelength-eingerueckte-tabellen-r1.md),
-[Verifikation](2026-11-24-slice-294-linelength-eingerueckte-tabellen-verify.md)). Die repo-weite Verifikation der
+(R1 (im Archiv von welle-97),
+Verifikation (im Archiv von welle-97)). Die repo-weite Verifikation der
 Welle entsteht parallel und ist nicht Eingang.
 **Nicht Gegenstand:** die Zweige Carveout und bootstrap-aware Gate (prüft der Planner).
 **Datum:** 2026-11-24.

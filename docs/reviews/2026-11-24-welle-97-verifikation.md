@@ -2,7 +2,7 @@
 
 **Rolle:** Verifier (Modul 8, §Rollen-Sequenz für eine Welle: Verifier → Planner) ·
 **Gegenstand:** Closure-Trigger aus
-[welle-97](../plan/planning/done/welle-97-linelength-eingerueckte-tabellen.md) §3, geprüft in einem frischen Kontext ·
+[welle-97](../plan/planning/done/welle-97/welle-97-linelength-eingerueckte-tabellen.md) §3, geprüft in einem frischen Kontext ·
 **Bezug:**
 [`DC-FA-LLEN-001`](../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in),
 [`DC-QA-02`](../../spec/lastenheft.md#dc-qa-02--determinismus),
@@ -11,8 +11,8 @@
 
 Jeder Beleg stammt aus einem Lauf, den ich selbst gefahren habe. Das Trigger-Audit (Schritt 2) ist hier nicht
 geprüft. Der Beleg geht über die Slice-DoDs hinaus; deren Verifikation steht in
-[slice-293](2026-11-24-slice-293-linelength-eingerueckte-tabellen-verify.md) und
-[slice-294](2026-11-24-slice-294-linelength-eingerueckte-tabellen-verify.md).
+slice-293 (im Archiv von welle-97) und
+slice-294 (im Archiv von welle-97).
 
 **Stand.** `make fullbuild` lief auf `5c8ded99` mit sauberem Arbeitsbaum. Während der Läufe kam `192cf345` auf
 `main` (Planner-Kontext, parallel zu diesem Lauf: `AGENTS.md`, ein Beobachtungs-Zustand, ein Regel-Volltext und der
@@ -25,7 +25,7 @@ Report. Ich habe `make fullbuild` nicht wiederholt.
 
 | Punkt | Urteil | Beleg |
 |---|---|---|
-| 1 — alle Slices in `done/` | bestätigt | [slice-293](../plan/planning/done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) und [slice-294](../plan/planning/done/slice-294-linelength-eingerueckte-tabellen-kern.md) liegen in `done/`; nur diese beiden tragen `**Welle:**` auf welle-97 (`grep -rl` über `docs/plan/planning`). `ls docs/plan/planning/{open,next,in-progress}`: `open/` und `next/` nur `.gitkeep`, `in-progress/` nur `roadmap.md`. |
+| 1 — alle Slices in `done/` | bestätigt | [slice-293](../plan/planning/done/welle-97/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) und [slice-294](../plan/planning/done/welle-97/slice-294-linelength-eingerueckte-tabellen-kern.md) liegen in `done/`; nur diese beiden tragen `**Welle:**` auf welle-97 (`grep -rl` über `docs/plan/planning`). `ls docs/plan/planning/{open,next,in-progress}`: `open/` und `next/` nur `.gitkeep`, `in-progress/` nur `roadmap.md`. |
 | 2 — `make fullbuild` grün | bestätigt | Exit 0, Abschluss `[fullbuild] green — image-hash sha256:dee681826eea27a2163f4e4b3416e65ceef5140a5c740f7739fec9067fb9aac9`. Zeilen unten. |
 | (a1) — Probe `REF=69c53e0f` | bestätigt | `blackbox-probe: byte-identisch über 20 Vergleiche (Vorher 69c53e0f, stdout/stderr/Exit getrennt, Kanarienlauf vorher und nachher).` Exit 0. |
 | (a2) — `--enable linelength` Vorher/Nachher | bestätigt | 1176 Vergleiche; 0 Abweichungen ohne eingerückte Tabellenzeile; die eine gewollte Abweichung ist die einzige. |
@@ -69,7 +69,7 @@ Was die Probe trägt, liest sich an `.d-check.yml`, wie der Plan es verlangt:
   `--enable planning` (Kommentar zu Zeile 892 der Datei), `targets` hat das Fixture `targets`.
 - Für `planning.waves` und `structure` im Lesen von Tabellenzeilen trägt deshalb nicht die Probe, sondern:
   `make planning-check` und `make verify-closure-notes` (beide mit `--enable planning --enable structure`) liefen
-  auf dem neuen Image grün (Beleg 5), und der Kopplungs-Test aus [slice-294](../plan/planning/done/slice-294-linelength-eingerueckte-tabellen-kern.md).
+  auf dem neuen Image grün (Beleg 5), und der Kopplungs-Test aus [slice-294](../plan/planning/done/welle-97/slice-294-linelength-eingerueckte-tabellen-kern.md).
 
 ## Beleg 3 — (a2) Vorher/Nachher mit `--enable linelength`
 
@@ -187,7 +187,7 @@ ein bis drei Leerzeichen; null Leerzeichen war schon vorher ausgenommen und weic
 ## Grenzen dieser Verifikation
 
 - Die 14 Fixtures sind eine Auswahl, kein Beweis; die Gleichheit im ganzen Raum tragen die Tests und die Mutationen
-  aus der Slice-Verifikation von [slice-294](2026-11-24-slice-294-linelength-eingerueckte-tabellen-verify.md).
+  aus der Slice-Verifikation von slice-294 (im Archiv von welle-97).
 - Der Bestand des Melders von [Issue #20](https://github.com/pt9912/d-check/issues/20) (41 von 85 Befunden) liegt
   außerhalb dieses Repos und ist von hier nicht gemessen; Probe 3 und 4 sind der Beleg, dass vier Leerzeichen und mehr
   Befunde behalten.
