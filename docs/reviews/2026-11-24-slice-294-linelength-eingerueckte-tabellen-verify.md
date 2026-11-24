@@ -1,7 +1,7 @@
 # Verifikations-Report — slice-294 (Kern und Tests)
 
 **Rolle:** Verifier (Modul 11) — „Bauen wir es richtig?“, gegen DoD, Plan und Anforderung; nicht gegen den Plan-Stil, nicht gegen den realen Bedarf.
-**Gegenstand:** [`slice-294`](../plan/planning/in-progress/slice-294-linelength-eingerueckte-tabellen-kern.md), `git log 482e0dc8..HEAD` auf `main`, lokal (`HEAD` = `7e134483`). Code in `222b5bcb` (Helfer, Aufruf, Tests) und `a4a91511` (Handbuch, `--print-config`-Vorlage, Zaun-Test); `b10dbb98` ist der Plan-Nachtrag, `7e134483` der Review-Report.
+**Gegenstand:** [`slice-294`](../plan/planning/done/slice-294-linelength-eingerueckte-tabellen-kern.md), `git log 482e0dc8..HEAD` auf `main`, lokal (`HEAD` = `7e134483`). Code in `222b5bcb` (Helfer, Aufruf, Tests) und `a4a91511` (Handbuch, `--print-config`-Vorlage, Zaun-Test); `b10dbb98` ist der Plan-Nachtrag, `7e134483` der Review-Report.
 **Maßstab:** [`DC-FA-LLEN-001`](../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) in der Fassung 0.115.1, [`ADR-0116`](../plan/adr/0116-linelength-eingerueckte-tabellenzeilen.md) (`Proposed`), [`ADR-0054`](../plan/adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md) Entscheidung 4, §1/§2/§3/§6 des Slice.
 **Eingang:** der Review-Report [`2026-11-24-slice-294-linelength-eingerueckte-tabellen-r1.md`](2026-11-24-slice-294-linelength-eingerueckte-tabellen-r1.md) (kein HIGH, kein MEDIUM); die DoD-Bestätigung des Implementers wurde **nicht übernommen**, jeder Punkt ist unten nachgefahren.
 **Datum:** 2026-11-24 · **Modell-ID:** claude-sonnet-5-5

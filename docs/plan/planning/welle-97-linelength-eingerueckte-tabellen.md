@@ -80,7 +80,7 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     darunter `targets`, das die Tabellenzeilen-Antwort der Lexik liest; ob dieses Profil `structure`
     und `planning.waves` einschaltet, liest die Closure an der `.d-check.yml` und nennt es in der
     Ergebnis-Notiz. Der Beleg für beide bleibt der Kopplungs-Test aus
-    [`slice-294`](in-progress/slice-294-linelength-eingerueckte-tabellen-kern.md). **(a2)** Ein Vorher-/Nachher-Lauf mit `--enable linelength`: dasselbe Vorher-Image
+    [`slice-294`](done/slice-294-linelength-eingerueckte-tabellen-kern.md). **(a2)** Ein Vorher-/Nachher-Lauf mit `--enable linelength`: dasselbe Vorher-Image
     wie in (a1) (`git archive 69c53e0f`), gebaut wie in `tools/blackbox-probe.sh` (`docker build --target runtime`),
     das Nachher-Image aus `make build`; beide über dasselbe Wegwerf-Fixture, eine Kopie von
     `docs/user/` mit einem `linelength`-Block (`max-chars` kleiner als die längste Zeile dort). Das
@@ -118,7 +118,7 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 | Slice | Titel | Bezug |
 |---|---|---|
 | [`slice-293`](done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) | Anforderung, Spezifikation und Folge-ADR zu [`ADR-0114`](../adr/0114-linelength-modul.md): `exempt-tables` nimmt eine `\|`-Zeile mit bis zu drei Leerzeichen davor aus; Entscheide festschreiben | [`DC-FA-LLEN-001`](../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) |
-| [`slice-294`](in-progress/slice-294-linelength-eingerueckte-tabellen-kern.md) | Kern und Tests: die Erkennung in `linelength`, Kopplungs-Test, Handbuch und Abdeckung | [`DC-FA-LLEN-001`](../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) in der Fassung aus [`slice-293`](done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) |
+| [`slice-294`](done/slice-294-linelength-eingerueckte-tabellen-kern.md) | Kern und Tests: die Erkennung in `linelength`, Kopplungs-Test, Handbuch und Abdeckung | [`DC-FA-LLEN-001`](../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) in der Fassung aus [`slice-293`](done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) |
 
 ## 5. Abhängigkeiten
 
@@ -131,7 +131,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 - **Reihenfolge der Slices ist fachlich bindend:** erst
   [`slice-293`](done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) (Anforderung
   und Entscheide stehen, bevor Code entsteht), dann
-  [`slice-294`](in-progress/slice-294-linelength-eingerueckte-tabellen-kern.md). Das WIP-Limit 1 hält sie
+  [`slice-294`](done/slice-294-linelength-eingerueckte-tabellen-kern.md). Das WIP-Limit 1 hält sie
   ohnehin nacheinander.
 - **Die kleinste Antwort auf jede offene Frage des Issues** — im Wortlaut, mit der Stelle, die sie
   trägt, und ihrem Preis. Die Lehre aus
