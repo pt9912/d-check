@@ -1,0 +1,2 @@
+**Vorgang:** slice-291
+**Fund:** Der Tausch-Testfall in slice-292 fuhr zuerst eine Abbildung, die es nicht gibt (Tausch in einem Commit, R2 I-3 und R3 M-3), danach einen Rot-Beleg, der nicht aus der Regel folgte (R4 L-3); für die Klausel „Ende keiner zweiten Quelle“ fehlte jeder Fall (R3 M-4). Für die Zusage „unabhängig von der Aufzählungsreihenfolge“ fährt „zehnmal byte-gleich“ keinen Reihenfolge-Wechsel (Verifikation V-2).

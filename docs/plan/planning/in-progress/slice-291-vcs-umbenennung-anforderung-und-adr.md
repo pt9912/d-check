@@ -70,7 +70,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
+- [x] [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
       ist im Lastenheft geändert (Version gehoben, Historie-Zeile nach
       [`MR-032`](../../../../harness/conventions.md#mr-032)): der Absatz zum Pfad-Nachzug
       nennt das Folgen einer Umbenennung samt Grenzen; das Kriterium „Boundary
@@ -80,22 +80,22 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       selbst bleibt Drift); je Entscheid steht ein Akzeptanzkriterium — mindestens die
       vier aus dem Issue, die Kette, die Mehrdeutigkeit, „Basis kein Vorfahr“ und „ohne
       Schalter byte-identisch“.
-- [ ] Die Spezifikation führt das Verfahren (welche Commits und Bäume gelesen werden,
+- [x] Die Spezifikation führt das Verfahren (welche Commits und Bäume gelesen werden,
       woran eine Umbenennung erkannt wird, wie ein Ziel über sie gleichgesetzt wird,
       fail-closed-Fälle) und den Schlüssel im Schema; jede Aussage über die Grenzen
       (welche Eingaben das Modul liest, [`AGENTS.md`](../../../../AGENTS.md) §3.8) ist
       am Gegenstand gezählt oder gemessen, nicht aus der Beschreibung übernommen.
-- [ ] Die ADR (Entscheide samt verglichenen Alternativen, darunter „Ähnlichkeits-Schwelle“
+- [x] Die ADR (Entscheide samt verglichenen Alternativen, darunter „Ähnlichkeits-Schwelle“
       und „Erweiterung von `ignore-link-targets`“) liegt als `Proposed` vor, ist im
       [ADR-Index](../../adr/README.md) geführt und trägt `## Re-Evaluierungs-Trigger`.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
 ## 3. Plan (vor Code)
 
@@ -451,24 +451,26 @@ dasteht.
   eine Datei mit anderem Namen bleibe Drift; die Änderung muss es umschreiben, nicht
   daneben ein zweites, widersprechendes stellen
   ([`BEO-ALL/plan-entscheid-steht-gegen-lastenheft`](../observations/BEO-ALL/plan-entscheid-steht-gegen-lastenheft/observation.md),
-  2×) — **Ausgang:** *entfallen*, wenn das Review Absatz, Kriterium und ADR
-  nebeneinander gelesen und keinen Widerspruch gefunden hat; sonst *eingetreten* mit
-  dem Fix-Commit als Beleg und einer Evidenz-Datei im Register.
+  2×) — **Ausgang:** *eingetreten.* Review R1 M-1 fand zwei Stellen im Lastenheft, die für
+  dieselbe Eingabe Befund und Nicht-Befund zusagten (Fix `4317dc0a`); danach stand der
+  Plan noch zweimal gegen Lastenheft und ADR (R3 M-1, R4 M-1; Fixes `90fd2340`,
+  `2abd7848`). Evidenz-Datei `slice-291.md` im Register, damit 3×.
 - Der gestagte Check sieht nur den Index gegen HEAD: liegt der `git mv` in einem
   früheren Commit und wird nur der Nachzug gestagt, fehlt die Umbenennung in der
   Range, und der Hook bleibt rot
   ([`BEO-ALL/umzug-mit-adr-nachzug-braucht-mitreisende-verweise`](../observations/BEO-ALL/umzug-mit-adr-nachzug-braucht-mitreisende-verweise/observation.md),
   1×); die Anforderung muss das als Grenze nennen, die CI-Range sieht beide Commits —
-  **Ausgang:** *weiter offen*, wenn die Anforderung die Grenze nennt (sie ist eine
-  Eigenschaft des gestagten Modus, kein Fehler dieses Slice); *entfallen*, wenn der
-  Architect einen Weg bestätigt, der den früheren Move-Commit mitliest.
+  **Ausgang:** *weiter offen.* Die Anforderung nennt die Grenze (Grenzen-Liste und
+  Kriterium „Boundary (`--staged`)“); das Mitlesen des früheren Move-Commits hat der
+  Architect als Alternative J verworfen. Der Fall bleibt beim Register-Eintrag
+  [`BEO-ALL/umzug-mit-adr-nachzug-braucht-mitreisende-verweise`](../observations/BEO-ALL/umzug-mit-adr-nachzug-braucht-mitreisende-verweise/observation.md).
 - Die Commit-Menge „von HEAD erreichbar, von BASE nicht“ ist bei einem Force-Push
   oder einer Basis, die kein Vorfahr ist, eine andere als erwartet
   ([`ADR-0109`](../../adr/0109-ci-push-range-faellt-bei-force-push-zurueck.md) regelt
-  die CI-Range) — **Ausgang:** *entfallen*, wenn die Spezifikation die Commit-Menge
-  und den Fall „Basis kein Vorfahr ⇒ keine Umbenennung, Urteil wie ohne Schalter“
-  (Entscheid 12) festschreibt und
-  [`slice-292`](../open/slice-292-vcs-umbenennung-modulkern.md) einen Test dafür trägt.
+  die CI-Range) — **Ausgang:** *entfallen.* Die Spezifikation (Schritt 2) legt die
+  Commit-Menge und „Basis kein Vorfahr ⇒ keine Umbenennung, Urteil wie ohne Schalter“
+  fest, das Lastenheft trägt Grenze und Kriterium; der Testfall steht in
+  [`slice-292`](../open/slice-292-vcs-umbenennung-modulkern.md) §3 und gehört dessen DoD.
 
 ## 7. Closure-Notiz
 
@@ -484,7 +486,48 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-*(Wird bei der Closure gefüllt.)*
+- **Was hat funktioniert:** Die Rollenfolge lief diesmal von Anfang an regelkonform:
+  Architect-Verdikt vor `in-progress`, die ADR schrieb nur der Architect, jede Entscheidung
+  in der Sache ging an den Auftraggeber. Die Reviews fanden am Gegenstand, was der Plan
+  nicht sah: dass die einseitige Gleichsetzung unveränderte ADRs rot macht (Verdikt F-2),
+  ein falsches Grün mit beiden Schaltern (R2 M-3), die Neubelegung (R1 M-3). Die
+  Verifikation, die gegen die Spec liest, bestätigte alle Liefer-Punkte mit eigenem Beleg
+  ([Report](../../../reviews/2026-11-24-slice-291-vcs-umbenennung-verify.md)).
+- **Was ging anders als geplant:** **(1) Vier Review-Runden statt einer.** Jede
+  Nachbesserung behauptete etwas Neues, und die nächste Runde fand dort den Fehler;
+  das Muster des Vorgängers `ignore-link-targets` (acht Runden) kehrte wieder, fast
+  alles an der Kombination beider Schalter. **(2) Zweimal stand die Zusammenfassung des Planners
+  gegen Lastenheft und ADR** — die Richtung von Entscheidung 9 und die
+  drei nachsichtigeren Fälle; beide Male trug die Zusammenfassung eine Vorlage an den
+  Auftraggeber, der deshalb zweimal neu bestätigen musste (2026-11-23, 2026-11-24). Die
+  Abhilfe war, im Plan zu zitieren statt nachzuerzählen. **(3) Drei Commit-Botschaften
+  behaupteten mehr als ihr Diff** (`e3e5d4eb`, `e84632b1` und eine Planner-Botschaft);
+  berichtigt in späteren Botschaften (`5b90b304`, `b297d9a4`), nicht amendet.
+  **(4) Lastenheft-Historie:** die noch unveröffentlichte Zeile 0.114.0 wurde zuerst
+  fortgeschrieben, nach R2 L-2 auf eigene Zeilen 0.114.1 bis 0.114.3 umgestellt ([`MR-032`](../../../../harness/conventions.md#mr-032)).
+  **(5) Ein Altbefund wurde sichtbar:** die Spezifikation verspricht für `--staged`
+  dieselben drei Eintrags-Arten wie im Baum, der Code nimmt jeden Index-Eintrag; die
+  Angleichung trägt [`slice-292`](../open/slice-292-vcs-umbenennung-modulkern.md).
+- **Steering-Loop-Eintrag:** mit diesem Slice ist keine Regel, kein Sensor und keine
+  benannte Spec-Lücke verkörpert.
+  [`BEO-ALL/plan-entscheid-steht-gegen-lastenheft`](../observations/BEO-ALL/plan-entscheid-steht-gegen-lastenheft/observation.md)
+  erreicht mit diesem Slice 3×; den Ausgang entscheidet der Lese-Schritt der Closure von
+  welle-96.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-291.md` in
+  [`BEO-ALL/plan-entscheid-steht-gegen-lastenheft`](../observations/BEO-ALL/plan-entscheid-steht-gegen-lastenheft/observation.md)
+  (3×) und in
+  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/observation.md)
+  (schon verkörpert); neu angelegt, je 1×:
+  [`BEO-ALL/grenz-aussage-ohne-ihre-bedingung`](../observations/BEO-ALL/grenz-aussage-ohne-ihre-bedingung/observation.md)
+  (fünf Stellen in vier Runden, ein Vorgang) und
+  [`BEO-ALL/testfall-faehrt-seine-regel-nicht`](../observations/BEO-ALL/testfall-faehrt-seine-regel-nicht/observation.md).
+  Die Zähler folgen aus den Dateien.
+- **Folge-Slices:** keine neuen. [`slice-292`](../open/slice-292-vcs-umbenennung-modulkern.md)
+  trägt die Testfälle zu jedem Kriterium, die Angleichung der Index-Enumeration, den
+  Übergang von [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) auf `Accepted` und die
+  beiden LOW der Verifikation (V-1 Nebensatz in Spezifikation Schritt 2, V-2
+  Reihenfolge-Test).
+- **Risiken aus §6:** eins *eingetreten*, eins *weiter offen*, eins *entfallen* — siehe §6.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
