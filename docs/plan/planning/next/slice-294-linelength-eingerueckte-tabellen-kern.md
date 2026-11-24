@@ -25,7 +25,7 @@ Schritt 4 als Vorgabe. Trifft der Code auf einen Rand, den sie anders beschreibt
 Befund zur Spezifikation und eine Plan-Änderung **vor** dem Code (§4, Rückführung), keine stille
 Angleichung. Der Verweis zeigt **aufwärts**: Die Spec nennt diesen Slice nie.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-11-24.
 
