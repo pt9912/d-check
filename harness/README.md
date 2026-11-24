@@ -221,7 +221,8 @@ keine aspirativen Texte. Aber ihre Kraft ist real begrenzt:
   §3.5) — maschinell erzwungen über `make adr-check` (`pre-commit`-Hook +
   PR-/Push-CI; erlaubt bleiben `## Geschichte`-Anhänge, der
   `**Status:**`-Übergang und ein reiner Pfad-Nachzug, der nur Link-Ziele ändert
-  ([ADR-0103](../docs/plan/adr/0103-adr-gate-laesst-pfad-nachzug-durch.md));
+  ([ADR-0103](../docs/plan/adr/0103-adr-gate-laesst-pfad-nachzug-durch.md),
+  [ADR-0115](../docs/plan/adr/0115-vcs-folgt-umbenennung.md));
   [ADR-0016](../docs/plan/adr/0016-adr-immutable-gate.md)).
 - Änderungen an Planning-Dokumenten folgen den Lifecycle-Regeln (`open → next → in-progress → done`; reine `git mv`-Commits, siehe `AGENTS.md` §3.3).
 
