@@ -111,10 +111,9 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   Out-of-Scope-Satzes von
   [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in).
   Nach Review R2 am selben Tag bestätigt: Entscheidung 9 und 10 in der neuen Fassung
-  (beide in der Sache geändert; gegenüber dem Lauf ohne `vcs.follow-renames` öffnet
-  keine ein Grün, gegenüber der vorher bestätigten Fassung ist Entscheidung 9 an einer
-  Stelle nachsichtiger — Begründung in
-  [`slice-291`](in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md) §3).
+  (beide in der Sache geändert); Entscheidung 9 am 2026-11-24 erneut bestätigt, mit den
+  drei Fällen, in denen sie nachsichtiger ist als die zuerst bestätigte Fassung
+  ([`slice-291`](in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md) §3).
 
 ## 6. Out-of-Scope für diese Welle
 

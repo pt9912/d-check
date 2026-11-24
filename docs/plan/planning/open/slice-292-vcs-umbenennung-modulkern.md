@@ -145,9 +145,15 @@ Liste folgt den bestätigten Entscheiden 1–14 und dem Architect-Verdikt):
   (Entscheid 12), kein Exit 2.
 - Unveränderter Link auf eine umbenannte Datei in einer ADR, die nur einen erlaubten
   Anhang bekommt ⇒ kein Befund (seiten-gleich, Entscheid 9).
-- Tausch A ↔ B in einem Commit (A → B und B → A, gleiche Blobs gekreuzt) ⇒ kein Pfad
+- Tausch über einen Zwischennamen (A → T, B → A, T → B in drei Commits) ⇒ kein Pfad
   nimmt teil, weil jedes Ende in BASE existiert (Entscheid 9); Nachzug A → B ⇒ Befund.
+  Rot-Beleg: ohne die BASE-Bedingung wäre der Nachzug grün. Ein Tausch der Inhalte in
+  einem Commit ist keine Umbenennung (beide Pfade bestehen weiter) ⇒ Inhaltsänderung.
 - A gelöscht, dann C → A, Nachzug C → A ⇒ Befund (Ende existiert in BASE, Entscheid 9).
+- Rotation A → X, danach C → A ⇒ A nimmt teil (Ende X), C nicht; Nachzug A → X ⇒ kein
+  Befund, Nachzug C → A ⇒ Befund.
+- Zwei Quellen auf ein Ende (Merge, A → E und B → E), Umbiegen von A auf B ⇒ Befund
+  (Ende keiner zweiten Quelle, Entscheid 9); ohne die Klausel wäre es grün.
 - Beide Schalter, Umbiegen von `d1/a.md` auf `d2/c.md`, das die Range nach `d3/a.md`
   umbenennt ⇒ Befund (Entscheid 10).
 - Beide Schalter, `d1/x.md` → `d2/x.md`, Umbiegen auf `d3/x.md` ⇒ Befund (Entscheid 10);
@@ -155,8 +161,9 @@ Liste folgt den bestätigten Entscheiden 1–14 und dem Architect-Verdikt):
 - A → B, danach B im selben Commit gelöscht und neu angelegt ⇒ Inhaltsänderung an Ort
   und Stelle, der Nachzug folgt.
 - Ende der Kette in HEAD gelöscht ⇒ keine Umbenennung.
-- Ende gelöscht und als andere Datei neu angelegt; Zwischenpfad einer Kette neu belegt ⇒
-  keine Umbenennung, Nachzug ist Befund (Neubelegung, Entscheidung 9 und 11).
+- Ende in einem Commit gelöscht und in einem späteren als andere Datei neu angelegt;
+  Zwischenpfad einer Kette ebenso neu belegt ⇒ keine Umbenennung, Nachzug ist Befund
+  (Neubelegung, Entscheidung 9 und 11).
 - Merge, eine Seite benennt A nach B um, die andere löscht A und legt es später neu an ⇒
   Mehrdeutigkeit, Befund; überschreibt die andere Seite A an Ort und Stelle ⇒ folgt
   (Entscheidung 11).

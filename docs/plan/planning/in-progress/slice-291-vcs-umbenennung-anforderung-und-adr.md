@@ -201,12 +201,15 @@ Folge-Entscheide aus dem Architect-Verdikt — der Wortlaut steht in
    Umbenennung nimmt nur teil, wenn ihr Ende in HEAD existiert, in BASE **nicht**
    existiert und Ende keiner zweiten Quelle ist (Tausch, freigemachter und neu belegter
    Name, zwei Quellen auf ein Ende nehmen nicht teil). *Nach Review R2 in der Sache
-   geändert; vom Auftraggeber am 2026-11-23 bestätigt. Gegenüber dem Lauf ohne
-   `follow-renames` öffnet sie kein Grün. Gegenüber der vorher bestätigten Fassung ist
-   sie nicht nur strenger: mit beiden Schaltern fällt ein Ziel, dessen Pfad in BASE lag
-   und Ende einer Umbenennung wird, auf das Ergebnis von `ignore-link-targets` allein
-   zurück (vorher teilweise Drift). Die Vorlage an den Auftraggeber nannte die Änderung
-   „nur in Richtung Drift“; das hielt nur gegen den Lauf ohne den Schalter.*
+   geändert. Kein Befund entfällt, den es ohne `follow-renames` gibt, außer über eine
+   teilnehmende Umbenennung. Gegenüber der Fassung, die der Auftraggeber zuerst bestätigt
+   hatte, ist sie in drei Fällen nachsichtiger — dort gilt das Ergebnis wie ohne den
+   Schalter, nicht Drift: (1) A gelöscht, dann C → A — C nimmt nicht teil; (2) zwei
+   Quellen auf ein Ende (Merge A → E und B → E) — keine nimmt teil; (3) Rotation A → X,
+   danach C → A — C nimmt nicht teil, auch mit `follow-renames` allein. Die erste
+   Vorlage („nur in Richtung Drift“) und die erste Berichtigung trafen das nicht
+   (Review R3, M-1); der Auftraggeber hat die Fassung am 2026-11-24 mit diesen drei
+   Fällen bestätigt.*
 10. **Zusammenspiel der Schalter:** ein teilnehmendes Ziel wird immer zu eigener Marke,
     vollem Endpfad und Anker, mit `follow-renames` allein wie mit beiden Schaltern; ein
     nicht teilnehmendes bleibt mit `follow-renames` allein roh und wird mit beiden wie mit
