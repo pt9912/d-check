@@ -2,7 +2,7 @@
 
 **Rolle:** Verifier (Modul 8, §Rollen-Sequenz für eine Welle: Verifier → Planner) ·
 **Gegenstand:** Closure-Trigger aus
-[welle-96](../plan/planning/done/welle-96-vcs-folgt-umbenennung.md) §3, geprüft in einem frischen Kontext ·
+[welle-96](../plan/planning/done/welle-96/welle-96-vcs-folgt-umbenennung.md) §3, geprüft in einem frischen Kontext ·
 **Bezug:**
 [`DC-FA-VCS-001`](../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in),
 [`DC-QA-02`](../../spec/lastenheft.md#dc-qa-02--determinismus),
@@ -10,8 +10,8 @@
 
 Jeder Beleg stammt aus einem Lauf, den ich selbst gefahren habe. Das Trigger-Audit (Schritt 2) ist hier
 nicht geprüft. Der Beleg geht über die Slice-DoDs hinaus; deren Verifikation steht in
-[slice-291](2026-11-24-slice-291-vcs-umbenennung-verify.md) und
-[slice-292](2026-11-24-slice-292-vcs-umbenennung-verify.md).
+slice-291 (Verifikation, im Archiv von welle-96) und
+slice-292 (Verifikation, im Archiv von welle-96).
 
 **Stand:** `make fullbuild` lief auf `274c6ba4` mit sauberem Arbeitsbaum. Während des Laufs kam `66eb94a3`
 auf `main` (ein Commit nur mit Dokumentation: Regel 18 in `AGENTS.md`, eine Beobachtung, der
@@ -24,7 +24,7 @@ bis auf diesen Report. Der Probe-Vergleich mit dem Eigenlauf lief auf `274c6ba4`
 
 | Punkt | Urteil | Beleg |
 |---|---|---|
-| 1 — alle Slices in `done/` | bestätigt | Die Welle trägt zwei Slices: [slice-291](../plan/planning/done/slice-291-vcs-umbenennung-anforderung-und-adr.md) und [slice-292](../plan/planning/done/slice-292-vcs-umbenennung-modulkern.md), beide in `done/` (Move von slice-292: `274c6ba4`). `open/` und `next/` tragen nur `.gitkeep`, `in-progress/` nur `roadmap.md`. Das `Welle:`-Feld beider Slices zeigt auf die Welle-Datei; ein dritter Slice mit diesem Zeiger existiert in keinem Lifecycle-Verzeichnis. |
+| 1 — alle Slices in `done/` | bestätigt | Die Welle trägt zwei Slices: [slice-291](../plan/planning/done/welle-96/slice-291-vcs-umbenennung-anforderung-und-adr.md) und [slice-292](../plan/planning/done/welle-96/slice-292-vcs-umbenennung-modulkern.md), beide in `done/` (Move von slice-292: `274c6ba4`). `open/` und `next/` tragen nur `.gitkeep`, `in-progress/` nur `roadmap.md`. Das `Welle:`-Feld beider Slices zeigt auf die Welle-Datei; ein dritter Slice mit diesem Zeiger existiert in keinem Lifecycle-Verzeichnis. |
 | 2 — `make fullbuild` grün | bestätigt | Exit 0. Auszug: `verify ok (54 Dateien, vollständig)`; `0 issues.`; `gesamt: 0 Befund(e)` (arch-check); `coverage-gate: OK — Coverage 94.90% erfüllt Schwelle 93%`; `Ran 55 rules on 75 files: 0 findings.`; `[gates] … green`; `image-test: OK — Akzeptanzkriterien erfüllt (DC-FA-DIST-001, … DC-FA-LLEN-001)`; `bench: Median 1142 ms (Pass-Kriterium < 5000 ms — DC-QA-01)`; `58 Anforderung(en), 0 Waise(n).`; verify-closure-notes `1157 Datei(en) geprüft, 0 Befund(e)`. Abschluss: `[fullbuild] green — image-hash sha256:6d1195bcbb53a57ec3e72056b0d5f680332c9af080e2df7dfcdebaa494e6eadb` (gleich `docker image inspect d-check:latest` direkt danach). |
 | 3 — ohne den Schalter nichts Neues | bestätigt, mit zwei Anmerkungen | Probe und Eigenlauf unten, dazu der zusätzliche Vorher/Nachher-Vergleich des Moduls `vcs` (60 Vergleiche). Die eine gewollte Abweichung ist die einzige. Anmerkung 1: der Eigenlauf der Probe weicht mit dem **eingeschalteten** Profil ab (siehe Abweichungen). Anmerkung 2: die Probe selbst fährt `vcs` nicht. |
 | 4 — der Anlass trägt am gebauten Image | bestätigt | Tabelle Probe → Ergebnis unten: ohne den Schalter 59 `core-drift-vcs`, mit ihm 0, Gegenprobe 59. |
@@ -75,8 +75,8 @@ Die vier Abweichungen sind **alle** dieselbe: gestagter Modus, ein Gitlink erset
 Datei. Vorher stdout leer, stderr `d-check: error: object not found`, Exit 2; nachher
 `adr/0001.md:1 … core-drift-vcs … immutable Datei gelöscht oder umbenannt — der Pfad einer immutablen Datei ist stabil`,
 Exit 1. Das ist die im Welle-Plan genannte Abweichung
-([Architect-Verdikt](2026-11-24-slice-292-architect-verdikt.md) F-4,
-[slice-292](../plan/planning/done/slice-292-vcs-umbenennung-modulkern.md) §3). Dieselbe Konstellation im
+(Architect-Verdikt zu slice-292 (im Archiv von welle-96) F-4,
+[slice-292](../plan/planning/done/welle-96/slice-292-vcs-umbenennung-modulkern.md) §3). Dieselbe Konstellation im
 `--range`-Modus (r4) ist beidseitig gleich, ebenso ein Gitlink, der keine immutable Datei ersetzt (r4, s7, s9).
 Dass der Vergleich eine Abweichung findet, wenn eine existiert, zeigt er selbst: er hat genau diese vier
 gefunden und keine andere.
