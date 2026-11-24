@@ -9,7 +9,7 @@ aus `open/` oder `next/` nach `done/` — §7 nennt in der Zeile `Gegenstand:`
 Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 (§Ein Slice, dessen Gegenstand ein anderer übernimmt).
 
-**Welle:** [`welle-96-vcs-folgt-umbenennung`](../welle-96-vcs-folgt-umbenennung.md).
+**Welle:** [`welle-96-vcs-folgt-umbenennung`](welle-96-vcs-folgt-umbenennung.md).
 
 **Bezug:** [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
 (das Kriterium „Boundary (Pfad-Nachzug)“ wird geändert, ein neues kommt hinzu),
@@ -310,7 +310,7 @@ Aussagen-Suche (Stand vor dem Fix, Kommandos darunter), Treffer:
   Drift“ ohne die Bedingung „die Umbenennung wechselt den Dateinamen“: Lastenheft Z. 2312–2316,
   Spezifikation Z. 2153–2156 (Fix hier). Das Kriterium Lastenheft Z. 2355 trägt die Bedingung
   schon. Dieselbe Aussage ohne Bedingung steht in Planungs-Dokumenten: Welle
-  [`welle-96`](../welle-96-vcs-folgt-umbenennung.md) Z. 128–130,
+  [`welle-96`](welle-96-vcs-folgt-umbenennung.md) Z. 128–130,
   [`slice-292`](../done/slice-292-vcs-umbenennung-modulkern.md) Z. 149, dieser Plan Z. 204–206
   (Entscheid 10). Träger ist der Planner; hier nicht geändert.
 - **M-1** — Kriterien, die `core-drift-vcs` zusagen, ohne `vcs.ignore-link-targets` auszuschließen:

@@ -33,7 +33,7 @@ Anlass ist [Issue #18](https://github.com/pt9912/d-check/issues/18) aus dem Kurs
 eine Layout-Migration mit englischen Dateinamen (im Verzeichnis `spec/` wird `spezifikation.md` zu
 `specification.md`) trifft jede `Accepted`-ADR, die die Datei verlinkt — im
 eigenen Bestand 59 von 107 (Zählung 2026-11-23, Kommando in
-[`slice-291`](done/slice-291-vcs-umbenennung-anforderung-und-adr.md) §3).
+[`slice-291`](slice-291-vcs-umbenennung-anforderung-und-adr.md) §3).
 
 ## 2. Trigger (Welle startet)
 
@@ -63,17 +63,17 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     Fixture ohne den neuen Schalter **dieselbe** Ausgabe (stdout, stderr und Exit
     getrennt). Eine opt-in-Erweiterung darf keinen bisher grünen oder roten Lauf
     verschieben — **mit einer gewollten Abweichung im gestagten Modus**
-    ([Architect-Verdikt](../../reviews/2026-11-24-slice-292-architect-verdikt.md) F-4 zu
-    [`slice-292`](done/slice-292-vcs-umbenennung-modulkern.md)): ersetzt ein gestagter
+    ([Architect-Verdikt](../../../reviews/2026-11-24-slice-292-architect-verdikt.md) F-4 zu
+    [`slice-292`](slice-292-vcs-umbenennung-modulkern.md)): ersetzt ein gestagter
     Gitlink eine immutable Datei an ihrem Pfad, endet `--staged` nach Lesart des Codes
     heute mit Exit 2 und nach der Angleichung der Index-Enumeration an die Spezifikation
     mit `core-drift-vcs`, wie im `--range`-Modus; Bedingung und Testfall stehen in
-    [`slice-292`](done/slice-292-vcs-umbenennung-modulkern.md) §3. Die Probe trifft die
+    [`slice-292`](slice-292-vcs-umbenennung-modulkern.md) §3. Die Probe trifft die
     Abweichung nicht: das Skript ruft in der Default-Belegung von `PROBE_FORMS` weder
     `--range` noch `--staged` und fährt das Modul `vcs` damit gar nicht. Die Gleichheit
     des Moduls ohne den Schalter tragen die Tests zum Kriterium „Boundary (ohne
     `vcs.follow-renames` byte-identisch)“ von
-    [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in).
+    [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in).
   - **Der Anlass trägt am gebauten Image:** in einem Wegwerf-Klon dieses Repos
     benennt ein Commit `spec/spezifikation.md` per `git mv` um und zieht in jeder
     `Accepted`-ADR nur das Link-Ziel nach. `make adr-check RANGE=HEAD~1..HEAD` meldet
@@ -91,8 +91,8 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [`slice-291`](done/slice-291-vcs-umbenennung-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR: `vcs` folgt einer Umbenennung; Entscheide festschreiben | [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
-| [`slice-292`](done/slice-292-vcs-umbenennung-modulkern.md) | Kern und git-Adapter: Umbenennungen der Range lesen, Link-Ziele über sie gleichsetzen, Schalter | [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) in der Fassung aus [`slice-291`](done/slice-291-vcs-umbenennung-anforderung-und-adr.md) |
+| [`slice-291`](slice-291-vcs-umbenennung-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR: `vcs` folgt einer Umbenennung; Entscheide festschreiben | [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in), [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
+| [`slice-292`](slice-292-vcs-umbenennung-modulkern.md) | Kern und git-Adapter: Umbenennungen der Range lesen, Link-Ziele über sie gleichsetzen, Schalter | [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) in der Fassung aus [`slice-291`](slice-291-vcs-umbenennung-anforderung-und-adr.md) |
 
 ## 5. Abhängigkeiten
 
@@ -103,11 +103,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   umbenennt, läuft ohne diese Welle mit rotem `make adr-check` in der CI.
 - Wird blockiert von: keiner.
 - **Reihenfolge der Slices ist fachlich bindend:** erst
-  [`slice-291`](done/slice-291-vcs-umbenennung-anforderung-und-adr.md) (Anforderung und
+  [`slice-291`](slice-291-vcs-umbenennung-anforderung-und-adr.md) (Anforderung und
   Entscheide stehen, bevor Code entsteht), dann
-  [`slice-292`](done/slice-292-vcs-umbenennung-modulkern.md). Das WIP-Limit 1 hält sie
+  [`slice-292`](slice-292-vcs-umbenennung-modulkern.md). Das WIP-Limit 1 hält sie
   ohnehin nacheinander.
-- **Entscheide, die [`slice-291`](done/slice-291-vcs-umbenennung-anforderung-und-adr.md)
+- **Entscheide, die [`slice-291`](slice-291-vcs-umbenennung-anforderung-und-adr.md)
   festschreibt** (mit Empfehlung; ohne Entscheid des Auftraggebers beginnt kein Code):
   woran eine Umbenennung erkannt wird (Inhalts-Gleichheit oder Ähnlichkeits-Schwelle),
   ob nur die Endpunkte der Range oder jeder Commit gelesen wird (und damit, ob
@@ -115,16 +115,16 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   mehrdeutigen Umbenennungen und Verzeichnis-Zielen geschieht, ob das eigene Profil den
   Schalter einschaltet.
 - **Entschieden mit dem Auftraggeber (2026-11-23):** die acht Entscheide in
-  [`slice-291`](done/slice-291-vcs-umbenennung-anforderung-und-adr.md) §3 mit den
+  [`slice-291`](slice-291-vcs-umbenennung-anforderung-und-adr.md) §3 mit den
   Empfehlungen bestätigt; nach dem Architect-Verdikt am selben Tag auch Entscheid 5 in
   der seiten-gleichen Fassung, die Folge-Entscheide 9–14 aus
-  [`ADR-0115`](../adr/0115-vcs-folgt-umbenennung.md) und die Schärfung des
+  [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) und die Schärfung des
   Out-of-Scope-Satzes von
-  [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in).
+  [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in).
   Nach Review R2 am selben Tag bestätigt: Entscheidung 9 und 10 in der neuen Fassung
   (beide in der Sache geändert); Entscheidung 9 am 2026-11-24 erneut bestätigt, mit den
   drei Fällen, in denen sie nachsichtiger ist als die zuerst bestätigte Fassung
-  ([`slice-291`](done/slice-291-vcs-umbenennung-anforderung-und-adr.md) §3).
+  ([`slice-291`](slice-291-vcs-umbenennung-anforderung-und-adr.md) §3).
 
 ## 6. Out-of-Scope für diese Welle
 
@@ -138,7 +138,7 @@ der Closure-Trigger unerreichbar wird.
   fragt nicht danach.
 - **Ein Nachzug auf eine gleichnamige andere Datei** — die offene Grenze von
   `ignore-link-targets`
-  ([`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/observation.md))
+  ([`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](../observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/observation.md))
   wird nicht geschärft; eine Verschärfung wäre nicht opt-in-neutral und ein eigener
   Vorgang. **Eine Ausnahme folgt aus Entscheid 10:** sind beide Schalter an, gleicht ein
   Ziel, das an einer Umbenennung teilnimmt, keinem nicht teilnehmenden — ein Nachzug
@@ -150,7 +150,7 @@ der Closure-Trigger unerreichbar wird.
   eine Umbenennung weiter als Löschung plus Einfügung.
 - **Release, Tag, Release-Prep** (CHANGELOG, READMEs, Handbuch-Kopf, Digest-Pins) und
   die Antwort auf das Issue — eigener Vorgang nach der Welle
-  ([`AGENTS.md`](../../../AGENTS.md) §5 Zeile 17).
+  ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 17).
 
 ## 7. Closure-Notiz
 
@@ -160,4 +160,4 @@ beiden Zeiger unten sind so zu schreiben, wie sie vom Ruheort `done/` auflösen,
 nicht vom Schreibort.
 
 Ergebnis: `welle-96-results.md` (Geschwister im Ruheort `done/`, entsteht bei der Closure)
-Zähler: [Beobachtungs-Register](observations/README.md)
+Zähler: [Beobachtungs-Register](../observations/README.md)

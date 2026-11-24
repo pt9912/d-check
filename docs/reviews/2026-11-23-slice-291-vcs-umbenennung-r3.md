@@ -72,7 +72,7 @@ mit dem Schlüssel geht auf eine teilnehmende Umbenennung zurück.
   [ADR-0115](../plan/adr/0115-vcs-folgt-umbenennung.md) Entscheidung 9
 - **Pfad:** `docs/plan/planning/done/slice-291-vcs-umbenennung-anforderung-und-adr.md` ·
   „mit beiden Schaltern fällt ein Ziel, dessen Pfad in BASE lag“ (Z. 205–209);
-  `docs/plan/planning/welle-96-vcs-folgt-umbenennung.md` · „ist Entscheidung 9 an einer“ (Z. 113–117);
+  `docs/plan/planning/done/welle-96-vcs-folgt-umbenennung.md` · „ist Entscheidung 9 an einer“ (Z. 113–117);
   Botschaft `7a57fa1e` · „faellt mit beiden Schaltern ein Ziel, dessen Pfad in BASE lag und Ende einer
   Umbenennung wird“
 - **Befund:** Gegen die bestätigte Fassung (`c89e2dee`: „Teil hat ein Pfad P, wenn er Quelle … oder wenn

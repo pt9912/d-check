@@ -125,7 +125,7 @@ sie tragen die heutigen Tests von `vcs_test.go`, `vcs_pfad_nachzug_test.go` und 
 - Das ist eine Angleichung an Rang 2 und keine Lockerung — von Exit 2 zu Exit 1, der Befund wird sichtbar.
   Aber es ist eine Änderung **ohne** `vcs.follow-renames`. Der Welle-Closure-Trigger sagt „Ohne den
   Schalter nichts Neues … darf keinen bisher grünen oder roten Lauf verschieben“
-  ([welle-96](../plan/planning/welle-96-vcs-folgt-umbenennung.md) Z. 61–65), Kriterium 30 nennt nur
+  ([welle-96](../plan/planning/done/welle-96-vcs-folgt-umbenennung.md) Z. 61–65), Kriterium 30 nennt nur
   `--range`.
 - **Verdikt:** gilt; der Plan muss die Abweichung benennen, damit Welle-Probe und Verifier sie nicht als
   Bruch lesen.

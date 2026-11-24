@@ -1,7 +1,7 @@
 # Architect-Verdikt — welle-96 (`vcs` folgt einer Umbenennung), Plan gegen Entscheidungslage
 
 **Rolle:** Architect (Modul 8), frischer Kontext, **vor** Code. Rolleninhaber: pt9912.
-**Gegenstand:** [welle-96](../plan/planning/welle-96-vcs-folgt-umbenennung.md) und ihre zwei Slice-Pläne
+**Gegenstand:** [welle-96](../plan/planning/done/welle-96-vcs-folgt-umbenennung.md) und ihre zwei Slice-Pläne
 [slice-291](../plan/planning/done/slice-291-vcs-umbenennung-anforderung-und-adr.md) (Entscheide 1–8 in §3,
 vom Auftraggeber am 2026-11-23 mit den Empfehlungen bestätigt) und
 [slice-292](../plan/planning/done/slice-292-vcs-umbenennung-modulkern.md).
@@ -89,7 +89,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
   `ignore-link-targets` allein und schließt einen Teil der Grenze
   [`BEO-ALL/pfad-nachzug-gleicher-name-andere-datei`](../plan/planning/observations/BEO-ALL/pfad-nachzug-gleicher-name-andere-datei/observation.md).
   Opt-in und in die sichere Richtung — aber nicht, was die Welle sagt: „wird nicht geschärft“
-  ([welle-96](../plan/planning/welle-96-vcs-folgt-umbenennung.md) Z. 120–124).
+  ([welle-96](../plan/planning/done/welle-96-vcs-folgt-umbenennung.md) Z. 120–124).
 - **Plan-Änderung:** Welle §6 zweiter Punkt: „bleibt für Ziele ohne Umbenennung; mit beiden Schaltern wird
   der Fall ‚umbenannte Quelle, gleichnamige andere Datei‘ Drift (ADR-0115 Konsequenzen)“; slice-292 §3
   Testfall dazu.

@@ -134,7 +134,7 @@ auf identischen Eingaben verglichen, stdout, stderr und Exit getrennt per `cmp`:
 Die eine gewollte Ausnahme, Gitlink statt immutabler Datei mit `--staged`, ist durch V1 am Vorzustand gemessen
 (Exit 2 `object not found`, nachher Exit 1 `core-drift-vcs`) und lockert nichts. Sie steht im Plan §3, im
 Spezifikations-Satz und im Welle-Trigger
-([`welle-96`](../plan/planning/welle-96-vcs-folgt-umbenennung.md), „gewollte Abweichung im gestagten Modus“).
+([`welle-96`](../plan/planning/done/welle-96-vcs-folgt-umbenennung.md), „gewollte Abweichung im gestagten Modus“).
 
 **Zusätzlich, ohne die Test-Doppelgänger:** acht Szenarien mit echtem `git` und dem gebauten Image, Exit und
 Zahl der `core-drift-vcs` je (ohne Schlüssel / `follow-renames` / beide):
@@ -224,7 +224,7 @@ ebenso. Der Wegwerf-Schalter wurde nur im Klon gesetzt; im Repo steht `.d-check.
 | 1 | der Auflöser trägt eine zweite Gleichsetzung, Filter könnten verrutschen | **entfallen** | `internal/hexagon/core/rules/vcs_pfad_nachzug_test.go` im Diff nicht berührt und in `make test` grün (Exit 0); beide Schalter zusammen fahren `TestVCSFollowRenames` (Spalte „beide“), `TestVCSFollowRenamesRandfaelle`, `TestVCSFollowRenamesBeideSchluesselIgnoreBleibt`, `TestVCS_FollowRenames` |
 | 2 | racily-clean-Fixtures bei gleichen Blobs | **entfallen** | die Adapter-Fixtures legen Objekte im Speicher an (kein Arbeitsbaum, kein Index); die CLI-Fixtures schreiben über `writeAt`, das `coretest.GitFixtureRewriteHazard` ruft, und kein neuer Fall schreibt dieselbe Datei gleich lang neu (jede Neufassung ändert den Link-Pfad und damit die Länge; `mvAt` legt einen neuen Pfad an) — [`BEO-ALL/racily-clean-git-fixture`](../plan/planning/observations/BEO-ALL/racily-clean-git-fixture/observation.md) |
 | 3 | der Walk liest mehr, ein großer Push-Bereich wird langsamer | **entfallen** | gemessen, siehe unten: Median 1,14 s ohne, 1,56 s mit, **1,37×**, Schwelle 2× |
-| 4 | die Angleichung der Index-Enumeration verschiebt ein Ergebnis mit `--staged` | **entfallen** | der Testfall „immutable Datei durch Gitlink ersetzt“ läuft in beiden Modi und beiden Konfigurationen grün; Rot am Vorzustand gemessen (V1: Exit 2 statt 1); der Closure-Trigger von [`welle-96`](../plan/planning/welle-96-vcs-folgt-umbenennung.md) benennt die Abweichung |
+| 4 | die Angleichung der Index-Enumeration verschiebt ein Ergebnis mit `--staged` | **entfallen** | der Testfall „immutable Datei durch Gitlink ersetzt“ läuft in beiden Modi und beiden Konfigurationen grün; Rot am Vorzustand gemessen (V1: Exit 2 statt 1); der Closure-Trigger von [`welle-96`](../plan/planning/done/welle-96-vcs-folgt-umbenennung.md) benennt die Abweichung |
 
 **Messung zu Risiko 3.** BASE `9e7b4017` (eine Merge-Seite zweigt am Eltern-Commit `7760865c` ab, der **vor** BASE
 liegt), HEAD `b8546e6c`; `git rev-list --count BASE..HEAD` = 100, die Range enthält genau einen Merge, `25394098`.

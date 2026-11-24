@@ -9,7 +9,7 @@ aus `open/` oder `next/` nach `done/` — §7 nennt in der Zeile `Gegenstand:`
 Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 (§Ein Slice, dessen Gegenstand ein anderer übernimmt).
 
-**Welle:** [`welle-96-vcs-folgt-umbenennung`](../welle-96-vcs-folgt-umbenennung.md).
+**Welle:** [`welle-96-vcs-folgt-umbenennung`](welle-96-vcs-folgt-umbenennung.md).
 
 **Bezug:** [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
 in der Fassung aus [`slice-291`](../done/slice-291-vcs-umbenennung-anforderung-und-adr.md)
@@ -371,7 +371,7 @@ dasteht.
   Neues“ lesen (Architect-Verdikt F-4) — **Ausgang:** *entfallen.* Der Testfall
   „immutable Datei durch Gitlink ersetzt“ läuft in beiden Modi grün, das Rot am
   Vorzustand ist gemessen (Exit 2 statt `core-drift-vcs`), und der Closure-Trigger der
-  [Welle](../welle-96-vcs-folgt-umbenennung.md) §3 benennt die Abweichung.
+  [Welle](welle-96-vcs-folgt-umbenennung.md) §3 benennt die Abweichung.
 
 ## 7. Closure-Notiz
 

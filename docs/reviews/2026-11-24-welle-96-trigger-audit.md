@@ -2,7 +2,7 @@
 
 **Rolle:** Architect (Modul 8, §Rollen-Sequenz für eine Welle: Closure-Schritt 2 und 3b, Planner → Architect →
 Planner). Rolleninhaber: pt9912.
-**Gegenstand:** [welle-96](../plan/planning/welle-96-vcs-folgt-umbenennung.md) mit
+**Gegenstand:** [welle-96](../plan/planning/done/welle-96-vcs-folgt-umbenennung.md) mit
 [slice-291](../plan/planning/done/slice-291-vcs-umbenennung-anforderung-und-adr.md) und
 [slice-292](../plan/planning/done/slice-292-vcs-umbenennung-modulkern.md), Range `v0.92.0..HEAD`
 (60 Commits, ab der Eröffnung `e81aebd4`; die Teil-Range `6aca94b0^..HEAD` umfasst nur slice-292).

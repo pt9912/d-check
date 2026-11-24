@@ -2,7 +2,7 @@
 
 **Rolle:** Verifier (Modul 8, §Rollen-Sequenz für eine Welle: Verifier → Planner) ·
 **Gegenstand:** Closure-Trigger aus
-[welle-96](../plan/planning/welle-96-vcs-folgt-umbenennung.md) §3, geprüft in einem frischen Kontext ·
+[welle-96](../plan/planning/done/welle-96-vcs-folgt-umbenennung.md) §3, geprüft in einem frischen Kontext ·
 **Bezug:**
 [`DC-FA-VCS-001`](../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in),
 [`DC-QA-02`](../../spec/lastenheft.md#dc-qa-02--determinismus),

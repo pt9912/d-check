@@ -62,7 +62,7 @@
 | 7, 8, 14 | keine Produktwirkung (eigenes Profil, ADR-Status, Commit-Reihenfolge) — kein Kriterium nötig |
 
   Die Pflicht-Liste der DoD ist vollständig. Die „vier aus dem Issue“ lese ich aus §1 von
-  [`welle-96`](../plan/planning/welle-96-vcs-folgt-umbenennung.md): Nachzug auf den neuen Namen
+  [`welle-96`](../plan/planning/done/welle-96-vcs-folgt-umbenennung.md): Nachzug auf den neuen Namen
   (Happy Path), Löschen und neu Anlegen (gelöscht und neu angelegt), Umbiegen auf eine bestehende Datei
   (Umbiegen), Anker oder Linktext (Anker, Linktext). Dazu kommen Kette, Mehrdeutigkeit, „Basis kein
   Vorfahr“ und „ohne Schalter byte-identisch“. Das Issue selbst habe ich nicht gelesen; das Repo verlinkt
