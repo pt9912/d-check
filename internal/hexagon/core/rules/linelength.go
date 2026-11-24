@@ -8,9 +8,12 @@ package rules
 // GRENZE, ausgesprochen (AGENTS.md §3.8): die Eingabemenge ist der effektive
 // Scan-Scope des Moduls minus exempt-paths; eine andere Datei liest das Modul
 // nicht. Was Fenced-Code und was eine Tabellenzeile ist, beantworten
-// proseLineSet und tableRowLine — mit deren Grenzen (Umschalten bei jeder
-// Zaun-Zeile, ein offener Zaun nimmt den Rest der Datei aus, keine Trennzeile
-// verlangt). Den offenen Zaun meldet spans, nicht dieses Modul.
+// proseLineSet und unbreakableTableRow (ADR-0116) — mit deren Grenzen
+// (Umschalten bei jeder Zaun-Zeile, ein offener Zaun nimmt den Rest der Datei
+// aus, keine Trennzeile verlangt). Die Tabellenzeile heißt: `|` in Spalte 0
+// oder nach einem bis drei Leerzeichen (U+0020); ab vier Leerzeichen, mit Tab,
+// U+00A0 oder `>` davor wird gemessen, weil die Lexik keinen Listenkontext
+// hergibt. Den offenen Zaun meldet spans, nicht dieses Modul.
 
 import (
 	"fmt"
@@ -69,7 +72,7 @@ func CheckLinelength(file string, content []byte, cfg model.LinelengthConfig) ([
 		if cfg.CodeBlocksExempt() && !prose[i+1] {
 			continue
 		}
-		if cfg.TablesExempt() && tableRowLine(lines, prose, i) {
+		if cfg.TablesExempt() && unbreakableTableRow(lines, prose, i) {
 			continue
 		}
 		count.Lines++

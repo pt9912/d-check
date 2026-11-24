@@ -106,11 +106,18 @@ func pinsKenntAnker(t *testing.T, ziel, anker string) bool {
 
 // Zweite Kopplung, seit die Chronologie-Bedingung der dritte Konsument ist
 // (ADR-0057, Form aus ADR-0054): die Frage "zaehlt diese Zeile als
-// Tabellenzeile?" muss von targets (gate-phantom aus Doku-Tabellen),
-// planning.waves (Registerzeilen), structure (Datenzeilen der
-// Chronologie-Bedingung) und linelength (Ausnahme (b)) GLEICH beantwortet
-// werden. Drei Schreibweisen, drei gemeinsame Antworten — eine Zeile im Fence
-// ist ein Beispiel, eine eingerueckte Zeile ist keine Spalte-0-Tabellenzeile.
+// Tabellenzeile?" (tableRowLine) muss von targets (gate-phantom aus
+// Doku-Tabellen), planning.waves (Registerzeilen) und structure (Datenzeilen
+// der Chronologie-Bedingung) GLEICH beantwortet werden. Die Schreibweisen
+// teilen sich eine gemeinsame Antwort — eine Zeile im Fence ist ein Beispiel,
+// eine eingerueckte Zeile (ein bis vier Leerzeichen, Tab) ist keine
+// Spalte-0-Tabellenzeile.
+//
+// linelength (Ausnahme (b)) stellt eine ANDERE Frage — "ist die Zeile Teil
+// einer Tabelle und deshalb nicht umbrechbar?" — und beantwortet sie mit
+// unbreakableTableRow (DC-FA-LLEN-001, ADR-0116, ADR-0054 Entscheidung 2); sie
+// schliesst tableRowLine ein und erweitert sie um bis drei Leerzeichen. Ihre
+// Kopplung ist die zweite Assertion unten, ueber ihre eigenen Faelle.
 //
 // Reichweiten-Notiz (Review F-3): die Kopf-/Trennzeilen-Antwort
 // (tableHeaderOrSeparator) und die Zell-Antwort (tableCells) haben heute je
@@ -131,7 +138,33 @@ func tabellenFaelle() []tabellenFall {
 	return []tabellenFall{
 		{"ausserhalb Fence", func(r string) string { return r + "\n" }, true},
 		{"im Fence", func(r string) string { return fence + "\n" + r + "\n" + fence + "\n" }, false},
+		{"ein Leerzeichen", func(r string) string { return " " + r + "\n" }, false},
 		{"eingerueckt", func(r string) string { return "  " + r + "\n" }, false},
+		{"drei Leerzeichen", func(r string) string { return "   " + r + "\n" }, false},
+		{"vier Leerzeichen", func(r string) string { return "    " + r + "\n" }, false},
+		{"Tab", func(r string) string { return "\t" + r + "\n" }, false},
+	}
+}
+
+// tabellenFaelleLinelength sind die Faelle der Frage "Teil einer Tabelle und
+// deshalb nicht umbrechbar?" (unbreakableTableRow): gueltig heisst, die Zeile
+// ist ausgenommen. Bis drei Leerzeichen davor und Spalte 0 ausgenommen; vier
+// Leerzeichen, Tab, U+00A0, `>`, eine Listenmarke davor und der Fence
+// gemessen.
+func tabellenFaelleLinelength() []tabellenFall {
+	fence := "```"
+	return []tabellenFall{
+		{"ausserhalb Fence", func(r string) string { return r + "\n" }, true},
+		{"im Fence", func(r string) string { return fence + "\n" + r + "\n" + fence + "\n" }, false},
+		{"ein Leerzeichen", func(r string) string { return " " + r + "\n" }, true},
+		{"zwei Leerzeichen", func(r string) string { return "  " + r + "\n" }, true},
+		{"drei Leerzeichen", func(r string) string { return "   " + r + "\n" }, true},
+		{"drei Leerzeichen im Fence", func(r string) string { return fence + "\n   " + r + "\n" + fence + "\n" }, false},
+		{"vier Leerzeichen", func(r string) string { return "    " + r + "\n" }, false},
+		{"Tab", func(r string) string { return "\t" + r + "\n" }, false},
+		{"geschuetztes Leerzeichen", func(r string) string { return "\u00a0" + r + "\n" }, false},
+		{"Zitat", func(r string) string { return "> " + r + "\n" }, false},
+		{"Listenmarke", func(r string) string { return "- " + r + "\n" }, false},
 	}
 }
 
@@ -193,7 +226,8 @@ func structureKenntZeile(t *testing.T, wrap func(string) string) bool {
 }
 
 // linelengthKenntZeile: eine überlange Zeile ist ausgenommen genau dann, wenn
-// sie als Tabellenzeile zählt. Ausnahme (a) und (c) sind aus, damit nur (b)
+// sie Teil einer Tabelle und deshalb nicht umbrechbar ist (Antwort von
+// unbreakableTableRow). Ausnahme (a) und (c) sind aus, damit nur (b)
 // antwortet: eine Zeile im Zaun ist dann keine Tabellenzeile.
 func linelengthKenntZeile(t *testing.T, wrap func(string) string) bool {
 	t.Helper()
@@ -204,7 +238,37 @@ func linelengthKenntZeile(t *testing.T, wrap func(string) string) bool {
 	return len(llLines(res, "docs/a.md")) == 0
 }
 
-// Die Tabellen-Kopplung selbst: alle vier Konsumenten, eine Antwort.
+// unbreakableTableRowKenntZeile fragt die Lexik direkt: dieselbe Zeile, dieselbe
+// Prosa-Menge, die Antwort des Helfers statt der des Moduls.
+func unbreakableTableRowKenntZeile(wrap func(string) string) bool {
+	content := []byte("# T\n\n" + wrap("| zelle | zweite zelle |"))
+	lines := textLines(content)
+	prose := proseLineSet(content)
+	for i := range lines {
+		if strings.Contains(lines[i], "zelle") {
+			return unbreakableTableRow(lines, prose, i)
+		}
+	}
+	return false
+}
+
+// tableRowLineKenntZeile ist die Spalte-0-Antwort derselben Zeile.
+func tableRowLineKenntZeile(wrap func(string) string) bool {
+	content := []byte("# T\n\n" + wrap("| zelle | zweite zelle |"))
+	lines := textLines(content)
+	prose := proseLineSet(content)
+	for i := range lines {
+		if strings.Contains(lines[i], "zelle") {
+			return tableRowLine(lines, prose, i)
+		}
+	}
+	return false
+}
+
+// Erste Assertion der Tabellen-Kopplung (ADR-0054 Entscheidung 4, ADR-0116
+// Entscheid 4): targets, planning.waves und structure beantworten die Frage
+// "Tabellenzeile?" (tableRowLine) auf EINER Antwort — auch fuer die
+// eingerueckte Zeile, die sie weiter nicht lesen.
 func TestTabellenzeilenFrageHatEineAntwort(t *testing.T) {
 	for _, c := range tabellenFaelle() {
 		t.Run(c.name, func(t *testing.T) {
@@ -212,13 +276,38 @@ func TestTabellenzeilenFrageHatEineAntwort(t *testing.T) {
 				"targets":        targetsKenntZeile(t, c.wrap),
 				"planning.waves": wavesKenntZeile(t, c.wrap),
 				"structure":      structureKenntZeile(t, c.wrap),
-				"linelength":     linelengthKenntZeile(t, c.wrap),
+				"tableRowLine":   tableRowLineKenntZeile(c.wrap),
 			}
 			for modul, antwort := range antworten {
 				if antwort != c.gueltig {
 					t.Fatalf("%s antwortet %v, gemeinsam erwartet %v (Antworten: %v)",
 						modul, antwort, c.gueltig, antworten)
 				}
+			}
+		})
+	}
+}
+
+// Zweite Assertion (ADR-0116 Entscheid 4): linelength beantwortet "Teil einer
+// Tabelle und deshalb nicht umbrechbar?" auf der Antwort von
+// unbreakableTableRow, in beiden Richtungen — bis drei Leerzeichen davor
+// ausgenommen; vier Leerzeichen, Tab, U+00A0, `>`, eine Listenmarke und der
+// Fence gemessen. Der Helfer schliesst tableRowLine ein: wo tableRowLine "ja"
+// sagt, sagt er es auch.
+func TestTabellenzeilenFrageVonLinelengthHatEineAntwort(t *testing.T) {
+	for _, c := range tabellenFaelleLinelength() {
+		t.Run(c.name, func(t *testing.T) {
+			antworten := map[string]bool{
+				"linelength":          linelengthKenntZeile(t, c.wrap),
+				"unbreakableTableRow": unbreakableTableRowKenntZeile(c.wrap),
+			}
+			for modul, antwort := range antworten {
+				if antwort != c.gueltig {
+					t.Fatalf("%s antwortet %v, erwartet %v (Antworten: %v)", modul, antwort, c.gueltig, antworten)
+				}
+			}
+			if tableRowLineKenntZeile(c.wrap) && !unbreakableTableRowKenntZeile(c.wrap) {
+				t.Fatalf("tableRowLine sagt ja, unbreakableTableRow nein: der Helfer schliesst sie nicht ein")
 			}
 		})
 	}

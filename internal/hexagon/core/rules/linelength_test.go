@@ -215,22 +215,177 @@ func TestLinelengthAusnahmeTabellenzeile(t *testing.T) {
 	llWantLines(t, llRun(t, files, cfg), "docs/a.md", 1)
 }
 
-// Grenzen von (b): eingerückte |-Zeile, Zitat-Zeile und GFM-Zeile ohne
-// führende Pipe sind keine Tabellenzeilen; mit (a) aus und (b) an ist eine
-// |-Zeile im Zaun keine (DC-FA-LLEN-001).
-func TestLinelengthTabellenzeileGrenzen(t *testing.T) {
-	row := "| " + llWords(90) + " |"
-	files := map[string]string{"docs/a.md": strings.Join([]string{
-		"  " + row,
-		"> " + row,
-		"a | " + llWords(90),
-	}, "\n") + "\n"}
-	llWantLines(t, llRun(t, files, llCfg(80)), "docs/a.md", 1, 2, 3)
+// llRow liefert eine überlange Tabellenzeile ohne Wort über der Grenze 80.
+func llRow() string { return "| " + llWords(90) + " |" }
 
-	fenced := map[string]string{"docs/b.md": "```\n" + row + "\n```\n"}
+// Ausnahme (b), eingerückt: eine |-Zeile mit einem, zwei und drei Leerzeichen
+// (U+0020) davor ist im Default ausgenommen, mit exempt-tables: false je ein
+// Befund (DC-FA-LLEN-001, ADR-0116).
+func TestLinelengthEingerueckteTabellenzeile(t *testing.T) {
+	files := map[string]string{"docs/a.md": strings.Join([]string{
+		" " + llRow(),
+		"  " + llRow(),
+		"   " + llRow(),
+	}, "\n") + "\n"}
+	llWantLines(t, llRun(t, files, llCfg(80)), "docs/a.md")
+	cfg := llCfg(80)
+	cfg.Linelength.ExemptTables = llOff()
+	llWantLines(t, llRun(t, files, cfg), "docs/a.md", 1, 2, 3)
+}
+
+// Grenze 3 gegen 4: drei Leerzeichen vor | sind ausgenommen, vier der Befund;
+// jeder Fall steht allein, damit nicht nur eine Seite der Bedingung variiert
+// (DC-FA-LLEN-001, ADR-0116).
+func TestLinelengthTabellenzeileDreiGegenVierLeerzeichen(t *testing.T) {
+	cases := []struct {
+		name string
+		line string
+		want []int
+	}{
+		{"drei Leerzeichen", "   " + llRow(), nil},
+		{"vier Leerzeichen", "    " + llRow(), []int{1}},
+		{"fuenf Leerzeichen", "     " + llRow(), []int{1}},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			llWantLines(t, llRun(t, map[string]string{"docs/a.md": c.line + "\n"}, llCfg(80)), "docs/a.md", c.want...)
+		})
+	}
+}
+
+// Grenzen von (b) je Fall allein: Tab, geschütztes Leerzeichen (U+00A0), ein
+// Leerzeichen und dann ein Tab, Zitat-Zeile, GFM-Zeile ohne führende Pipe und
+// Text mit Einrückung ohne | sind keine Tabellenzeilen und werden gemessen
+// (DC-FA-LLEN-001, ADR-0116).
+func TestLinelengthTabellenzeileGrenzen(t *testing.T) {
+	cases := []struct{ name, line string }{
+		{"Tab", "\t" + llRow()},
+		{"geschuetztes Leerzeichen", " " + llRow()},
+		{"Leerzeichen dann Tab", " \t" + llRow()},
+		{"drei Leerzeichen dann Tab", "   \t" + llRow()},
+		{"Zitat", "> " + llRow()},
+		{"Zitat mit Einrueckung", "  > " + llRow()},
+		{"ohne fuehrende Pipe", "a | " + llWords(90)},
+		{"Einrueckung ohne Pipe", "   " + llWords(90)},
+		{"Pipe nicht erstes Zeichen", "   x" + llRow()},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			llWantLines(t, llRun(t, map[string]string{"docs/a.md": c.line + "\n"}, llCfg(80)), "docs/a.md", 1)
+		})
+	}
+}
+
+// Grenze 1: eine Prosa-Zeile, die nach drei Leerzeichen mit | beginnt, ohne
+// dass eine Tabelle dasteht, ist ausgenommen, wie in Spalte 0 — eine
+// Trennzeile oder eine zweite |-Zeile wird nicht verlangt
+// (DC-FA-LLEN-001, ADR-0116).
+func TestLinelengthProsaZeileMitPipeOhneTabelleIstAusgenommen(t *testing.T) {
+	prose := "| " + llWords(90)
+	for _, line := range []string{prose, "   " + prose} {
+		files := map[string]string{"docs/a.md": "Ein Satz.\n\n" + line + "\n\nNoch ein Satz.\n"}
+		llWantLines(t, llRun(t, files, llCfg(80)), "docs/a.md")
+	}
+}
+
+// Grenze 2: eine Tabelle auf der Zeile der Listenmarke beginnt nicht mit
+// Leerzeichen und |, auch nicht unter einer Marke von vier Spalten; sie wird
+// gemessen (DC-FA-LLEN-001, ADR-0116).
+func TestLinelengthTabellenzeileHinterListenmarkeWirdGemessen(t *testing.T) {
+	cases := []struct{ name, line string }{
+		{"Bindestrich", "- " + llRow()},
+		{"Sternchen", "* " + llRow()},
+		{"nummeriert", "1. " + llRow()},
+		{"zweistellig nummeriert", "10. " + llRow()},
+		{"Marke mit Einrueckung", "  - " + llRow()},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			llWantLines(t, llRun(t, map[string]string{"docs/a.md": c.line + "\n"}, llCfg(80)), "docs/a.md", 1)
+		})
+	}
+}
+
+// Die Form des Anlasses: eine Tabelle unter einem nummerierten Listenpunkt
+// mit drei Leerzeichen davor ist im Default befundfrei, mit exempt-tables:
+// false ein Befund je überlanger Zeile, und der Listenpunkt selbst bleibt
+// gemessen (DC-FA-LLEN-001, ADR-0116).
+func TestLinelengthTabelleUnterNummeriertemListenpunkt(t *testing.T) {
+	files := map[string]string{"docs/a.md": strings.Join([]string{
+		"1. Tabelle:",
+		"",
+		"   | a | b |",
+		"   |---|---|",
+		"   " + llRow(),
+		"",
+		"2. " + llWords(90),
+	}, "\n") + "\n"}
+	llWantLines(t, llRun(t, files, llCfg(80)), "docs/a.md", 7)
+	cfg := llCfg(80)
+	cfg.Linelength.ExemptTables = llOff()
+	llWantLines(t, llRun(t, files, cfg), "docs/a.md", 5, 7)
+}
+
+// Die Schalter sind unabhängig: mit (a) aus und (b) an liegt eine |-Zeile im
+// Zaun — auch eine eingerückte, auch mit drei Leerzeichen — nicht außerhalb
+// von Fenced-Code und wird gemessen (DC-FA-LLEN-001, ADR-0116).
+func TestLinelengthTabellenzeileImZaunWirdGemessen(t *testing.T) {
 	cfg := llCfg(80)
 	cfg.Linelength.ExemptCodeBlocks = llOff()
-	llWantLines(t, llRun(t, fenced, cfg), "docs/b.md", 2)
+	for _, c := range []struct{ name, line string }{
+		{"Spalte 0", llRow()},
+		{"drei Leerzeichen", "   " + llRow()},
+		{"ein Leerzeichen", " " + llRow()},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			files := map[string]string{"docs/b.md": "```\n" + c.line + "\n```\n"}
+			llWantLines(t, llRun(t, files, cfg), "docs/b.md", 2)
+		})
+	}
+}
+
+// Ausnahme (b), Rest unverändert: Dateien ohne eingerückte |-Zeile verhalten
+// sich wie zuvor — Kopf-, Trenn- und Datenzeilen in Spalte 0 sind
+// ausgenommen, die Zeilen darum gemessen, mit (b) aus alle gemessen
+// (DC-FA-LLEN-001, ADR-0116).
+func TestLinelengthTabellenzeileSpalteNullUnveraendert(t *testing.T) {
+	files := map[string]string{"docs/a.md": strings.Join([]string{
+		"# T",
+		llWords(90),
+		llRow(),
+		"|" + strings.Repeat(" --- |", 20),
+		llRow(),
+		llWords(90),
+	}, "\n") + "\n"}
+	llWantLines(t, llRun(t, files, llCfg(80)), "docs/a.md", 2, 6)
+	cfg := llCfg(80)
+	cfg.Linelength.ExemptTables = llOff()
+	llWantLines(t, llRun(t, files, cfg), "docs/a.md", 2, 3, 4, 5, 6)
+}
+
+// Bezugsmenge: eine Zeile mit drei Leerzeichen vor | zählt im Default nicht
+// zu den geprüften Zeilen, mit exempt-tables: false zählt sie
+// (DC-FA-LLEN-001, ADR-0116).
+func TestLinelengthBezugsmengeEingerueckteTabellenzeile(t *testing.T) {
+	files := map[string]string{"docs/a.md": "# T\n   | a | b |\nkurz\n"}
+	if n := llNote(t, llRun(t, files, llCfg(80))); n != "linelength: 1 Datei(en), 2 Zeile(n) geprüft, 0 davon mit einem Wort über der Grenze ausgenommen" {
+		t.Fatalf("Bezugsmenge im Default: %q", n)
+	}
+	cfg := llCfg(80)
+	cfg.Linelength.ExemptTables = llOff()
+	if n := llNote(t, llRun(t, files, cfg)); n != "linelength: 1 Datei(en), 3 Zeile(n) geprüft, 0 davon mit einem Wort über der Grenze ausgenommen" {
+		t.Fatalf("Bezugsmenge mit exempt-tables: false: %q", n)
+	}
+}
+
+// Eine eingerückte Tabellenzeile mit einem Wort über der Grenze nimmt (b)
+// aus, bevor (c) sie sieht: sie zählt nicht in U (ADR-0116, Konsequenzen).
+func TestLinelengthEingerueckteTabellenzeileZaehltNichtInU(t *testing.T) {
+	files := map[string]string{"docs/a.md": "   | " + llWord(90) + " |\n"}
+	n := llNote(t, llRun(t, files, llCfg(80)))
+	if n != "linelength: 1 Datei(en), 0 Zeile(n) geprüft, 0 davon mit einem Wort über der Grenze ausgenommen" {
+		t.Fatalf("Bezugsmenge: %q", n)
+	}
 }
 
 // Ausnahme (c) prüft das längste Wort: ein Wort über der Grenze nimmt die

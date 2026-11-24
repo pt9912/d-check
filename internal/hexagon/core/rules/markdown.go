@@ -193,6 +193,34 @@ func tableRowLine(lines []string, prose map[int]bool, i int) bool {
 	return prose[i+1] && strings.HasPrefix(lines[i], "|")
 }
 
+// unbreakableTableRow meldet, ob lines[i] (0-basiert) Teil einer Tabelle und
+// deshalb nicht umbrechbar ist — die Frage von linelength (Ausnahme (b),
+// DC-FA-LLEN-001, ADR-0116), nicht die von tableRowLine. Ihre Antwort
+// schließt tableRowLine ein (ein `|` in Spalte 0) und erweitert sie um null
+// bis drei Leerzeichen (U+0020) vor dem `|`; tableRowLine selbst bleibt
+// unverändert, targets, planning.waves und structure lesen eine eingerückte
+// Zeile weiter nicht als Tabellenzeile. Grenzen, je mit ihrer Bedingung: ein
+// Tab, ein U+00A0 oder vier und mehr Leerzeichen vor dem `|` zählen nicht,
+// weil die Lexik keinen Listenkontext trägt; eine Listenmarke (`- | a |`) und
+// ein Zitat-Zeichen (`> |`) vor dem `|` zählen nicht; eine Trennzeile wird
+// nicht verlangt. Die eingerückte Zeile muss außerhalb von Fenced-Code liegen
+// (prose), wie die Spalte-0-Zeile.
+func unbreakableTableRow(lines []string, prose map[int]bool, i int) bool {
+	if tableRowLine(lines, prose, i) {
+		return true
+	}
+	line := lines[i]
+	indent := 0
+	for indent < len(line) && line[indent] == ' ' {
+		indent++
+	}
+	return indent >= 1 && indent <= maxTableIndent && prose[i+1] && strings.HasPrefix(line[indent:], "|")
+}
+
+// maxTableIndent ist die größte Zahl von Leerzeichen (U+0020) vor dem `|`,
+// die unbreakableTableRow noch als Tabellenzeile liest (ADR-0116 Entscheid 3).
+const maxTableIndent = 3
+
 // tableHeaderOrSeparator meldet, ob lines[i] (0-basiert) die Trennzeile einer
 // GFM-Tabelle ist oder deren Kopfzeile (die Tabellenzeile unmittelbar vor
 // einer Trennzeile) — beide deklarieren keine Daten, auch wenn eine Kennung

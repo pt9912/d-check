@@ -303,8 +303,10 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthAusnahmeTabellenzeile` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthAusnahmeWortUeberDerGrenze` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthBezugsmenge` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
+| [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthBezugsmengeEingerueckteTabellenzeile` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthEinWortUeberDerGrenze` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-CONF-002`](../../spec/lastenheft.md), [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthEingabemenge` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
+| [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthEingerueckteTabellenzeile` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthEinrueckungUndUeberschrift` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthFenceGrenzenDerLexik` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthFormPraefix` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
@@ -316,8 +318,14 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthNurEinCRFaelltWeg` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthOffenerZaunNimmtDenRestAus` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthOhneGrenze` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
+| [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthProsaZeileMitPipeOhneTabelleIstAusgenommen` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md), [`DC-QA-02`](../../spec/lastenheft.md) | `TestLinelengthReihenfolgeUndDeterminismus` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
+| [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthTabelleUnterNummeriertemListenpunkt` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
+| [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthTabellenzeileDreiGegenVierLeerzeichen` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthTabellenzeileGrenzen` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
+| [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthTabellenzeileHinterListenmarkeWirdGemessen` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
+| [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthTabellenzeileImZaunWirdGemessen` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
+| [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthTabellenzeileSpalteNullUnveraendert` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthWortTrennerSindSpaceUndTab` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthZaehltCodepunkte` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthZeilenendeOhneCR` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
