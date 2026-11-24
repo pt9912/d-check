@@ -380,6 +380,35 @@ for p in 'nie grüner' 'Dateiname des Endes\|Dateinamen des Endes\|Dateinamen ih
   grep -n "$p" spec/lastenheft.md spec/spezifikation.md; done
 ```
 
+**Plan-Änderung nach Review R3 (Implementer, 2026-11-24, vor dem Fix):** M-4 und I-1 aus
+`docs/reviews/2026-11-23-slice-291-vcs-umbenennung-r3.md` gehen in den Spec-Text. Grundlage ist
+Entscheidung 9 in der am 2026-11-24 bestätigten Fassung, samt den drei Fällen, in denen sie
+nachsichtiger ist als die erste: freigemachter Name, zwei Quellen auf ein Ende, Rotation.
+
+- **Neue Kriterien: zwei** — zwei Quellen auf ein Ende (M-4) und Rotation (I-1).
+- **Neue Grenze:** sie benennt die drei nachsichtigeren Fälle.
+- **Satz geschärft:** der „auch“-Satz zur Teilnahme, in Lastenheft und Spezifikation.
+- **Version:** Lastenheft 0.114.3 mit eigener Historie-Zeile; die Spezifikation bekommt eine
+  eigene Zeile.
+- Alle Stellen liegen in schon geführten Abschnitten.
+
+Aussagen-Suche (Stand vor dem Fix), Treffer:
+
+- **„Ende keiner zweiten Quelle“:**
+  - Lastenheft Z. 2295;
+  - Spezifikation Z. 2153–2154 und Schema-Zeile Z. 4019 („Ende genau einer Quelle“);
+  - kein Kriterium, keine Grenze.
+- **„auch ein Pfad, der in BASE lag“:** Lastenheft Z. 2296–2298, Spezifikation Z. 2155–2157.
+- **„freimacht“:** zusätzlich die Grenze im Lastenheft, Z. 2330–2331 (Nachzug bleibt Drift).
+- **Die drei Fälle als Nachsicht:** stehen nirgends ausdrücklich. Rotation und zwei Quellen fehlen
+  ganz; der freigemachte Name steht nur als Drift-Fall des Nachzugs, nicht mit dem Rückfall seiner
+  Quelle auf `vcs.ignore-link-targets` allein.
+
+```bash
+grep -n 'zweiten Quelle\|in BASE lag\|Rotation\|freimacht\|genau einer Quelle\|zwei Quellen' \
+  spec/lastenheft.md spec/spezifikation.md
+```
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
