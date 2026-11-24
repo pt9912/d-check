@@ -4,7 +4,7 @@
   R1 und R2 dienten nur als Kontext; Zuordnungen, Zählungen, Mutationen und Messungen sind selbst
   gemacht, in einem frischen Kontext.
 - **Gegenstand:** Plan
-  [`slice-292`](../plan/planning/in-progress/slice-292-vcs-umbenennung-modulkern.md) §1, §2, §3 (Tabelle und
+  [`slice-292`](../plan/planning/done/slice-292-vcs-umbenennung-modulkern.md) §1, §2, §3 (Tabelle und
   Testfälle) und §6;
   [`DC-FA-VCS-001`](../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
   (Lastenheft 0.114.3, 30 Kriterien),

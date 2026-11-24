@@ -46,17 +46,17 @@ zusammen mit der Begründungs-Pflicht je Punkt.
 [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
 steht im Lastenheft, Verfahren und Schema in der Spezifikation, die Entscheidung in
 einer ADR (`Proposed` bis zur Closure von
-[`slice-292`](../in-progress/slice-292-vcs-umbenennung-modulkern.md)) — und die Entscheide unten sind
+[`slice-292`](../done/slice-292-vcs-umbenennung-modulkern.md)) — und die Entscheide unten sind
 **vor dem ersten Code** vom Auftraggeber bestätigt und festgeschrieben.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Code, git-Adapter, Konfigurations-Rand, Tests** — gehören
-  [`slice-292`](../in-progress/slice-292-vcs-umbenennung-modulkern.md); dieser Slice schreibt, was
+  [`slice-292`](../done/slice-292-vcs-umbenennung-modulkern.md); dieser Slice schreibt, was
   der Code einlösen soll, damit die Reviews dort gegen eine Anforderung prüfen.
 - **Das eigene Profil (`.d-check.yml`)** — der Schalter wird erst wirksam, wenn der
   Code steht; das Einschalten gehört, falls Entscheid 7 es bestätigt, zu
-  [`slice-292`](../in-progress/slice-292-vcs-umbenennung-modulkern.md).
+  [`slice-292`](../done/slice-292-vcs-umbenennung-modulkern.md).
 - **Die Grenze „gleichnamige andere Datei“ von `ignore-link-targets`** — bleibt, wie
   sie ist (Welle-Out-of-Scope); die neue Anforderung nennt sie nur als bestehende
   Grenze.
@@ -110,7 +110,7 @@ Aussagen-Berührung steht hier gar nicht.
 | `spec/spezifikation.md` | update | §[`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 und 4 (samt den Sätzen zum anderen Namen und zur Grenze „dieselbe Datei“), Schema-Zeile des neuen Schlüssels, Historie |
 | [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) | liegt vor (`Proposed`, vom Architect mit dem Verdikt angelegt) | der Architect gleicht sie an, wenn das Schreiben der Anforderung eine Entscheidung verschiebt |
 | `docs/plan/adr/README.md` | liegt vor | ADR-Index ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 4) |
-| Plan von [`slice-292`](../in-progress/slice-292-vcs-umbenennung-modulkern.md) | update | die Testfälle, die aus den bestätigten Entscheiden folgen |
+| Plan von [`slice-292`](../done/slice-292-vcs-umbenennung-modulkern.md) | update | die Testfälle, die aus den bestätigten Entscheiden folgen |
 
 **Anlass gezählt** (Regel 14/18 der Dokumentations-Regeln — Form vor Zahl): eine
 `Accepted`-ADR „verlinkt“ die Spezifikation, wenn eine Zeile ein Markdown-Link-Ziel
@@ -182,14 +182,14 @@ Schärfung des Out-of-Scope-Satzes. Träger ist
    Vorfahr ist, regelt Entscheid 12. Kein neuer Grund-Code: es bleibt `core-drift-vcs`.
    Die Umbenennung der immutablen Datei selbst bleibt Drift.
 7. **Eigenes Profil:** `.d-check.yml` schaltet `follow-renames: true` im `vcs`-Block
-   ein ([`slice-292`](../in-progress/slice-292-vcs-umbenennung-modulkern.md)). Begründung:
+   ein ([`slice-292`](../done/slice-292-vcs-umbenennung-modulkern.md)). Begründung:
    [`ADR-0103`](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md) hat für dieses
    Repo schon entschieden, dass ein Pfad-Nachzug keine Drift ist; die neue ADR trägt
    die Ausweitung auf den neuen Namen (Lockerung nur per ADR,
    [`AGENTS.md`](../../../../AGENTS.md) §3.6). Alternative: erst mit der
    Baseline-Hebung einschalten, die die Spec-Dateien umbenennt.
 8. **ADR-Status:** die ADR bleibt `Proposed`, bis der Mechanismus in
-   [`slice-292`](../in-progress/slice-292-vcs-umbenennung-modulkern.md) steht und reviewt ist
+   [`slice-292`](../done/slice-292-vcs-umbenennung-modulkern.md) steht und reviewt ist
    ([`BEO-ALL/adr-accepted-bevor-der-mechanismus-steht`](../observations/BEO-ALL/adr-accepted-bevor-der-mechanismus-steht/observation.md),
    2×).
 
@@ -237,14 +237,14 @@ Folge-Entscheide aus dem Architect-Verdikt — der Wortlaut steht in
     dann neben [`ADR-0103`](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md).
 
 **Gegenprobe vor dem Schreiben (Schritt 19 des Workflow-Skeletts):** die Negativfälle
-stehen als Testfälle für [`slice-292`](../in-progress/slice-292-vcs-umbenennung-modulkern.md) —
+stehen als Testfälle für [`slice-292`](../done/slice-292-vcs-umbenennung-modulkern.md) —
 Umbiegen auf eine bestehende Datei C; Löschen und neu Anlegen mit anderem Inhalt;
 umbenennen und im selben Commit ändern; zwei Kopien desselben Blobs; Kette über drei
 Commits; Kette mit Verzweigung; Anker- oder Linktext-Änderung zusammen mit dem
 Nachzug; Link auf ein umbenanntes Verzeichnis; Umbenennung in einem Merge; die
 immutable Datei selbst umbenannt; `--staged` mit `git mv` und Nachzug im Index; dazu
 die Fälle aus dem Architect-Verdikt (Liste in
-[`slice-292`](../in-progress/slice-292-vcs-umbenennung-modulkern.md) §3).
+[`slice-292`](../done/slice-292-vcs-umbenennung-modulkern.md) §3).
 
 **Plan-Änderung (Implementer, 2026-11-23, vor dem Inhalt):** Drei Stellen kommen zu den in
 der Tabelle oben geführten hinzu, alle in schon geführten Abschnitten:
@@ -282,7 +282,7 @@ Grenz-Aussage in Lastenheft und Spezifikation stützt sich auf diese Zählungen,
   `IgnoreLinkTargets`, aus der Vereinigung beider Pfad-Mengen, und **eine** Auflösung gilt
   für beide Fassungen.
 - Methoden des VCS-Ports heute: **fünf**; die Abbildung der Umbenennungen ist die sechste
-  (in [`slice-292`](../in-progress/slice-292-vcs-umbenennung-modulkern.md)).
+  (in [`slice-292`](../done/slice-292-vcs-umbenennung-modulkern.md)).
 
 ```bash
 grep -n 'case filemode' internal/adapter/driven/git/git.go            # 165 Dir, 173 Regular/Executable/Symlink
@@ -311,7 +311,7 @@ Aussagen-Suche (Stand vor dem Fix, Kommandos darunter), Treffer:
   Spezifikation Z. 2153–2156 (Fix hier). Das Kriterium Lastenheft Z. 2355 trägt die Bedingung
   schon. Dieselbe Aussage ohne Bedingung steht in Planungs-Dokumenten: Welle
   [`welle-96`](../welle-96-vcs-folgt-umbenennung.md) Z. 128–130,
-  [`slice-292`](../in-progress/slice-292-vcs-umbenennung-modulkern.md) Z. 149, dieser Plan Z. 204–206
+  [`slice-292`](../done/slice-292-vcs-umbenennung-modulkern.md) Z. 149, dieser Plan Z. 204–206
   (Entscheid 10). Träger ist der Planner; hier nicht geändert.
 - **M-1** — Kriterien, die `core-drift-vcs` zusagen, ohne `vcs.ignore-link-targets` auszuschließen:
   Lastenheft Z. 2348, 2349, 2351, 2352 (zweiter Teil), 2353, 2356 (zweiter Teil), 2359 (zweiter
@@ -470,7 +470,7 @@ dasteht.
   die CI-Range) — **Ausgang:** *entfallen.* Die Spezifikation (Schritt 2) legt die
   Commit-Menge und „Basis kein Vorfahr ⇒ keine Umbenennung, Urteil wie ohne Schalter“
   fest, das Lastenheft trägt Grenze und Kriterium; der Testfall steht in
-  [`slice-292`](../in-progress/slice-292-vcs-umbenennung-modulkern.md) §3 und gehört dessen DoD.
+  [`slice-292`](../done/slice-292-vcs-umbenennung-modulkern.md) §3 und gehört dessen DoD.
 
 ## 7. Closure-Notiz
 
@@ -507,7 +507,7 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   fortgeschrieben, nach R2 L-2 auf eigene Zeilen 0.114.1 bis 0.114.3 umgestellt ([`MR-032`](../../../../harness/conventions.md#mr-032)).
   **(5) Ein Altbefund wurde sichtbar:** die Spezifikation verspricht für `--staged`
   dieselben drei Eintrags-Arten wie im Baum, der Code nimmt jeden Index-Eintrag; die
-  Angleichung trägt [`slice-292`](../in-progress/slice-292-vcs-umbenennung-modulkern.md).
+  Angleichung trägt [`slice-292`](../done/slice-292-vcs-umbenennung-modulkern.md).
 - **Steering-Loop-Eintrag:** mit diesem Slice ist keine Regel, kein Sensor und keine
   benannte Spec-Lücke verkörpert.
   [`BEO-ALL/plan-entscheid-steht-gegen-lastenheft`](../observations/BEO-ALL/plan-entscheid-steht-gegen-lastenheft/observation.md)
@@ -522,7 +522,7 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   (fünf Stellen in vier Runden, ein Vorgang) und
   [`BEO-ALL/testfall-faehrt-seine-regel-nicht`](../observations/BEO-ALL/testfall-faehrt-seine-regel-nicht/observation.md).
   Die Zähler folgen aus den Dateien.
-- **Folge-Slices:** keine neuen. [`slice-292`](../in-progress/slice-292-vcs-umbenennung-modulkern.md)
+- **Folge-Slices:** keine neuen. [`slice-292`](../done/slice-292-vcs-umbenennung-modulkern.md)
   trägt die Testfälle zu jedem Kriterium, die Angleichung der Index-Enumeration, den
   Übergang von [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) auf `Accepted` und die
   beiden LOW der Verifikation (V-1 Nebensatz in Spezifikation Schritt 2, V-2

@@ -4,7 +4,7 @@
 **Gegenstand:** [welle-96](../plan/planning/welle-96-vcs-folgt-umbenennung.md) und ihre zwei Slice-Pläne
 [slice-291](../plan/planning/done/slice-291-vcs-umbenennung-anforderung-und-adr.md) (Entscheide 1–8 in §3,
 vom Auftraggeber am 2026-11-23 mit den Empfehlungen bestätigt) und
-[slice-292](../plan/planning/in-progress/slice-292-vcs-umbenennung-modulkern.md).
+[slice-292](../plan/planning/done/slice-292-vcs-umbenennung-modulkern.md).
 **Anlass:** [Issue #18](https://github.com/pt9912/d-check/issues/18) — ein Link-Nachzug in einer
 `Accepted`-ADR auf eine in derselben Range umbenannte Datei meldet `core-drift-vcs`, auch mit
 `vcs.ignore-link-targets`.
