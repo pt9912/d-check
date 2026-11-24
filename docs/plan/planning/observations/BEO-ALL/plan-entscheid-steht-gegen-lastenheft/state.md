@@ -1,1 +1,1 @@
-**Stand:** offen — 3×, Schwelle erreicht; der Lese-Schritt der Closure von welle-96 entscheidet den Ausgang.
+**Stand:** verkörpert — Dokumentations-Regel 18 (AGENTS.md §5, Volltext harness/rules/dokumentations-regeln/18-plan-festlegung-zitiert-ihre-quelle.md), seit welle-96.
