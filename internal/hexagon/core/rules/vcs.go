@@ -18,7 +18,9 @@ import (
 // die git-Historie über den VCS-Port (nicht-hermetisch, aber lokal/
 // lesend/deterministisch) — ein Port-Fehler (fehlendes `.git`/Range) wird als
 // error zurückgegeben, den der Aufrufer auf Exit 2 abbildet (fail-closed).
-// Diagnose-only: kein `--repair`-Hunk.
+// Diagnose-only: kein `--repair`-Hunk. Mit vcs.follow-renames liest sie
+// zusätzlich die Umbenennungen der Range über den Port (Renames) und setzt
+// Link-Ziele über sie gleich (DC-FA-VCS-001.a Schritt 4).
 //
 // Die geschützte Klasse (`cfg.Paths`) wird direkt gegen BEIDE Tree-Stände
 // aufgelöst, statt einem Diff zu vertrauen (slice-220, CO-001 dritte
@@ -50,14 +52,14 @@ func CheckVCS(vcs driven.VCS, cfg model.VCSConfig, base, head string) ([]model.F
 		paths = append(paths, p)
 	}
 	sort.Strings(paths) // DC-QA-02 Determinismus (Kandidaten kommen aus einer Menge)
-	var tree map[string]bool
-	if cfg.IgnoreLinkTargets {
-		tree = pathTree(append(append([]string{}, baseAll...), headAll...))
+	policy, err := newTargetPolicy(vcs, cfg, base, head, baseAll, headAll)
+	if err != nil {
+		return nil, err
 	}
 	var findings []model.Finding
 	for _, p := range paths {
 		if headSet[p] {
-			f, err := vcsModified(vcs, cfg, base, head, p, tree)
+			f, err := vcsModified(vcs, cfg, base, head, p, policy)
 			if err != nil {
 				return nil, err
 			}
@@ -107,7 +109,7 @@ func vcsDeleted(vcs driven.VCS, cfg model.VCSConfig, base, path string) ([]model
 // vcsModified vergleicht den Core einer modifizierten immutablen Datei und
 // prüft den Status-Übergang. BASE nicht immutabel (z. B. Proposed) ⇒ frei
 // (Grandfathering, DC-FA-VCS-001.a Schritt 3).
-func vcsModified(vcs driven.VCS, cfg model.VCSConfig, base, head, path string, tree map[string]bool) ([]model.Finding, error) {
+func vcsModified(vcs driven.VCS, cfg model.VCSConfig, base, head, path string, policy targetPolicy) ([]model.Finding, error) {
 	baseContent, ok, err := vcs.FileAt(base, path)
 	if err != nil {
 		return nil, err
@@ -127,7 +129,8 @@ func vcsModified(vcs driven.VCS, cfg model.VCSConfig, base, head, path string, t
 		line = 1
 	}
 	var findings []model.Finding
-	resolve := linkTargetResolver(path, markFreeTree(tree, baseContent, headContent))
+	policy.tree = markFreeTree(policy.tree, baseContent, headContent)
+	resolve := linkTargetResolver(path, policy)
 	if vcsCore(baseContent, cfg.StatusLine, cfg.ExcludeSections, resolve) !=
 		vcsCore(headContent, cfg.StatusLine, cfg.ExcludeSections, resolve) {
 		findings = append(findings, model.Finding{

@@ -2,17 +2,22 @@ package rules
 
 import (
 	"bytes"
+	"fmt"
 	"path"
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
+	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
 // normalizedLinkTargetLines liefert je Zeile, in der ein Link-Ziel normiert
 // wurde, ihre Fassung mit normierten Zielen (DC-FA-VCS-001.a Schritt 4).
 // Normiert wird ein Ziel, das resolve auflöst (gegen die Vereinigung der
-// Pfad-Bäume von BASE und HEAD): es wird durch Marke, Dateiname und Anker
-// ersetzt, sodass ein reiner Pfad-Nachzug denselben Text ergibt; ein Ziel, das
+// Pfad-Bäume von BASE und HEAD): es wird durch das ersetzt, was resolve liefert --
+// Marke, Dateiname und Anker, mit vcs.follow-renames doppelte Marke, Endpfad und
+// Anker --, sodass ein reiner Pfad-Nachzug denselben Text ergibt; ein Ziel, das
 // nicht auflöst, bleibt roh. Was ein Link ist,
 // beantwortet dieselbe Erkennung wie das Modul links: PreprocessMarkdown
 // (Fenced-Code entfällt, Code-Spans absatzweise positionserhaltend geleert),
@@ -62,17 +67,78 @@ func markFreeTree(tree map[string]bool, base, head []byte) map[string]bool {
 	return tree
 }
 
+// targetPolicy sagt, wie die Link-Ziele einer Datei gleichgesetzt werden.
+// tree ist die Vereinigung der Pfad-Bäume von BASE und HEAD (pathTree), nil
+// heißt: nichts wird normiert. names ist vcs.ignore-link-targets (Dateiname und
+// Anker). renames ist vcs.follow-renames: die Zuordnung Quelle → Ende der
+// teilnehmenden Umbenennungen, ends ihre Enden; nil ohne den Schlüssel.
+type targetPolicy struct {
+	tree    map[string]bool
+	names   bool
+	renames map[string]string
+	ends    map[string]bool
+}
+
+// newTargetPolicy bildet die Gleichsetzung der Link-Ziele aus der Konfiguration:
+// ohne vcs.ignore-link-targets und ohne vcs.follow-renames bleibt tree nil und
+// die Port-Methode Renames ungerufen. Die Zuordnung des Ports muss ihre
+// Invariante halten (keine Quelle ist zugleich Ende); sonst hängt die
+// Gleichsetzung von der Reihenfolge ab, und der Lauf bricht ab.
+func newTargetPolicy(vcs driven.VCS, cfg model.VCSConfig, base, head string, baseAll, headAll []string) (targetPolicy, error) {
+	if !cfg.IgnoreLinkTargets && !cfg.FollowRenames {
+		return targetPolicy{}, nil
+	}
+	policy := targetPolicy{
+		tree:  pathTree(append(append([]string{}, baseAll...), headAll...)),
+		names: cfg.IgnoreLinkTargets,
+	}
+	if !cfg.FollowRenames {
+		return policy, nil
+	}
+	renames, err := vcs.Renames(base, head)
+	if err != nil {
+		return targetPolicy{}, err
+	}
+	policy.renames = renames
+	policy.ends = make(map[string]bool, len(renames))
+	for source, end := range renames {
+		if _, ok := renames[end]; ok {
+			return targetPolicy{}, fmt.Errorf("umbenennungen widersprechen sich: %q ist Quelle und Ende zugleich (Quelle %q)", end, source)
+		}
+		policy.ends[end] = true
+	}
+	return policy, nil
+}
+
+// renamedTargetMark steht vor dem Endpfad eines teilnehmenden Ziels: die
+// Marke zweimal, damit es nie der Form von ignore-link-targets gleicht, die
+// eine Marke und den Dateinamen trägt (ADR-0115 Entscheidung 10).
+const renamedTargetMark = normalizedTargetMark + normalizedTargetMark
+
+// followed liefert das Ende, auf das ein teilnehmender Pfad gleichgesetzt wird:
+// die Quelle gilt als ihr Ende, das Ende als es selbst.
+func (p targetPolicy) followed(file string) (string, bool) {
+	if end, ok := p.renames[file]; ok {
+		return end, true
+	}
+	if p.ends[file] {
+		return file, true
+	}
+	return "", false
+}
+
 // linkTargetResolver liefert für die Datei file die Auflösung ihrer Link-Ziele
-// gegen tree, nil ohne tree. tree ist die Vereinigung der Pfad-Bäume von BASE
-// und HEAD (pathTree): beide Seiten lösen gleich auf, ein unveränderter Link
-// auf eine gelöschte Datei bleibt gleich. Ein relatives Ziel, das auf einen
-// Eintrag von tree zeigt, wird zu Marke, Dateiname und Anker; ein absolutes,
-// ein externes (`://`), eines mit Query, ein reiner Anker und eines außerhalb
-// des Repos lösen nicht auf.
+// gegen policy.tree, nil ohne tree. Beide Seiten lösen gleich auf, ein
+// unveränderter Link auf eine gelöschte Datei bleibt gleich. Ein relatives Ziel,
+// das auf einen Eintrag von tree zeigt, wird gleichgesetzt: ein teilnehmendes
+// zu doppelter Marke, Endpfad und Anker (vcs.follow-renames), jedes andere mit
+// vcs.ignore-link-targets zu Marke, Dateiname und Anker und sonst gar nicht.
+// Ein absolutes, ein externes (`://`), eines mit Query, ein reiner Anker und
+// eines außerhalb des Repos lösen nicht auf.
 // GRENZE: Ein Nachzug auf eine Datei, die nur noch in BASE existiert, geht
 // durch -- den toten Link meldet das Modul links.
-func linkTargetResolver(file string, tree map[string]bool) func(string) (string, bool) {
-	if tree == nil {
+func linkTargetResolver(file string, policy targetPolicy) func(string) (string, bool) {
+	if policy.tree == nil {
 		return nil
 	}
 	return func(target string) (string, bool) {
@@ -85,10 +151,16 @@ func linkTargetResolver(file string, tree map[string]bool) func(string) (string,
 			return "", false
 		}
 		p := path.Clean(path.Join(path.Dir(file), t))
-		if p == ".." || strings.HasPrefix(p, "../") || !tree[p] {
+		if p == ".." || strings.HasPrefix(p, "../") || !policy.tree[p] {
 			return "", false
 		}
-		return normalizedTargetMark + path.Base(p) + anchor, true
+		if end, ok := policy.followed(p); ok {
+			return renamedTargetMark + end + anchor, true
+		}
+		if policy.names {
+			return normalizedTargetMark + path.Base(p) + anchor, true
+		}
+		return "", false
 	}
 }
 

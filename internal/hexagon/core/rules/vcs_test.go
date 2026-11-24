@@ -23,7 +23,18 @@ type fakeVCS struct {
 	lineStat    driven.LineStat              // Modul metrics (DC-FA-MET-001)
 	lineCall    *lineCall                    // letzter LineChanges-Aufruf
 	err         error
-	fileErr     error // FileAt scheitert — unlesbares Objekt oder unlesbarer Tree-Eintrag
+	fileErr     error             // FileAt scheitert — unlesbares Objekt oder unlesbarer Tree-Eintrag
+	renames     map[string]string // Renames: Zuordnung Quelle → Ende (vcs.follow-renames)
+	renamesErr  error             // Renames scheitert — unlesbarer Commit oder Baum
+	renamesCall int               // Zahl der Renames-Aufrufe: ohne vcs.follow-renames nie
+}
+
+func (f *fakeVCS) Renames(_, _ string) (map[string]string, error) {
+	f.renamesCall++
+	if f.renamesErr != nil {
+		return nil, f.renamesErr
+	}
+	return f.renames, nil
 }
 
 func (f *fakeVCS) AllPaths(base, head string) ([]string, []string, error) {

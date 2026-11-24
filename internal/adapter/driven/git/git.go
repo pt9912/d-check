@@ -156,25 +156,44 @@ func (a *Adapter) pathsAt(ref string) ([]string, error) {
 // prüfen. Ein Gitlink (Submodul) trägt keinen Blob dieses Repos und wird
 // übersprungen, nicht aufgelöst.
 func walkTree(repo *gogit.Repository, tree *object.Tree, prefix string, out *[]string) error {
+	return walkEntries(repo, tree, prefix, func(full string, _ object.TreeEntry) {
+		*out = append(*out, full)
+	})
+}
+
+// walkEntries ruft visit für jeden Datei-Eintrag unter tree (regulär,
+// ausführbar, Symlink) mit seinem vollen Pfad; die Fehlerpolitik ist die von
+// walkTree.
+func walkEntries(repo *gogit.Repository, tree *object.Tree, prefix string, visit func(path string, e object.TreeEntry)) error {
 	for _, e := range tree.Entries {
-		full := e.Name
-		if prefix != "" {
-			full = prefix + "/" + e.Name
-		}
-		switch e.Mode {
-		case filemode.Dir:
+		full := joinPath(prefix, e.Name)
+		switch {
+		case e.Mode == filemode.Dir:
 			sub, err := repo.TreeObject(e.Hash)
 			if err != nil {
 				return fmt.Errorf("nicht lesbarer Unterbaum %q: %w", full, err)
 			}
-			if err := walkTree(repo, sub, full, out); err != nil {
+			if err := walkEntries(repo, sub, full, visit); err != nil {
 				return err
 			}
-		case filemode.Regular, filemode.Executable, filemode.Symlink:
-			*out = append(*out, full)
+		case isFileMode(e.Mode):
+			visit(full, e)
 		}
 	}
 	return nil
+}
+
+// isFileMode meldet die drei Arten, die als Datei zählen: regulär, ausführbar,
+// Symlink. Ein Verzeichnis und ein Gitlink zählen nicht.
+func isFileMode(m filemode.FileMode) bool {
+	return m == filemode.Regular || m == filemode.Executable || m == filemode.Symlink
+}
+
+func joinPath(prefix, name string) string {
+	if prefix == "" {
+		return name
+	}
+	return prefix + "/" + name
 }
 
 // CommitMessages liefert die rohen Messages der Nicht-Merge-Commits der Range
@@ -520,4 +539,477 @@ func (a *Adapter) isAncestor(base, head plumbing.Hash) (bool, error) {
 		stack = append(stack, c.ParentHashes...)
 	}
 	return false, nil
+}
+
+// Renames liefert die Zuordnung Quelle → Ende der Umbenennungen, die an
+// Link-Zielen teilnehmen (driven.VCS.Renames, DC-FA-VCS-001.a Schritt 2,
+// ADR-0115). Eine Umbenennung ist ein Schritt, in dem ein Pfad verschwindet und
+// ein anderer mit gleichem Eintrag erscheint; die Bibliotheks-Erkennung
+// bleibt ungenutzt.
+func (a *Adapter) Renames(base, head string) (map[string]string, error) {
+	if head == driven.IndexRef {
+		return a.stagedRenames(base)
+	}
+	return a.rangeRenames(base, head)
+}
+
+// fileEntry ist, was die Erkennung vergleicht: Blob-Kennung und Art (Datei
+// oder Symlink); das Ausführbar-Bit zählt nicht.
+type fileEntry struct {
+	hash    plumbing.Hash
+	symlink bool
+}
+
+func newFileEntry(e object.TreeEntry) fileEntry {
+	return fileEntry{hash: e.Hash, symlink: e.Mode == filemode.Symlink}
+}
+
+// stepEvents sind die Pfad-Ereignisse eines Schritts: ein verschwundener Pfad
+// trägt sein Ende (leer: ohne Ende, gelöscht), ein neuer Pfad steht in created.
+// Ein Pfad, der vor und nach dem Schritt als Datei besteht, hat kein Ereignis.
+type stepEvents struct {
+	gone    map[string]string
+	created map[string]bool
+}
+
+// eventsOf bildet die Ereignisse aus den verschwundenen und den neuen Pfaden
+// eines Schritts: A → B nur, wenn genau ein verschwundener und genau ein neuer
+// Pfad den Eintrag tragen.
+func eventsOf(gone, added map[string]fileEntry) stepEvents {
+	goneBy, addedBy := groupByEntry(gone), groupByEntry(added)
+	ev := stepEvents{gone: make(map[string]string, len(gone)), created: make(map[string]bool, len(added))}
+	for p, e := range gone {
+		ev.gone[p] = ""
+		if g, n := goneBy[e], addedBy[e]; len(g) == 1 && len(n) == 1 {
+			ev.gone[p] = n[0]
+		}
+	}
+	for q := range added {
+		ev.created[q] = true
+	}
+	return ev
+}
+
+func groupByEntry(paths map[string]fileEntry) map[fileEntry][]string {
+	out := make(map[fileEntry][]string, len(paths))
+	for p, e := range paths {
+		out[e] = append(out[e], p)
+	}
+	return out
+}
+
+// lineSet fasst zusammen, wo eine Quelle auf allen Abstammungslinien steht, die
+// einen Commit erreichen: unchanged — eine Linie lässt sie in jedem Schritt
+// bestehen, deleted — eine Linie lässt sie ohne Ende verschwinden, at — die
+// Pfade, an denen Linien stehen, die sie umbenannt haben.
+type lineSet struct {
+	unchanged bool
+	deleted   bool
+	at        map[string]bool
+}
+
+func (ls lineSet) with(p string) lineSet {
+	at := make(map[string]bool, len(ls.at)+1)
+	for k := range ls.at {
+		at[k] = true
+	}
+	at[p] = true
+	ls.at = at
+	return ls
+}
+
+func (ls lineSet) union(o lineSet) lineSet {
+	ls.unchanged = ls.unchanged || o.unchanged
+	ls.deleted = ls.deleted || o.deleted
+	for p := range o.at {
+		ls = ls.with(p)
+	}
+	return ls
+}
+
+// land setzt eine Linie, die vor dem Schritt am Pfad p steht, hinter den
+// Schritt; unchanged sagt, dass sie die Quelle noch nie verlassen hat. Ein Pfad,
+// den der Schritt neu anlegt, kann vorher keine Quelle getragen haben: die
+// Linie fällt weg.
+func (ls lineSet) land(p string, unchanged bool, ev stepEvents) lineSet {
+	if ev.created[p] {
+		return ls
+	}
+	to, moved := ev.gone[p]
+	switch {
+	case !moved && unchanged:
+		ls.unchanged = true
+	case !moved:
+		ls = ls.with(p)
+	case to == "":
+		ls.deleted = true
+	default:
+		ls = ls.with(to)
+	}
+	return ls
+}
+
+func (ls lineSet) step(source string, ev stepEvents) lineSet {
+	out := lineSet{deleted: ls.deleted}
+	if ls.unchanged {
+		out = out.land(source, true, ev)
+	}
+	for p := range ls.at {
+		out = out.land(p, false, ev)
+	}
+	return out
+}
+
+// lineStates ordnet jeder Quelle ihr lineSet an einem Commit zu; eine Quelle
+// ohne Eintrag steht auf jeder Linie unverändert.
+type lineStates map[string]lineSet
+
+func (s lineStates) get(source string) lineSet {
+	if ls, ok := s[source]; ok {
+		return ls
+	}
+	return lineSet{unchanged: true}
+}
+
+// advance führt die Zustände über einen Schritt fort. Neu in die Zuordnung
+// kommen nur Quellen, auf deren Pfad der Schritt ein Ereignis hat.
+func advance(parent lineStates, ev stepEvents) lineStates {
+	if len(ev.gone) == 0 && len(ev.created) == 0 {
+		return parent
+	}
+	out := make(lineStates, len(parent))
+	for source, ls := range parent {
+		out[source] = ls.step(source, ev)
+	}
+	touch := func(p string) {
+		if _, ok := parent[p]; !ok {
+			out[p] = parent.get(p).step(p, ev)
+		}
+	}
+	for p := range ev.gone {
+		touch(p)
+	}
+	for p := range ev.created {
+		touch(p)
+	}
+	return out
+}
+
+// mergeStates vereint die Zustände der Eltern-Commits eines Merges; ein
+// Merge-Commit trägt selbst keine Umbenennung bei.
+func mergeStates(parents []lineStates) lineStates {
+	sources := map[string]bool{}
+	for _, p := range parents {
+		for source := range p {
+			sources[source] = true
+		}
+	}
+	out := make(lineStates, len(sources))
+	for source := range sources {
+		var acc lineSet
+		for _, p := range parents {
+			acc = acc.union(p.get(source))
+		}
+		out[source] = acc
+	}
+	return out
+}
+
+// finalRenames filtert die Zustände an HEAD auf die teilnehmenden
+// Umbenennungen (ADR-0115 Entscheidung 9): die Quelle liegt in BASE, genau ein
+// Ende und keine Linie ohne Ende, das Ende liegt in HEAD und nicht in BASE und
+// ist Ende keiner zweiten Quelle.
+func finalRenames(states lineStates, baseSet, headSet map[string]bool) map[string]string {
+	ends := map[string]string{}
+	count := map[string]int{}
+	for source, ls := range states {
+		if !baseSet[source] || ls.deleted || len(ls.at) != 1 {
+			continue
+		}
+		for end := range ls.at {
+			if headSet[end] && !baseSet[end] {
+				ends[source] = end
+				count[end]++
+			}
+		}
+	}
+	out := make(map[string]string, len(ends))
+	for source, end := range ends {
+		if count[end] == 1 {
+			out[source] = end
+		}
+	}
+	return out
+}
+
+func entryIndex(t *object.Tree) map[string]object.TreeEntry {
+	out := make(map[string]object.TreeEntry, len(t.Entries))
+	for _, e := range t.Entries {
+		out[e.Name] = e
+	}
+	return out
+}
+
+// diffFiles sammelt die Datei-Pfade, die zwischen left und right verschwinden
+// (gone) oder entstehen (added). Ein Teilbaum gleicher Kennung auf beiden
+// Seiten bleibt ungelesen; jeder andere Unterbaum wird gelesen, und ein
+// unlesbarer ist ein Fehler — kein Diff-Walker, der ihn als Ende der Aufzählung
+// liest (DC-FA-VCS-001.a Schritt 2).
+func diffFiles(repo *gogit.Repository, left, right *object.Tree, prefix string, gone, added map[string]fileEntry) error {
+	l, r := entryIndex(left), entryIndex(right)
+	for _, name := range entryNames(l, r) {
+		le, lok := l[name]
+		re, rok := r[name]
+		pair := entryPair{left: le, right: re, hasLeft: lok, hasRight: rok}
+		if err := diffEntry(repo, pair, joinPath(prefix, name), gone, added); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// entryNames liefert die Namen beider Seiten, sortiert und ohne Doppelte.
+func entryNames(l, r map[string]object.TreeEntry) []string {
+	names := make([]string, 0, len(l)+len(r))
+	for n := range l {
+		names = append(names, n)
+	}
+	for n := range r {
+		if _, ok := l[n]; !ok {
+			names = append(names, n)
+		}
+	}
+	sort.Strings(names)
+	return names
+}
+
+// entryPair sind die Einträge eines Namens auf beiden Seiten eines Schritts.
+type entryPair struct {
+	left, right       object.TreeEntry
+	hasLeft, hasRight bool
+}
+
+func diffEntry(repo *gogit.Repository, p entryPair, full string, gone, added map[string]fileEntry) error {
+	if p.hasLeft && p.hasRight && p.left.Mode == filemode.Dir && p.right.Mode == filemode.Dir {
+		if p.left.Hash == p.right.Hash {
+			return nil
+		}
+		return diffSubtrees(repo, p.left.Hash, p.right.Hash, full, gone, added)
+	}
+	if p.hasLeft {
+		if err := collectSide(repo, p.left, full, p.hasRight && isFileMode(p.right.Mode), gone); err != nil {
+			return err
+		}
+	}
+	if p.hasRight {
+		return collectSide(repo, p.right, full, p.hasLeft && isFileMode(p.left.Mode), added)
+	}
+	return nil
+}
+
+func diffSubtrees(repo *gogit.Repository, left, right plumbing.Hash, full string, gone, added map[string]fileEntry) error {
+	lt, err := repo.TreeObject(left)
+	if err != nil {
+		return fmt.Errorf("nicht lesbarer Unterbaum %q: %w", full, err)
+	}
+	rt, err := repo.TreeObject(right)
+	if err != nil {
+		return fmt.Errorf("nicht lesbarer Unterbaum %q: %w", full, err)
+	}
+	return diffFiles(repo, lt, rt, full, gone, added)
+}
+
+// collectSide trägt die Datei-Pfade eines Eintrags in out ein. otherIsFile sagt,
+// dass die Gegenseite am selben Pfad eine Datei trägt: dann besteht der Pfad
+// fort, auch mit geändertem Inhalt oder geänderter Art.
+func collectSide(repo *gogit.Repository, e object.TreeEntry, full string, otherIsFile bool, out map[string]fileEntry) error {
+	switch {
+	case e.Mode == filemode.Dir:
+		sub, err := repo.TreeObject(e.Hash)
+		if err != nil {
+			return fmt.Errorf("nicht lesbarer Unterbaum %q: %w", full, err)
+		}
+		return walkEntries(repo, sub, full, func(p string, fe object.TreeEntry) {
+			out[p] = newFileEntry(fe)
+		})
+	case isFileMode(e.Mode) && !otherIsFile:
+		out[full] = newFileEntry(e)
+	}
+	return nil
+}
+
+// rangeWalk hält die Commits der Range (von HEAD erreichbar, von BASE nicht),
+// Eltern vor Kindern.
+type rangeWalk struct {
+	repo     *gogit.Repository
+	excluded map[plumbing.Hash]bool
+	commits  map[plumbing.Hash]*object.Commit
+	order    []plumbing.Hash
+}
+
+func (w *rangeWalk) visit(h plumbing.Hash) error {
+	if w.excluded[h] || w.commits[h] != nil {
+		return nil
+	}
+	c, err := w.repo.CommitObject(h)
+	if err != nil {
+		return fmt.Errorf("commit %s nicht lesbar: %w", h, err)
+	}
+	w.commits[h] = c
+	for _, p := range c.ParentHashes {
+		if err := w.visit(p); err != nil {
+			return err
+		}
+	}
+	w.order = append(w.order, h)
+	return nil
+}
+
+// step liest den Schritt eines Commits mit genau einem Eltern-Commit: die
+// Bäume beider, auch wenn der Eltern-Commit vor BASE liegt.
+func (w *rangeWalk) step(c *object.Commit) (stepEvents, error) {
+	parent, err := w.repo.CommitObject(c.ParentHashes[0])
+	if err != nil {
+		return stepEvents{}, fmt.Errorf("commit %s nicht lesbar: %w", c.ParentHashes[0], err)
+	}
+	pt, err := parent.Tree()
+	if err != nil {
+		return stepEvents{}, fmt.Errorf("baum von commit %s nicht lesbar: %w", parent.Hash, err)
+	}
+	ct, err := c.Tree()
+	if err != nil {
+		return stepEvents{}, fmt.Errorf("baum von commit %s nicht lesbar: %w", c.Hash, err)
+	}
+	gone, added := map[string]fileEntry{}, map[string]fileEntry{}
+	if err := diffFiles(w.repo, pt, ct, "", gone, added); err != nil {
+		return stepEvents{}, fmt.Errorf("schritt %s nicht lesbar: %w", c.Hash, err)
+	}
+	return eventsOf(gone, added), nil
+}
+
+func (w *rangeWalk) statesOf(h plumbing.Hash, states map[plumbing.Hash]lineStates) (lineStates, error) {
+	c := w.commits[h]
+	switch len(c.ParentHashes) {
+	case 0:
+		return nil, nil
+	case 1:
+		ev, err := w.step(c)
+		if err != nil {
+			return nil, err
+		}
+		return advance(states[c.ParentHashes[0]], ev), nil
+	}
+	parents := make([]lineStates, len(c.ParentHashes))
+	for i, p := range c.ParentHashes {
+		parents[i] = states[p]
+	}
+	return mergeStates(parents), nil
+}
+
+func (a *Adapter) rangeRenames(base, head string) (map[string]string, error) {
+	baseHash, err := a.repo.ResolveRevision(plumbing.Revision(base))
+	if err != nil {
+		return nil, fmt.Errorf("Range-Basis %q nicht auflösbar: %w", base, err)
+	}
+	headHash, err := a.repo.ResolveRevision(plumbing.Revision(head))
+	if err != nil {
+		return nil, fmt.Errorf("Range-Spitze %q nicht auflösbar: %w", head, err)
+	}
+	isAnc, err := a.isAncestor(*baseHash, *headHash)
+	if err != nil {
+		return nil, fmt.Errorf("historie von %q nicht lesbar: %w", head, err)
+	}
+	if !isAnc {
+		return map[string]string{}, nil
+	}
+	excluded, err := a.ancestors(*baseHash)
+	if err != nil {
+		return nil, fmt.Errorf("Range-Basis-Vorfahren nicht lesbar: %w", err)
+	}
+	w := &rangeWalk{repo: a.repo, excluded: excluded, commits: map[plumbing.Hash]*object.Commit{}}
+	if err := w.visit(*headHash); err != nil {
+		return nil, err
+	}
+	states := make(map[plumbing.Hash]lineStates, len(w.order))
+	for _, h := range w.order {
+		st, err := w.statesOf(h, states)
+		if err != nil {
+			return nil, err
+		}
+		states[h] = st
+	}
+	baseSet, err := a.pathSet(base)
+	if err != nil {
+		return nil, err
+	}
+	headSet, err := a.pathSet(head)
+	if err != nil {
+		return nil, err
+	}
+	return finalRenames(states[*headHash], baseSet, headSet), nil
+}
+
+func (a *Adapter) pathSet(ref string) (map[string]bool, error) {
+	paths, err := a.pathsAt(ref)
+	if err != nil {
+		return nil, err
+	}
+	return keySet(paths), nil
+}
+
+func keySet(paths []string) map[string]bool {
+	out := make(map[string]bool, len(paths))
+	for _, p := range paths {
+		out[p] = true
+	}
+	return out
+}
+
+// stagedRenames liest den einen Schritt HEAD → Index; „BASE“ der Bedingungen ist
+// HEAD. Ohne HEAD (erster Commit) ist die Zuordnung leer.
+func (a *Adapter) stagedRenames(base string) (map[string]string, error) {
+	if !a.hasHead() {
+		return map[string]string{}, nil
+	}
+	tree, err := a.treeAt(base)
+	if err != nil {
+		return nil, fmt.Errorf("staged-Basis %q nicht auflösbar: %w", base, err)
+	}
+	left := map[string]fileEntry{}
+	if err := walkEntries(a.repo, tree, "", func(p string, e object.TreeEntry) {
+		left[p] = newFileEntry(e)
+	}); err != nil {
+		return nil, fmt.Errorf("nicht vollständig lesbarer Tree zu %q: %w", base, err)
+	}
+	idx, err := a.repo.Storer.Index()
+	if err != nil {
+		return nil, fmt.Errorf("git-Index nicht lesbar: %w", err)
+	}
+	right := map[string]fileEntry{}
+	for _, e := range idx.Entries {
+		if isFileMode(e.Mode) {
+			right[e.Name] = fileEntry{hash: e.Hash, symlink: e.Mode == filemode.Symlink}
+		}
+	}
+	gone, added := map[string]fileEntry{}, map[string]fileEntry{}
+	for p, e := range left {
+		if _, ok := right[p]; !ok {
+			gone[p] = e
+		}
+	}
+	for p, e := range right {
+		if _, ok := left[p]; !ok {
+			added[p] = e
+		}
+	}
+	states := advance(nil, eventsOf(gone, added))
+	return finalRenames(states, pathKeys(left), pathKeys(right)), nil
+}
+
+func pathKeys(m map[string]fileEntry) map[string]bool {
+	out := make(map[string]bool, len(m))
+	for p := range m {
+		out[p] = true
+	}
+	return out
 }

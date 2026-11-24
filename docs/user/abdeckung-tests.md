@@ -37,6 +37,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-LINK-001`](../../spec/lastenheft.md) | `TestDecode_ResolveFromFehler` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
 | [`DC-FA-SRC-001`](../../spec/lastenheft.md) | `TestDecode_SourcesFailClosed` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
 | [`DC-FA-SRC-001`](../../spec/lastenheft.md) | `TestDecode_SourcesHappy` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
+| [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestDecode_VCSFollowRenames` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
 | [`DC-FA-VER-001`](../../spec/lastenheft.md) | `TestDecode_Versions` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
 | [`DC-FA-VER-001`](../../spec/lastenheft.md) | `TestDecode_VersionsFehler` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
 | [`DC-FA-CONF-002`](../../spec/lastenheft.md), [`DC-FA-VER-001`](../../spec/lastenheft.md) | `TestDecode_VersionsScope` | [`internal/adapter/driven/configyaml/configyaml_test.go`](../../internal/adapter/driven/configyaml/configyaml_test.go) |
@@ -64,6 +65,10 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-XREF-001`](../../spec/lastenheft.md) | `TestDecode_CrossConsistencyHappy` | [`internal/adapter/driven/configyaml/trace_cross_test.go`](../../internal/adapter/driven/configyaml/trace_cross_test.go) |
 | [`DC-QA-02`](../../spec/lastenheft.md) | `TestDecode_CrossConsistencyOhneBlock` | [`internal/adapter/driven/configyaml/trace_cross_test.go`](../../internal/adapter/driven/configyaml/trace_cross_test.go) |
 | [`DC-QA-02`](../../spec/lastenheft.md) | `TestDecode_RequirementsObjectFormUnchanged` | [`internal/adapter/driven/configyaml/trace_requirements_list_test.go`](../../internal/adapter/driven/configyaml/trace_requirements_list_test.go) |
+| [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestRenamesFehlerFormen` | [`internal/adapter/driven/git/git_renames_test.go`](../../internal/adapter/driven/git/git_renames_test.go) |
+| [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestRenamesLinear` | [`internal/adapter/driven/git/git_renames_test.go`](../../internal/adapter/driven/git/git_renames_test.go) |
+| [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestRenamesStaged` | [`internal/adapter/driven/git/git_renames_test.go`](../../internal/adapter/driven/git/git_renames_test.go) |
+| [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestRenamesUnlesbaresObjekt` | [`internal/adapter/driven/git/git_renames_test.go`](../../internal/adapter/driven/git/git_renames_test.go) |
 | [`DC-FA-VCS-002`](../../spec/lastenheft.md) | `TestAllPathsLeereRange` | [`internal/adapter/driven/git/git_test.go`](../../internal/adapter/driven/git/git_test.go) |
 | [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestAllPathsPureRenameYieldsDelete` | [`internal/adapter/driven/git/git_test.go`](../../internal/adapter/driven/git/git_test.go) |
 | [`DC-FA-COMMITS-001`](../../spec/lastenheft.md) | `TestCommitMessages` | [`internal/adapter/driven/git/git_test.go`](../../internal/adapter/driven/git/git_test.go) |
@@ -182,6 +187,9 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-TRK-001`](../../spec/lastenheft.md) | `TestTracked_StagedZielGruen` | [`internal/adapter/driving/cli/cli_tracked_test.go`](../../internal/adapter/driving/cli/cli_tracked_test.go) |
 | [`DC-FA-CONF-001`](../../spec/lastenheft.md) | `TestTracked_UngueltigesGlobExit2` | [`internal/adapter/driving/cli/cli_tracked_test.go`](../../internal/adapter/driving/cli/cli_tracked_test.go) |
 | [`DC-FA-TRK-001`](../../spec/lastenheft.md) | `TestTracked_UntrackedZiel` | [`internal/adapter/driving/cli/cli_tracked_test.go`](../../internal/adapter/driving/cli/cli_tracked_test.go) |
+| [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestVCS_FollowRenames` | [`internal/adapter/driving/cli/cli_vcs_renames_test.go`](../../internal/adapter/driving/cli/cli_vcs_renames_test.go) |
+| [`DC-FA-VCS-001`](../../spec/lastenheft.md), [`DC-QA-02`](../../spec/lastenheft.md) | `TestVCS_FollowRenamesAusByteIdentisch` | [`internal/adapter/driving/cli/cli_vcs_renames_test.go`](../../internal/adapter/driving/cli/cli_vcs_renames_test.go) |
+| [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestVCS_FollowRenamesFailClosed` | [`internal/adapter/driving/cli/cli_vcs_renames_test.go`](../../internal/adapter/driving/cli/cli_vcs_renames_test.go) |
 | [`DC-FA-VER-001`](../../spec/lastenheft.md), [`DC-QA-02`](../../spec/lastenheft.md) | `TestVersionsPatterns_KurzformByteIdentisch` | [`internal/adapter/driving/cli/cli_versions_patterns_test.go`](../../internal/adapter/driving/cli/cli_versions_patterns_test.go) |
 | [`DC-FA-VER-001`](../../spec/lastenheft.md) | `TestVersionsPatterns_MischformExit2` | [`internal/adapter/driving/cli/cli_versions_patterns_test.go`](../../internal/adapter/driving/cli/cli_versions_patterns_test.go) |
 | [`DC-FA-CLI-005`](../../spec/lastenheft.md), [`DC-FA-VER-001`](../../spec/lastenheft.md) | `TestVersionsPatterns_VorlagenBloeckeEinkommentierbar` | [`internal/adapter/driving/cli/cli_versions_patterns_test.go`](../../internal/adapter/driving/cli/cli_versions_patterns_test.go) |
@@ -413,6 +421,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-STRUCT-001`](../../spec/lastenheft.md) | `TestStructureHeadingSectionsEach` | [`internal/hexagon/core/rules/structure_test.go`](../../internal/hexagon/core/rules/structure_test.go) |
 | [`DC-FA-TGT-001`](../../spec/lastenheft.md) | `TestTargetsTabellenzeileImFenceDokumentiertNicht` | [`internal/hexagon/core/rules/targets_test.go`](../../internal/hexagon/core/rules/targets_test.go) |
 | [`DC-FA-LINK-002`](../../spec/lastenheft.md) | `TestCheckTracked_SymlinkZieleUeberspringen` | [`internal/hexagon/core/rules/tracked_test.go`](../../internal/hexagon/core/rules/tracked_test.go) |
+| [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestVCSFollowRenames` | [`internal/hexagon/core/rules/vcs_follow_renames_test.go`](../../internal/hexagon/core/rules/vcs_follow_renames_test.go) |
 | [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestVCSFailClosed` | [`internal/hexagon/core/rules/vcs_test.go`](../../internal/hexagon/core/rules/vcs_test.go) |
 | [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestVCSStatusImFenceZaehltNicht` | [`internal/hexagon/core/rules/vcs_test.go`](../../internal/hexagon/core/rules/vcs_test.go) |
 | [`DC-FA-VER-001`](../../spec/lastenheft.md) | `TestVersionsAusgabeFolgtDerSortierung` | [`internal/hexagon/core/rules/versions_test.go`](../../internal/hexagon/core/rules/versions_test.go) |

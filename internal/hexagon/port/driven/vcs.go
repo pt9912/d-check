@@ -58,6 +58,18 @@ type VCS interface {
 	// head existiert, steht in LineStat.Missing. Ein nicht auflösbares Ref oder
 	// eine Basis, die kein Vorfahr von head ist, ⇒ Fehler (fail-closed, Exit 2).
 	LineChanges(base, head string, paths, excluded []string) (LineStat, error)
+	// Renames liefert für die Range base..head (head == IndexRef ⇒ HEAD gegen den
+	// Index) die Zuordnung Quelle → Ende der Umbenennungen, die an Link-Zielen
+	// teilnehmen (DC-FA-VCS-001.a Schritt 2, ADR-0115 Entscheidung 13): Pfade
+	// '/'-getrennt und repo-relativ; Kette, Mehrdeutigkeit und die Bedingungen
+	// an das Ende (in head, nicht in base, Ende keiner zweiten Quelle) sind
+	// bereits entschieden. Invariante: keine Quelle ist zugleich Ende — jede
+	// Quelle liegt in base, kein Ende. Eine Basis, die kein Vorfahr von head ist,
+	// und --staged ohne HEAD liefern eine leere Zuordnung, keinen Fehler; ein
+	// Commit oder Baum, den die Erkennung braucht und nicht lesen kann, ist ein
+	// Fehler (fail-closed, Exit 2). Gerufen wird die Methode nur mit
+	// vcs.follow-renames.
+	Renames(base, head string) (map[string]string, error)
 }
 
 // LineStat ist das Ergebnis von VCS.LineChanges: die Zeilen-Summe sowie die

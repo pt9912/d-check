@@ -366,6 +366,11 @@ type VCSConfig struct {
 	// bleibt eine. Was die Erkennung normiert und wo sie endet, legt
 	// DC-FA-VCS-001.a Schritt 4 fest.
 	IgnoreLinkTargets bool
+	// FollowRenames liest die Umbenennungen der Range aus der git-Historie und
+	// setzt ein Link-Ziel über sie gleich: ein Nachzug auf den neuen Namen einer
+	// umbenannten Datei ist keine Core-Drift. Unabhängig von IgnoreLinkTargets;
+	// Verfahren und Grenzen legt DC-FA-VCS-001.a Schritt 2 und 4 fest.
+	FollowRenames bool
 }
 
 // CommitsConfig sind die Parameter des Moduls commits (DC-FA-COMMITS-001):

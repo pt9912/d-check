@@ -1444,6 +1444,57 @@ func TestDecode_VCSIgnoreLinkTargets(t *testing.T) {
 	}
 }
 
+// vcs.follow-renames wird wie vcs.ignore-link-targets gelesen: derselbe Wert
+// ergibt denselben Zustand, ein falscher Typ ist ein Fehler (Exit 2), ein
+// Schlüssel ohne Wert gilt als abwesend (DC-FA-VCS-001.a Schritt 2).
+func TestDecode_VCSFollowRenames(t *testing.T) {
+	base := "vcs:\n  paths: ['docs/adr/*.md']\n  immutable-when: '^Accepted'\n"
+	flag := func(cfg model.Config, key string) bool {
+		if key == "follow-renames" {
+			return cfg.VCS.FollowRenames
+		}
+		return cfg.VCS.IgnoreLinkTargets
+	}
+	for _, c := range []struct {
+		name, value string
+		want        bool
+		wantErr     bool
+	}{
+		{"wahr", "true", true, false},
+		{"falsch", "false", false, false},
+		{"ohne wert", "", false, false},
+		{"null", "~", false, false},
+		{"zeichenkette", "'ja'", false, true},
+		{"liste", "[true]", false, true},
+		{"zahl", "1", false, true},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			var results [2]string
+			for i, key := range []string{"ignore-link-targets", "follow-renames"} {
+				cfg, err := configyaml.Decode([]byte(base + "  " + key + ": " + c.value + "\n"))
+				if (err != nil) != c.wantErr {
+					t.Fatalf("%s: Fehler = %v, erwartet Fehler: %v", key, err, c.wantErr)
+				}
+				if err == nil && flag(cfg, key) != c.want {
+					t.Fatalf("%s = %v, want %v", key, flag(cfg, key), c.want)
+				}
+				results[i] = fmt.Sprintf("%v/%v", err != nil, err == nil && flag(cfg, key))
+			}
+			if results[0] != results[1] {
+				t.Fatalf("beide Schlüssel müssen gleich gelesen werden: ignore-link-targets %s, follow-renames %s", results[0], results[1])
+			}
+		})
+	}
+	cfg, err := configyaml.Decode([]byte(base + "  follow-renames: true\n"))
+	if err != nil || !cfg.VCS.FollowRenames || cfg.VCS.IgnoreLinkTargets {
+		t.Fatalf("follow-renames allein nicht durchgereicht: %+v, %v", cfg.VCS, err)
+	}
+	cfg, err = configyaml.Decode([]byte(base))
+	if err != nil || cfg.VCS.FollowRenames {
+		t.Fatalf("ohne den Schlüssel muss er aus sein: %+v, %v", cfg.VCS, err)
+	}
+}
+
 // skip-allows-empty reicht in allen drei Modulen in den Kern durch; ohne
 // skip-pattern ist es eine halbe Aktivierung und bricht mit dem Schlüssel in
 // der Meldung ab.
