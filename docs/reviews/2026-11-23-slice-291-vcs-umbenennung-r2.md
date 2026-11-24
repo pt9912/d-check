@@ -186,7 +186,7 @@ ADR im Stand `746d1863` nebeneinander.
 - **Kategorie:** LOW
 - **Quelle:** [`AGENTS.md`](../../AGENTS.md) §6 Schritt 4; `v6.18.1` · `regelwerk/modul-08-agentenrollen.md`
   §Rollen-Sequenz für einen Slice („keine Rolle springt rückwärts … ohne Übergabe-Artefakt“)
-- **Pfad:** `docs/plan/planning/in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md` · „Neu kommen drei Kriterien hinzu“ (Z. 288)
+- **Pfad:** `docs/plan/planning/done/slice-291-vcs-umbenennung-anforderung-und-adr.md` · „Neu kommen drei Kriterien hinzu“ (Z. 288)
 - **Befund:** `18157ed7` fügt „Negative (Merge-Seite löscht und legt neu an)“ hinzu und schränkt die
   Merge-Grenze auf das Überschreiben an Ort und Stelle ein; davor steht kein Plan-Nachtrag, der Plan
   zählt weiter drei. Die „offene Frage des Implementers“, auf die `6295c2d4` antwortet, liegt in keinem

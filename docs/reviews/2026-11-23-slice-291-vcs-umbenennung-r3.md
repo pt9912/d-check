@@ -70,7 +70,7 @@ mit dem Schlüssel geht auf eine teilnehmende Umbenennung zurück.
 - **Kategorie:** MEDIUM
 - **Quelle:** [`AGENTS.md`](../../AGENTS.md) §5 Regel 15; Prüffrage 8 und 18;
   [ADR-0115](../plan/adr/0115-vcs-folgt-umbenennung.md) Entscheidung 9
-- **Pfad:** `docs/plan/planning/in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md` ·
+- **Pfad:** `docs/plan/planning/done/slice-291-vcs-umbenennung-anforderung-und-adr.md` ·
   „mit beiden Schaltern fällt ein Ziel, dessen Pfad in BASE lag“ (Z. 205–209);
   `docs/plan/planning/welle-96-vcs-folgt-umbenennung.md` · „ist Entscheidung 9 an einer“ (Z. 113–117);
   Botschaft `7a57fa1e` · „faellt mit beiden Schaltern ein Ziel, dessen Pfad in BASE lag und Ende einer

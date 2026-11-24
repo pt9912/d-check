@@ -2,7 +2,7 @@
 
 **Rolle:** Architect (Modul 8), frischer Kontext, **vor** Code. Rolleninhaber: pt9912.
 **Gegenstand:** [welle-96](../plan/planning/welle-96-vcs-folgt-umbenennung.md) und ihre zwei Slice-Pläne
-[slice-291](../plan/planning/in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md) (Entscheide 1–8 in §3,
+[slice-291](../plan/planning/done/slice-291-vcs-umbenennung-anforderung-und-adr.md) (Entscheide 1–8 in §3,
 vom Auftraggeber am 2026-11-23 mit den Empfehlungen bestätigt) und
 [slice-292](../plan/planning/open/slice-292-vcs-umbenennung-modulkern.md).
 **Anlass:** [Issue #18](https://github.com/pt9912/d-check/issues/18) — ein Link-Nachzug in einer
@@ -34,7 +34,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
 ### F-1 — Das Lastenheft wird an mehr Stellen geändert, als der Plan als berührt führt — **V1**
 
 - slice-291 nennt als berührt Absatz „Pfad-Nachzug (opt-in)“, Akzeptanzkriterien, Version und Historie
-  ([slice-291](../plan/planning/in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md) Z. 21–25). Nicht
+  ([slice-291](../plan/planning/done/slice-291-vcs-umbenennung-anforderung-und-adr.md) Z. 21–25). Nicht
   geführt ist der Out-of-Scope-Satz von
   [`DC-FA-VCS-001`](../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in):
   „Umbenennungs-Erkennung über Inhalts-Ähnlichkeit statt Pfad (eine immutable Datei behält ihren Pfad)“
@@ -58,7 +58,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
 ### F-2 — Entscheid 5 setzt nur auf der BASE-Seite gleich; das macht unveränderte ADRs rot — **V2** (Entscheidung 9)
 
 - Entscheid 5: „Ein Link-Ziel, das in BASE auf den Pfad A auflöst, gilt als Ziel auf B“
-  ([slice-291](../plan/planning/in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md) Z. 153–155).
+  ([slice-291](../plan/planning/done/slice-291-vcs-umbenennung-anforderung-und-adr.md) Z. 153–155).
 - Am Gegenstand: das Modul vergleicht den Core **jeder** geschützten Datei, die in beiden Ständen liegt,
   nicht nur der geänderten ([vcs.go](../../internal/hexagon/core/rules/vcs.go) Z. 58–66), mit **einer**
   Auflösungs-Funktion für beide Fassungen (Z. 130–132). Wird nur die BASE-Fassung gleichgesetzt, ergibt

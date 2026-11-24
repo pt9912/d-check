@@ -3,7 +3,7 @@
 - **Rolle:** Verifier (Modul 11) — DoD, Plan und Spec gegen den gelieferten Text. Die Reviews R1–R4
   dienten nur als Kontext; Zuordnungen und Zählungen sind selbst gemacht.
 - **Gegenstand:** Plan
-  [`slice-291`](../plan/planning/in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md) §1, §2,
+  [`slice-291`](../plan/planning/done/slice-291-vcs-umbenennung-anforderung-und-adr.md) §1, §2,
   §3 (Entscheide 1–14, Plan-Nachtrag, Plan-Änderungen nach R1–R3) und §6;
   [`DC-FA-VCS-001`](../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
   (Lastenheft 0.114.3),

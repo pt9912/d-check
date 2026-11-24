@@ -76,7 +76,7 @@ des Endes normiert. Das Ergebnis, auf dem M-1 und L-1 aufbauen, zeigt die Tabell
 - **Kategorie:** MEDIUM
 - **Quelle:** [`AGENTS.md`](../../AGENTS.md) §5 Regel 15; Prüffrage 8;
   [ADR-0115](../plan/adr/0115-vcs-folgt-umbenennung.md) Entscheidung 9 und §Konsequenzen „Grenze“
-- **Pfad:** `docs/plan/planning/in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md` ·
+- **Pfad:** `docs/plan/planning/done/slice-291-vcs-umbenennung-anforderung-und-adr.md` ·
   „dort gilt das Ergebnis wie ohne den Schalter, nicht Drift“ und „C nimmt nicht teil, auch mit
   `follow-renames` allein“ (Z. 205–212)
 - **Befund:** Bei der Rotation hängt der Plan „auch mit `follow-renames` allein“ an C. Mit dem Schlüssel
