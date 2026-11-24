@@ -1676,7 +1676,7 @@ modules: [links, anchors]      # linelength läuft über --enable, nicht über m
 linelength:
   max-chars: 120
   exempt-code-blocks: true     # Fenced-Code samt Zäunen nicht messen
-  exempt-tables: true          # Zeilen, die mit | beginnen, nicht messen
+  exempt-tables: true          # Zeilen mit | (bis drei Leerzeichen davor) nicht messen
   exempt-unbreakable: true     # Zeile mit einem Wort über der Grenze nicht melden
   exempt-paths: [CHANGELOG.md] # Dateien ganz ohne Prüfung (Glob wie scan.ignore)
 ```
@@ -1696,22 +1696,35 @@ docs/a.md:12	max-chars=120	line-chars-exceeded	Zeile hat 131 Zeichen, erlaubt si
 linelength: 1 Datei(en), 40 Zeile(n) geprüft, 2 davon mit einem Wort über der Grenze ausgenommen
 ```
 
-**Sieben Dinge, die dabei zählen:**
+**Acht Dinge, die dabei zählen:**
 
 - **Gezählt werden Codepunkte der rohen Zeile.** Ein Umlaut und ein Emoji zählen je ein Zeichen,
   ein Tab eines, eine ungültige UTF-8-Folge je Byte eines. Einrückung, Inline-Code, Link-Ziele,
   HTML und Kommentare zählen mit. Ein `\r` am Zeilenende gehört nicht zur Zeile. Eine Zeile
   **genau** auf der Grenze ist befundfrei.
 - **Die drei Ausnahmen.** (a) `exempt-code-blocks`: Zeilen in Fenced-Code samt der Zäune. (b)
-  `exempt-tables`: Zeilen außerhalb von Fenced-Code, die mit `|` beginnen — eine Trennzeile wird
-  nicht verlangt. (c) `exempt-unbreakable`: eine überlange Zeile, die ein **Wort** trägt, das
+  `exempt-tables`: Zeilen außerhalb von Fenced-Code, die nach null bis drei Leerzeichen (U+0020)
+  mit `|` beginnen — eine Trennzeile wird nicht verlangt. (c) `exempt-unbreakable`: eine überlange Zeile, die ein **Wort** trägt, das
   allein länger als die Grenze ist (eine lange URL, ein langer Pfad); ein Wort ist eine Folge
   ohne Space und Tab. Die ganze Zeile ist dann ausgenommen, auch mit umbrechbarem Text davor.
-- **Fenced-Code und Tabellenzeile kennt das Modul so, wie es die übrigen Module kennen.** Jede
-  Zeile, die nach Einrückung mit ```` ``` ```` oder `~~~` beginnt, schaltet um — eine `~~~`-Zeile
-  schließt deshalb auch einen Backtick-Block. Ein eingerückter Code-Block ohne Zaun, ein Zaun
-  hinter `>`, eine eingerückte `|`-Zeile, eine Zeile `> |` und eine Tabellenzeile ohne führende
-  Pipe werden gemessen.
+- **Fenced-Code kennt das Modul so, wie es die übrigen Module kennen.** Jede Zeile, die nach
+  Einrückung mit ```` ``` ```` oder `~~~` beginnt, schaltet um — eine `~~~`-Zeile schließt
+  deshalb auch einen Backtick-Block. Ein eingerückter Code-Block ohne Zaun und ein Zaun hinter
+  `>` werden gemessen.
+- **Eine Tabellenzeile fragt das Modul anders als `targets`, `planning.waves` und `structure`:**
+  nicht „deklariert die Zeile etwas ab Spalte 0“, sondern „ist die Zeile Teil einer Tabelle und
+  deshalb nicht umbrechbar“. Ausgenommen ist deshalb eine Zeile mit `|` in Spalte 0 und eine mit
+  einem bis drei Leerzeichen (U+0020) davor, etwa die Tabelle unter einem Listenpunkt `1. `;
+  jene drei Module lesen eine eingerückte Zeile weiter nicht als Tabellenzeile. **Gemessen
+  werden:** eine Zeile mit vier und mehr Leerzeichen, mit einem Tab oder mit einem geschützten
+  Leerzeichen (U+00A0) vor dem `|`, eine Zeile `> |`, eine Zeile ohne führende Pipe (`a | b`)
+  und mit `exempt-code-blocks: false` eine `|`-Zeile im Zaun, auch eine eingerückte. Das Modul
+  kennt keinen Listenkontext: eine Tabelle auf der Zeile der Listenmarke (`- | a | b |`) beginnt
+  nicht mit Leerzeichen und `|`, und eine Tabelle unter einer Marke von vier Spalten (`10. `)
+  oder in einer verschachtelten Liste steht mit vier und mehr Leerzeichen davor — beide werden
+  gemessen. Eine Prosa-Zeile, die nach ein bis drei Leerzeichen mit `|` beginnt, ohne dass eine
+  Tabelle dasteht, ist ausgenommen, wie in Spalte 0. Eine ausgenommene Zeile zählt nicht zu den
+  geprüften Zeilen der Bezugsmenge.
 - **Ein nie geschlossener Zaun nimmt den Rest der Datei aus.** Gemeldet wird er von `spans`
   (`fence-unclosed`), nicht von `linelength`.
 - **Kein Zeilen-Marker.** `d-check:ignore` wirkt nicht; ein Marker-Kommentar verlängert seine
@@ -3132,7 +3145,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `file`      | opt-in        | Zeilen-/Byte-Obergrenzen einer **ganzen** Datei, unabhängig von Dateiart und `scan.roots`/`scan.ignore` — eigenes Modul statt einer Erweiterung von `structure`, weil jenes den **bereinigten** Abschnittstext einer Markdown-Datei zählt und `file` die **rohe** Datei jeder Art. `max-lines` zählt wie `wc -l` plus eine unvollständige Schlusszeile (dieselbe Zählung wie `codepaths`/`citations`) ⇒ `file-lines-exceeded`; `max-bytes` die rohe Byte-Länge (Fenced-/Inline-Code zählt mit) ⇒ `file-bytes-exceeded`. Mindestens eine der beiden Schwellen ist Pflicht, sonst Exit 2. Kandidaten kommen aus **eigenen** `files`-Globs (kein `scope`, wie bei `structure`), abzüglich `exempt-paths`; keine Regel trifft eine Datei ⇒ `file-no-match`. **Hermetisch** (kein git), fail-closed bei unlesbarem Baum | `file-no-match`, `file-lines-exceeded`, `file-bytes-exceeded` |
 | `metrics`   | opt-in        | Kennzahl eines Planungsdokuments (§4.26): die Marke im Block eines Plans gegen die konfigurierte ganzzahlige Formel, die Zeilen-Summe aus git (`numstat` ohne Rename-Erkennung, braucht `.git`) gegen die Marke, Ausnahme-Einträge auf einen nicht leeren Grund, Schätzung aus der Tabelle des Plans; das Plan-Verzeichnis ist ausdrücklich benannt: weder `scan.roots` noch `scan.ignore` noch die Skip-Liste gelten dafür |
 | `pinsync`   | opt-in        | Gleichheit eines Wertes an mehreren Stellen (§4.27): ein Pin trägt einen Namen und mindestens zwei Quellen (Datei und RE2-Ausdruck mit genau einer Fanggruppe), gelesen zeilenweise; Befund bei ungleichen Werten, bei keinem und bei mehr als einem Treffer; Fehler der Konfiguration, eine fehlende Quelle und ein Symlink als Quelle sind Exit 2; **hermetisch** (kein git, kein Netz); die Quellen sind ausdrücklich benannt: weder `scan.roots` noch `scan.ignore` noch die Skip-Liste gelten dafür | `pinsync-mismatch`, `pinsync-no-match`, `pinsync-ambiguous` |
-| `linelength` | opt-in      | Zeichen je Zeile in den Markdown-Dateien der Scan-Menge (§4.28; `linelength.scope`, `linelength.exempt-paths`): eine Zeile mit mehr Unicode-Codepunkten der rohen Zeile als `max-chars` ist ein Befund, genau auf der Grenze befundfrei; drei je einzeln schaltbare Ausnahmen, im Default an — Fenced-Code samt Zäunen, Zeilen, die mit `\|` beginnen, und eine Zeile mit einem Wort über der Grenze; **kein Zeilen-Marker**; ein fehlendes oder ungültiges `max-chars` ist Exit 2; **hermetisch** | `line-chars-exceeded` |
+| `linelength` | opt-in      | Zeichen je Zeile in den Markdown-Dateien der Scan-Menge (§4.28; `linelength.scope`, `linelength.exempt-paths`): eine Zeile mit mehr Unicode-Codepunkten der rohen Zeile als `max-chars` ist ein Befund, genau auf der Grenze befundfrei; drei je einzeln schaltbare Ausnahmen, im Default an — Fenced-Code samt Zäunen, Zeilen, die nach null bis drei Leerzeichen mit `\|` beginnen, und eine Zeile mit einem Wort über der Grenze; **kein Zeilen-Marker**; ein fehlendes oder ungültiges `max-chars` ist Exit 2; **hermetisch** | `line-chars-exceeded` |
 | `workflows` | opt-in        | Deklarations-Konsistenz der `uses:`-Referenzen von CI-Workflows unterhalb eines **konfigurierten** Verzeichnisses (`workflows.dir` — der Ort ist nicht verdrahtet, weil er CI-System-spezifisch ist). **Fremde** Referenz: voller 40-stelliger Commit-SHA plus Tag-Kommentar dahinter — ein Tag lässt sich umhängen, ein SHA nicht; geprüft wird die **Form**, nicht die **Gültigkeit** (das wäre Netz). **Derselbe SHA trägt dateiübergreifend überall denselben Tag-Kommentar** — ein Widerspruch meldet jede beteiligte Zeile, welcher Wert stimmt bleibt Netz. **Lokale** Referenz (`./…`): kein Pin nötig — sie löst auf denselben Commit auf wie ihr Aufrufer —, dafür zwei andere Fragen: **existiert** das Ziel, und **bekommt es die Rechte, die es verlangt?** Ein aufgerufener Workflow erhält nur, was der aufrufende **Job** selbst führt; ein Job ohne eigenes `permissions:` erbt zwar den Workflow-Kopf, kann aber nichts weitergeben, was er nicht deklariert. Stufen: `none` < `read` < `write`; ein nicht genannter Scope ist `none`, `read-all`/`write-all` setzen jeden. Die Referenzen kommen aus dem **YAML-Baum**, nicht aus einer Textsuche. **Hermetisch** (kein git, kein Netz, kein Ausführen), fail-closed bei leerer Prüfmenge und bei unlesbarem YAML. **Benannte Grenze:** das Modul liest die **Ziele** lokaler Referenzen, die es nicht scannt — dieselbe Parse-Zusage gilt dort —, und es deckt **eine** Deklarations-Klasse, nicht die Lauffähigkeit | `uses-pin-missing`, `uses-pin-untagged`, `uses-pin-tag-conflict`, `uses-local-missing`, `uses-local-perms-undeclared`, `uses-local-perms-narrow`, `workflow-unparsable` |
 | `reviews`   | opt-in        | Review-Report-Deckung: jeder `done/`-Slice mit einer Review-Zusage braucht mindestens einen Report unter `reviews-dir`. **Zusage** ist ein Checkbox-Punkt (Haken-Zustand egal), auf den `promise-pattern` passt — Default: die Phrase „unabhängiger Review" **oder** die Vorlagen-Form „Review durchgeführt" am Anfang eines Punkt-Teils (hinter der Task-Box, `;` oder `,`, auch über einen Zeilenumbruch). **Zuordnung** über `match`: `id` (Default) über die `slice-<NNN>`-Kennung im Report-Namen — eine Zusage ohne lesbare Kennung im Slice-Namen ist selbst ein Befund —, `name` über den Basisnamen des Slice, gefolgt von einem Zeichen, das weder Buchstabe noch Ziffer ist (für Slug-Kennungen) — trägt der Report-Name auch einen längeren Slice-Basisnamen, der den kürzeren enthält, deckt er nur den längeren. `done-dir` wird unmittelbar gelesen, mit `recursive` auch die Unterverzeichnisse; `skip-pattern` nimmt eine Datei nach ihrem Inhalt aus (etwa archivierte Stubs). Fail-closed bei leerer Kandidatenmenge oder unlesbarem Verzeichnis — eine Menge, die erst `skip-pattern` leert, ist nur mit `skip-allows-empty: true` kein Befund; null Zusagen unter vorhandenen Kandidaten sind legitim, außer mit `require-promises` | `review-missing`                                             |
 | `mentions`  | opt-in        | Erwähnungs-Deckung: jedes Mitglied einer über Pfad-Globs konfigurierten **Soll-Menge** (`artifacts`) muss in mindestens einem Dokument der ebenso konfigurierten **Ist-Menge** (`documents`) wörtlich vorkommen. Gesucht wird eine **eigenständige Nennung**: links blockiert Buchstabe, Ziffer, `-` und `.`, rechts nur Buchstabe und Ziffer — Satz-Schlusspunkt, Kompositum, Kursivierung und `../`-relative Verlinkung zählen damit. Preis: ein Unterstrich-Kompositum, eine angehängte Endung und ein fremdes Pfad-Präfix decken das Mitglied darunter. `match: path` (Default, Pfad ab der Scan-Wurzel) oder `basename` (nur der Dateiname) — für Dokumente, die **relativ** verlinken, ist `basename` die richtige Form; kollidierende Suchbegriffe prüft das Modul selbst und bricht ab (Exit 2), statt sie dem Konfigurierenden aufzugeben. **Ein Block ist EIN Paar** — die Ist-Menge wird als Vereinigung gelesen. Fail-closed: fehlende oder leer bleibende Menge und unlesbares Verzeichnis ⇒ Exit 2, nicht „0 Befunde". Die Zusammenfassung nennt die Bezugsmenge (`N von M`) | `artifact-unmentioned` |

@@ -311,7 +311,7 @@ modules: [links, anchors]
 # linelength:
 #   max-chars: 120                               # Pflicht, sobald das Modul aktiv ist; ganze Zahl >= 1
 #   exempt-code-blocks: true                     # Fenced-Code samt Zäunen nicht messen
-#   exempt-tables: true                          # Zeilen, die mit | beginnen, nicht messen
+#   exempt-tables: true                          # Zeilen mit | (bis drei Leerzeichen davor) nicht messen
 #   exempt-unbreakable: true                     # Zeile mit einem Wort über der Grenze nicht melden
 #   exempt-paths: [CHANGELOG.md]                 # Glob wie scan.ignore; Dateien ganz ohne Prüfung
 

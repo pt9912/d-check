@@ -307,6 +307,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthEinWortUeberDerGrenze` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-CONF-002`](../../spec/lastenheft.md), [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthEingabemenge` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthEingerueckteTabellenzeile` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
+| [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthEingerueckteTabellenzeileVorUndHinterZaun` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthEinrueckungUndUeberschrift` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthFenceGrenzenDerLexik` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |
 | [`DC-FA-LLEN-001`](../../spec/lastenheft.md) | `TestLinelengthFormPraefix` | [`internal/hexagon/core/rules/linelength_test.go`](../../internal/hexagon/core/rules/linelength_test.go) |

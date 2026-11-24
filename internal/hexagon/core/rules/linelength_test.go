@@ -344,6 +344,24 @@ func TestLinelengthTabellenzeileImZaunWirdGemessen(t *testing.T) {
 	}
 }
 
+// Der Zaun-Zustand gilt je Zeile: eine eingerückte |-Zeile vor und hinter
+// einem geschlossenen Zaun liegt außerhalb von Fenced-Code und ist
+// ausgenommen, die im Zaun nicht — mit (a) aus ein Befund
+// (DC-FA-LLEN-001, ADR-0116).
+func TestLinelengthEingerueckteTabellenzeileVorUndHinterZaun(t *testing.T) {
+	files := map[string]string{"docs/a.md": strings.Join([]string{
+		"   " + llRow(), // 1: vor dem Zaun
+		"```",          // 2
+		"   " + llRow(), // 3: im Zaun
+		"```",          // 4
+		"   " + llRow(), // 5: hinter dem Zaun
+	}, "\n") + "\n"}
+	cfg := llCfg(80)
+	cfg.Linelength.ExemptCodeBlocks = llOff()
+	llWantLines(t, llRun(t, files, cfg), "docs/a.md", 3)
+	llWantLines(t, llRun(t, files, llCfg(80)), "docs/a.md")
+}
+
 // Ausnahme (b), Rest unverändert: Dateien ohne eingerückte |-Zeile verhalten
 // sich wie zuvor — Kopf-, Trenn- und Datenzeilen in Spalte 0 sind
 // ausgenommen, die Zeilen darum gemessen, mit (b) aus alle gemessen
