@@ -74,12 +74,12 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] **Erkennung:** [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)
+- [x] **Erkennung:** [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)
       (Kriterien 1 bis 4 und 6 aus [`slice-293`](../done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md)
       §3) ist im Modulkern erfüllt: die Regel nimmt genau die Zeilen aus, die dort stehen, und keine
       weitere; jeder Test läuft ohne die Regel **aus dem richtigen Grund** rot (Mutation je Test,
       §3), und die Closure-Notiz nennt je Test die Mutation und die gelesene Meldung.
-- [ ] **Kopplung:** Kriterium 5 — der Kopplungs-Test hält die Frage „Tabellenzeile?“ je Konsument fest,
+- [x] **Kopplung:** Kriterium 5 — der Kopplungs-Test hält die Frage „Tabellenzeile?“ je Konsument fest,
       **in beiden Richtungen** (`linelength` nimmt die eingerückte Zeile aus, `targets`,
       `planning.waves` und `structure` lesen sie weiter nicht als Tabellenzeile), und die geteilte
       Antwort `tableRowLine` steht im Diff unverändert. Die Assertionen sind **zwei**
@@ -87,7 +87,7 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       Konsumenten von `tableRowLine` auf **einer** Antwort, die eingerückte Zeile eingeschlossen, und
       `linelength` auf der Antwort des Helfers. Der Kopf-Kommentar des Kopplungs-Tests („… GLEICH
       beantwortet …, eine eingerueckte Zeile ist keine Spalte-0-Tabellenzeile“) ändert sich mit.
-- [ ] **Doku und Entscheidung:** das Handbuch §4.28 samt Modul-Tabelle, der Kommentar der
+- [x] **Doku und Entscheidung:** das Handbuch §4.28 samt Modul-Tabelle, der Kommentar der
       `--print-config`-Vorlage und die Kommentare am Code nennen die Regel mit ihrer Bedingung; die
       Abdeckungs-Dateien sind aus den Tests abgeleitet (`make abdeckung`); die Folge-ADR ist
       **`Accepted`, erst nach Review und Verifikation** ([`BEO-ALL/adr-accepted-bevor-der-mechanismus-steht`](../observations/BEO-ALL/adr-accepted-bevor-der-mechanismus-steht/observation.md)).
@@ -96,14 +96,14 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       („Entscheidung 5 (b) teil-superseded durch [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md)“) und im Index die Zeile von [`ADR-0114`](../../adr/0114-linelength-modul.md) mit
       „Accepted (teil-superseded: [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md))“; die Status-Zeile von [`ADR-0114`](../../adr/0114-linelength-modul.md) bleibt `Accepted`
       ([Verdikt](../../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-6).
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
 ## 3. Plan (vor Code)
 
