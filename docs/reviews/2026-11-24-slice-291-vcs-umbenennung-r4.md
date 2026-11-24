@@ -113,7 +113,7 @@ des Endes normiert. Das Ergebnis, auf dem M-1 und L-1 aufbauen, zeigt die Tabell
   Kriterium „Boundary (Rotation)“
 - **Pfad:** `docs/plan/adr/0115-vcs-folgt-umbenennung.md` · „die drei Fälle der Grenze zu Entscheidung 9
   mit beiden Schaltern ⇒ dasselbe Ergebnis wie mit `ignore-link-targets` allein“ (Z. 252);
-  `docs/plan/planning/open/slice-292-vcs-umbenennung-modulkern.md` · Testfall-Liste (Z. 130–181)
+  `docs/plan/planning/next/slice-292-vcs-umbenennung-modulkern.md` · Testfall-Liste (Z. 130–181)
 - **Befund:** Für die nicht teilnehmende Quelle gilt der Satz. Für die Rotation als ganzen Fall gilt er
   nicht: mit beiden Schaltern folgt der Nachzug A → X (A nimmt teil). Mit `ignore-link-targets` allein
   ist er Drift, weil der Dateiname wechselt. Das Lastenheft fasst das mit „oder eine teilnehmende
@@ -148,7 +148,7 @@ des Endes normiert. Das Ergebnis, auf dem M-1 und L-1 aufbauen, zeigt die Tabell
 - **Kategorie:** LOW
 - **Quelle:** `v6.18.1` · `regelwerk/modul-11-verification.md` §Bewusstes Brechen für
   DoD-Testbehauptungen
-- **Pfad:** `docs/plan/planning/open/slice-292-vcs-umbenennung-modulkern.md` · „Rot-Beleg: ohne die
+- **Pfad:** `docs/plan/planning/next/slice-292-vcs-umbenennung-modulkern.md` · „Rot-Beleg: ohne die
   BASE-Bedingung wäre der Nachzug grün“ (Z. 150)
 - **Befund:** Ohne die BASE-Bedingung nehmen A → B (über T) und B → A beide teil. Dann ist A Quelle der
   einen und Ende der anderen Umbenennung, und für B gilt dasselbe. „Quelle und Ende gelten beide als das

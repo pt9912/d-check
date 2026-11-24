@@ -1,7 +1,7 @@
 # Architect-Verdikt — slice-292 (`vcs` folgt einer Umbenennung, Modulkern), Plan gegen Entscheidungslage
 
 **Rolle:** Architect (Modul 8), frischer Kontext, **vor** Code. Rolleninhaber: pt9912.
-**Gegenstand:** [slice-292](../plan/planning/open/slice-292-vcs-umbenennung-modulkern.md) im Stand nach dem
+**Gegenstand:** [slice-292](../plan/planning/next/slice-292-vcs-umbenennung-modulkern.md) im Stand nach dem
 vierten Nachzug, gegen [`DC-FA-VCS-001`](../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
 (Lastenheft 0.114.3, 30 Kriterien, Z. 2390–2419),
 §[`DC-FA-VCS-001.a`](../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)

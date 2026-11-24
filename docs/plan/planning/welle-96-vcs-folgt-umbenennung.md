@@ -64,11 +64,11 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     getrennt). Eine opt-in-Erweiterung darf keinen bisher grünen oder roten Lauf
     verschieben — **mit einer gewollten Abweichung im gestagten Modus**
     ([Architect-Verdikt](../../reviews/2026-11-24-slice-292-architect-verdikt.md) F-4 zu
-    [`slice-292`](open/slice-292-vcs-umbenennung-modulkern.md)): ersetzt ein gestagter
+    [`slice-292`](next/slice-292-vcs-umbenennung-modulkern.md)): ersetzt ein gestagter
     Gitlink eine immutable Datei an ihrem Pfad, endet `--staged` nach Lesart des Codes
     heute mit Exit 2 und nach der Angleichung der Index-Enumeration an die Spezifikation
     mit `core-drift-vcs`, wie im `--range`-Modus; Bedingung und Testfall stehen in
-    [`slice-292`](open/slice-292-vcs-umbenennung-modulkern.md) §3. Die Probe trifft die
+    [`slice-292`](next/slice-292-vcs-umbenennung-modulkern.md) §3. Die Probe trifft die
     Abweichung nicht: das Skript ruft in der Default-Belegung von `PROBE_FORMS` weder
     `--range` noch `--staged` und fährt das Modul `vcs` damit gar nicht. Die Gleichheit
     des Moduls ohne den Schalter tragen die Tests zum Kriterium „Boundary (ohne
@@ -92,7 +92,7 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 | Slice | Titel | Bezug |
 |---|---|---|
 | [`slice-291`](done/slice-291-vcs-umbenennung-anforderung-und-adr.md) | Anforderung, Spezifikation und ADR: `vcs` folgt einer Umbenennung; Entscheide festschreiben | [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
-| [`slice-292`](open/slice-292-vcs-umbenennung-modulkern.md) | Kern und git-Adapter: Umbenennungen der Range lesen, Link-Ziele über sie gleichsetzen, Schalter | [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) in der Fassung aus [`slice-291`](done/slice-291-vcs-umbenennung-anforderung-und-adr.md) |
+| [`slice-292`](next/slice-292-vcs-umbenennung-modulkern.md) | Kern und git-Adapter: Umbenennungen der Range lesen, Link-Ziele über sie gleichsetzen, Schalter | [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) in der Fassung aus [`slice-291`](done/slice-291-vcs-umbenennung-anforderung-und-adr.md) |
 
 ## 5. Abhängigkeiten
 
@@ -105,7 +105,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 - **Reihenfolge der Slices ist fachlich bindend:** erst
   [`slice-291`](done/slice-291-vcs-umbenennung-anforderung-und-adr.md) (Anforderung und
   Entscheide stehen, bevor Code entsteht), dann
-  [`slice-292`](open/slice-292-vcs-umbenennung-modulkern.md). Das WIP-Limit 1 hält sie
+  [`slice-292`](next/slice-292-vcs-umbenennung-modulkern.md). Das WIP-Limit 1 hält sie
   ohnehin nacheinander.
 - **Entscheide, die [`slice-291`](done/slice-291-vcs-umbenennung-anforderung-und-adr.md)
   festschreibt** (mit Empfehlung; ohne Entscheid des Auftraggebers beginnt kein Code):
