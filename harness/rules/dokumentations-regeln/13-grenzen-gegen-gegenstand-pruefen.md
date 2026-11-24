@@ -28,3 +28,14 @@ Grenzen-Listen überhaupt. Urteil, kein `grep`; der Reviewer-Skill trägt den
 Anker dazu. *(Hard Rule aus dem Steering Loop,
 [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../../../docs/plan/planning/observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md),
 seit slice-213; Auflösungs-Trigger: permanent.)*
+
+**Eine Grenze, die an einer zweiten Stelle wiedergegeben wird**, nimmt ihre Bedingung mit — in ein
+Kriterium, eine Historie-Zeile, die Spezifikation, eine ADR, einen Kommentar oder einen Testfall. Für
+eine Begründung gilt dasselbe: Sie steht nur bei den Fällen, die sie trägt. Vor dem Handoff wird jede
+Stelle, die dieselbe Aussage trägt, über ihren **Inhalt** gesucht, nicht über ihren Wortlaut; eine Stelle,
+die die Grenze ohne ihre Bedingung trägt, sagt für den ausgenommenen Fall das Gegenteil zu. Im Slice-Plan
+trägt das [Regel 18](18-plan-festlegung-zitiert-ihre-quelle.md) (zitieren statt nacherzählen), vor einem
+Fix nach dem Review die Suche über die Aussage im Workflow-Skelett; dieser Absatz gilt beim ersten
+Schreiben und überall sonst. Urteil, kein `grep`. *(Hard Rule aus dem Steering Loop,
+[`BEO-ALL/grenz-aussage-ohne-ihre-bedingung`](../../../docs/plan/planning/observations/BEO-ALL/grenz-aussage-ohne-ihre-bedingung/observation.md),
+seit welle-97; Auflösungs-Trigger: permanent.)*
