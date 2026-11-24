@@ -75,8 +75,12 @@ Wir geben dem Modul `vcs` einen **eigenen opt-in-Schlüssel `vcs.follow-renames`
 Umbenennungen der Range aus der git-Historie liest und ein Link-Ziel über sie gleichsetzt. Im Einzelnen
 (die Nummern dienen dieser Liste als Bezug; 1–14 vom Auftraggeber am 2026-11-23 bestätigt, Entscheidung 5 in
 der seiten-gleichen Fassung nach Entscheidung 9; danach ohne erneute Bestätigung an die Spezifikation
-angeglichen — Wortlaut von 1, 2, 3, 9 und 13 — und nach den Reviews an 11 und 13 geschärft; Entscheidung 9 und 10
-sind nach Review R2 in der Sache geändert und vom Auftraggeber am 2026-11-23 in dieser Fassung bestätigt, siehe Geschichte):
+angeglichen — Wortlaut von 1, 2, 3, 9 und 13 — und nach den Reviews an 11 und 13 geschärft. Entscheidung 10
+ist nach Review R2 in der Sache geändert und am 2026-11-23 in dieser Fassung bestätigt. Entscheidung 9 ist
+nach Review R2 ebenso geändert; die Vorlage vom 2026-11-23 nannte das „nur in Richtung Drift“, was gegen die
+zuerst bestätigte Fassung in drei Fällen nicht hält. Der Auftraggeber hat am 2026-11-24 bestätigt, dass seine
+Zustimmung für die jetzige Fassung gilt, mit diesen drei Fällen (Konsequenzen, Grenze zu Entscheidung 9);
+siehe Geschichte):
 
 1. **Erkennung: Inhalts-Gleichheit, keine Ähnlichkeits-Schwelle.** Ein Pfad A, der vor einem Schritt
    existiert und danach nicht, und ein Pfad B, der danach existiert und vorher nicht, sind eine
@@ -111,10 +115,11 @@ sind nach Review R2 in der Sache geändert und vom Auftraggeber am 2026-11-23 in
    ist die zusammengesetzte Abbildung Quelle → Ende (Entscheidung 11 und 13), nicht die Einzelschritte.
    Quelle ist nur ein Pfad des BASE-Stands; ein Zwischenpfad einer Kette ist weder Quelle noch Ende. Eine
    Umbenennung Quelle → Ende nimmt nur teil, wenn ihr Ende in HEAD existiert, **in BASE nicht** und Ende
-   keiner zweiten Quelle ist — ein
-   Pfad, der in BASE schon lag, hat dort eine eigene Geschichte (umbenannt, gelöscht und neu belegt,
-   getauscht) und wird nicht zum Ende einer anderen Datei. Teil haben dann ihre Quelle (sie gilt als das
-   Ende) und ihr Ende. Daraus folgt die Invariante: **gleicher Rohtext ergibt gleichen Core** — ein
+   keiner zweiten Quelle ist. Teil haben dann ihre Quelle (sie gilt als das Ende) und ihr Ende. Die
+   Bedingung gilt der **Umbenennung**, nicht dem Pfad: ein Pfad, der in BASE schon lag, wird nicht zum
+   Ende einer anderen Datei, nimmt aber als Quelle seiner eigenen Umbenennung teil (Rotation A → X, danach
+   C → A: A nimmt als Quelle teil und gilt als X, C nimmt nicht teil; die Grenze unter Konsequenzen nennt
+   die drei Fälle). Daraus folgt die Invariante: **gleicher Rohtext ergibt gleichen Core** — ein
    unveränderter Link auf eine umbenannte Datei bleibt gleich. Die Zusage in Befunden: ohne
    `ignore-link-targets` ergibt der Schalter keinen **Befund**, den es ohne ihn nicht gibt; mit beiden
    Schaltern entfällt ein Befund, den `ignore-link-targets` allein meldet, nur dort, wo beide Ziele
@@ -193,10 +198,23 @@ Entscheidungen 1–4 und die Wirkung von `ignore-link-targets` bleiben unveränd
   das trägt der Review des Commits.
 - Negativ — umbenennen und im selben Commit ändern bleibt Drift; ebenso eine Umbenennung, bei der ein
   Werkzeug den Inhalt ersetzt (Archiv-Stub im selben Akt).
-- Negativ — ein Ende, das in BASE schon lag, nimmt nicht teil (Entscheidung 9): ein Tausch zweier Namen
-  (A ↔ B über einen Zwischennamen) bleibt Drift, ebenso ein Nachzug auf einen Pfad, den die Range erst
-  freimacht und dann mit einer anderen Datei belegt (A gelöscht, danach C → A). Fehlalarm in die sichere
-  Richtung.
+- Negativ — eine Umbenennung auf einen Pfad, der in BASE schon lag, nimmt nicht teil (Entscheidung 9): ein
+  Tausch zweier Namen (A ↔ B über einen Zwischennamen) bleibt Drift, ebenso ein Nachzug auf einen Pfad,
+  den die Range erst freimacht und dann mit einer anderen Datei belegt (A gelöscht, danach C → A).
+  Fehlalarm in die sichere Richtung.
+- Grenze — drei Fälle, in denen Entscheidung 9 nachsichtiger ist als die am 2026-11-23 zuerst bestätigte
+  Fassung („Teil hat eine Quelle oder ein Ende; zugleich Quelle und Ende nicht“). In allen drei urteilt
+  das Modul über die nicht teilnehmende Quelle wie ohne `follow-renames`, nicht strenger:
+  1. A gelöscht, danach C → A: C nimmt nicht teil (vorher als Quelle mit Ende A).
+  2. Zwei Quellen auf ein Ende (Merge, A → E auf der einen, B → E auf der anderen Seite): keine nimmt
+     teil (vorher beide).
+  3. Rotation A → X, danach C → A: C nimmt nicht teil, auch mit `follow-renames` allein; A nimmt als
+     Quelle von A → X teil, ein Nachzug von A auf X folgt (vorher nahm C als Quelle mit Ende A teil, A als
+     Quelle und Ende zugleich nicht).
+
+  Mit beiden Schaltern wird die nicht teilnehmende Quelle wie mit `ignore-link-targets` allein normiert;
+  ein Umbiegen von C bzw. A auf eine andere Datei gleichen Namens ist dann so grün wie ohne
+  `follow-renames`. Der Auftraggeber hat das am 2026-11-24 bestätigt.
 - Negativ — Dateien gleichen Inhalts (leere Dateien, gleiche Vorlagen) in einem umbenannten Verzeichnis
   sind mehrdeutig, ihre Links folgen nicht.
 - Negativ — beide Schalter an ist strenger als `ignore-link-targets` allein, und nur dort, wo ein Ziel
@@ -230,8 +248,8 @@ Entscheidungen 1–4 und die Wirkung von `ignore-link-targets` bleiben unveränd
 
 | Tooling | Regel | Make-Target |
 |---|---|---|
-| Tests des git-Adapters gegen echte git-Fixtures | Blob-Gleichheit, Kette über drei Commits, Kette nur entlang der Abstammung, Mehrdeutigkeit (Kopien, zwei Enden, zwei Linien), Merge als HEAD mit einer umbenennenden Seite, Merge mit einer Seite, die den Pfad in einem Commit löscht und in einem späteren neu anlegt ⇒ keine Umbenennung, Löschen und Neuanlegen im selben Commit ⇒ Umbenennung bleibt, Ende in BASE vorhanden (A gelöscht, dann C → A) ⇒ keine Umbenennung, unlesbarer Baum eines Eltern-Commits vor BASE ⇒ Fehler, Basis kein Vorfahr ⇒ leere Abbildung, `--staged`, unlesbares Objekt eines Zwischen-Commits ⇒ Fehler | `make test` |
-| Tests der Regel | Nachzug mit Schalter kein Befund, ohne Befund; unveränderter Link auf umbenannte Datei mit erlaubtem Anhang kein Befund; beide Schalter samt gleichnamiger anderer Datei ⇒ Befund; Ende in einem Commit gelöscht und in einem späteren als andere Datei neu angelegt ⇒ Befund; beide Schalter, Umbiegen auf eine Datei, die die Range in den alten Namen umbenennt ⇒ Befund; beide Schalter, Umbenennung nur des Verzeichnisses und Umbiegen auf eine andere gleichnamige Datei ⇒ Befund; Zwischenpfad einer Kette neu belegt und als Ziel nachgezogen ⇒ Befund; unlesbarer Zwischen-Commit ohne Schalter Exit 0, mit ihm Exit 2; bestehende Tests von `ignore-link-targets` unverändert grün; derselbe Lauf zehnmal byte-gleich | `make test` |
+| Tests des git-Adapters gegen echte git-Fixtures | Blob-Gleichheit, Kette über drei Commits, Kette nur entlang der Abstammung, Mehrdeutigkeit (Kopien, zwei Enden, zwei Linien), Merge als HEAD mit einer umbenennenden Seite, Merge mit einer Seite, die den Pfad in einem Commit löscht und in einem späteren neu anlegt ⇒ keine Umbenennung, zwei Quellen auf ein Ende (Merge, A → E und B → E) ⇒ keine nimmt teil, Rotation (A → X, danach C → A) ⇒ A → X nimmt teil, C → A nicht, Löschen und Neuanlegen im selben Commit ⇒ Umbenennung bleibt, Ende in BASE vorhanden (A gelöscht, dann C → A) ⇒ keine Umbenennung, unlesbarer Baum eines Eltern-Commits vor BASE ⇒ Fehler, Basis kein Vorfahr ⇒ leere Abbildung, `--staged`, unlesbares Objekt eines Zwischen-Commits ⇒ Fehler | `make test` |
+| Tests der Regel | Nachzug mit Schalter kein Befund, ohne Befund; unveränderter Link auf umbenannte Datei mit erlaubtem Anhang kein Befund; beide Schalter samt gleichnamiger anderer Datei ⇒ Befund; Ende in einem Commit gelöscht und in einem späteren als andere Datei neu angelegt ⇒ Befund; beide Schalter, Umbiegen auf eine Datei, die die Range in den alten Namen umbenennt ⇒ Befund; beide Schalter, Umbenennung nur des Verzeichnisses und Umbiegen auf eine andere gleichnamige Datei ⇒ Befund; Rotation: Nachzug von A auf X kein Befund, Nachzug von C auf A Befund; die drei Fälle der Grenze zu Entscheidung 9 mit beiden Schaltern ⇒ dasselbe Ergebnis wie mit `ignore-link-targets` allein; Zwischenpfad einer Kette neu belegt und als Ziel nachgezogen ⇒ Befund; unlesbarer Zwischen-Commit ohne Schalter Exit 0, mit ihm Exit 2; bestehende Tests von `ignore-link-targets` unverändert grün; derselbe Lauf zehnmal byte-gleich | `make test` |
 | Probe am gebauten Image in einem Wegwerf-Klon | Umbenennung einer verlinkten Spec-Datei samt Nachzug: ohne Schalter je ADR ein Befund, mit ihm keiner; gelöscht und neu angelegt ⇒ Befund | `make adr-check` |
 | Vorher-/Nachher-Vergleich ohne Schalter | Ausgabe byte-gleich zur letzten Release-Version | `make blackbox-probe` |
 
@@ -257,3 +275,4 @@ Entscheidungen 1–4 und die Wirkung von `ignore-link-targets` bleiben unveränd
 | 2026-11-23 | Proposed, Entscheidung 11 präzisiert: auch eine Merge-Seite, die einen Pfad nicht umbenennt, ihn aber löscht und neu anlegt, ist eine Linie zu „gelöscht“; neben der Umbenennung der anderen Seite ist das Mehrdeutigkeit. Die Merge-Grenze unter Konsequenzen gilt nur noch für das Überschreiben an Ort und Stelle | slice-291 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, nach Review R2 zum Anforderungs-Slice: Entscheidung 10 normiert ein teilnehmendes Ziel auch mit beiden Schaltern auf eine eigene Marke und den vollen Endpfad, damit gleicht es nie einem nicht teilnehmenden (schließt das Umbiegen auf eine Datei, die den alten Namen bekommt, und die Bedingung „Umbenennung wechselt den Dateinamen“ entfällt) — **in der Sache geändert, nur in Richtung Drift, Bestätigung durch den Auftraggeber offen**; Entscheidung 9: ein Ende nimmt nur teil, wenn es in BASE nicht lag und Ende genau einer Quelle ist (ersetzt „zugleich Quelle und Ende“); Entscheidung 11: „gelöscht“ heißt ohne Ende, Löschen und Neuanlegen im selben Schritt ist Inhaltsänderung, eine Linie ohne den Pfad ist unberührt; Entscheidung 13: gelesen werden auch Bäume von Eltern-Commits vor BASE; Alternativen L und M | slice-291 <!-- d-check:status-provenance --> |
 | 2026-11-23 | Proposed, fortgeschrieben: der Auftraggeber hat Entscheidung 9 und 10 in der Fassung nach Review R2 bestätigt | slice-291 <!-- d-check:status-provenance --> |
+| 2026-11-24 | Proposed, fortgeschrieben: der Auftraggeber hat bestätigt, dass seine Zustimmung zu Entscheidung 9 für die Fassung nach Review R2 gilt, mit den drei Fällen, in denen sie nachsichtiger ist als die zuerst bestätigte Fassung (A gelöscht, danach C → A; zwei Quellen auf ein Ende; Rotation). Die Zeile vom 2026-11-23 zu Review R2 und die Botschaft des Commits, der sie schrieb, nannten beide Änderungen „nur in Richtung Drift“; für Entscheidung 9 trägt das nicht — berichtigt hier. Entscheidung 9 sagt ausdrücklich, dass die Bedingung der Umbenennung gilt und ein Pfad aus BASE als Quelle seiner eigenen Umbenennung teilnimmt | slice-291 <!-- d-check:status-provenance --> |
