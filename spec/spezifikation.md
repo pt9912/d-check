@@ -3737,8 +3737,9 @@ Dateien seiner Scan-Menge über den Filesystem-Port, ohne git, ohne Netz und ohn
    Zeile, auf die die Tabellenzeilen-Frage von `linelength` mit „ja“ antwortet — „ist die Zeile Teil
    einer Tabelle und deshalb nicht umbrechbar“: sie liegt in `proseLineSet`, und die rohe Zeile
    beginnt nach null bis drei Leerzeichen (U+0020) mit `|`. Mit null Leerzeichen ist das die
-   Antwort von `tableRowLine`, die die übrigen Module lesen; die Frage von `linelength` schließt sie
-   ein und erweitert sie um die Einrückung, `tableRowLine` selbst bleibt unverändert. Beide
+   Antwort von `tableRowLine`, die `targets`, `planning.waves` und `structure` lesen; die Frage von
+   `linelength` schließt sie ein und erweitert sie um die Einrückung, `tableRowLine` selbst bleibt
+   unverändert. Beide
    Antworten kommen aus der geteilten Lexik, unabhängig vom jeweils anderen Schalter. Die übrigen
    Zeilen sind die **geprüften** Zeilen.
 5. **Länge.** Je geprüfter Zeile die Zahl ihrer Unicode-Codepunkte (dieselbe Zählung wie
@@ -4335,6 +4336,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-11-24 | Nachzug nach Review an §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) Schritt 4 ([`DC-FA-LLEN-001`](lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) 0.115.1): `tableRowLine` lesen `targets`, `planning.waves` und `structure`, nicht „die übrigen Module“ |
 | 2026-11-24 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) Schritt 4, „Nicht Gegenstand“, „Grenzen, am Gegenstand gelesen“ und die Schema-Zeile `linelength.exempt-tables` in §2 ([`DC-FA-LLEN-001`](lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) 0.115.0): die Ausnahme (b) fragt „ist die Zeile Teil einer Tabelle und deshalb nicht umbrechbar“ und nimmt auch eine `\|`-Zeile mit null bis drei Leerzeichen (U+0020) davor aus; die Frage schließt `tableRowLine` ein, `tableRowLine` bleibt unverändert, `targets`, `planning.waves` und `structure` lesen eine eingerückte Zeile weiter nicht als Tabellenzeile. Die Grenzen nennen vier und mehr Leerzeichen, Tab, U+00A0, `> \|`, die eingerückte Zeile im Zaun, `- \| a \| b \|` und die Tabelle unter `10. ` mit ihrer Bedingung |
 | 2026-11-24 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2: die Enumeration am staged Index nimmt dieselben drei Arten wie der Baum (reguläre Datei, ausführbare Datei, Symlink); ein Gitlink im Index ist kein Datei-Pfad, und der Nebensatz zur Index-Enumeration im Abschnitt zur Umbenennungs-Abbildung folgt dem. Ersetzt ein Gitlink eine immutable Datei an ihrem Pfad, meldet das Modul `core-drift-vcs` — mit `--range` wie mit `--staged` (mit `--staged` war es Exit 2); der benannte Preis „bleibt unbemerkt“ entfällt |
 | 2026-11-24 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4, Teilnahme: eine Umbenennung, deren Ende in BASE lag oder auch Ende einer zweiten Quelle ist, lässt keinen ihrer Pfade über sich teilnehmen; ein Pfad aus BASE, der Ende einer solchen und Quelle einer teilnehmenden Umbenennung ist, nimmt als deren Quelle teil (Rotation). Die Regel bleibt, der Satz lässt sich nicht mehr als Ausschluss der Rotation lesen. Kein neuer Grund-Code |

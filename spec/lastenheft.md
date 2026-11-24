@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.115.0
+**Version:** 0.115.1
 
 **Status:** Draft
 
@@ -4616,11 +4616,12 @@ gemessen.
 
 **Was Fenced-Code und was eine Tabellenzeile ist, beantwortet die geteilte Lexik des
 Produkts.** Für Fenced-Code ist es dieselbe Antwort, die die übrigen Module auf diese Frage geben,
-keine zweite. Für die Tabellenzeile fragt `linelength` etwas anderes als die übrigen Module — nicht
+keine zweite. Für die Tabellenzeile fragt `linelength` etwas anderes als die Module `targets`,
+`planning.waves` und `structure` — nicht
 „deklariert diese Zeile etwas in einer Tabelle ab Spalte 0“, sondern „ist diese Zeile Teil einer
 Tabelle und deshalb nicht umbrechbar“; die Lexik beantwortet sie als eigene, benannte Frage. Ihre
-Antwort schließt die Spalte-0-Antwort der übrigen Module ein und erweitert sie um die Einrückung;
-die übrigen Module lesen eine eingerückte Zeile weiter nicht als Tabellenzeile. Daraus folgen
+Antwort schließt die Spalte-0-Antwort dieser drei Module ein und erweitert sie um die Einrückung;
+diese Module lesen eine eingerückte Zeile weiter nicht als Tabellenzeile. Daraus folgen
 Grenzen, die diese Anforderung zusagt, statt sie zu verschweigen:
 
 - **Jede Zaun-Zeile schaltet um.** Eine Zeile, die nach beliebiger Einrückung aus Space und Tab
@@ -4803,6 +4804,7 @@ Rechtschreib-Regeln** — der Ausschluss in [§5](#5-globale-out-of-scope-punkte
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.115.1 | 2026-11-24 | Nachzug nach Review an [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) (0.115.0), präzisiert — keine Verhaltensänderung: der Satz, die übrigen Module lasen eine eingerückte Zeile weiter nicht als Tabellenzeile, gilt nur für `targets`, `planning.waves` und `structure`; der Leser der Requirements Traceability Matrix und der Leser des Beobachtungs-Registers in `planning` trimmen die Zeile und lesen eine eingerückte Tabellenzeile. Der Absatz zur geteilten Lexik nennt die drei Module, wie das Kriterium „Ausnahme (b), andere Module unverändert“ sie nennt. Anlass: Review | — |
 | 0.115.0 | 2026-11-24 | [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) (`linelength.exempt-tables`): die Ausnahme (b) nimmt auch eine `\|`-Zeile aus, vor deren erstem `\|` null bis drei Leerzeichen (U+0020) und sonst nichts stehen — eine Verhaltensänderung. Vier und mehr Leerzeichen, ein Tab, ein geschütztes Leerzeichen (U+00A0), `> \|` und eine eingerückte `\|`-Zeile im Zaun bei `exempt-code-blocks: false` bleiben Befund; der Punkt „Tabellenzeile heißt …“ nennt die Grenzen mit ihrer Bedingung (Prosa-Zeile mit `\|` ohne Tabelle ausgenommen, `- \| a \| b \|` gemessen, Tabelle unter `10. ` oder in einer verschachtelten Liste gemessen). Die Zusage „dieselbe Antwort … keine zweite“ und der Out-of-Scope-Satz (4) sind umgeschrieben: die Antwort auf die Tabellenzeile kommt weiter aus der geteilten Lexik, auf eine eigene, benannte Frage; die übrigen Module lesen eine eingerückte Zeile weiter nicht als Tabellenzeile. Das Kriterium „Ausnahme (b), Grenzen“ ist ersetzt, fünf Kriterien kommen hinzu. Gegen §5 gehalten: kein globaler Ausschluss getroffen — die Zeilenlänge läuft weiter mit der Markdown-Lexik der übrigen Module. Anlass: Feldmeldung eines Adopters (GitHub-Issue 20). Begründung in begleitender ADR | — |
 | 0.114.3 | 2026-11-24 | Nachzug nach Review an [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) (`vcs.follow-renames`), präzisiert — die Teilnahme-Regel von 0.114.2 bleibt, ihr Satz lässt sich aber nicht mehr als Ausschluss der Rotation lesen. Er sagt, dass eine Umbenennung, deren Ende in BASE lag oder auch Ende einer zweiten Quelle ist, keinen ihrer Pfade **über sich** teilnehmen lässt, und dass ein Pfad aus BASE, der Ende einer solchen und Quelle einer teilnehmenden Umbenennung ist, als deren Quelle teilnimmt (Rotation). Eine Grenze benennt die drei Fälle, die etwas durchlassen, das man als Drift erwarten könnte — freigemachter Name, zwei Quellen auf ein Ende, Rotation. Zwei Kriterien kommen hinzu (zwei Quellen auf ein Ende, Rotation). Anlass: Review | — |
 | 0.114.2 | 2026-11-23 | Nachzug nach Review an [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) (`vcs.follow-renames`): eine Umbenennung nimmt nur teil, wenn ihr Ende in HEAD existiert, in BASE nicht und Ende keiner zweiten Quelle ist — ein Tausch zweier Namen und ein Name, den die Range freimacht und neu belegt, nehmen nicht teil. Mit beiden Schlüsseln wird ein teilnehmendes Ziel wie mit `vcs.follow-renames` allein gleichgesetzt und jedes andere wie mit `vcs.ignore-link-targets` allein normiert; die beiden Formen gleichen sich nie, ein Befund von `vcs.ignore-link-targets` allein entfällt nur, wo beide Ziele teilnehmen und dasselbe Ende haben, und die Bedingung „die Umbenennung wechselt den Dateinamen“ entfällt. Eine Linie, auf der der Pfad nicht liegt oder in jedem Schritt bestehen bleibt, ist unberührt; Löschen und Neuanlegen im selben Schritt ist eine Inhaltsänderung an Ort und Stelle, die Neubelegung und die Merge-Grenze verlangen ein Löschen in einem Commit und ein Neuanlegen in einem späteren. Gelesen werden auch die Bäume der Eltern-Commits vor BASE; der fail-closed-Fall nennt jedes Objekt, das allein der Schlüssel liest. Vier Kriterien kommen hinzu, fünf sind angeglichen. Anlass: Review | — |
