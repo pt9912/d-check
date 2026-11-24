@@ -9,7 +9,7 @@ aus `open/` oder `next/` nach `done/` — §7 nennt in der Zeile `Gegenstand:`
 Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 (§Ein Slice, dessen Gegenstand ein anderer übernimmt).
 
-**Welle:** [`welle-97-linelength-eingerueckte-tabellen`](../welle-97-linelength-eingerueckte-tabellen.md).
+**Welle:** [`welle-97-linelength-eingerueckte-tabellen`](welle-97-linelength-eingerueckte-tabellen.md).
 
 **Bezug:** [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)
 (die Ausnahme (b) und das Kriterium „Ausnahme (b), Grenzen“ werden geändert, neue Kriterien kommen hinzu),
@@ -135,7 +135,7 @@ Aussagen-Berührung steht hier gar nicht.
 | Plan von [`slice-294`](../done/slice-294-linelength-eingerueckte-tabellen-kern.md) | update | die Testfälle, die aus den bestätigten Entscheiden folgen |
 
 **Die kleinsten Antworten stehen einmal** — im Wortlaut der Welle
-([§5](../welle-97-linelength-eingerueckte-tabellen.md), Fragen 1 bis 4), mit der Stelle, die sie trägt.
+([§5](welle-97-linelength-eingerueckte-tabellen.md), Fragen 1 bis 4), mit der Stelle, die sie trägt.
 Dieser Plan wiederholt sie nicht, damit keine zweite Fassung neben der ersten steht
 ([`BEO-ALL/grenz-aussage-ohne-ihre-bedingung`](../observations/BEO-ALL/grenz-aussage-ohne-ihre-bedingung/observation.md));
 der Auftraggeber hat die Fragen 1 bis 3 am 2026-11-24 bestätigt. **Der eine Punkt, der vom Wortlaut
@@ -155,7 +155,7 @@ nennen):
 | 3 | **Ausnahme (b) im Zaun.** Given `exempt-code-blocks: false`, `exempt-tables: true` und eine überlange `\|`-Zeile mit drei Leerzeichen davor in einem Zaun, then ein Befund. | neu (das Gegenstück ohne Einrückung steht im heutigen Kriterium und bleibt in 2) |
 | 4 | **Bezugsmenge.** Given eine Datei, deren eine Zeile mit drei Leerzeichen vor `\|` beginnt, when der Lauf im Default erfolgt, then zählt die Bezugsmengen-Zeile diese Zeile nicht zu den geprüften Zeilen; with `exempt-tables: false` zählt sie. | neu — die Zeile `linelength: <D> Datei(en), <Z> Zeile(n) geprüft …` ist heute das, was nach `scope`, `exempt-paths`, (a) und (b) bleibt |
 | 5 | **Andere Module unverändert.** Given eine Zeile mit ein bis drei Leerzeichen vor `\|`, then liest keines der Module `targets`, `planning.waves` und `structure` sie als Tabellenzeile (Antwort heute: nein). | neu |
-| 6 | **Rest unverändert.** Given Dateien ohne eine Zeile mit ein bis drei Leerzeichen vor `\|`, when der Lauf im Default erfolgt, then nimmt Ausnahme (b) genau die Zeilen aus, die mit `\|` beginnen (außerhalb von Fenced-Code, wie bisher). | neu — die Ausgabe-Gleichheit gegen den Stand davor prüft die Welle ([§3 (a)](../welle-97-linelength-eingerueckte-tabellen.md)), nicht die Anforderung |
+| 6 | **Rest unverändert.** Given Dateien ohne eine Zeile mit ein bis drei Leerzeichen vor `\|`, when der Lauf im Default erfolgt, then nimmt Ausnahme (b) genau die Zeilen aus, die mit `\|` beginnen (außerhalb von Fenced-Code, wie bisher). | neu — die Ausgabe-Gleichheit gegen den Stand davor prüft die Welle ([§3 (a)](welle-97-linelength-eingerueckte-tabellen.md)), nicht die Anforderung |
 
 **Spiegel-Zählung vor dem Editieren** ([`MR-025`](../../../../harness/conventions.md#mr-025), Form
 vor Zahl — [`AGENTS.md`](../../../../AGENTS.md) §5 Regel 14). Die Aussage „eine eingerückte
@@ -314,7 +314,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
 **Start** (`next` → `in-progress`): Die Welle
-[`welle-97-linelength-eingerueckte-tabellen`](../welle-97-linelength-eingerueckte-tabellen.md) ist
+[`welle-97-linelength-eingerueckte-tabellen`](welle-97-linelength-eingerueckte-tabellen.md) ist
 offen, das Architect-Verdikt zu Frage 4 liegt unter `docs/reviews/`, und das WIP-Limit ist frei
 (`in-progress/` trägt nur die Roadmap). Der Auftraggeber hat die Fragen 1 bis 3 der Welle
 bestätigt oder geändert, **bevor** die Anforderung geschrieben wird.

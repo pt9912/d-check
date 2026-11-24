@@ -9,7 +9,7 @@ aus `open/` oder `next/` nach `done/` — §7 nennt in der Zeile `Gegenstand:`
 Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 (§Ein Slice, dessen Gegenstand ein anderer übernimmt).
 
-**Welle:** [`welle-97-linelength-eingerueckte-tabellen`](../welle-97-linelength-eingerueckte-tabellen.md).
+**Welle:** [`welle-97-linelength-eingerueckte-tabellen`](welle-97-linelength-eingerueckte-tabellen.md).
 
 **Bezug:** [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)
 in der Fassung aus [`slice-293`](../done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md),
@@ -49,7 +49,7 @@ Verifikation `Accepted`.
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Die Image-Probe und der Vorher-/Nachher-Vergleich** — sie sind der Closure-Trigger der Welle
-  ([§3](../welle-97-linelength-eingerueckte-tabellen.md)), nicht diese DoD
+  ([§3](welle-97-linelength-eingerueckte-tabellen.md)), nicht diese DoD
   ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 10); der Slice endet am grünen `make gates`.
 - **`tableRowLine` selbst weiten** — entschieden dagegen: der Helfer wohnt daneben und schließt
   `tableRowLine` ein ([`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) Entscheid 4,
@@ -223,7 +223,7 @@ Verifikations-Report liegen unter `docs/reviews/`, Closure-Notiz mit Lerneintrag
 Nachbesserung zitiert die Stelle, die sie trägt
 ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 18). Was die **Welle** einlöst — der Vorher-/Nachher-Lauf
 und die Probe am gebauten Image — steht in
-[ihrem Closure-Trigger](../welle-97-linelength-eingerueckte-tabellen.md) und nicht in dieser DoD
+[ihrem Closure-Trigger](welle-97-linelength-eingerueckte-tabellen.md) und nicht in dieser DoD
 ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 10).
 
 ## 6. Risiken und offene Punkte

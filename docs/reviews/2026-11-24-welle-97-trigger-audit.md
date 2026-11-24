@@ -2,7 +2,7 @@
 
 **Rolle:** Architect (Modul 8, §Rollen-Sequenz für eine Welle: Closure-Schritt 2 und 3b, Planner → Architect →
 Planner). Rolleninhaber: pt9912.
-**Gegenstand:** [welle-97](../plan/planning/welle-97-linelength-eingerueckte-tabellen.md) mit
+**Gegenstand:** [welle-97](../plan/planning/done/welle-97-linelength-eingerueckte-tabellen.md) mit
 [slice-293](../plan/planning/done/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) und
 [slice-294](../plan/planning/done/slice-294-linelength-eingerueckte-tabellen-kern.md), Range `cb164eaa^..HEAD`
 (28 Commits, Spitze `5c8ded99`).

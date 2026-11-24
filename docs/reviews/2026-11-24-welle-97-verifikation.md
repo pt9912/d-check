@@ -2,7 +2,7 @@
 
 **Rolle:** Verifier (Modul 8, §Rollen-Sequenz für eine Welle: Verifier → Planner) ·
 **Gegenstand:** Closure-Trigger aus
-[welle-97](../plan/planning/welle-97-linelength-eingerueckte-tabellen.md) §3, geprüft in einem frischen Kontext ·
+[welle-97](../plan/planning/done/welle-97-linelength-eingerueckte-tabellen.md) §3, geprüft in einem frischen Kontext ·
 **Bezug:**
 [`DC-FA-LLEN-001`](../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in),
 [`DC-QA-02`](../../spec/lastenheft.md#dc-qa-02--determinismus),
