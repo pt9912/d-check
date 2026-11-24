@@ -154,7 +154,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
      …“); bis drei Leerzeichen ist die Zeile nach dieser Lesart keine
      Code-Zeile, ohne dass die Lexik einen Listenkontext kennen muss. **Sie ist enger als der
      Wortlaut des Issues („2 bis 5 Leerzeichen“) — der eine Punkt, den der Auftraggeber
-     bestätigen muss:** Eine Tabelle unter einer Marke von vier Spalten (`10. `) oder in einem
+     bestätigt hat (2026-11-24, „bis 3 Leerzeichen“):** Eine Tabelle unter einer Marke von vier Spalten (`10. `) oder in einem
      verschachtelten Listenpunkt steht mit vier und mehr Leerzeichen und bleibt ein Befund. Ob der
      Bestand des Melders solche Zeilen trägt, ist von hier nicht gemessen. Die **größere Antwort**
      (4 und 5 Leerzeichen nur im Listenkontext, mit einer neuen Listen-Erkennung in der geteilten
