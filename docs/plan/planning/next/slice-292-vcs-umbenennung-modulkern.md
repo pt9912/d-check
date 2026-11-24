@@ -31,7 +31,7 @@ Verfahren und Schema schrieb
 Grund-Code, §4 der Spezifikation bleibt. Der Verweis zeigt **aufwärts**: Die Spec
 nennt diesen Slice nie.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-11-23.
 
