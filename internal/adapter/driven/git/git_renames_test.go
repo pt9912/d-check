@@ -687,3 +687,19 @@ func TestRenamesFehlerFormen(t *testing.T) {
 		t.Errorf("Renames(head, base) = %v, %v; erwartet leer ohne Fehler (Basis kein Vorfahr)", got, err)
 	}
 }
+
+// Die Commit-Menge ist „von HEAD erreichbar, von BASE nicht“ (DC-FA-VCS-001,
+// ADR-0115 Entscheidung 2): ein Commit vor BASE trägt nichts bei. a.md wird vor
+// BASE gelöscht und vor BASE mit anderem Inhalt neu angelegt; läse die Range
+// diese Commits mit, trüge a.md die Linie „gelöscht“, und die Umbenennung in der
+// Range ginge verloren.
+func TestRenamesCommitMengeOhneVorBase(t *testing.T) {
+	runRenameCases(t, []renameCase{
+		{"Pfad vor BASE gelöscht und neu angelegt", []commitSpec{
+			{"r", nil, files{"a.md": fA(), "n.md": fC()}},
+			{"r2", []string{"r"}, files{"n.md": fC()}},
+			{"base", []string{"r2"}, files{"a.md": fB(), "n.md": fC()}},
+			{"head", []string{"base"}, files{"b.md": fB(), "n.md": fC()}},
+		}, "base", "head", m{"a.md": "b.md"}},
+	})
+}

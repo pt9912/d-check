@@ -67,6 +67,7 @@ Anforderung prüfen soll, nicht, dass er es tut.
 | [`DC-QA-02`](../../spec/lastenheft.md) | `TestDecode_RequirementsObjectFormUnchanged` | [`internal/adapter/driven/configyaml/trace_requirements_list_test.go`](../../internal/adapter/driven/configyaml/trace_requirements_list_test.go) |
 | [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestAllPathsStagedGitlinkIstKeinePfad` | [`internal/adapter/driven/git/git_renames_test.go`](../../internal/adapter/driven/git/git_renames_test.go) |
 | [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestRenamesArtDesEintrags` | [`internal/adapter/driven/git/git_renames_test.go`](../../internal/adapter/driven/git/git_renames_test.go) |
+| [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestRenamesCommitMengeOhneVorBase` | [`internal/adapter/driven/git/git_renames_test.go`](../../internal/adapter/driven/git/git_renames_test.go) |
 | [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestRenamesFehlerFormen` | [`internal/adapter/driven/git/git_renames_test.go`](../../internal/adapter/driven/git/git_renames_test.go) |
 | [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestRenamesLinear` | [`internal/adapter/driven/git/git_renames_test.go`](../../internal/adapter/driven/git/git_renames_test.go) |
 | [`DC-FA-VCS-001`](../../spec/lastenheft.md) | `TestRenamesMehrdeutigkeit` | [`internal/adapter/driven/git/git_renames_test.go`](../../internal/adapter/driven/git/git_renames_test.go) |
