@@ -91,7 +91,8 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   ADR immutability as a distributable module (`core-drift-vcs`), pure-Go git in
   the read-only `.git` (**no** git binary, **no** network); with
   `ignore-link-targets` a pure path follow-up after a file moved is no drift,
-  opt-in
+  with `follow-renames` so is a follow-up to the new name of a file renamed in
+  the range, opt-in
   ([`DC-FA-VCS-001`](spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in))
 - `commits` — traceability identifier in commit messages over a range (`--range`)
   or the pending message (`--commit-msg`): every commit message carries a
@@ -211,7 +212,8 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   ([`DC-FA-PSYNC-001`](spec/lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in))
 - `linelength` — characters per line in the Markdown files of the scan set
   (`linelength.scope`, `exempt-paths`): a line with more Unicode code points
-  than `max-chars` is a finding; fenced code, lines starting with `|` and a
+  than `max-chars` is a finding; fenced code, lines starting with `|` (after at
+  most three spaces) and a
   line carrying a word longer than the limit are exempt by default, each
   switchable. No line marker; a missing or invalid `max-chars` is exit 2.
   Hermetic, opt-in
@@ -343,7 +345,7 @@ works for both registries)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.92.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.93.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

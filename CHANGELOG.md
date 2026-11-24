@@ -4,6 +4,55 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.93.0] — 2026-11-24
+
+### Added
+
+- **`vcs.follow-renames`: ein Link-Nachzug auf die umbenannte Datei ist keine Drift**
+  ([`DC-FA-VCS-001`](spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in),
+  Lastenheft 0.114.3, [ADR-0115](docs/plan/adr/0115-vcs-folgt-umbenennung.md); Anlass: GitHub-Issue 18).
+  Bisher meldete `vcs` einen Nachzug nur dann nicht als `core-drift-vcs`, wenn die Datei mit
+  demselben Namen umzog (`ignore-link-targets`); zieht eine `Accepted`-ADR einen Link auf eine
+  umbenannte Datei nach, war das Drift. Mit dem neuen opt-in-Schlüssel `vcs.follow-renames: true`
+  (Default aus) folgt das Modul einer Umbenennung der Range. Eine Umbenennung führt einen Pfad aus
+  BASE mit gleichem Inhalt (Blob-Kennung und Art; das Ausführbar-Bit zählt nicht) auf einen neuen Pfad,
+  der in HEAD liegt und in BASE nicht lag — gelesen je Commit der Range, Ketten laufen entlang der
+  Abstammung. Mehrdeutige Fälle bleiben Drift (zwei Quellen auf ein Ende, ein Tausch, ein Pfad,
+  der in der Kette gelöscht und neu belegt wird), ebenso die Umbenennung der immutablen Datei selbst,
+  ein Anker, ein Linktext und jedes Umbiegen auf eine andere Datei. Ist die Basis kein Vorfahr von
+  HEAD, trägt die Range keine Umbenennung, und das Modul urteilt wie ohne den Schlüssel; ein
+  unlesbares Objekt ist Exit 2. Mit `ignore-link-targets` zusammen gilt: ein Ziel, das an einer
+  Umbenennung teilnimmt, gleicht nur einem Ziel mit demselben Ende. Ohne den Schlüssel
+  byte-identisch zu v0.92.0 für `--range` (60 Vergleiche, eine Ausnahme siehe Changed); die Laufzeit
+  über 100 Commits liegt beim 1,37-Fachen. Handbuch, Abschnitt zu `vcs`.
+
+### Changed
+
+- **`linelength.exempt-tables` nimmt auch eine eingerückte Tabellenzeile aus** (geänderte Zusage;
+  [`DC-FA-LLEN-001`](spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in),
+  Lastenheft 0.115.1, [ADR-0116](docs/plan/adr/0116-linelength-eingerueckte-tabellenzeilen.md);
+  Anlass: GitHub-Issue 20). Eine Zeile, vor deren erstem `|` höchstens drei Leerzeichen (U+0020)
+  stehen, gilt jetzt als Tabellenzeile — etwa eine Tabelle in einem Listenpunkt. **Ein Bestand mit
+  solchen Zeilen wird dadurch grüner.** Vier und mehr Leerzeichen, ein Tab, U+00A0, `> |` und
+  eine Tabelle unter einer längeren Listenmarke wie `10. ` bleiben ein Befund; ohne
+  Listen-Erkennung in der geteilten Lexik trägt die Ausnahme keinen Listenkontext. Kein neuer
+  Schlüssel; mit `exempt-tables: false` wird jede `|`-Zeile wieder gemessen. Die übrigen Module,
+  die eine Tabellenzeile lesen (`targets`, `planning.waves`, `structure`), ändern sich nicht. Vorher-
+  und Nachher-Image über 1176 Vergleiche: 180 Abweichungen, alle in den Fällen mit einer
+  eingerückten Zeile und aktiver Ausnahme. Handbuch §4.28.
+- **`vcs --staged`: Im Index zählen nur Datei, ausführbare Datei und Symlink**, wie im Baum.
+  Ersetzt ein Gitlink eine immutable Datei an ihrem Pfad, endete der Lauf bisher mit Exit 2
+  (`object not found`) und meldet jetzt `core-drift-vcs`, wie im `--range`-Modus. Das ist die einzige
+  Abweichung gegenüber v0.92.0 ohne den neuen Schlüssel.
+
+### Changed (Repo-intern)
+
+- Das eigene Profil schaltet `vcs.follow-renames` ein
+  ([ADR-0115](docs/plan/adr/0115-vcs-folgt-umbenennung.md) Entscheidung 7); `make adr-check` lässt damit
+  den Nachzug auf eine umbenannte Spec-Datei durch.
+- Neue Dokumentations-Regel 18 (eine Festlegung im Slice-Plan zitiert die Stelle, die sie trägt) und
+  eine Erweiterung der Regel 13 (eine wiedergegebene Grenze nimmt ihre Bedingung mit) in `AGENTS.md` §5.
+
 ## [0.92.0] — 2026-11-23
 
 ### Added

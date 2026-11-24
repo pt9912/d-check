@@ -90,7 +90,8 @@ Dokuments:
   ADR-Immutabilität als verteilbares Modul (`core-drift-vcs`), reine-Go-git im
   read-only `.git` (**kein** git-Binary, **kein** Netz); mit
   `ignore-link-targets` ist der reine Pfad-Nachzug einer umgezogenen Datei
-  keine Drift, opt-in
+  keine Drift, mit `follow-renames` auch der Nachzug auf den neuen Namen einer
+  in der Range umbenannten Datei, opt-in
   ([`DC-FA-VCS-001`](spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in))
 - `commits` — Traceability-Kennung in Commit-Messages über eine Range (`--range`)
   bzw. der Pending-Message (`--commit-msg`): jede Commit-Message trägt eine
@@ -212,7 +213,8 @@ Dokuments:
   ([`DC-FA-PSYNC-001`](spec/lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in))
 - `linelength` — Zeichen je Zeile in den Markdown-Dateien der Scan-Menge
   (`linelength.scope`, `exempt-paths`): eine Zeile mit mehr Unicode-Codepunkten
-  als `max-chars` ist ein Befund; Fenced-Code, Zeilen, die mit `|` beginnen,
+  als `max-chars` ist ein Befund; Fenced-Code, Zeilen, die mit `|` beginnen
+  (nach höchstens drei Leerzeichen),
   und eine Zeile mit einem Wort über der Grenze sind im Default ausgenommen,
   je einzeln schaltbar. Kein Zeilen-Marker; ein fehlendes oder ungültiges
   `max-chars` ist Exit 2. Hermetisch, opt-in
@@ -347,7 +349,7 @@ zusätzlich nach Docker Hub gespiegelt als
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.92.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.93.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
