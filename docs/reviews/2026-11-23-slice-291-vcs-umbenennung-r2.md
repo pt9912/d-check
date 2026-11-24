@@ -235,7 +235,7 @@ ADR im Stand `746d1863` nebeneinander.
 
 - **Kategorie:** INFO
 - **Quelle:** Prüffrage 20
-- **Pfad:** `docs/plan/planning/next/slice-292-vcs-umbenennung-modulkern.md` · „Tausch A ↔ B in einem Commit ⇒ kein Pfad nimmt teil (Quelle und Ende zugleich).“ (Z. 148)
+- **Pfad:** `docs/plan/planning/in-progress/slice-292-vcs-umbenennung-modulkern.md` · „Tausch A ↔ B in einem Commit ⇒ kein Pfad nimmt teil (Quelle und Ende zugleich).“ (Z. 148)
 - **Befund:** In einem Commit bestehen A und B vor und nach dem Schritt; nach Spezifikation Z. 2073–2077
   ist das gar keine Umbenennung, die Regel „zugleich Quelle und Ende“ greift erst beim Tausch über einen
   Zwischennamen in mehreren Commits (ADR §Konsequenzen, Z. 188). Der Testfall bliebe grün, wenn die

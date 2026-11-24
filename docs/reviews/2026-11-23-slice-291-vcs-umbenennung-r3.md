@@ -136,7 +136,7 @@ mit dem Schlüssel geht auf eine teilnehmende Umbenennung zurück.
 - **Kategorie:** MEDIUM
 - **Quelle:** Prüffrage 20; `v6.18.1` · `regelwerk/modul-11-verification.md` §Bewusstes Brechen für
   DoD-Testbehauptungen; [ADR-0115](../plan/adr/0115-vcs-folgt-umbenennung.md) Entscheidung 1 und 9
-- **Pfad:** `docs/plan/planning/next/slice-292-vcs-umbenennung-modulkern.md` · „Tausch A ↔ B in einem
+- **Pfad:** `docs/plan/planning/in-progress/slice-292-vcs-umbenennung-modulkern.md` · „Tausch A ↔ B in einem
   Commit (A → B und B → A, gleiche Blobs gekreuzt)“ (Z. 148–149)
 - **Befund:** In einem Commit bestehen A und B vor und nach dem Schritt; nach Lastenheft Z. 2263–2266
   und Spezifikation Z. 2073–2077 ist das keine Umbenennung — es gibt weder A → B noch B → A. Der Testfall
@@ -162,7 +162,7 @@ mit dem Schlüssel geht auf eine teilnehmende Umbenennung zurück.
   [`DC-FA-VCS-001`](../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
   Absatz „Was gleichgesetzt wird“
 - **Pfad:** `spec/lastenheft.md` · „existiert und Ende keiner zweiten Quelle ist“ (Z. 2295), Kriterien
-  Z. 2373–2400; `docs/plan/planning/next/slice-292-vcs-umbenennung-modulkern.md` · Testfall-Liste
+  Z. 2373–2400; `docs/plan/planning/in-progress/slice-292-vcs-umbenennung-modulkern.md` · Testfall-Liste
   (Z. 130–173); `docs/plan/adr/0115-vcs-folgt-umbenennung.md` · Fitness Function (Z. 233–234)
 - **Befund:** Die Bedingung steht gleichlautend in Lastenheft, Spezifikation (Z. 2153–2154), ADR
   Entscheidung 9 (Z. 113–114) und Schema-Zeile. Erreichbar ist sie nur über einen Merge (A → E auf der
@@ -202,7 +202,7 @@ mit dem Schlüssel geht auf eine teilnehmende Umbenennung zurück.
 - **Kategorie:** LOW
 - **Quelle:** [ADR-0115](../plan/adr/0115-vcs-folgt-umbenennung.md) Entscheidung 11 („Löschen und
   Neuanlegen im **selben** Schritt ist … eine Inhaltsänderung“)
-- **Pfad:** `docs/plan/planning/next/slice-292-vcs-umbenennung-modulkern.md` · „Ende gelöscht und als
+- **Pfad:** `docs/plan/planning/in-progress/slice-292-vcs-umbenennung-modulkern.md` · „Ende gelöscht und als
   andere Datei neu angelegt; Zwischenpfad einer Kette neu belegt“ (Z. 158)
 - **Befund:** Z. 155–156 (neu in `7d4643c4`) sagt für Löschen und Neuanlegen im selben Commit „der
   Nachzug folgt“, Z. 158 für „gelöscht und … neu angelegt“ ohne Commit-Angabe „Nachzug ist Befund“.
