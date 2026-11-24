@@ -280,6 +280,34 @@ Kriterium 1, 2 und 3; Entscheid 4 (eigene Frage in der Lexik, andere Module unve
 die umgeschriebenen Sätze. Die drei Grenzen und die Prosa-Zeile stehen als Sätze im Punkt „Tabellenzeile
 heißt …“ ohne eigenes Kriterium (F-4).
 
+### Plan-Nachtrag des Implementers (2026-11-24, nach Review R1, Befund F-1)
+
+Der Befund ([Review R1](../../../reviews/2026-11-24-slice-293-linelength-eingerueckte-tabellen-r1.md) F-1)
+trifft eine Aussage, die ich ohne ihre Bedingung geschrieben hatte: „die übrigen Module lesen eine
+eingerückte Zeile weiter nicht als Tabellenzeile“. Am Gegenstand gelesen: `declaredObservationIDs` in
+`planning_observations.go` trimmt die Zeile (`strings.TrimSpace`) vor dem Test auf `|`, und
+`SplitPipeTableLine` in `markdown_table.go` trimmt (`strings.TrimSpace`) — beide lesen eine eingerückte
+Zeile als Tabellenzeile; die Aussage gilt nur für die drei Konsumenten von `tableRowLine`. Die Messung
+unter `--trace` ist die des Reviews (am eigenen Fixture ohne die Konfiguration des Leser-Musters
+nicht nachgestellt). Keine Plan-Änderung über §3 hinaus: die Kürzung wiederholt die Eingrenzung, die
+Kriterium 5 und die Spezifikation schon tragen.
+
+**Die Aussage, über ihren Inhalt gesucht**, vor dem Editieren:
+`git grep -n -E 'übrigen Module|weiter nicht als Tabellenzeile|andere Module|anderen Module|übrige Module' -- spec/lastenheft.md spec/spezifikation.md`.
+
+| Stelle | Aussage | Ergebnis |
+|---|---|---|
+| Lastenheft, Absatz zur geteilten Lexik (3 Stellen) | „fragt `linelength` etwas anderes als die übrigen Module“; „Spalte-0-Antwort der übrigen Module“; „die übrigen Module lesen eine eingerückte Zeile weiter nicht …“ | **auf `targets`, `planning.waves` und `structure` gekürzt** |
+| Lastenheft, Historie 0.115.0 | derselbe Satz | **bleibt byte-gleich** (Chronik, nicht umgeschrieben); die Präzisierung steht in der neuen Zeile 0.115.1 |
+| Spezifikation, Schritt 4 | „Antwort von `tableRowLine`, die die übrigen Module lesen“ | **auf die drei Module gekürzt** |
+| Spezifikation, Historie (Zeile von 0.115.0) | nennt schon die drei Module | unberührt; eigene Zeile für den Nachzug |
+| Lastenheft Kriterium „andere Module unverändert“ | nennt die drei Module | unberührt, trug die Eingrenzung schon |
+| Lastenheft Absatz, „für Fenced-Code … die übrigen Module“ | Fenced-Code, nicht Tabellenzeile | unberührt: anderer Gegenstand, vom Review nicht beanstandet |
+| Lastenheft 1573, 1613, 1699, 1807, 1857, 1929, 4785, 4812; Spezifikation 90, 971, 1424, 1751–1842, 2443, 3617, 3674, 3766, Historie 4427, 4445 | andere Gegenstände (Opt-out-Marker, Vorverarbeitung, Eingabefehler, §5) | unberührt |
+
+Version: Lastenheft 0.115.1 mit **eigener** Historie-Zeile „präzisiert“, die Zeile 0.115.0 bleibt byte-gleich
+([`MR-032`](../../../../harness/conventions.md#mr-032); die Lehre aus welle-96 R2 L-2).
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
