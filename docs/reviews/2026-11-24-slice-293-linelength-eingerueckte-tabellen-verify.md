@@ -28,7 +28,7 @@
 
 Die Punkte 6 bis 9 sind nach dem Plan Closure-Pflichten, die der Planner nach dieser Verifikation erfüllt; sie sind **nicht** verletzt, aber auch noch nicht bestätigt. Die vier inhaltlichen Punkte 1 bis 5 sind bestätigt.
 
-**Bewusstes Brechen (Modul 11):** Dieser Slice liefert Text, keinen Test; kein DoD-Punkt beruft sich auf einen grünen Test, der ohne einen Fix rot laufen müsste. Der Sensor-Beleg ist hier die Gegenprobe am Gegenstand (Abschnitt 3), nicht ein Mutationstest. Die Tests der Anforderung (Mutation je Test) trägt `slice-294` ([DoD dort](../plan/planning/open/slice-294-linelength-eingerueckte-tabellen-kern.md)).
+**Bewusstes Brechen (Modul 11):** Dieser Slice liefert Text, keinen Test; kein DoD-Punkt beruft sich auf einen grünen Test, der ohne einen Fix rot laufen müsste. Der Sensor-Beleg ist hier die Gegenprobe am Gegenstand (Abschnitt 3), nicht ein Mutationstest. Die Tests der Anforderung (Mutation je Test) trägt `slice-294` ([DoD dort](../plan/planning/next/slice-294-linelength-eingerueckte-tabellen-kern.md)).
 
 ### Zu Punkt 1: Entscheid → Kriterium, selbst zugeordnet
 

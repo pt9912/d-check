@@ -52,23 +52,23 @@ zusammen mit der Begründungs-Pflicht je Punkt.
 [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)
 steht im Lastenheft, Verfahren und Schema in der Spezifikation, die Entscheidung in einer Folge-ADR zu
 [`ADR-0114`](../../adr/0114-linelength-modul.md) (`Proposed` bis zur Closure von
-[`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md)) — und die vier Entscheide
+[`slice-294`](../next/slice-294-linelength-eingerueckte-tabellen-kern.md)) — und die vier Entscheide
 unten sind **vor dem ersten Code** vom Auftraggeber bestätigt.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Code, Tests, Konfigurations-Rand** — gehören
-  [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md); dieser Slice schreibt, was der
+  [`slice-294`](../next/slice-294-linelength-eingerueckte-tabellen-kern.md); dieser Slice schreibt, was der
   Code einlösen soll, damit die Reviews dort gegen eine Anforderung prüfen.
 - **Das Benutzerhandbuch (§4.28 und die Modul-Tabelle)** — es bildet den Ist-Zustand ab
   und beschreibt keine Fassung vor ihrem Code; es ändert sich mit dem Code in
-  [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md).
+  [`slice-294`](../next/slice-294-linelength-eingerueckte-tabellen-kern.md).
 - **Der Text von [`ADR-0114`](../../adr/0114-linelength-modul.md)** — eine `Accepted`-ADR wird nicht
   überschrieben ([`AGENTS.md`](../../../../AGENTS.md) §3.5); die Folge-ADR löst Entscheidung 5 (b) und
   die Konsequenz zur eingerückten Tabellenzeile teilweise ab
   ([`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md)). Die Geschichte-Zeile in
   [`ADR-0114`](../../adr/0114-linelength-modul.md) und ihre Index-Zeile („teil-superseded: [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md)“) tragen den Übergang von [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) nach
-  `Accepted` und gehören deshalb [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md)
+  `Accepted` und gehören deshalb [`slice-294`](../next/slice-294-linelength-eingerueckte-tabellen-kern.md)
   ([Verdikt](../../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-6).
 - **Lastenheft §5** — geprüft und unverändert (Kopf „Berührte Spec-Stellen“): kein Satz dort ändert
   sich, solange der Helfer in der geteilten Lexik wohnt.
@@ -132,7 +132,7 @@ Aussagen-Berührung steht hier gar nicht.
 | Folge-ADR zu [`ADR-0114`](../../adr/0114-linelength-modul.md) | liegt vor: [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md), `Proposed`, vom Architect mit dem Verdikt geschrieben | Entscheidung 5 (b) und die Konsequenz zur eingerückten Tabellenzeile werden teilweise abgelöst (`Supersedes`-Teil); der Architect gleicht sie an, wenn das Schreiben der Anforderung eine Entscheidung verschiebt |
 | **Lastenheft §5** | geprüft, **unverändert** | die Antwort kommt aus der geteilten Lexik ([`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) Entscheid 4); die Zusage dort „mit derselben Markdown-Lexik wie die übrigen Module“ bleibt wahr ([Verdikt](../../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-3) |
 | `docs/plan/adr/README.md` | update | ADR-Index ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 4) |
-| Plan von [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md) | update | die Testfälle, die aus den bestätigten Entscheiden folgen |
+| Plan von [`slice-294`](../next/slice-294-linelength-eingerueckte-tabellen-kern.md) | update | die Testfälle, die aus den bestätigten Entscheiden folgen |
 
 **Die kleinsten Antworten stehen einmal** — im Wortlaut der Welle
 ([§5](../welle-97-linelength-eingerueckte-tabellen.md), Fragen 1 bis 4), mit der Stelle, die sie trägt.
@@ -145,7 +145,7 @@ Lexik keinen Listenkontext hergibt. Frage 4 ist im
 
 **Die sechs Akzeptanzkriterien, die die Anforderung tragen soll** (Obergrenze der Welle: etwa acht;
 jedes mit der Bedingung, unter der es gilt — der Lastenheft-Text und das Kriterium in
-[`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md) §3 müssen **dieselbe** Bedingung
+[`slice-294`](../next/slice-294-linelength-eingerueckte-tabellen-kern.md) §3 müssen **dieselbe** Bedingung
 nennen):
 
 | # | Kriterium (Given … then) | Änderung am Bestand |
@@ -173,7 +173,7 @@ git grep -n -E 'eingerückte[rn]? (Tabellenzeile|`\|`)|eingerückte oder zitiert
 Von den 27 Zeilen sind 4 Beschreibungen, die sich mit diesem Slice ändern (Lastenheft: Ausnahme (b)
 in der Beschreibung und das Kriterium „(b), Grenzen“; Spezifikation: Schritt 4 und die
 Schema-Zeile); das Kriterium „(b), an und aus“ bleibt, Kriterium 1 steht daneben. Die übrigen nennen den Schlüssel am Konfigurations-Rand, in Tests, im
-Image-Test, im Handbuch (zwei Beschreibungen: [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md))
+Image-Test, im Handbuch (zwei Beschreibungen: [`slice-294`](../next/slice-294-linelength-eingerueckte-tabellen-kern.md))
 oder in der `Accepted`-ADR (unveränderlich). Die zweite Suche findet die Aussage ohne den
 Schlüssel: im Lastenheft die Zusage „dieselbe Antwort … keine zweite“, den Punkt „Tabellenzeile
 heißt …“ und Out-of-Scope (4); in der Spezifikation die „Grenzen, am Gegenstand gelesen“; im
@@ -261,7 +261,7 @@ git grep -n -E 'eingerückte[rn]? (Tabellenzeile|`\|`)|eingerückte oder zitiert
 | Spezifikation, Schema `linelength.exempt-tables` | „die mit `\|` beginnen“ | umgeschrieben |
 | Lastenheft 4356 (`metrics`), Spezifikation 2419, 2801, 3040, 3555, 4134 (`targets`, `planning.waves`, `structure`, `metrics`) | Spalte 0, „dieselbe Antwort wie bei `targets`“ | **unberührt, bleibt wahr**: sie beschreiben `tableRowLine` und die anderen Module; beides ändert sich nicht |
 | Lastenheft 3246 | „keine zweite Regel“ (anderer Gegenstand) | unberührt |
-| Handbuch §4.28 (drei Stellen), Modul-Tabelle, Änderungs-Tabelle | Ist-Zustand zu `exempt-tables` | gehört [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md) |
+| Handbuch §4.28 (drei Stellen), Modul-Tabelle, Änderungs-Tabelle | Ist-Zustand zu `exempt-tables` | gehört [`slice-294`](../next/slice-294-linelength-eingerueckte-tabellen-kern.md) |
 | `config_template.go`, READMEs | Kommentar bzw. Modul-Bullet | `slice-294` bzw. Release-Prep |
 | [`ADR-0114`](../../adr/0114-linelength-modul.md) | Entscheidung 5 (b), Konsequenz | unveränderlich (`Accepted`) |
 
@@ -415,8 +415,8 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   den zu weiten Satz weiter und bleibt als Chronik stehen, die Zeile 0.115.1 stellt ihn richtig (V-2);
   der Satz „für Fenced-Code … die übrigen Module“ steht ohne Eingrenzung, betrifft aber eine andere
   Frage (V-1); die drei Grenzen und die Prosa-Zeile haben keine eigenen Kriterien, ihre Tests stehen
-  in [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md) §3 (V-3, Verdikt F-4).
-- **Folge-Slices:** keine neuen. [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md)
+  in [`slice-294`](../next/slice-294-linelength-eingerueckte-tabellen-kern.md) §3 (V-3, Verdikt F-4).
+- **Folge-Slices:** keine neuen. [`slice-294`](../next/slice-294-linelength-eingerueckte-tabellen-kern.md)
   trägt Helfer, Tests je Kriterium, Handbuch und den Übergang von
   [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) auf `Accepted`.
 - **Risiken aus §6:** drei *entfallen*, eines *weiter offen* — siehe §6.
@@ -459,7 +459,7 @@ Festlegungen stehen in der Welle mit ihrer Stelle),
 [`BEO-ALL/grenz-aussage-ohne-ihre-bedingung`](../observations/BEO-ALL/grenz-aussage-ohne-ihre-bedingung/observation.md)
 (offen, 1× — jede Grenze der Anforderung trägt ihre Bedingung, §3),
 [`BEO-ALL/spec-randbedingung-ohne-test`](../observations/BEO-ALL/spec-randbedingung-ohne-test/observation.md)
-(offen, 2× — jede Randbedingung bekommt ein Kriterium, das [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md) mit einem Test belegt),
+(offen, 2× — jede Randbedingung bekommt ein Kriterium, das [`slice-294`](../next/slice-294-linelength-eingerueckte-tabellen-kern.md) mit einem Test belegt),
 [`BEO-ALL/gemeinsame-leser-sind-zwei-familien`](../observations/BEO-ALL/gemeinsame-leser-sind-zwei-familien/observation.md)
 (offen, 2× — „dieselbe Lexik“ stimmt nur für eine Familie; Frage 4 der Welle),
 [`BEO-ALL/shared-lexicon-drifts-at-edges`](../observations/BEO-ALL/shared-lexicon-drifts-at-edges/observation.md)
@@ -469,7 +469,7 @@ Festlegungen stehen in der Welle mit ihrer Stelle),
 derselben Markdown-Lexik wie die übrigen Module“ sagt) und
 [`BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/observation.md)
 (verkörpert, 4× — die Spiegel-Suche in §3 nimmt Handbuch und Konfigurations-Vorlage auf; sie gehören
-[`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md)). **Kein Treffer:**
+[`slice-294`](../next/slice-294-linelength-eingerueckte-tabellen-kern.md)). **Kein Treffer:**
 [`BEO-ALL/prosa-verschwindet-in-inline-code-spanne`](../observations/BEO-ALL/prosa-verschwindet-in-inline-code-spanne/observation.md)
 (offen, 2×) — `linelength` misst die rohe Zeile über `proseLineSet`, das nur Fenced-Code
 ausschließt und keine Inline-Code-Spanne leert; der Zähler bleibt unberührt.
