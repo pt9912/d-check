@@ -1,0 +1,2 @@
+**Vorgang:** slice-293
+**Fund:** Das Lastenheft sagte „die übrigen Module lesen eine eingerückte Zeile weiter nicht als Tabellenzeile“; am Gegenstand stimmt das nur für `targets`, `planning.waves` und `structure`, denn der RTM-Leser und der Beobachtungs-Leser in `planning` trimmen die Zeile (Review R1 F-1). Dieselbe Eingrenzung fehlte in der Spezifikation (Schritt 4) und blieb in Verifikation V-1 an einer anderen Frage ohne Eingrenzung stehen.

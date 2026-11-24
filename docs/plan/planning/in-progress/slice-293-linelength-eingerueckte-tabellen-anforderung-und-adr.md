@@ -86,7 +86,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)
+- [x] [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)
       ist im Lastenheft geändert (Version gehoben, Historie-Zeile nach
       [`MR-032`](../../../../harness/conventions.md#mr-032), **eine Zeile je Version**): die
       Ausnahme (b) und der Punkt „Tabellenzeile heißt …“ nennen die Einrückung bis drei
@@ -102,21 +102,21 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       (2) eine Tabelle auf der Zeile der Listenmarke (`- | a | b |`) beginnt nicht mit Leerzeichen
       und `|` und bleibt gemessen; (3) eine Tabelle unter einer Marke von vier Spalten (`10. `) oder
       in einer verschachtelten Liste steht mit vier und mehr Leerzeichen und bleibt gemessen.
-- [ ] Die Spezifikation führt das Verfahren (Schritt 4, „Nicht Gegenstand“, „Grenzen, am Gegenstand
+- [x] Die Spezifikation führt das Verfahren (Schritt 4, „Nicht Gegenstand“, „Grenzen, am Gegenstand
       gelesen“) und die Beschreibung von `linelength.exempt-tables` im Schema; jede Aussage über die
       Grenzen ist am Gegenstand gelesen ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 13), nicht
       aus der Beschreibung übernommen.
-- [ ] Die Folge-ADR (Entscheide samt verglichenen Alternativen, darunter „`tableRowLine` selbst
+- [x] Die Folge-ADR (Entscheide samt verglichenen Alternativen, darunter „`tableRowLine` selbst
       weiten“ und „eigener Schalter“) liegt als `Proposed` vor, ist im
       [ADR-Index](../../adr/README.md) geführt und trägt `## Re-Evaluierungs-Trigger`.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
 ## 3. Plan (vor Code)
 
@@ -352,26 +352,25 @@ dasteht.
   ist …“, Punkt „Tabellenzeile heißt …“, Kriterium „Ausnahme (b), Grenzen“, Out-of-Scope (4));
   die Änderung muss sie umschreiben, nicht daneben eine widersprechende Zeile stellen
   ([`BEO-ALL/plan-entscheid-steht-gegen-lastenheft`](../observations/BEO-ALL/plan-entscheid-steht-gegen-lastenheft/observation.md),
-  verkörpert, 3×) — **Ausgang:** *entfallen*, wenn das Review diese Stellen nebeneinander gelesen
-  und keinen Widerspruch gefunden hat; sonst *eingetreten* mit dem Fix-Commit als Beleg und einer
-  Evidenz-Datei im Register.
+  verkörpert, 3×) — **Ausgang:** *entfallen.* Review R1 las die Stellen nebeneinander und fand
+  keinen Widerspruch zwischen ihnen; sein einziger Befund (F-1) war ein Satz, der über den
+  Gegenstand hinausging, kein Widerspruch (Verifikation, Risiko 1).
 - Die Anforderung wächst über sechs Kriterien (Obergrenze der Welle: etwa acht), weil eine
   Randbedingung Randfälle mitbringt
   ([`BEO-ALL/empfehlung-weitet-anforderung-ueber-den-anlass`](../observations/BEO-ALL/empfehlung-weitet-anforderung-ueber-den-anlass/observation.md),
-  1×) — **Ausgang:** *entfallen*, wenn Lastenheft und Folge-ADR bei höchstens acht Kriterien und den
-  vier Entscheiden der Welle bleiben; sonst *eingetreten* mit einer Evidenz-Datei im Register (dann
-  2×).
+  1×) — **Ausgang:** *entfallen.* Das Lastenheft führt sieben Kriterien der Familie (b) bei der
+  Obergrenze acht, die Folge-ADR vier Entscheide (Verifikation, Risiko 2).
 - Die enge Antwort zu Frage 3 (höchstens drei Leerzeichen) lässt eine Tabelle unter einer
   Vier-Spalten-Marke oder in einem verschachtelten Listenpunkt als Befund stehen; ob der Bestand des
-  Melders solche Zeilen trägt, ist von hier nicht gemessen — **Ausgang:** *weiter offen*, wenn der
-  Auftraggeber die enge Fassung bestätigt (die Anforderung nennt die Grenze mit ihrer Bedingung; der
-  Register-Eintrag entsteht bei der Closure); *entfallen*, wenn er stattdessen die Listen-Erkennung
-  verlangt — das ist dann eine Plan-Änderung vor dem Code (§4, Rückführung), nicht Teil dieses
-  Slice.
+  Melders solche Zeilen trägt, ist von hier nicht gemessen — **Ausgang:** *weiter offen.* Der
+  Auftraggeber hat die enge Fassung am 2026-11-24 bestätigt, die Anforderung nennt die Grenze mit
+  ihrer Bedingung. Der Bestand des Melders bleibt ungemessen; trägt er nach der Hebung Zeilen dieser
+  Form, ist die Listen-Erkennung ein eigener Vorgang. Register:
+  [`BEO-ALL/enge-einrueckungs-grenze-laesst-listen-tabellen-stehen`](../observations/BEO-ALL/enge-einrueckungs-grenze-laesst-listen-tabellen-stehen/observation.md).
 - Lastenheft und Spezifikation führen dieselbe Aussage je in eigenen Worten; ein Satz, der nur an einer
-  Stelle umgeschrieben wird, stünde gegen den anderen — **Ausgang:** *entfallen*, wenn die zweite
-  Suche aus §3 nach dem Editieren keine der dort genannten Stellen mehr mit der alten Aussage zeigt
-  (jede umgeschrieben oder als unberührt begründet).
+  Stelle umgeschrieben wird, stünde gegen den anderen — **Ausgang:** *entfallen.* Die zweite Suche
+  nach dem Editieren zeigt keine der genannten Stellen mehr mit der alten Aussage; jede ist
+  umgeschrieben oder als unberührt begründet (Verifikation, Risiko 4).
 
 ## 7. Closure-Notiz
 
@@ -387,7 +386,40 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-*(Wird bei der Closure gefüllt.)*
+- **Was hat funktioniert:** Der Zuschnitt aus welle-96 trug. Die Anforderung blieb bei sieben
+  Kriterien der Familie (b) und vier Entscheiden, die Review-Runde fand einen Befund (einen zu weiten
+  Satz) statt vier, und es genügte eine Runde. Die Messung am Image vor dem Schreiben (Fixture mit
+  `max-chars: 10`) hat den Ist-Zustand festgelegt, statt ihn zu vermuten; Reviewer und Verifier haben
+  sie unabhängig nachgefahren. Der Architect entschied Frage 4 am Code: `tableRowLine` wird nicht
+  geweitet, weil `targets`, `planning.waves` und `structure` sonst gegen ihre Zusage „Spalte 0“
+  rutschten.
+- **Was ging anders als geplant:** **(1) Ein Satz ging über den Gegenstand hinaus** („die übrigen
+  Module lesen eine eingerückte Zeile weiter nicht als Tabellenzeile“): der RTM-Leser unter
+  `--trace` und der Beobachtungs-Leser in `planning` trimmen die Zeile und lesen sie als Tabelle.
+  Gekürzt auf die drei Module; das Lastenheft steht seitdem auf 0.115.1, die Zeile 0.115.0 blieb
+  unverändert. **(2) Die Spiegel-Zählung wuchs** von 10 Dateien und 27 Zeilen auf 12 und 35, weil
+  [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) und ihr Index-Eintrag nach dem Plan dazukamen. **(3) Die Zählung der „Ausformungen“**
+  stand in Plan-Nachtrag und Botschaft verschieden (zwei und drei, R1 F-2).
+- **Steering-Loop-Eintrag:** mit diesem Slice ist keine Regel, kein Sensor und keine benannte
+  Spec-Lücke verkörpert.
+  [`BEO-ALL/grenz-aussage-ohne-ihre-bedingung`](../observations/BEO-ALL/grenz-aussage-ohne-ihre-bedingung/observation.md)
+  erreicht mit diesem Slice 2×.
+- **Beobachtungs-Register (`../observations/`):** `evidence/slice-293.md` in
+  [`BEO-ALL/grenz-aussage-ohne-ihre-bedingung`](../observations/BEO-ALL/grenz-aussage-ohne-ihre-bedingung/observation.md)
+  (2×) und in
+  [`BEO-ALL/commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/observation.md)
+  (schon verkörpert); neu angelegt, 1×:
+  [`BEO-ALL/enge-einrueckungs-grenze-laesst-listen-tabellen-stehen`](../observations/BEO-ALL/enge-einrueckungs-grenze-laesst-listen-tabellen-stehen/observation.md).
+  Benannt, nicht gezählt: die Schema-Zeile von `linelength.exempt-tables` führt eine kürzere
+  Aufzählung der Grenzen als Lastenheft und Spezifikation (R1 F-3); die Historie-Zeile 0.115.0 trägt
+  den zu weiten Satz weiter und bleibt als Chronik stehen, die Zeile 0.115.1 stellt ihn richtig (V-2);
+  der Satz „für Fenced-Code … die übrigen Module“ steht ohne Eingrenzung, betrifft aber eine andere
+  Frage (V-1); die drei Grenzen und die Prosa-Zeile haben keine eigenen Kriterien, ihre Tests stehen
+  in [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md) §3 (V-3, Verdikt F-4).
+- **Folge-Slices:** keine neuen. [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md)
+  trägt Helfer, Tests je Kriterium, Handbuch und den Übergang von
+  [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) auf `Accepted`.
+- **Risiken aus §6:** drei *entfallen*, eines *weiter offen* — siehe §6.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
