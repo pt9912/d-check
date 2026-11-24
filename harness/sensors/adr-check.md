@@ -15,6 +15,12 @@ Pfad-Nachzug — eine Änderung nur an Link-Zielen auf eine umgezogene Datei,
 und ausdrücklich **nicht** Teil des Kern-Vergleichs
 ([`AGENTS.md`](../../AGENTS.md) §3.5, §3.7).
 
+Der Pfad-Nachzug auf eine **umbenannte** Datei — anderer Dateiname — ist
+`vcs.follow-renames` ([ADR-0115](../../docs/plan/adr/0115-vcs-folgt-umbenennung.md)):
+Das Modul liest die Umbenennungen der Range aus der git-Historie und setzt ein
+Link-Ziel über sie gleich. Ob dieses Repo den Schlüssel einschaltet, steht im
+`vcs`-Block der [`.d-check.yml`](../../.d-check.yml); Grenze 5.
+
 Eine gelöschte oder umbenannte `Accepted`-ADR ist ein **FAIL**.
 
 **Vorlauf-Wächter:** dem Container-Lauf geht `history-range-guard` voraus
@@ -110,11 +116,15 @@ Grün über leerem Prüfbereich (shallow-Klon) kommt so nicht zustande.
    `internal/adapter/driven/git/`) und fallen ohne ihren Fix — verifiziert
    durch Zurücknehmen.
 
-   **Und die Gegenrichtung hat einen Preis, der hierher gehört:** Weil ein
-   Eintrag ohne Datei-Inhalt befundfrei bleibt, geht auch der Fall durch, in
-   dem eine `Accepted`-ADR am geschützten Pfad durch einen **Gitlink** ersetzt
-   wird — sie ist dann verschwunden, und niemand meldet es. Das ist kein
-   Neuzugang, sondern eine benannte, unverändert bestehende Grenze.
+   **Und die Gegenrichtung hat eine Kante, die das Modul meldet:** Ein Eintrag
+   ohne Datei-Inhalt bleibt befundfrei, solange er keinen Pfad besetzt, den eine
+   immutable Datei trug. Ersetzt ein **Gitlink** eine `Accepted`-ADR an ihrem
+   Pfad, fehlt der Pfad in der Datei-Menge von HEAD bzw. des Index, und das
+   Modul meldet `core-drift-vcs` (gelöscht oder umbenannt) — mit `--range` wie
+   mit `--staged`, mit und ohne `vcs.follow-renames`
+   (`TestVCS_ImmutableDateiDurchGitlinkErsetzt` in
+   `internal/adapter/driving/cli/`). Die Enumeration des Index nimmt dafür
+   dieselben drei Arten wie der Baum.
 
    **Für gepinnte Konsumenten galt das länger:** Wer ein veröffentlichtes
    Image `v0.76.0` oder älter fährt, hat die dritte/vierte Ausprägung
@@ -139,18 +149,43 @@ Grün über leerem Prüfbereich (shallow-Klon) kommt so nicht zustande.
    jedes Link-Ziel, das in BASE oder HEAD als Datei oder Verzeichnis auflöst,
    auf Dateiname und Anker; ein Ziel, das nicht auflöst, bleibt roh. Es prüft
    damit, dass das neue Ziel in einem der beiden Stände existiert und denselben
-   Namen trägt — nicht, dass es dieselbe Datei ist; ein Nachzug auf eine Datei,
+   Namen trägt — nicht, dass es dieselbe Datei ist (ohne `vcs.follow-renames`,
+   Grenze 5); ein Nachzug auf eine Datei,
    die nur noch in BASE existiert, geht durch (den toten Link meldet `links`).
    Was ein Link ist, liest es mit derselben Erkennung wie das Modul `links`;
    eingerückte Zeilen, Zitate, HTML-Blöcke, Code, Klammertext ohne gültiges
    Ziel, ein Link im Linktext und Links mit escapter Klammer bleiben
    unverändert. Ein Pfad-Nachzug in Code, der hinter einer Listenmarke
    beginnt, wird normiert. Fail-safe bleibt Drift: Ziel auf der Folgezeile,
-   Umbenennung beim Umzug, Link im Zitat, eingerückter Listen-Folgeabsatz,
+   Umbenennung beim Umzug (ohne `vcs.follow-renames`), Link im Zitat,
+   eingerückter Listen-Folgeabsatz,
    Absatzzeile, die mit Inline-HTML beginnt, ein Link, den ein zeilenweise
    falsch gepaarter Code-Span verdeckt, eine Referenz-Definition mit
    CRLF-Ende. Permanent, solange der Nachzug erlaubt ist
    ([ADR-0103](../../docs/plan/adr/0103-adr-gate-laesst-pfad-nachzug-durch.md)).
+
+5. **`vcs.follow-renames` liest mehr, als das Gate scannt, und seine Zusage ist
+   Pfad-Identität.** Mit dem Schlüssel liest das Modul jeden Commit der Range,
+   die Bäume der Schritte und ihrer Eltern-Commits (auch vor BASE) und die
+   geänderten Teilbäume — über die Scan-Menge und `vcs.paths` hinaus; die
+   Laufzeit wächst mit der Länge der Range, und ein unlesbares Objekt, das nur
+   diese Erkennung liest, ist Exit 2, auch wenn BASE und HEAD lesbar sind.
+   Als Umbenennung gilt Inhalts-**Gleichheit** (Blob-Kennung und Art, drei Arten
+   zählen als Datei: regulär, ausführbar, Symlink), je Commit gegen seinen
+   Eltern-Commit, ohne Ähnlichkeits-Schwelle. **Die Zusage ist Pfad-Identität
+   entlang der Historie, nicht Inhalts-Identität des Ziels:** ein reiner
+   Move-Commit mit späterer Inhaltsänderung geht durch, und wer eine
+   Umbenennung vortäuscht, um einen Link auf ein anderes Dokument umzubiegen,
+   wird nicht erkannt — das trägt der Review des Commits. Drift bleiben:
+   Umbenennen und im selben Commit ändern, Mehrdeutigkeit (gleicher Inhalt auf
+   mehreren verschwundenen oder neuen Pfaden, zwei Enden, eine Linie, die den
+   Pfad ohne Ende verschwinden lässt), ein Tausch zweier Namen und ein
+   freigemachter, neu belegter Name, ein Link auf ein umbenanntes Verzeichnis,
+   mit `--staged` ein Move in einem früheren Commit und eine Basis, die kein
+   Vorfahr von HEAD ist. Der Review-Hinweis gehört zur Grenze: das Gate sieht
+   die Aussage der Ziel-Datei nicht. Permanent, solange der Schlüssel an ist —
+   ob ein Nachzug die Aussage einer ADR verschiebt, ist ein Urteil
+   ([ADR-0115](../../docs/plan/adr/0115-vcs-folgt-umbenennung.md)).
 
 ## Bindung
 

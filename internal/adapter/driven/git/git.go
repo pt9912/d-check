@@ -94,7 +94,9 @@ func (a *Adapter) AllPaths(base, head string) ([]string, []string, error) {
 		}
 		headAll := make([]string, 0, len(idx.Entries))
 		for _, e := range idx.Entries {
-			headAll = append(headAll, e.Name)
+			if isFileMode(e.Mode) {
+				headAll = append(headAll, e.Name)
+			}
 		}
 		return baseAll, headAll, nil
 	}

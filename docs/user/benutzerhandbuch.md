@@ -1858,6 +1858,7 @@ vcs:                           # git-Diff-Immutabilität (opt-in; braucht .git +
   status-line: '^\*\*Status:\*\*'       # Kopf-Status-Zeile (aus dem Core gestrippt)
   head-allow: '^\*\*Status:\*\* (Accepted|Superseded by ADR-[0-9]{4})'  # erlaubter Status-Übergang
   # ignore-link-targets: true           # reiner Pfad-Nachzug einer umgezogenen Datei ist keine Drift
+  # follow-renames: true                # Nachzug auf eine in der Range umbenannte Datei ist keine Drift
 commits:                       # Traceability-Kennung in Commit-Messages (opt-in; git)
   id-patterns:                 # gültige Kennungen; eine Message ohne Match ⇒ commit-untraceable
     - 'ADR-\d{4}'
@@ -2153,14 +2154,78 @@ umgezogenen Datei nachgezogen wird. Mit `vcs.ignore-link-targets: true` normiert
 das Modul vor dem Vergleich jedes Link-Ziel, das in BASE oder HEAD auf eine Datei
 oder ein Verzeichnis auflöst, auf Dateiname und Anker; ein reiner Pfad-Nachzug
 ergibt so denselben Core. Drift bleiben: ein Ziel auf eine Datei mit anderem
-Namen oder auf keine existierende, eine Anker-Änderung und jede Änderung am
-Linktext oder an der übrigen Zeile. Was ein Link ist, liest `vcs` wie das Modul
-`links`; in Code, Zitaten und HTML-Blöcken wird nichts normiert. **Grenze:**
-geprüft wird, dass das neue Ziel existiert und denselben Namen trägt, nicht,
-dass es dieselbe Datei ist. **Für den `--staged`-Lauf:** ziehen Sie die
-Verweise im selben Commit nach, der die Datei verschiebt — in einem späteren
-Commit kennt der gestagte Vergleich den alten Pfad nicht mehr, und das alte Ziel
-gilt als Drift.
+Namen (ohne `vcs.follow-renames`, siehe unten) oder auf keine existierende, eine
+Anker-Änderung und jede Änderung am Linktext oder an der übrigen Zeile. Was ein
+Link ist, liest `vcs` wie das Modul `links`; in Code, Zitaten und HTML-Blöcken
+wird nichts normiert. **Grenze:** ohne `vcs.follow-renames` wird geprüft, dass
+das neue Ziel existiert und denselben Namen trägt, nicht, dass es dieselbe Datei
+ist. **Für den `--staged`-Lauf:** ziehen Sie die Verweise im selben Commit nach,
+der die Datei verschiebt — in einem späteren Commit kennt der gestagte Vergleich
+den alten Pfad nicht mehr, und das alte Ziel gilt als Drift.
+
+**Eine verlinkte Datei wird umbenannt.** Wechselt die Datei beim Umzug ihren
+Namen — etwa bei einer Layout-Migration —, hilft `vcs.ignore-link-targets`
+nicht: das Werkzeug weiß nicht, ob der Link nachgezogen oder auf ein anderes
+Dokument umgebogen wurde. Mit `vcs.follow-renames: true` beantwortet die
+git-Historie der Range die Frage: ein Nachzug auf den **neuen Namen** einer in
+der Range umbenannten Datei ist keine Drift. Der Schlüssel ist unabhängig von
+`vcs.ignore-link-targets`; ohne ihn liest das Modul keinen Commit zwischen BASE
+und HEAD, und die Ausgabe bleibt unverändert.
+
+```yaml
+vcs:
+  paths: ["docs/plan/adr/[0-9]*.md"]
+  immutable-when: '^\*\*Status:\*\* Accepted'
+  follow-renames: true     # Nachzug auf eine in der Range umbenannte Datei folgt
+```
+
+Als Umbenennung gilt, was die Historie als **Inhalts-Gleichheit** zeigt: in
+einem Commit verschwindet ein Pfad, und ein anderer erscheint mit demselben
+Inhalt — gleiches Blob und gleiche Art (Datei oder Symlink; das Ausführbar-Bit
+zählt nicht). Eine Ähnlichkeits-Schwelle gibt es nicht. Gelesen wird jeder
+Commit der Range gegen seinen Eltern-Commit; Umbenennungen verketten sich
+entlang der Abstammung (A → B, später B → C ergibt A → C), und ein Merge-Commit
+trägt selbst keine bei. Der Move und der Nachzug dürfen im selben oder in
+verschiedenen Commits liegen. Mit `--staged` ist der einzige Schritt HEAD gegen
+den Index.
+
+Was **nicht** folgt und Drift bleibt:
+
+- die Umbenennung der **immutablen Datei selbst** — ihr Pfad ist stabil;
+- Umbenennen und im selben Commit ändern, ebenso eine Umbenennung, bei der ein
+  Werkzeug den Inhalt im selben Akt ersetzt; eine Inhaltsänderung in einem
+  **späteren** Commit folgt dagegen — die Zusage ist Pfad-Identität entlang der
+  Historie, nicht Inhalts-Identität des Ziels;
+- Mehrdeutigkeit: tragen mehrere verschwundene oder mehrere neue Pfade eines
+  Commits denselben Inhalt (Kopien, leere Dateien), führen die Linien der Range
+  zu zwei Enden, oder verschwindet der Pfad auf einer Linie ohne Ende, hat die
+  Quelle keine Umbenennung;
+- ein Tausch zweier Namen und ein Name, den die Range freimacht und neu belegt:
+  ein Ende, das schon in BASE lag, nimmt nicht teil, ebenso ein Ende, das auch
+  Ende einer zweiten Quelle ist;
+- ein Link auf ein umbenanntes **Verzeichnis** (ein Link auf eine Datei darin
+  folgt deren eigener Umbenennung);
+- mit `--staged` ein Move, der in einem früheren Commit liegt — dort sieht nur
+  die Range beide Commits;
+- eine Basis, die kein Vorfahr von HEAD ist: die Range trägt dann keine
+  Umbenennung, das Modul urteilt wie ohne den Schlüssel, ohne Exit 2.
+
+Ein **Umbiegen** auf eine andere, nicht umbenannte Datei, ein geänderter Anker
+und jede Änderung am Linktext oder an der übrigen Zeile bleiben Drift. Mit
+beiden Schlüsseln wird ein teilnehmendes Ziel wie mit `vcs.follow-renames`
+allein gleichgesetzt und jedes andere wie mit `vcs.ignore-link-targets` allein
+auf Dateiname und Anker normiert; ein Nachzug zwischen einem teilnehmenden und
+einem nicht teilnehmenden Ziel bleibt Drift, auch bei gleichem Dateinamen.
+
+**Was der Schlüssel liest.** Mit `vcs.follow-renames` liest `vcs` jeden Commit
+der Range, die Bäume der Schritte und ihrer Eltern-Commits und die Teilbäume, die
+sich darin unterscheiden — über die Scan-Menge und `vcs.paths` hinaus; eine
+Umbenennung irgendwo im Repository zählt, und die Laufzeit wächst mit der Länge
+der Range. Von einer Datei liest die Erkennung nur die Kennung ihres Inhalts.
+Ein unlesbares Objekt, das die Erkennung braucht, ist **Exit 2** — auch wenn
+BASE und HEAD lesbar sind. Ein Gitlink (Submodul) und ein Verzeichnis nehmen
+nicht teil; ersetzt ein Gitlink eine immutable Datei an ihrem Pfad, meldet das
+Modul `core-drift-vcs`.
 
 **Grenze — Pack-Dateien ohne gültiges Hash-Suffix oder ohne passenden Index
 sind unsichtbar.** `vcs` liest die Objektdatenbank über eine reine
@@ -3058,7 +3123,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `versions`  | opt-in        | gepinnte Versions-Verweise (etwa `ghcr`-Image-Tags) tragen die aktuelle Version (aus `version.md#aktuell`), auch in Fences. **Mehrere Muster-Quellen-Paare** über `versions.patterns` (eigenes Release **und** ein fremder gepinnter Stand); die Kurzform `pin-pattern`/`current-from` **ist** die einelementige Liste, beide Schreibweisen zugleich ⇒ Exit 2. Ausnahmen sind paar-lokal, der Zeilen-Marker ist es nicht | `version-stale`                                             |
 | `pins`      | opt-in        | Content-Pin (`<!-- dpin: … -->`): Ziel-Span eines Links unverändert seit dem Verlinken | `link-stale`                                                |
 | `immutable` | opt-in        | Immutabilitäts-Pin (`<!-- immutable: … -->`): normalisierter **Core** einer Datei (ohne Marker-Zeile + `exclude-sections`) unverändert seit dem Pinnen; hermetisch (kein git) | `core-drift`                                                |
-| `vcs`       | opt-in (git)  | git-Diff-Immutabilität: **Core** einer immutablen Datei (`immutable-when`) unverändert über eine Commit-Range (`--range`/`--staged`); liest `.git` read-only (kein git-Binary, kein Netz). `immutable-when` und die Kopf-Status-Zeile gelten nur **außerhalb von Code-Blöcken** — eine Datei, die ihren eigenen Kopf als Beispiel zeigt, wird dadurch nicht immutabel. Mit `ignore-link-targets` ist ein reiner **Pfad-Nachzug** keine Drift: ein Link-Ziel, das in BASE oder HEAD auf eine Datei oder ein Verzeichnis auflöst, wird vor dem Vergleich auf Dateiname und Anker normiert — zieht eine verlinkte Datei um, darf die immutable Datei ihr folgen; ein Ziel auf eine Datei mit anderem Namen oder auf keine existierende, jede Änderung am Linktext oder an der übrigen Zeile bleiben Drift | `core-drift-vcs`                                            |
+| `vcs`       | opt-in (git)  | git-Diff-Immutabilität: **Core** einer immutablen Datei (`immutable-when`) unverändert über eine Commit-Range (`--range`/`--staged`); liest `.git` read-only (kein git-Binary, kein Netz). `immutable-when` und die Kopf-Status-Zeile gelten nur **außerhalb von Code-Blöcken** — eine Datei, die ihren eigenen Kopf als Beispiel zeigt, wird dadurch nicht immutabel. Mit `ignore-link-targets` ist ein reiner **Pfad-Nachzug** keine Drift: ein Link-Ziel, das in BASE oder HEAD auf eine Datei oder ein Verzeichnis auflöst, wird vor dem Vergleich auf Dateiname und Anker normiert — zieht eine verlinkte Datei um, darf die immutable Datei ihr folgen; ein Ziel auf eine Datei mit anderem Namen oder auf keine existierende, jede Änderung am Linktext oder an der übrigen Zeile bleiben Drift. Mit `follow-renames` folgt das Modul zusätzlich den Umbenennungen der Range aus der git-Historie (Inhalts-Gleichheit je Commit): ein Nachzug auf den neuen Namen einer umbenannten Datei ist keine Drift | `core-drift-vcs`                                            |
 | `commits`   | opt-in (git)  | Traceability-Kennung (`id-patterns`) in jeder Commit-Message einer Range (`--range`) bzw. der Pending-Message (`--commit-msg`); liest `.git` read-only (kein git-Binary, kein Netz) | `commit-untraceable`                                        |
 | `planning`  | opt-in        | Zwei Seiten derselben Lifecycle-Invariante. **Eintritt:** der Ruhe-Marker (`marker`) steht im `heading`-Block (Default `## Aktuelle Welle`) genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt. **Austritt** (zusätzlich opt-in über `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete — Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine deklarierte Floskel und — opt-in über `placeholder` — kein unausgefüllter Vorlagen-Platzhalter. Mit `closure.recursive` auch aus den Unterverzeichnissen von `closure.dir`, mit `closure.skip-pattern` ohne Dateien, deren Inhalt das Muster trifft (etwa archivierte Stubs); leert das Muster die Menge, ist das nur mit `closure.skip-allows-empty: true` kein Befund — der Ruhezustand eines Repos, dessen Slices alle archiviert sind. **Hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null Kandidaten. Überschriften und Marker zählen nur **außerhalb von Code-Blöcken**; die Block-Grenze ist die geteilte Abschnittsgrenze. **Dritte Fähigkeit** (opt-in über `waves.dir`): die Wellen-Register der Roadmap gegen die Wellen-Dateien — Plan-Dokument flach ⟺ aktive Welle (`waves.mode: one`, Default) **oder** Kennungs-Bijektion Aktiv-Block ⟺ flache Dokumente, Marker außen vor (`waves.mode: many`); Vorschau ohne Datei, Abschluss-Register ⟺ Ergebnisnotizen (beidseitig). **Vierte Fähigkeit** (opt-in über `observations.register` **oder** `observations.dir`, mutually exclusive): eine **zitierte** Kennung hat einen Nachweis — im Tabellen-Modus (`register`) eine Zeile im Register, im Verzeichnis-Modus (`dir`) ein Ordner `<zitierter-pfad>/observation.md`; gezählt werden Prosa und Linktext, ein reines Inline-Code-Span nicht (Beispiel statt Behauptung); im Tabellen-Modus deklariert nur die **erste** Tabellenzelle; die Umkehrung („jede Kennung ist zitiert") bleibt in beiden Modi ausgeschlossen | `planning-drift`, `closure-note-missing`, `closure-note-thin`, `closure-note-boilerplate`, `closure-note-placeholder`, `closure-note-ambiguous`, `wave-drift`, `wave-preview-exists`, `wave-results-missing`, `wave-unregistered`, `observation-unregistered` |
 | `tracked`   | opt-in (git)  | Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (gestagt = getrackt, keine `.gitignore`-Interpretation); liest `.git` read-only, **ohne** Range; fail-closed ohne `.git` | `target-untracked`                                          |

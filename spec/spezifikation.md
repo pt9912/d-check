@@ -2000,11 +2000,12 @@ abdeckt:
    Umgebungsfehler), statt ihn stillschweigend zu überspringen — ein Tree-
    Walker, der einen nicht ladbaren Unterbaum als stilles Ende der
    Aufzählung liest (statt als Fehler), verschluckt eine Löschung darunter
-   spurlos. Ein Tree-Eintrag **ohne** Datei-Inhalt (Verzeichnis, Gitlink)
+   spurlos. Ein Eintrag **ohne** Datei-Inhalt (Verzeichnis, Gitlink)
    trägt keinen Blob und wird beim Durchlaufen übersprungen — das ist kein
-   unlesbares Objekt, sondern der Normalfall, mit dem benannten Preis, dass
-   eine immutable Datei, die durch einen Gitlink **ersetzt** wird, unbemerkt
-   bleibt.
+   unlesbares Objekt, sondern der Normalfall; im Index nimmt die Enumeration
+   dieselben drei Arten wie der Baum. Ersetzt ein Gitlink eine immutable Datei an
+   ihrem Pfad, fehlt der Pfad in der HEAD-Menge: das Modul meldet
+   `core-drift-vcs` (gelöscht oder umbenannt), mit `--range` wie mit `--staged`.
 
    Aus beiden vollständigen Pfad-Mengen wird über `vcs.paths` gefiltert und
    dann die Mengen-**Differenz** gebildet: ein Pfad in **beiden** gefilterten
@@ -2066,7 +2067,8 @@ abdeckt:
      Grund, keine Kette ab der Merge-Basis.
    - *Eine Umbenennung in einem Schritt.* Teil haben die drei Arten, die die
      Enumeration oben als Datei zählt — reguläre Datei, ausführbare Datei,
-     Symlink —, und zwar auch im Index, wo die Enumeration jeden Eintrag nimmt;
+     Symlink —, und zwar auch im Index, dessen Enumeration dieselben drei Arten
+     nimmt wie der Baum;
      ein Verzeichnis und ein Gitlink nehmen nicht teil. Zwei Einträge sind
      **gleich** bei gleicher Blob-Kennung und gleicher Art (Datei oder
      Symlink); das Ausführbar-Bit zählt nicht. Verglichen wird die Kennung aus
@@ -4320,6 +4322,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-11-24 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2: die Enumeration am staged Index nimmt dieselben drei Arten wie der Baum (reguläre Datei, ausführbare Datei, Symlink); ein Gitlink im Index ist kein Datei-Pfad, und der Nebensatz zur Index-Enumeration im Abschnitt zur Umbenennungs-Abbildung folgt dem. Ersetzt ein Gitlink eine immutable Datei an ihrem Pfad, meldet das Modul `core-drift-vcs` — mit `--range` wie mit `--staged` (mit `--staged` war es Exit 2); der benannte Preis „bleibt unbemerkt“ entfällt |
 | 2026-11-24 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4, Teilnahme: eine Umbenennung, deren Ende in BASE lag oder auch Ende einer zweiten Quelle ist, lässt keinen ihrer Pfade über sich teilnehmen; ein Pfad aus BASE, der Ende einer solchen und Quelle einer teilnehmenden Umbenennung ist, nimmt als deren Quelle teil (Rotation). Die Regel bleibt, der Satz lässt sich nicht mehr als Ausschluss der Rotation lesen. Kein neuer Grund-Code |
 | 2026-11-23 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 und 4 und §2-Schema (`vcs.follow-renames`): eine Linie, auf der der Pfad nicht liegt oder in jedem Schritt bestehen bleibt, ist unberührt; Löschen und Neuanlegen im selben Schritt ist eine Inhaltsänderung; gelesen werden auch die Bäume der Eltern-Commits vor BASE. Eine Umbenennung nimmt nur teil, wenn ihr Ende in HEAD existiert, in BASE nicht und Ende keiner zweiten Quelle ist (ersetzt „zugleich Quelle und Ende“). Ein teilnehmendes Ziel wird mit `vcs.follow-renames` allein wie mit beiden Schlüsseln zu doppelter Marke, Endpfad und Anker, jedes andere bleibt roh bzw. wird wie mit `vcs.ignore-link-targets` allein normiert; die Formen gleichen sich nie, und mit beiden Schlüsseln entfällt ein Befund von `vcs.ignore-link-targets` allein nur bei gleichem Ende beider Ziele. Der Satz zum Nachzug auf eine nur in BASE existierende Datei gilt für Ziele ohne Teilnahme. Kein neuer Grund-Code |
 | 2026-11-23 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) und §2-Schema: der opt-in-Schlüssel `vcs.follow-renames` ([`DC-FA-VCS-001`](lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) 0.114.0). Schritt 2 führt die Abbildung der Umbenennungen der Range: Commit-Menge (von HEAD erreichbar, von BASE nicht; ein Schritt ist ein Commit mit genau einem Eltern-Commit, mit `--staged` HEAD → Index), Basis kein Vorfahr ⇒ leere Abbildung ohne Exit 2, Umbenennung an gleicher Blob-Kennung und Art (drei Arten, auch im Index; das Ausführbar-Bit zählt nicht), Mehrdeutigkeit ohne Umbenennung, Kette entlang der Abstammung unabhängig von der Aufzählungsreihenfolge (Quelle nur ein Pfad aus BASE, ein Zwischenpfad weder Quelle noch Ende, eine Linie, deren Pfad ohne Umbenennung verschwindet, endet mit „gelöscht“, auch bei Neuanlage und auch auf der Seite eines Merges, die den Pfad nicht umbenennt; unberührt ist nur eine Linie, auf der der Pfad in jedem Schritt bestehen bleibt), fail-closed auf jedes nötige Objekt; die Kandidaten-Mengen bleiben unberührt. Schritt 4 setzt ein teilnehmendes Ziel auf beiden Seiten gleich auf das Ende, mit beiden Schlüsseln vor der Normierung auf den Dateinamen (Drift für einen Nachzug auf eine gleichnamige andere Datei nur, wenn die Umbenennung den Dateinamen wechselt); ohne `vcs.ignore-link-targets` kein zusätzlicher Befund, der fail-closed-Fall eines Zwischen-Commits ist benannt; die Liste der Ziele, die nicht auflösen, nennt jetzt auch Query und Ziel außerhalb des Repos; die Sätze zum anderen Namen, zu „dieselbe Datei“ und zur Umbenennung beim Umzug sind auf den Schlüssel bezogen. §2: neue Zeile `vcs.follow-renames`, die Zeile `vcs.ignore-link-targets` nennt den anderen Namen nur noch ohne ihn. Kein neuer Grund-Code. Das Verfahren gilt für das fertige Modul |
