@@ -18,7 +18,9 @@ und [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md), [`DC-QA-02`](../../..
 [`ADR-0024`](../../adr/0024-vcs-immutable-gate.md),
 [`ADR-0103`](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md).
 
-**Berührte Spec-Stellen:** — (Verfahren und Schema schreibt
+**Berührte Spec-Stellen:** `spezifikation.md`
+§[`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
+Schritt 2, nur der Nebensatz zur Index-Enumeration (Verfahren und Schema schrieb
 [`slice-291`](../in-progress/slice-291-vcs-umbenennung-anforderung-und-adr.md); kein neuer
 Grund-Code, §4 der Spezifikation bleibt). Der Verweis zeigt **aufwärts**: Die Spec
 nennt diesen Slice nie.
@@ -113,6 +115,7 @@ Aussagen-Berührung steht hier gar nicht.
 | `README.md`, `README.de.md` | — | nennen die Grenze „anderer Name“ nicht; ein Satz zum neuen Schalter ist README-Prosa und gehört in die Release-Prep ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 17), außer ein Spiegel-Test verlangt ihn schon hier |
 | [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md), `docs/plan/adr/README.md` | update | Status `Accepted` und Index — durch den Architect |
 | `AGENTS.md` §3.5, `harness/README.md` §Traceability rules | update | nennen [`ADR-0115`](../../adr/0115-vcs-folgt-umbenennung.md) neben [`ADR-0103`](../../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md) (Entscheid 14) |
+| `spec/spezifikation.md` | update | **Plan-Änderung nach der Verifikation von slice-291 (V-1):** Schritt 2 beschreibt die Index-Enumeration im Nebensatz „wo die Enumeration jeden Eintrag nimmt“ mit dem heutigen Code; mit der Angleichung von `AllPaths` wird er falsch und fällt im selben Commit wie der Code. Historie-Zeile dazu |
 | `docs/user/abdeckung-tests.md` | update | von `make abdeckung` abgeleitet; `make test` hält sie gegen die Ableitung |
 | Testdateien neben Adapter, Regel und Konfigurations-Rand; der Test-Doppelgänger des Ports in `internal/hexagon/core/rules/vcs_test.go` | neu / update | Happy/Boundary/Negative je Kriterium von [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in); jeder Implementierer des Ports folgt der neuen Methode |
 
@@ -185,6 +188,10 @@ Liste folgt den bestätigten Entscheiden 1–14 und dem Architect-Verdikt):
   die Angleichung wäre er einer (Rot-Beleg am Vorzustand).
 - Zehn Läufe derselben Eingabe ⇒ byte-gleiche Ausgabe (Messmethode von
   [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
+- Dieselbe Topologie mit vertauschter Ordnung der Kurz-SHAs (zwei Fixtures, gleiche
+  Umbenennungen, andere Commit-Kennungen) ⇒ dieselbe Abbildung; „zehn Läufe“ allein fährt
+  keinen Reihenfolge-Wechsel, weil die Aufzählung nach Kurz-SHA sortiert ist
+  (Verifikation von slice-291, V-2).
 
 ## 4. Trigger
 
