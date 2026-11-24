@@ -3734,9 +3734,13 @@ Dateien seiner Scan-Menge über den Filesystem-Port, ohne git, ohne Netz und ohn
    [§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 1
    (Umschalten bei jeder Zeile, die nach Space und Tab mit ```` ``` ```` oder `~~~` beginnt,
    ausgenommen eine Backtick-Zeile mit Backtick im Rest). Ist `exempt-tables` an, entfällt jede
-   Zeile, für die `tableRowLine` gilt: sie liegt in `proseLineSet`, und die rohe Zeile beginnt mit
-   `|`. Beide Antworten kommen aus der geteilten Lexik, unabhängig vom jeweils anderen Schalter.
-   Die übrigen Zeilen sind die **geprüften** Zeilen.
+   Zeile, auf die die Tabellenzeilen-Frage von `linelength` mit „ja“ antwortet — „ist die Zeile Teil
+   einer Tabelle und deshalb nicht umbrechbar“: sie liegt in `proseLineSet`, und die rohe Zeile
+   beginnt nach null bis drei Leerzeichen (U+0020) mit `|`. Mit null Leerzeichen ist das die
+   Antwort von `tableRowLine`, die die übrigen Module lesen; die Frage von `linelength` schließt sie
+   ein und erweitert sie um die Einrückung, `tableRowLine` selbst bleibt unverändert. Beide
+   Antworten kommen aus der geteilten Lexik, unabhängig vom jeweils anderen Schalter. Die übrigen
+   Zeilen sind die **geprüften** Zeilen.
 5. **Länge.** Je geprüfter Zeile die Zahl ihrer Unicode-Codepunkte (dieselbe Zählung wie
    `structure[].table.column[].cell-max-chars`; eine ungültige UTF-8-Folge zählt je Byte als ein
    Codepunkt). Länge ≤ `max-chars` ⇒ befundfrei.
@@ -3763,7 +3767,8 @@ Dateien seiner Scan-Menge über den Filesystem-Port, ohne git, ohne Netz und ohn
    aus Schritt 2.
 
 **Nicht Gegenstand:** andere Dateiarten; Anzeigebreite; ein Zeilen-Marker; eine eigene Lesart
-von Fenced-Code, Tabellen, Links oder URLs; das Umbrechen oder Kürzen einer Zeile; Front-Matter
+von Fenced-Code, Links oder URLs, eine strengere Lesart von Tabellen (Trennzeile verlangt, Zeile
+ohne führende Pipe) und eine Erkennung des Listenkontexts für die Einrückung vor `|`; das Umbrechen oder Kürzen einer Zeile; Front-Matter
 als eigene Form; mehr als eine Grenze je Lauf.
 
 **Grenzen, am Gegenstand gelesen.** `proseLineSet` baut auf dem Fence-Automaten, der jede
@@ -3774,10 +3779,18 @@ Einrückung aus Space und Tab: auch ein Zaun mit vier oder mehr Leerzeichen davo
 während ein eingerückter Code-Block ohne Zaun kein Fenced-Code ist und gemessen wird. Ein Zaun
 hinter `>` schaltet nicht um. Ein nie geschlossener Zaun nimmt den Rest der Datei aus; das meldet
 `spans` als `fence-unclosed` ([§DC-FA-SPAN-001.a](#dc-fa-span-001a--span-artefakt-erkennung)
-Schritt 3), nicht `linelength`. `tableRowLine` verlangt keine Trennzeile und trimmt nicht: eine
-`|`-Zeile ohne Tabelle ist ausgenommen, eine eingerückte oder zitierte Tabellenzeile und eine
-GFM-Zeile ohne führende Pipe nicht. Mit (a) aus und (b) an liegt eine `|`-Zeile im Zaun nicht in
-`proseLineSet` und ist damit keine Tabellenzeile. Gemessen wird die rohe Zeile — Inline-Code wird
+Schritt 3), nicht `linelength`. `tableRowLine` verlangt keine Trennzeile und trimmt nicht; die
+Frage von (b) verlangt sie ebenso wenig und lässt davor nur null bis drei Leerzeichen (U+0020) zu:
+eine `|`-Zeile ohne Tabelle ist ausgenommen, auch eine Prosa-Zeile, die nach ein bis drei
+Leerzeichen mit `|` beginnt, ohne dass eine Tabelle dasteht. Nicht ausgenommen sind eine Zeile mit
+vier und mehr Leerzeichen, mit einem Tab oder mit einem geschützten Leerzeichen (U+00A0) vor `|`,
+eine zitierte Zeile (`> |`) und eine GFM-Zeile ohne führende Pipe. Die Lexik trägt keinen
+Listenkontext: eine Tabelle auf der Zeile der Listenmarke (`- | a | b |`) beginnt nicht mit
+Leerzeichen und `|` und wird gemessen, eine Tabelle unter einer Marke von vier Spalten (`10. `) oder
+in einer verschachtelten Liste steht mit vier und mehr Leerzeichen davor und wird gemessen. Für
+`targets`, `planning.waves` und `structure` bleibt eine eingerückte Zeile keine Tabellenzeile. Mit
+(a) aus und (b) an liegt eine `|`-Zeile im Zaun, auch eine eingerückte, nicht in `proseLineSet` und
+ist damit keine Tabellenzeile. Gemessen wird die rohe Zeile — Inline-Code wird
 nicht geleert, ein Byte-Order-Mark am Dateianfang zählt als Zeichen der ersten Zeile, ein
 geschütztes Leerzeichen trennt für (c) keine Wörter. Außer der Konfiguration liest das Modul keine
 Datei außerhalb der Eingabemenge aus Schritt 2. Schritt 1 liest den YAML-Typ, nicht den Zahlwert:
@@ -4113,7 +4126,7 @@ Exit 2 ohne Prüfung
 | `pinsync.pins[].sources[].pattern` | string | leer | RE2-Ausdruck mit **genau einer** Fanggruppe; läuft je Zeile. Zwei Quellen eines Pins dürfen nicht dasselbe `file` **und** dasselbe `pattern` tragen. |
 | `linelength.max-chars` | int | abwesend | Obergrenze der Zeichen je Zeile (Unicode-Codepunkte der rohen Zeile ohne Zeilenende); Länge **größer** als der Wert ⇒ `line-chars-exceeded`, genau auf der Grenze befundfrei. **Pflicht**, sobald das Modul aktiv ist (fehlt ⇒ Exit 2); gesetzt und keine ganze Zahl ≥ 1 ⇒ Exit 2 ([`DC-FA-LLEN-001`](lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)) |
 | `linelength.exempt-code-blocks` | bool | `true` | Zeilen in Fenced-Code samt Zäunen werden nicht gemessen (Antwort der geteilten Lexik); `false` misst sie mit |
-| `linelength.exempt-tables` | bool | `true` | Zeilen außerhalb von Fenced-Code, die mit `\|` beginnen, werden nicht gemessen — eine Trennzeile wird nicht verlangt; `false` misst sie mit |
+| `linelength.exempt-tables` | bool | `true` | Zeilen außerhalb von Fenced-Code, die nach null bis drei Leerzeichen (U+0020) mit `\|` beginnen, werden nicht gemessen — eine Trennzeile wird nicht verlangt; vier und mehr Leerzeichen, ein Tab und `> \|` davor lassen die Zeile gemessen; `false` misst sie mit |
 | `linelength.exempt-unbreakable` | bool | `true` | eine Zeile über der Grenze, die ein Wort (längste Folge ohne Space und Tab) mit mehr als `max-chars` Codepunkten trägt, ist ausgenommen und zählt in der Bezugsmenge; `false` meldet sie |
 | `linelength.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `linelength`-Prüfung — datei-weit, nach `linelength.scope` bzw. dem globalen Scan. **Segmentweise** validiert; leerer Eintrag oder ungültiges Segment ⇒ Exit 2 |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
@@ -4322,6 +4335,7 @@ steht bei ihm, nicht hier.
 
 | Datum | Änderung |
 |---|---|
+| 2026-11-24 | §[`DC-FA-LLEN-001.a`](spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) Schritt 4, „Nicht Gegenstand“, „Grenzen, am Gegenstand gelesen“ und die Schema-Zeile `linelength.exempt-tables` in §2 ([`DC-FA-LLEN-001`](lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) 0.115.0): die Ausnahme (b) fragt „ist die Zeile Teil einer Tabelle und deshalb nicht umbrechbar“ und nimmt auch eine `\|`-Zeile mit null bis drei Leerzeichen (U+0020) davor aus; die Frage schließt `tableRowLine` ein, `tableRowLine` bleibt unverändert, `targets`, `planning.waves` und `structure` lesen eine eingerückte Zeile weiter nicht als Tabellenzeile. Die Grenzen nennen vier und mehr Leerzeichen, Tab, U+00A0, `> \|`, die eingerückte Zeile im Zaun, `- \| a \| b \|` und die Tabelle unter `10. ` mit ihrer Bedingung |
 | 2026-11-24 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2: die Enumeration am staged Index nimmt dieselben drei Arten wie der Baum (reguläre Datei, ausführbare Datei, Symlink); ein Gitlink im Index ist kein Datei-Pfad, und der Nebensatz zur Index-Enumeration im Abschnitt zur Umbenennungs-Abbildung folgt dem. Ersetzt ein Gitlink eine immutable Datei an ihrem Pfad, meldet das Modul `core-drift-vcs` — mit `--range` wie mit `--staged` (mit `--staged` war es Exit 2); der benannte Preis „bleibt unbemerkt“ entfällt |
 | 2026-11-24 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 4, Teilnahme: eine Umbenennung, deren Ende in BASE lag oder auch Ende einer zweiten Quelle ist, lässt keinen ihrer Pfade über sich teilnehmen; ein Pfad aus BASE, der Ende einer solchen und Quelle einer teilnehmenden Umbenennung ist, nimmt als deren Quelle teil (Rotation). Die Regel bleibt, der Satz lässt sich nicht mehr als Ausschluss der Rotation lesen. Kein neuer Grund-Code |
 | 2026-11-23 | Nachzug nach Review an §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 und 4 und §2-Schema (`vcs.follow-renames`): eine Linie, auf der der Pfad nicht liegt oder in jedem Schritt bestehen bleibt, ist unberührt; Löschen und Neuanlegen im selben Schritt ist eine Inhaltsänderung; gelesen werden auch die Bäume der Eltern-Commits vor BASE. Eine Umbenennung nimmt nur teil, wenn ihr Ende in HEAD existiert, in BASE nicht und Ende keiner zweiten Quelle ist (ersetzt „zugleich Quelle und Ende“). Ein teilnehmendes Ziel wird mit `vcs.follow-renames` allein wie mit beiden Schlüsseln zu doppelter Marke, Endpfad und Anker, jedes andere bleibt roh bzw. wird wie mit `vcs.ignore-link-targets` allein normiert; die Formen gleichen sich nie, und mit beiden Schlüsseln entfällt ein Befund von `vcs.ignore-link-targets` allein nur bei gleichem Ende beider Ziele. Der Satz zum Nachzug auf eine nur in BASE existierende Datei gilt für Ziele ohne Teilnahme. Kein neuer Grund-Code |

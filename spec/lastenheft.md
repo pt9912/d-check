@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.114.3
+**Version:** 0.115.0
 
 **Status:** Draft
 
@@ -4601,7 +4601,8 @@ auf der Grenze ist befundfrei.
 
 **Drei Ausnahmen, je einzeln schaltbar, im Default an.** (a) `exempt-code-blocks`: Zeilen in
 Fenced-Code-Blöcken samt ihrer Zäune werden nicht gemessen. (b) `exempt-tables`: Zeilen
-außerhalb von Fenced-Code, die mit `|` beginnen, werden nicht gemessen. (c)
+außerhalb von Fenced-Code, die nach null bis drei Leerzeichen (U+0020) mit `|` beginnen, werden
+nicht gemessen. (c)
 `exempt-unbreakable`: eine Zeile über der Grenze, die ein **Wort** trägt, das allein mehr als
 `max-chars` Zeichen hat, ist ausgenommen — kein Umbruch bringt sie unter die Grenze (eine lange
 URL, ein langer Link, ein langer Pfad). Ein **Wort** ist eine längste Folge von Zeichen ohne
@@ -4614,8 +4615,13 @@ zählen mit; einen Front-Matter-Block kennt das Modul nicht als eigene Form, sei
 gemessen.
 
 **Was Fenced-Code und was eine Tabellenzeile ist, beantwortet die geteilte Lexik des
-Produkts** — dieselbe Antwort, die die übrigen Module auf diese Frage geben, keine zweite. Daraus
-folgen Grenzen, die diese Anforderung zusagt, statt sie zu verschweigen:
+Produkts.** Für Fenced-Code ist es dieselbe Antwort, die die übrigen Module auf diese Frage geben,
+keine zweite. Für die Tabellenzeile fragt `linelength` etwas anderes als die übrigen Module — nicht
+„deklariert diese Zeile etwas in einer Tabelle ab Spalte 0“, sondern „ist diese Zeile Teil einer
+Tabelle und deshalb nicht umbrechbar“; die Lexik beantwortet sie als eigene, benannte Frage. Ihre
+Antwort schließt die Spalte-0-Antwort der übrigen Module ein und erweitert sie um die Einrückung;
+die übrigen Module lesen eine eingerückte Zeile weiter nicht als Tabellenzeile. Daraus folgen
+Grenzen, die diese Anforderung zusagt, statt sie zu verschweigen:
 
 - **Jede Zaun-Zeile schaltet um.** Eine Zeile, die nach beliebiger Einrückung aus Space und Tab
   mit ```` ``` ```` oder `~~~` beginnt, öffnet oder schließt einen Block — ohne Abgleich von
@@ -4631,11 +4637,17 @@ folgen Grenzen, die diese Anforderung zusagt, statt sie zu verschweigen:
   [`DC-FA-SPAN-001`](#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in) (Modul
   `spans`, Grund `fence-unclosed`), wenn es aktiv ist; `linelength` meldet ihn nicht ein zweites
   Mal.
-- **Tabellenzeile heißt: die rohe Zeile beginnt mit `|`.** Eine Trennzeile wird nicht verlangt —
-  eine `|`-Zeile ohne Tabelle ist ausgenommen. Eine eingerückte Tabellenzeile (etwa in einem
-  Listenpunkt), eine Zeile in einem Zitat (`> |`) und eine Tabellenzeile ohne führende Pipe
-  (`a | b`) sind keine Tabellenzeilen und werden gemessen. Die Schalter sind unabhängig: mit (a)
-  aus und (b) an ist eine `|`-Zeile **im** Zaun keine Tabellenzeile und wird gemessen.
+- **Tabellenzeile heißt: die rohe Zeile beginnt mit `|`, davor stehen null bis drei Leerzeichen
+  (U+0020) und sonst nichts.** Eine Trennzeile wird nicht verlangt — eine Prosa-Zeile, die nach
+  null bis drei Leerzeichen mit `|` beginnt, ohne dass eine Tabelle dasteht, ist ausgenommen. Vier
+  und mehr Leerzeichen, ein Tab oder ein geschütztes Leerzeichen (U+00A0) vor `|`, eine Zeile in
+  einem Zitat (`> |`) und eine Tabellenzeile ohne führende Pipe (`a | b`) sind keine
+  Tabellenzeilen und werden gemessen. Daraus folgt für Tabellen in Listenpunkten: Eine Tabelle
+  auf der Zeile der Listenmarke (`- | a | b |`) beginnt nicht mit Leerzeichen und `|` und wird
+  gemessen; eine Tabelle unter einer Marke von vier Spalten (`10. `) oder in einer verschachtelten
+  Liste steht mit vier und mehr Leerzeichen davor und wird gemessen. Die Schalter sind
+  unabhängig: mit (a) aus und (b) an ist eine `|`-Zeile **im** Zaun — auch eine eingerückte —
+  keine Tabellenzeile und wird gemessen.
 
 Die Ausnahme (c) prüft das Wort, nicht den Rest der Zeile, und auch diese Grenze sagt die
 Anforderung zu: eine Zeile mit einem Wort über der Grenze ist **ganz** ausgenommen, auch wenn
@@ -4704,7 +4716,12 @@ Grenze, sodass (c) sie nicht ausnimmt):
 - **Ausnahme (a), an und aus:** Given eine überlange Zeile in einem Backtick-Block, eine in einem Tilde-Block und eine überlange Zaun-Zeile, when der Lauf im Default erfolgt, then keine Befunde; with `exempt-code-blocks: false`, then je ein Befund.
 - **Ausnahme (a), Grenzen:** Given eine `~~~`-Zeile in einem Backtick-Block, then werden die Zeilen danach bis zur nächsten Zaun-Zeile gemessen; Given einen eingerückten Code-Block ohne Zaun, then werden seine Zeilen gemessen; Given einen Zaun, der bis zum Dateiende nicht schließt, then wird keine Zeile dahinter gemessen.
 - **Ausnahme (b), an und aus:** Given eine überlange `|`-Zeile ohne Trennzeile, when der Lauf im Default erfolgt, then kein Befund; with `exempt-tables: false`, then ein Befund.
-- **Ausnahme (b), Grenzen:** Given je eine überlange eingerückte `|`-Zeile, eine `> |`-Zeile und eine Zeile `a | b` ohne führende Pipe, when der Lauf im Default erfolgt, then je ein Befund; Given `exempt-code-blocks: false` und `exempt-tables: true` und eine überlange `|`-Zeile in einem Zaun, then ein Befund.
+- **Ausnahme (b), eingerückt, an und aus:** Given je eine überlange `|`-Zeile mit einem, zwei und drei Leerzeichen davor, when der Lauf im Default erfolgt, then kein Befund; with `exempt-tables: false`, then je ein Befund.
+- **Ausnahme (b), Grenzen:** Given je eine überlange `|`-Zeile mit vier Leerzeichen davor, mit einem Tab davor und mit einem geschützten Leerzeichen (U+00A0) davor, eine `> |`-Zeile und eine Zeile `a | b` ohne führende Pipe, when der Lauf im Default erfolgt, then je ein Befund — „Leerzeichen“ ist hier U+0020 und kein anderes Zeichen, anders als der Leerraum der Wortgrenze in Ausnahme (c), zu dem auch der Tab gehört; Given `exempt-code-blocks: false` und `exempt-tables: true` und eine überlange `|`-Zeile in einem Zaun, then ein Befund.
+- **Ausnahme (b), eingerückt im Zaun:** Given `exempt-code-blocks: false`, `exempt-tables: true` und eine überlange `|`-Zeile mit drei Leerzeichen davor in einem Zaun, when der Lauf erfolgt, then ein Befund.
+- **Ausnahme (b), Bezugsmenge:** Given eine Datei, deren eine Zeile mit drei Leerzeichen vor `|` beginnt, when der Lauf im Default erfolgt, then zählt die Bezugsmengen-Zeile diese Zeile nicht zu den geprüften Zeilen; with `exempt-tables: false`, then zählt sie.
+- **Ausnahme (b), andere Module unverändert:** Given eine Zeile mit ein bis drei Leerzeichen vor `|`, when die Module `targets`, `planning.waves` und `structure` laufen, then liest keines von ihnen sie als Tabellenzeile.
+- **Ausnahme (b), Rest unverändert:** Given Dateien ohne eine Zeile mit ein bis drei Leerzeichen vor `|`, when der Lauf im Default erfolgt, then nimmt (b) genau die Zeilen aus, die mit `|` beginnen (außerhalb von Fenced-Code, wie bisher).
 - **Ausnahme (c), an und aus:** Given eine überlange Zeile mit einem Wort, etwa einer URL, das länger als `max-chars` ist, when der Lauf im Default erfolgt, then kein Befund; with `exempt-unbreakable: false`, then ein Befund.
 - **Ausnahme (c), Ränder:** Given eine überlange Zeile, deren längstes Wort genau `max-chars` Zeichen hat, then ein Befund; mit `max-chars + 1` Zeichen, then kein Befund. Given eine überlange Prosa-Zeile, deren kurzes letztes Wort über die Grenze ragt, then ein Befund. Given umbrechbaren Text vor einem Wort mit mehr als `max-chars` Zeichen, then kein Befund. Given zwei Wörter von je höchstens `max-chars` Zeichen, die nur ein Tab trennt, then ein Befund; Given dieselben Wörter, getrennt durch ein geschütztes Leerzeichen (U+00A0), sodass sie ein Wort mit mehr als `max-chars` Zeichen bilden, then kein Befund. Given ein Wort mit höchstens `max-chars` Zeichen, das nur mit seiner Einrückung über die Grenze reicht, then ein Befund. Given `max-chars: 120` und eine Zeile aus `- ` und einem Wort mit 119 Zeichen, then ein Befund; Given dasselbe mit `> `, then ein Befund. Given `max-chars: 120` und eine Zeile aus `- foo ` und einem Wort mit 119 Zeichen, then ein Befund — vor dem Wort umbrechbar, die Fortsetzungszeile trägt 119 Zeichen. Given `max-chars: 120` und eine Zeile aus `-   ` (drei Leerzeichen) und einem Wort mit 117 Zeichen, then ein Befund.
 - **Überschrift:** Given eine überlange ATX-Überschrift ohne Wort über der Grenze, when der Lauf erfolgt, then ein Befund.
@@ -4724,7 +4741,10 @@ Zeichen, Emoji als zwei Spalten) — sie hängt an einer Tabelle, die sich mit d
 ändert. (3) **Ein Zeilen-Marker** zum Ausnehmen einzelner Zeilen. (4) **Eine eigene, strengere
 Lesart** von Fenced-Code (längengleiches Schließen) oder Tabellen (Trennzeile verlangt, Zeile ohne
 führende Pipe) und eine Erkennung von Links und URLs für (c) — sie gäben eine zweite Antwort neben
-der geteilten. (5) **Schreibende Wege** — Umbrechen oder Kürzen:
+der geteilten. Ebenso **eine Erkennung des Listenkontexts** für die Einrückung vor `|` (mehr als
+drei Leerzeichen unter `10. ` oder in einer verschachtelten Liste): die geteilte Lexik kennt keinen,
+und eine Anforderung dafür wäre ein eigener Vorgang. Die Antwort auf die eigene Frage der
+Tabellenzeile (oben) ist keine zweite Antwort, sie kommt aus der geteilten Lexik. (5) **Schreibende Wege** — Umbrechen oder Kürzen:
 [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) schließt sie aus.
 (6) **Front-Matter als eigene Form.** (7) **Verschiedene Grenzen** je Datei, Verzeichnis oder
 Zeilenart in einem Lauf. (8) **Eine Grenze für die Markdown-Dateien dieses Repos** — diese
@@ -4783,6 +4803,7 @@ Rechtschreib-Regeln** — der Ausschluss in [§5](#5-globale-out-of-scope-punkte
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.115.0 | 2026-11-24 | [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) (`linelength.exempt-tables`): die Ausnahme (b) nimmt auch eine `\|`-Zeile aus, vor deren erstem `\|` null bis drei Leerzeichen (U+0020) und sonst nichts stehen — eine Verhaltensänderung. Vier und mehr Leerzeichen, ein Tab, ein geschütztes Leerzeichen (U+00A0), `> \|` und eine eingerückte `\|`-Zeile im Zaun bei `exempt-code-blocks: false` bleiben Befund; der Punkt „Tabellenzeile heißt …“ nennt die Grenzen mit ihrer Bedingung (Prosa-Zeile mit `\|` ohne Tabelle ausgenommen, `- \| a \| b \|` gemessen, Tabelle unter `10. ` oder in einer verschachtelten Liste gemessen). Die Zusage „dieselbe Antwort … keine zweite“ und der Out-of-Scope-Satz (4) sind umgeschrieben: die Antwort auf die Tabellenzeile kommt weiter aus der geteilten Lexik, auf eine eigene, benannte Frage; die übrigen Module lesen eine eingerückte Zeile weiter nicht als Tabellenzeile. Das Kriterium „Ausnahme (b), Grenzen“ ist ersetzt, fünf Kriterien kommen hinzu. Gegen §5 gehalten: kein globaler Ausschluss getroffen — die Zeilenlänge läuft weiter mit der Markdown-Lexik der übrigen Module. Anlass: Feldmeldung eines Adopters (GitHub-Issue 20). Begründung in begleitender ADR | — |
 | 0.114.3 | 2026-11-24 | Nachzug nach Review an [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) (`vcs.follow-renames`), präzisiert — die Teilnahme-Regel von 0.114.2 bleibt, ihr Satz lässt sich aber nicht mehr als Ausschluss der Rotation lesen. Er sagt, dass eine Umbenennung, deren Ende in BASE lag oder auch Ende einer zweiten Quelle ist, keinen ihrer Pfade **über sich** teilnehmen lässt, und dass ein Pfad aus BASE, der Ende einer solchen und Quelle einer teilnehmenden Umbenennung ist, als deren Quelle teilnimmt (Rotation). Eine Grenze benennt die drei Fälle, die etwas durchlassen, das man als Drift erwarten könnte — freigemachter Name, zwei Quellen auf ein Ende, Rotation. Zwei Kriterien kommen hinzu (zwei Quellen auf ein Ende, Rotation). Anlass: Review | — |
 | 0.114.2 | 2026-11-23 | Nachzug nach Review an [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) (`vcs.follow-renames`): eine Umbenennung nimmt nur teil, wenn ihr Ende in HEAD existiert, in BASE nicht und Ende keiner zweiten Quelle ist — ein Tausch zweier Namen und ein Name, den die Range freimacht und neu belegt, nehmen nicht teil. Mit beiden Schlüsseln wird ein teilnehmendes Ziel wie mit `vcs.follow-renames` allein gleichgesetzt und jedes andere wie mit `vcs.ignore-link-targets` allein normiert; die beiden Formen gleichen sich nie, ein Befund von `vcs.ignore-link-targets` allein entfällt nur, wo beide Ziele teilnehmen und dasselbe Ende haben, und die Bedingung „die Umbenennung wechselt den Dateinamen“ entfällt. Eine Linie, auf der der Pfad nicht liegt oder in jedem Schritt bestehen bleibt, ist unberührt; Löschen und Neuanlegen im selben Schritt ist eine Inhaltsänderung an Ort und Stelle, die Neubelegung und die Merge-Grenze verlangen ein Löschen in einem Commit und ein Neuanlegen in einem späteren. Gelesen werden auch die Bäume der Eltern-Commits vor BASE; der fail-closed-Fall nennt jedes Objekt, das allein der Schlüssel liest. Vier Kriterien kommen hinzu, fünf sind angeglichen. Anlass: Review | — |
 | 0.114.1 | 2026-11-23 | Nachzug nach Review an [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) (`vcs.follow-renames`): ein Schritt ist ein Commit mit genau einem Eltern-Commit. Quelle einer Umbenennung ist nur ein Pfad aus BASE, ein Zwischenpfad einer Kette ist weder Quelle noch Ende; eine Kette, deren Pfad ohne Umbenennung verschwindet, endet ohne Ende, auch bei späterer Neuanlage und auf einer Merge-Seite, die ihn nicht umbenennt — neben einem Ende ist das Mehrdeutigkeit. Die Kriterien, die `core-drift-vcs` zusagen, gelten ohne `vcs.ignore-link-targets`, ein Kriterium bindet sie für beide Schlüssel; der Satz „ohne den Schlüssel kein Befund, mit ihm keiner“ steht unter seinem Given und nennt den fail-closed-Fall. Die Grenze mit beiden Schlüsseln gilt nur bei wechselndem Dateinamen; neue Grenzen zur Neubelegung und zum Merge (Überschreiben an Ort und Stelle folgt, Löschen und Neuanlegen auf einer Seite ist Mehrdeutigkeit). Vier Kriterien kommen hinzu. Anlass: Review | — |
