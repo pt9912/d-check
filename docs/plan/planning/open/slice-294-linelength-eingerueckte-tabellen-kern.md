@@ -12,14 +12,14 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 **Welle:** [`welle-97-linelength-eingerueckte-tabellen`](../welle-97-linelength-eingerueckte-tabellen.md).
 
 **Bezug:** [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)
-in der Fassung aus [`slice-293`](../open/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md),
+in der Fassung aus [`slice-293`](../next/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md),
 [`ADR-0054`](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md) (Entscheidung 4: je Konsument
-eine Assertion), die Folge-ADR aus [`slice-293`](../open/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md)
+eine Assertion), die Folge-ADR aus [`slice-293`](../next/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md)
 (`Proposed` bis zur Closure dieses Slice), [`ADR-0114`](../../adr/0114-linelength-modul.md) (nur
 die Teile, die die Folge-ADR nicht ablöst).
 
 **Berührte Spec-Stellen:** `—`. Die Spezifikation ändert
-[`slice-293`](../open/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md); dieser Slice liest
+[`slice-293`](../next/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md); dieser Slice liest
 §[`DC-FA-LLEN-001.a`](../../../../spec/spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength)
 Schritt 4 als Vorgabe. Trifft der Code auf einen Rand, den sie anders beschreibt, ist das ein
 Befund zur Spezifikation und eine Plan-Änderung **vor** dem Code (§4, Rückführung), keine stille
@@ -42,7 +42,7 @@ zusammen mit der Begründungs-Pflicht je Punkt.
 
 **Ziel:** Mit `linelength.exempt-tables` an nimmt das Modul eine `|`-Zeile aus, vor der ein bis drei
 Leerzeichen stehen — und nur diese; jedes der sechs Kriterien aus
-[`slice-293`](../open/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) §3 hat einen Test, der
+[`slice-293`](../next/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) §3 hat einen Test, der
 ohne die Regel aus dem richtigen Grund rot läuft, und die Folge-ADR ist nach Review und
 Verifikation `Accepted`.
 
@@ -75,7 +75,7 @@ gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst —
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
 - [ ] **Erkennung:** [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)
-      (Kriterien 1 bis 4 und 6 aus [`slice-293`](../open/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md)
+      (Kriterien 1 bis 4 und 6 aus [`slice-293`](../next/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md)
       §3) ist im Modulkern erfüllt: die Regel nimmt genau die Zeilen aus, die dort stehen, und keine
       weitere; jeder Test läuft ohne die Regel **aus dem richtigen Grund** rot (Mutation je Test,
       §3), und die Closure-Notiz nennt je Test die Mutation und die gelesene Meldung.
@@ -119,7 +119,7 @@ Aussagen-Berührung steht hier gar nicht.
 | `internal/hexagon/core/rules/linelength_test.go` | update | Kriterien 1 bis 4 und 6, Happy/Boundary/Negative, dazu die zwei Grenzen aus dem Punkt „Tabellenzeile heißt …“ ([Verdikt](../../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-4): eine Prosa-Zeile mit drei Leerzeichen und `\|` ohne Tabelle ist ausgenommen (Grenze 1), `- \| a \| b \|` bleibt gemessen (Grenze 2); Grenze 3 (vier Leerzeichen) deckt Kriterium 2 — die Mutationen stehen unten |
 | `internal/hexagon/core/rules/lexikon_kopplung_test.go` | update | Kriterium 5: **zwei Assertionen** ([`ADR-0054`](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md) Entscheidung 4, [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) Entscheid 4) — `targets`, `planning.waves` und `structure` auf einer Antwort (`TestTabellenzeilenFrageHatEineAntwort`; die eingerückte Zeile eingeschlossen), `linelength` auf der Antwort des Helfers, in beiden Richtungen. **Der Kopf-Kommentar des Tests ändert sich mit:** er sagt heute „GLEICH beantwortet … eine eingerueckte Zeile ist keine Spalte-0-Tabellenzeile“ für alle vier |
 | `docs/user/benutzerhandbuch.md` | update | §4.28: die YAML-Zeile zu `exempt-tables`, die Beschreibung der Ausnahme (b) und der Satz zur eingerückten `\|`-Zeile; die Zeile des Moduls in der Modul-Tabelle (§6). Zählung unten |
-| `internal/adapter/driving/cli/config_template.go` | update | der Kommentar zu `exempt-tables` in der `--print-config`-Vorlage, falls der Wortlaut aus [`slice-293`](../open/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) ihn verlangt |
+| `internal/adapter/driving/cli/config_template.go` | update | der Kommentar zu `exempt-tables` in der `--print-config`-Vorlage, falls der Wortlaut aus [`slice-293`](../next/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) ihn verlangt |
 | `docs/user/abdeckung-tests.md` | `make abdeckung` | die neuen Testnamen; `make test` hält die Datei gegen ihre Ableitung ([ADR-0104](../../adr/0104-test-nachweise-entlasten-in-der-rtm.md)) |
 | [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) und ADR-Index | `**Status:**`-Übergang | `Proposed` → `Accepted` **nach** Review und Verifikation |
 | [`ADR-0114`](../../adr/0114-linelength-modul.md) und ADR-Index | Geschichte-Zeile, Index-Zeile | **im selben Commit** wie der Übergang von [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md): eine Zeile in `## Geschichte` („Entscheidung 5 (b) teil-superseded durch [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md)“), im Index „Accepted (teil-superseded: [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md))“ wie bei [`ADR-0002`](../../adr/0002-distribution-ghcr-image.md) und [`ADR-0013`](../../adr/0013-pr-ci-und-traceability-gate.md). Die Status-Zeile bleibt `Accepted`: `vcs.head-allow` lässt nur `Accepted` oder `Superseded by ADR-NNNN` zu, und die Ablösung ist nur teilweise ([Verdikt](../../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-6) |
@@ -162,7 +162,7 @@ Release-Prep. Der Implementer zählt vor dem Editieren **neu**.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
-**Start** (`next` → `in-progress`): [`slice-293`](../open/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md)
+**Start** (`next` → `in-progress`): [`slice-293`](../next/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md)
 liegt in `done/` (die Anforderung steht im Lastenheft, die Folge-ADR als `Proposed`), der
 Auftraggeber hat die vier Entscheide der Welle bestätigt, das Architect-Verdikt zu Frage 4 liegt
 unter `docs/reviews/`, und das WIP-Limit ist frei (`in-progress/` trägt nur die Roadmap).
