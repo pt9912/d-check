@@ -152,7 +152,8 @@ Liste folgt den bestätigten Entscheiden 1–14 und dem Architect-Verdikt):
 - A gelöscht, dann C → A, Nachzug C → A ⇒ Befund (Ende existiert in BASE, Entscheid 9).
 - Rotation A → X, danach C → A ⇒ A nimmt teil (Ende X), C nicht; Nachzug A → X ⇒ kein
   Befund, Nachzug C → A ⇒ Befund.
-- Zwei Quellen auf ein Ende (Merge, A → E und B → E), Umbiegen von A auf B ⇒ Befund
+- Zwei Quellen auf ein Ende (Merge, A → E und B → E), A und B mit verschiedenen
+  Dateinamen, Umbiegen von A auf B ⇒ Befund, mit `follow-renames` allein und mit beiden
   (Ende keiner zweiten Quelle, Entscheid 9); ohne die Klausel wäre es grün.
 - Beide Schalter, Umbiegen von `d1/a.md` auf `d2/c.md`, das die Range nach `d3/a.md`
   umbenennt ⇒ Befund (Entscheid 10).
