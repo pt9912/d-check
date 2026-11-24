@@ -238,6 +238,48 @@ ADR-Index (1), beide seit dem Plan hinzugekommen. Die Stände der anderen Dateie
   Rechtschreib-/Stil-/Lint-Prüfung) trifft die Änderung; die Ausnahme „mit derselben Markdown-Lexik wie die
   übrigen Module, die Markdown lesen“ bleibt wahr, weil die Frage in der geteilten Lexik wohnt (Verdikt F-3).
 
+### Plan-Nachtrag des Implementers (2026-11-24, nach dem Inhalts-Commit)
+
+**Die Aussage, über ihren Inhalt gesucht** (nicht an der zitierten Stelle; [`BEO-ALL/grenz-aussage-ohne-ihre-bedingung`](../observations/BEO-ALL/grenz-aussage-ohne-ihre-bedingung/observation.md)),
+vor und nach dem Editieren mit demselben Kommando:
+
+```bash
+git grep -n -E 'eingerückte[rn]? (Tabellenzeile|`\|`)|eingerückte oder zitierte|dieselbe Antwort|keine zweite|zweite Antwort|mit `\\?\|` beginn|Spalte 0|Spalte-0' \
+  -- spec/lastenheft.md spec/spezifikation.md
+```
+
+| Stelle (vor dem Editieren) | Aussage | Nach dem Editieren |
+|---|---|---|
+| Lastenheft, Absatz „Drei Ausnahmen“, (b) | „… die mit `\|` beginnen, werden nicht gemessen“ | umgeschrieben: „nach null bis drei Leerzeichen (U+0020) mit `\|` beginnen“ |
+| Lastenheft, Einleitungssatz des Abschnitts | „dieselbe Antwort … keine zweite“ | umgeschrieben: gilt für Fenced-Code; die Tabellenzeile ist eine eigene, benannte Frage der Lexik |
+| Lastenheft, Punkt „Tabellenzeile heißt …“ | eingerückte Zeile wird gemessen | umgeschrieben, drei Grenzen mit Bedingung |
+| Lastenheft, Kriterium „Ausnahme (b), Grenzen“ | eingerückte `\|`-Zeile ⇒ Befund | **ersetzt** (kein zweites daneben) |
+| Lastenheft, Out-of-Scope (4) | „eigene, strengere Lesart … von Tabellen … zweite Antwort“ | umgeschrieben, Listenkontext aufgenommen |
+| Spezifikation, Schritt 4 | „`tableRowLine` gilt“ | umgeschrieben: die Frage von `linelength` schließt `tableRowLine` ein |
+| Spezifikation, „Nicht Gegenstand“ | „eine eigene Lesart von … Tabellen“ | umgeschrieben (strengere Lesart, Listenkontext) |
+| Spezifikation, „Grenzen, am Gegenstand gelesen“ | „eine eingerückte oder zitierte Tabellenzeile … nicht“ | umgeschrieben, Bedingung je Grenze |
+| Spezifikation, Schema `linelength.exempt-tables` | „die mit `\|` beginnen“ | umgeschrieben |
+| Lastenheft 4356 (`metrics`), Spezifikation 2419, 2801, 3040, 3555, 4134 (`targets`, `planning.waves`, `structure`, `metrics`) | Spalte 0, „dieselbe Antwort wie bei `targets`“ | **unberührt, bleibt wahr**: sie beschreiben `tableRowLine` und die anderen Module; beides ändert sich nicht |
+| Lastenheft 3246 | „keine zweite Regel“ (anderer Gegenstand) | unberührt |
+| Handbuch §4.28 (drei Stellen), Modul-Tabelle, Änderungs-Tabelle | Ist-Zustand zu `exempt-tables` | gehört [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md) |
+| `config_template.go`, READMEs | Kommentar bzw. Modul-Bullet | `slice-294` bzw. Release-Prep |
+| [`ADR-0114`](../../adr/0114-linelength-modul.md) | Entscheidung 5 (b), Konsequenz | unveränderlich (`Accepted`) |
+
+Nach dem Editieren zeigt dieselbe Suche nur noch Treffer, die entweder die **umgeschriebene** Fassung sind
+(Lastenheft Z. 4604, 4618–4622, 4642, 4724, 4743, 4747; Spezifikation Z. 3785, 4129), eine **unberührte** Zeile
+der Tabelle oben oder eine **Historie-Zeile früherer Fassungen** (Chronik, nicht umgeschrieben); keine Zeile trägt
+mehr die alte Aussage „eine eingerückte Tabellenzeile wird gemessen“ oder „keine zweite Antwort“ für die
+Tabellenzeile. Das Risiko „eine Stelle stünde gegen die andere“ (§6, Risiko 4) ist damit am Text gelesen; ob
+das Review einen Widerspruch findet, entscheidet Risiko 1.
+
+**Kriterien-Zählung:** sechs Kriterien in der Anforderung, davon fünf neu und eines ersetzt (kein zweites daneben
+gestellt); das Kriterium „Ausnahme (b), an und aus“ bleibt. Zuordnung zu den Entscheiden der ADR:
+Entscheid 1 (kein neuer Schlüssel; `false` misst) — Kriterium 1 und 4; Entscheid 2 (`> |` gemessen) —
+Kriterium 2; Entscheid 3 (höchstens drei Leerzeichen; Tab, U+00A0 und vier gemessen; im Zaun gemessen) —
+Kriterium 1, 2 und 3; Entscheid 4 (eigene Frage in der Lexik, andere Module unverändert) — Kriterium 5 und 6 und
+die umgeschriebenen Sätze. Die drei Grenzen und die Prosa-Zeile stehen als Sätze im Punkt „Tabellenzeile
+heißt …“ ohne eigenes Kriterium (F-4).
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
