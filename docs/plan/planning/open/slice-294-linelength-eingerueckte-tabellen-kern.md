@@ -51,9 +51,10 @@ Verifikation `Accepted`.
 - **Die Image-Probe und der Vorher-/Nachher-Vergleich** — sie sind der Closure-Trigger der Welle
   ([§3](../welle-97-linelength-eingerueckte-tabellen.md)), nicht diese DoD
   ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 10); der Slice endet am grünen `make gates`.
-- **`tableRowLine` selbst weiten** — die Empfehlung zu Frage 4 der Welle ist ein neuer benannter
-  Helfer daneben; verlangt das Verdikt des Architects etwas anderes, ändert sich dieser Plan, bevor
-  Code entsteht.
+- **`tableRowLine` selbst weiten** — entschieden dagegen: der Helfer wohnt daneben und schließt
+  `tableRowLine` ein ([`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) Entscheid 4,
+  Alternative B; [Verdikt](../../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-1). Die
+  Weitung verschöbe `targets`, `planning.waves` und `structure` gegen ihre Spalte-0-Zusagen.
 - **`> |`, eine Listen-Erkennung, ein neuer Schlüssel** — Welle §6; der Konfigurations-Rand
   (`configyaml.go`) bleibt unberührt, weil kein Schlüssel dazukommt.
 - **`tools/image-test.sh` und `harness/sensors/image-test.md`** — der Fixture dort trägt die
@@ -81,11 +82,20 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 - [ ] **Kopplung:** Kriterium 5 — der Kopplungs-Test hält die Frage „Tabellenzeile?“ je Konsument fest,
       **in beiden Richtungen** (`linelength` nimmt die eingerückte Zeile aus, `targets`,
       `planning.waves` und `structure` lesen sie weiter nicht als Tabellenzeile), und die geteilte
-      Antwort `tableRowLine` steht im Diff unverändert.
+      Antwort `tableRowLine` steht im Diff unverändert. Die Assertionen sind **zwei**
+      ([`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) Entscheid 4): die drei
+      Konsumenten von `tableRowLine` auf **einer** Antwort, die eingerückte Zeile eingeschlossen, und
+      `linelength` auf der Antwort des Helfers. Der Kopf-Kommentar des Kopplungs-Tests („… GLEICH
+      beantwortet …, eine eingerueckte Zeile ist keine Spalte-0-Tabellenzeile“) ändert sich mit.
 - [ ] **Doku und Entscheidung:** das Handbuch §4.28 samt Modul-Tabelle, der Kommentar der
       `--print-config`-Vorlage und die Kommentare am Code nennen die Regel mit ihrer Bedingung; die
       Abdeckungs-Dateien sind aus den Tests abgeleitet (`make abdeckung`); die Folge-ADR ist
       **`Accepted`, erst nach Review und Verifikation** ([`BEO-ALL/adr-accepted-bevor-der-mechanismus-steht`](../observations/BEO-ALL/adr-accepted-bevor-der-mechanismus-steht/observation.md)).
+      **Im selben Commit**, der [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md)
+      `Accepted` macht: eine Zeile in `## Geschichte` von [`ADR-0114`](../../adr/0114-linelength-modul.md)
+      („Entscheidung 5 (b) teil-superseded durch [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md)“) und im Index die Zeile von [`ADR-0114`](../../adr/0114-linelength-modul.md) mit
+      „Accepted (teil-superseded: [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md))“; die Status-Zeile von [`ADR-0114`](../../adr/0114-linelength-modul.md) bleibt `Accepted`
+      ([Verdikt](../../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-6).
 - [ ] `make gates` grün.
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
@@ -104,14 +114,15 @@ Aussagen-Berührung steht hier gar nicht.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `internal/hexagon/core/rules/markdown.go` | update | **Ein neuer benannter Helfer** neben `tableRowLine` (Name vergibt der Implementer), nur von `linelength` gerufen; `tableRowLine` bleibt zeichengleich. Der Kommentar nennt die zweite Frage („eingerückt, bis drei Leerzeichen“) und die Folge-ADR als Herkunft. Verlangt das Verdikt des Architects zu Frage 4 etwas anderes, ändert sich diese Zeile vor dem Code |
-| `internal/hexagon/core/rules/linelength.go` | update | die Ausnahme (b) ruft den Helfer zusätzlich zu `tableRowLine`; der Dateikopf (`GRENZE, ausgesprochen`) nennt die neue Antwort samt ihrer Grenze (ab vier Leerzeichen und mit Tab gemessen, weil die Lexik keinen Listenkontext hergibt) |
-| `internal/hexagon/core/rules/linelength_test.go` | update | Kriterien 1 bis 4 und 6, Happy/Boundary/Negative — die Mutationen stehen unten |
-| `internal/hexagon/core/rules/lexikon_kopplung_test.go` | update | Kriterium 5: die vorhandene Aussage „eine eingerueckte Zeile ist keine Spalte-0-Tabellenzeile“ gilt für `targets`, `planning.waves` und `structure` weiter und für `linelength` nicht mehr — beide Richtungen als Assertion ([`ADR-0054`](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md) Entscheidung 4) |
+| `internal/hexagon/core/rules/markdown.go` | update | **Ein neuer benannter Helfer** neben `tableRowLine` (Name vergibt der Implementer): er **ruft `tableRowLine` und erweitert sie** um null bis drei Leerzeichen (U+0020) davor, statt die Spalte-0-Antwort ein zweites Mal zu schreiben ([`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) Entscheid 4). `tableRowLine` bleibt zeichengleich. Der Kommentar nennt die zweite Frage („eingerückt, bis drei Leerzeichen“) und die ADR als Herkunft. Für die eingerückte Zeile verlangt der Helfer selbst, dass sie außerhalb von Fenced-Code liegt (Kriterium 3) |
+| `internal/hexagon/core/rules/linelength.go` | update | die Ausnahme (b) ruft **nur den Helfer** (nicht zusätzlich `tableRowLine`: mit zwei Aufrufen bliebe die Mutation zu Kriterium 6 grün); der Dateikopf (`GRENZE, ausgesprochen`) nennt die neue Antwort samt ihrer Grenze (ab vier Leerzeichen und mit Tab gemessen, weil die Lexik keinen Listenkontext hergibt) |
+| `internal/hexagon/core/rules/linelength_test.go` | update | Kriterien 1 bis 4 und 6, Happy/Boundary/Negative, dazu die zwei Grenzen aus dem Punkt „Tabellenzeile heißt …“ ([Verdikt](../../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-4): eine Prosa-Zeile mit drei Leerzeichen und `\|` ohne Tabelle ist ausgenommen (Grenze 1), `- \| a \| b \|` bleibt gemessen (Grenze 2); Grenze 3 (vier Leerzeichen) deckt Kriterium 2 — die Mutationen stehen unten |
+| `internal/hexagon/core/rules/lexikon_kopplung_test.go` | update | Kriterium 5: **zwei Assertionen** ([`ADR-0054`](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md) Entscheidung 4, [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) Entscheid 4) — `targets`, `planning.waves` und `structure` auf einer Antwort (`TestTabellenzeilenFrageHatEineAntwort`; die eingerückte Zeile eingeschlossen), `linelength` auf der Antwort des Helfers, in beiden Richtungen. **Der Kopf-Kommentar des Tests ändert sich mit:** er sagt heute „GLEICH beantwortet … eine eingerueckte Zeile ist keine Spalte-0-Tabellenzeile“ für alle vier |
 | `docs/user/benutzerhandbuch.md` | update | §4.28: die YAML-Zeile zu `exempt-tables`, die Beschreibung der Ausnahme (b) und der Satz zur eingerückten `\|`-Zeile; die Zeile des Moduls in der Modul-Tabelle (§6). Zählung unten |
 | `internal/adapter/driving/cli/config_template.go` | update | der Kommentar zu `exempt-tables` in der `--print-config`-Vorlage, falls der Wortlaut aus [`slice-293`](../open/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) ihn verlangt |
 | `docs/user/abdeckung-tests.md` | `make abdeckung` | die neuen Testnamen; `make test` hält die Datei gegen ihre Ableitung ([ADR-0104](../../adr/0104-test-nachweise-entlasten-in-der-rtm.md)) |
-| Folge-ADR aus [`slice-293`](../open/slice-293-linelength-eingerueckte-tabellen-anforderung-und-adr.md) und ADR-Index | `**Status:**`-Übergang | `Proposed` → `Accepted` **nach** Review und Verifikation |
+| [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) und ADR-Index | `**Status:**`-Übergang | `Proposed` → `Accepted` **nach** Review und Verifikation |
+| [`ADR-0114`](../../adr/0114-linelength-modul.md) und ADR-Index | Geschichte-Zeile, Index-Zeile | **im selben Commit** wie der Übergang von [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md): eine Zeile in `## Geschichte` („Entscheidung 5 (b) teil-superseded durch [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md)“), im Index „Accepted (teil-superseded: [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md))“ wie bei [`ADR-0002`](../../adr/0002-distribution-ghcr-image.md) und [`ADR-0013`](../../adr/0013-pr-ci-und-traceability-gate.md). Die Status-Zeile bleibt `Accepted`: `vcs.head-allow` lässt nur `Accepted` oder `Superseded by ADR-NNNN` zu, und die Ablösung ist nur teilweise ([Verdikt](../../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-6) |
 
 **Rot-Beleg je Test — der Vorzustand ohne die Regel, ausgeschrieben**
 ([`BEO-ALL/testfall-faehrt-seine-regel-nicht`](../observations/BEO-ALL/testfall-faehrt-seine-regel-nicht/observation.md)).
@@ -121,14 +132,16 @@ grün:
 
 | Kriterium | Mutation | Erwartung |
 |---|---|---|
-| 1 (drei Leerzeichen) | der Aufruf des Helfers in `linelength.go` entfällt | der Test findet einen Befund an der Zeile mit drei Leerzeichen, will keinen |
+| 1 (drei Leerzeichen) | `linelength.go` ruft für (b) wieder `tableRowLine` statt des Helfers | der Test findet einen Befund an der Zeile mit drei Leerzeichen, will keinen |
 | 1 (die Grenze 3) | die Schwelle „höchstens drei“ wird „höchstens zwei“ | der Fall mit drei Leerzeichen wird rot, der mit einem bleibt grün |
 | 2 (vier Leerzeichen, Tab, U+00A0) | die Schwelle wird „höchstens vier“ bzw. ein Tab zählt als Leerzeichen | der Fall mit vier Leerzeichen bzw. mit Tab wird rot — je Fall einzeln, damit nicht nur die erste Seite der Bedingung variiert ([`BEO-ALL/negativtest-deckt-nur-eine-regelseite`](../observations/BEO-ALL/negativtest-deckt-nur-eine-regelseite/observation.md)) |
 | 2 (`> \|`, `a \| b`, Text mit Einrückung) | der Helfer trimmt auch `>` bzw. verlangt kein `\|` am Anfang | der jeweilige Fall wird rot |
-| 3 (im Zaun) | die Prüfung gegen `proseLineSet` entfällt im Helfer | der Zaun-Fall findet keinen Befund, will einen |
+| 3 (im Zaun) | die Prüfung gegen `proseLineSet` entfällt im Helfer für die eingerückte Zeile | der Zaun-Fall findet keinen Befund, will einen |
+| Grenze 1 (Prosa-Zeile mit drei Leerzeichen und `\|`, ohne Tabelle) | der Helfer verlangt eine Trennzeile oder eine zweite `\|`-Zeile | die Prosa-Zeile wird gemessen und liefert einen Befund, der Test will keinen |
+| Grenze 2 (`- \| a \| b \|`) | der Helfer trimmt auch eine Listenmarke vor dem `\|` | die Zeile wird ausgenommen, der Test will einen Befund |
 | 4 (Bezugsmenge) | `count.Lines++` rückt vor die Ausnahme | die Bezugsmengen-Zeile nennt eine Zeile zu viel |
 | 5 (Kopplung) | `tableRowLine` selbst nimmt die eingerückte Zeile an | die Assertion für `targets`, `planning.waves` und `structure` wird rot |
-| 6 (Rest unverändert) | der Helfer trifft die Spalte 0 nicht mehr | der Fall mit `\|` in Spalte 0 wird rot |
+| 6 (Rest unverändert) | der Helfer ruft `tableRowLine` nicht mehr (ist `linelength` auf den Helfer allein gestellt, trifft er die Spalte 0 dann nicht mehr) | der Fall mit `\|` in Spalte 0 wird rot — mit **zwei** Aufrufen in `linelength.go` bliebe er grün, weil `tableRowLine` die Spalte 0 weiter trifft; deshalb ruft `linelength` nur den Helfer |
 
 **Spiegel-Zählung im Handbuch und in der Vorlage** (Form vor Zahl, Regel 14): die Beschreibung der
 Ausnahme (b) steht im Handbuch an **drei** Stellen und in der Modul-Tabelle an **einer**, in der

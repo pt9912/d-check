@@ -64,8 +64,15 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
 - `make fullbuild` grün.
 - **Das Mehr gegenüber den Slice-DoDs** (repo-weit, in keiner einzelnen DoD):
   - **(a) Ohne den Wunsch nichts Neues.** Zwei Läufe, die zusammen tragen, was jeder allein nicht trägt.
-    **(a1)** `make blackbox-probe REF=v0.92.0` endet mit „byte-identisch“ über seine Vergleiche
-    (stdout, stderr und Exit getrennt). Das Target fährt `linelength` **nicht**: unter
+    **(a1)** `make blackbox-probe REF=69c53e0f` — der Self-Close von welle-96, der letzte Stand **vor**
+    dieser Welle — endet mit „byte-identisch“ über seine Vergleiche (stdout, stderr und Exit
+    getrennt). **Nicht `REF=v0.92.0`:** das Profil dieses Repos schaltet seit welle-96
+    `vcs.follow-renames` ein, das Vorher-Image `v0.92.0` kennt den Schlüssel nicht und lehnt die
+    `.d-check.yml` ab; der Eigenlauf `repo` endet dort vorher mit Exit 2, nachher mit Exit 0, und
+    „4 von 20 Vergleichen weichen ab (Vorher 61a412eb)“
+    ([Verifikation zu welle-96](../../reviews/2026-11-24-welle-96-verifikation.md)). Diese Abweichung
+    kommt aus welle-96 und nicht aus dieser Welle
+    ([Architect-Verdikt](../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-2). Das Target fährt `linelength` **nicht**: unter
     `tools/blackbox-probe/fixtures/` liegen `ids`, `links`, `sauber` und `targets`
     (`ls tools/blackbox-probe/fixtures/`), und `grep -rl linelength tools/blackbox-probe/` findet
     nichts. Es belegt deshalb nur, dass die Änderung kein Modul verschiebt, das **das Profil dieser
@@ -73,8 +80,8 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     darunter `targets`, das die Tabellenzeilen-Antwort der Lexik liest; ob dieses Profil `structure`
     und `planning.waves` einschaltet, liest die Closure an der `.d-check.yml` und nennt es in der
     Ergebnis-Notiz. Der Beleg für beide bleibt der Kopplungs-Test aus
-    [`slice-294`](open/slice-294-linelength-eingerueckte-tabellen-kern.md). **(a2)** Ein Vorher-/Nachher-Lauf mit `--enable linelength`: das Vorher-Image aus
-    `git archive v0.92.0`, gebaut wie in `tools/blackbox-probe.sh` (`docker build --target runtime`),
+    [`slice-294`](open/slice-294-linelength-eingerueckte-tabellen-kern.md). **(a2)** Ein Vorher-/Nachher-Lauf mit `--enable linelength`: dasselbe Vorher-Image
+    wie in (a1) (`git archive 69c53e0f`), gebaut wie in `tools/blackbox-probe.sh` (`docker build --target runtime`),
     das Nachher-Image aus `make build`; beide über dasselbe Wegwerf-Fixture, eine Kopie von
     `docs/user/` mit einem `linelength`-Block (`max-chars` kleiner als die längste Zeile dort). Das
     Fixture trägt keine Zeile mit ein bis drei Leerzeichen vor `|` (`grep -rEc '^ {1,3}\|'` über
@@ -92,10 +99,14 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     nur im Text. Die Tabelle **Probe → Ergebnis** (Fixture, Schalter, erwartet, gemessen) steht in
     `welle-97-results.md`.
   - **(c) Das Trigger-Audit** (seit slice-241) ist über die Welle-Closure vollzogen und in
-    `welle-97-results.md` belegt. Fällig ist in dieser Welle jedenfalls der
-    Re-Evaluierungs-Trigger (a) von [`ADR-0114`](../adr/0114-linelength-modul.md) („die geteilte Lexik
-    ihre … Tabellen-Antwort ändert“): Die Closure-Notiz sagt, ob er eingetreten ist, und nennt die
-    Folge-ADR als Verdikt.
+    `welle-97-results.md` belegt. Fällig ist in dieser Welle der Re-Evaluierungs-Trigger **(b)** von
+    [`ADR-0114`](../adr/0114-linelength-modul.md) („ein Konsument eine Zeile ausnehmen muss, die weder
+    Code noch Tabelle noch unumbrechbar ist“): Die eingerückte Tabellenzeile ist nach Entscheidung 5 (b)
+    dort keine Tabelle. **Nicht (a)** („die geteilte Lexik ihre Fence- oder Tabellen-Antwort ändert“):
+    `tableRowLine` bleibt zeichengleich
+    ([Verdikt](../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-5). Die Closure-Notiz nennt
+    [`ADR-0116`](../adr/0116-linelength-eingerueckte-tabellenzeilen.md) als Antwort (sie wählt den Helfer
+    in der Lexik und verwirft den Marker, Alternative G).
 - Closure-Notiz in `welle-97-results.md`.
 
 ## 4. Slices in dieser Welle
@@ -160,9 +171,13 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
      (4 und 5 Leerzeichen nur im Listenkontext, mit einer neuen Listen-Erkennung in der geteilten
      Lexik und Kriterien für ihre Ränder) ist nicht geplant; sie wird ein eigener Vorgang, wenn der
      Bestand des Melders nach der Hebung Befunde dieser Form behält.
-  4. *Wo wohnt die Antwort?* — Entscheidung des Architects, Empfehlung: **ein neuer benannter Helfer
-     neben `tableRowLine` in der geteilten Lexik, nur von `linelength` gerufen; `tableRowLine`
-     bleibt, wie es ist.** So bewegt sich weder `targets` noch `planning.waves` noch `structure`.
+  4. *Wo wohnt die Antwort?* — **entschieden** im
+     [Architect-Verdikt](../../reviews/2026-11-24-welle-97-architect-verdikt.md) (F-1) und in
+     [`ADR-0116`](../adr/0116-linelength-eingerueckte-tabellenzeilen.md) Entscheid 4, die ihn trägt:
+     „Ein neuer Helfer in der geteilten Lexik neben `tableRowLine` beantwortet die Frage aus Entscheid 3.
+     Er **schließt `tableRowLine` ein**: Er ruft sie, statt die Spalte-0-Antwort ein zweites Mal zu
+     schreiben, und erweitert sie um die Einrückung. `linelength` ruft für (b) nur diesen Helfer.“ So
+     bewegt sich weder `targets` noch `planning.waves` noch `structure`.
      Preis: Die Zusage „dieselbe Antwort, die die übrigen Module auf diese Frage geben, keine zweite“
      (Anforderung, Absatz „Was Fenced-Code und was eine Tabellenzeile ist …“; Out-of-Scope (4);
      [`ADR-0114`](../adr/0114-linelength-modul.md) Kontext) gilt für diese Frage dann nicht mehr
@@ -192,7 +207,7 @@ der Closure-Trigger unerreichbar wird.
   Code-Block unberührt, auch mit `|` am Zeilenanfang.
 - **Andere Module, die Tabellenzeilen lesen** (`targets`, `planning.waves`, `structure`) — sie lesen
   eine eingerückte `|`-Zeile weiter nicht als Tabellenzeile; `tableRowLine` bleibt, wie es ist
-  (Empfehlung zu Frage 4, endgültig mit dem Verdikt des Architects).
+  ([`ADR-0116`](../adr/0116-linelength-eingerueckte-tabellenzeilen.md) Entscheid 4).
 - **Ein Umbau der geteilten Lexik** über den einen neuen Helfer hinaus.
 - **`--fix-patch`, Umbrechen oder Kürzen** — das Modul schreibt nie
   ([`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit),

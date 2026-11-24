@@ -24,7 +24,13 @@ ist …“ samt Einleitungssatz und dem Punkt „Tabellenzeile heißt …“, Ak
 (4), Version und Historie); `spezifikation.md` §[`DC-FA-LLEN-001.a`](../../../../spec/spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength)
 Schritt 4, „Nicht Gegenstand“ und „Grenzen, am Gegenstand gelesen“, dazu die Zeile
 `linelength.exempt-tables` im Schema [`SPEC-005`](../../../../spec/spezifikation.md#spec-005--d-checkyml);
-`architecture.md` bleibt unberührt (sie nennt `linelength` nur in der Modul-Aufzählung). Der Verweis
+`architecture.md` bleibt unberührt (sie nennt `linelength` nur in der Modul-Aufzählung). **Lastenheft
+§5** ([Globale Out-of-Scope-Punkte](../../../../spec/lastenheft.md#5-globale-out-of-scope-punkte): die
+Zeilenlänge läuft „mit derselben Markdown-Lexik wie die übrigen Module, die Markdown lesen“) ist
+**geprüft und bleibt unverändert**: die Antwort kommt aus der geteilten Lexik, auf eine eigene,
+benannte Frage ([`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) Entscheid 4;
+[Verdikt](../../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-3). Wanderte der Helfer in
+`linelength`, wäre §5 berührt, und das wäre eine Entscheidung des Auftraggebers. Der Verweis
 zeigt **aufwärts**: Die Spec nennt diesen Slice nie.
 
 **Verantwortlich:** —
@@ -59,8 +65,13 @@ unten sind **vor dem ersten Code** vom Auftraggeber bestätigt.
   [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md).
 - **Der Text von [`ADR-0114`](../../adr/0114-linelength-modul.md)** — eine `Accepted`-ADR wird nicht
   überschrieben ([`AGENTS.md`](../../../../AGENTS.md) §3.5); die Folge-ADR löst Entscheidung 5 (b) und
-  die Konsequenz zur eingerückten Tabellenzeile teilweise ab. Was an der alten ADR zulässig bleibt
-  (`## Geschichte`, `**Status:**`-Übergang), entscheidet der Architect mit dem Verdikt.
+  die Konsequenz zur eingerückten Tabellenzeile teilweise ab
+  ([`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md)). Die Geschichte-Zeile in
+  [`ADR-0114`](../../adr/0114-linelength-modul.md) und ihre Index-Zeile („teil-superseded: [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md)“) tragen den Übergang von [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) nach
+  `Accepted` und gehören deshalb [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md)
+  ([Verdikt](../../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-6).
+- **Lastenheft §5** — geprüft und unverändert (Kopf „Berührte Spec-Stellen“): kein Satz dort ändert
+  sich, solange der Helfer in der geteilten Lexik wohnt.
 - **Zitate (`> |`), ein eigener Schalter, eine Listen-Erkennung** — Frage 2, 1 und 3 der Welle; die
   kleinste Antwort lässt sie weg, und eine Anforderung dafür wäre ein eigener Vorgang.
 - **CHANGELOG, READMEs** — Release-Prep ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 17), kein
@@ -82,7 +93,15 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       Leerzeichen; die Zusage „dieselbe Antwort … keine zweite“ und der Out-of-Scope-Satz (4) sind
       **umgeschrieben**, nicht neben einem Widerspruch stehen gelassen; das Kriterium „Ausnahme (b),
       Grenzen“ ist **geändert**, nicht ein zweites daneben gestellt; die sechs Kriterien aus §3
-      stehen da, jede Grenze mit ihrer Bedingung.
+      stehen da, jede Grenze mit ihrer Bedingung. **Der Punkt „Tabellenzeile heißt …“ nennt drei
+      Grenzen, je mit ihrer Bedingung** (keine neuen Kriterien; Kriterium 2 deckt die Schwelle bei vier
+      schon; Wortlaut in [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md)
+      §Konsequenzen, [Verdikt](../../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-4):
+      (1) eine Prosa-Zeile, die nach ein bis drei Leerzeichen mit `|` beginnt, ohne dass eine Tabelle
+      dasteht, ist ausgenommen — eine Trennzeile wird weiter nicht verlangt, wie heute in Spalte 0;
+      (2) eine Tabelle auf der Zeile der Listenmarke (`- | a | b |`) beginnt nicht mit Leerzeichen
+      und `|` und bleibt gemessen; (3) eine Tabelle unter einer Marke von vier Spalten (`10. `) oder
+      in einer verschachtelten Liste steht mit vier und mehr Leerzeichen und bleibt gemessen.
 - [ ] Die Spezifikation führt das Verfahren (Schritt 4, „Nicht Gegenstand“, „Grenzen, am Gegenstand
       gelesen“) und die Beschreibung von `linelength.exempt-tables` im Schema; jede Aussage über die
       Grenzen ist am Gegenstand gelesen ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 13), nicht
@@ -110,7 +129,8 @@ Aussagen-Berührung steht hier gar nicht.
 |---|---|---|
 | `spec/lastenheft.md` | update | [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in): die Sätze zu Ausnahme (b), die Zusage „dieselbe Antwort … keine zweite“, der Punkt „Tabellenzeile heißt …“, die Kriterien „Ausnahme (b), …“, Out-of-Scope (4), Version und Historie (Spiegel-Zählung unten) |
 | `spec/spezifikation.md` | update | §[`DC-FA-LLEN-001.a`](../../../../spec/spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength) Schritt 4, „Nicht Gegenstand“, „Grenzen, am Gegenstand gelesen“, die Beschreibung von `linelength.exempt-tables` im Schema, Historie |
-| Folge-ADR zu [`ADR-0114`](../../adr/0114-linelength-modul.md) | neu, `Proposed`, schreibt der Architect | Entscheidung 5 (b) und die Konsequenz zur eingerückten Tabellenzeile werden teilweise abgelöst (`Supersedes`-Teil); die Alternativen stehen im Wortlaut der Welle §5 |
+| Folge-ADR zu [`ADR-0114`](../../adr/0114-linelength-modul.md) | liegt vor: [`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md), `Proposed`, vom Architect mit dem Verdikt geschrieben | Entscheidung 5 (b) und die Konsequenz zur eingerückten Tabellenzeile werden teilweise abgelöst (`Supersedes`-Teil); der Architect gleicht sie an, wenn das Schreiben der Anforderung eine Entscheidung verschiebt |
+| **Lastenheft §5** | geprüft, **unverändert** | die Antwort kommt aus der geteilten Lexik ([`ADR-0116`](../../adr/0116-linelength-eingerueckte-tabellenzeilen.md) Entscheid 4); die Zusage dort „mit derselben Markdown-Lexik wie die übrigen Module“ bleibt wahr ([Verdikt](../../../reviews/2026-11-24-welle-97-architect-verdikt.md) F-3) |
 | `docs/plan/adr/README.md` | update | ADR-Index ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 4) |
 | Plan von [`slice-294`](../open/slice-294-linelength-eingerueckte-tabellen-kern.md) | update | die Testfälle, die aus den bestätigten Entscheiden folgen |
 
@@ -118,10 +138,10 @@ Aussagen-Berührung steht hier gar nicht.
 ([§5](../welle-97-linelength-eingerueckte-tabellen.md), Fragen 1 bis 4), mit der Stelle, die sie trägt.
 Dieser Plan wiederholt sie nicht, damit keine zweite Fassung neben der ersten steht
 ([`BEO-ALL/grenz-aussage-ohne-ihre-bedingung`](../observations/BEO-ALL/grenz-aussage-ohne-ihre-bedingung/observation.md));
-er legt sie dem Auftraggeber zur Bestätigung vor. **Der eine Punkt, der vom Wortlaut des Issues
-abweicht, ist Frage 3:** höchstens drei Leerzeichen statt „2 bis 5“, weil die geteilte Lexik keinen
-Listenkontext hergibt. Der Architect schreibt zu Frage 4 das Verdikt (`docs/reviews/`) vor
-`in-progress`.
+der Auftraggeber hat die Fragen 1 bis 3 am 2026-11-24 bestätigt. **Der eine Punkt, der vom Wortlaut
+des Issues abweicht, ist Frage 3:** höchstens drei Leerzeichen statt „2 bis 5“, weil die geteilte
+Lexik keinen Listenkontext hergibt. Frage 4 ist im
+[Architect-Verdikt](../../../reviews/2026-11-24-welle-97-architect-verdikt.md) entschieden.
 
 **Die sechs Akzeptanzkriterien, die die Anforderung tragen soll** (Obergrenze der Welle: etwa acht;
 jedes mit der Bedingung, unter der es gilt — der Lastenheft-Text und das Kriterium in
