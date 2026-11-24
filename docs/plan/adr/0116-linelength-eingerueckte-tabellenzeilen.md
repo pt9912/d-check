@@ -1,6 +1,6 @@
 # ADR-0116: `linelength.exempt-tables` nimmt auch eine `|`-Zeile mit bis zu drei Leerzeichen davor aus
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-11-24
 
@@ -141,3 +141,4 @@ Welle (Verdikt unter `docs/reviews/`).
 | Datum | Ereignis | Verweis |
 |---|---|---|
 | 2026-11-24 | Proposed: Entscheide 1–3 wie vom Auftraggeber bestätigt, Entscheid 4 aus dem Architect-Verdikt zur Welle | slice-293 <!-- d-check:status-provenance --> |
+| 2026-11-24 | Accepted: der Mechanismus steht (slice-294). Der Helfer `unbreakableTableRow` in der geteilten Lexik ruft `tableRowLine` und lässt davor bis drei Leerzeichen (U+0020) zu, außerhalb von Fenced-Code; `tableRowLine` ist zeichengleich, `linelength` ruft für (b) nur den Helfer, und der Kopplungs-Test hält beide Fragen. Review R1 ohne HIGH und MEDIUM, die Verifikation hat jede Grenze mit einer Mutation rot gesehen; die Entscheide 1–4 tragen ohne inhaltliche Änderung gegenüber der Fassung als `Proposed` | slice-294 <!-- d-check:status-provenance --> |
