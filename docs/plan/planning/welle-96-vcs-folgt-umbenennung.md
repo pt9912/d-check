@@ -62,7 +62,18 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     der letzten Release-Version (`REF=v0.92.0`) zeigt für den Eigenlauf und ein
     Fixture ohne den neuen Schalter **dieselbe** Ausgabe (stdout, stderr und Exit
     getrennt). Eine opt-in-Erweiterung darf keinen bisher grünen oder roten Lauf
-    verschieben.
+    verschieben — **mit einer gewollten Abweichung im gestagten Modus**
+    ([Architect-Verdikt](../../reviews/2026-11-24-slice-292-architect-verdikt.md) F-4 zu
+    [`slice-292`](open/slice-292-vcs-umbenennung-modulkern.md)): ersetzt ein gestagter
+    Gitlink eine immutable Datei an ihrem Pfad, endet `--staged` nach Lesart des Codes
+    heute mit Exit 2 und nach der Angleichung der Index-Enumeration an die Spezifikation
+    mit `core-drift-vcs`, wie im `--range`-Modus; Bedingung und Testfall stehen in
+    [`slice-292`](open/slice-292-vcs-umbenennung-modulkern.md) §3. Die Probe trifft die
+    Abweichung nicht: das Skript ruft in der Default-Belegung von `PROBE_FORMS` weder
+    `--range` noch `--staged` und fährt das Modul `vcs` damit gar nicht. Die Gleichheit
+    des Moduls ohne den Schalter tragen die Tests zum Kriterium „Boundary (ohne
+    `vcs.follow-renames` byte-identisch)“ von
+    [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in).
   - **Der Anlass trägt am gebauten Image:** in einem Wegwerf-Klon dieses Repos
     benennt ein Commit `spec/spezifikation.md` per `git mv` um und zieht in jeder
     `Accepted`-ADR nur das Link-Ziel nach. `make adr-check RANGE=HEAD~1..HEAD` meldet
