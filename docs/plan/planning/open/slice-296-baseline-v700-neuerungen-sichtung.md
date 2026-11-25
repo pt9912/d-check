@@ -37,7 +37,8 @@ zusammen mit der Begründungs-Pflicht je Punkt.
 **Ziel:** Zu jeder Bewegung zwischen `v6.18.1` und `v7.0.0` — 39 Dateien und die Sammelzeile der 7 reinen
 Stempel-Änderungen — steht in **einer** Entscheidungsvorlage eine Zeile mit Klasse (*bereits befolgt* · *neu und
 anwendbar* · *nicht anwendbar*), Fundstelle im vendorten Baum, Empfehlung und Preis; dazu die zwei benannten
-Fragen (Umgebungs-Zusage und `environment-check` gegen die vorhandenen Gates; die englischen Bezeichner). Der
+Fragen (Umgebungs-Zusage und `environment-check` gegen die vorhandenen Gates; die **Reste** der Namensregel im
+Angebot des Produkts an Konsumenten). Der
 Auftraggeber entscheidet je Zeile; **der Slice übernimmt nichts**.
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
@@ -47,15 +48,15 @@ Auftraggeber entscheidet je Zeile; **der Slice übernimmt nichts**.
   Auftraggebers, je Übernahme einer, und keiner wird hier vorab angelegt: Ein Slice ohne Entscheid wäre ein Plan
   für etwas, das niemand verlangt hat
   ([`BEO-ALL/empfehlung-weitet-anforderung-ueber-den-anlass`](../observations/BEO-ALL/empfehlung-weitet-anforderung-ueber-den-anlass/observation.md)).
-- **Kein Durchgang durch die Adaptions-Liste** (Freshness-Audit) — Frage 5 in [welle-98 §5](../welle-98-baseline-v700.md).
+- **Kein Durchgang durch die Adaptions-Liste** (Freshness-Audit) — Frage 10 in [welle-98 §5](../welle-98-baseline-v700.md).
   Die Vorlage nennt zu einer Bewegung die aktive Adaption, die sie berührt, **wenn** die Lektüre sie findet; sie
   prüft die 41 Einträge nicht je einzeln.
-- **Kein Wort über die Umbenennung der Spezifikation hinaus.** Entscheid 1 ist gefallen; die Vorlage führt die
-  Zeile mit „entschieden“ und fragt nicht erneut.
+- **Kein Wort über die Namensregel selbst hinaus.** Entscheid 1 ist gefallen und in [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) umgesetzt; die Vorlage führt die
+  Zeilen dazu mit „entschieden“ und fragt nicht erneut — gefragt wird nur nach den **Resten** (Frage B).
 - **Kein CR an den Kurs.** Findet die Sichtung einen Widerspruch im Regelwerk, steht er in der Vorlage; ein
   ausgehender Change Request ([`MR-035`](../../../../harness/conventions.md#mr-035)) ist ein eigener Vorgang.
-- **Keine Änderung am Bestand an Plänen und Slices**, auch keine Berichtigung von `welle-`-Kennungen: sie bleiben, bis
-  der Auftraggeber zu Punkt 1 geantwortet hat.
+- **Keine Änderung am Bestand an Plänen und Slices**, auch keine Berichtigung von `welle-`-Kennungen: sie bleiben (Bestand;
+  Entscheid 1, „Bestand bleibt“).
 
 Was hier steht, ist die Grenze, an der ein wachsender Slice sich messen lässt:
 Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
@@ -84,9 +85,13 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 18). Jede Zeile hat eine leere Spalte *Entscheidung des
       Auftraggebers*.
 - [ ] **Die zwei benannten Fragen:** (A) Umgebungs-Zusage und `environment-check` — je Bestandteil des Kapitels
-      gegen das, was das Repo hat (§3), mit einer Antwort *befolgt · Lücke · nicht anwendbar*; (B) die Bezeichner
-      (`wave-`, `archive.zip`, `seit wave-`, Vorlagen-Paar, `specification.md`) — je Klasse die **gezählte** Reichweite
-      im Repo (Dateien, Verweise, Konfiguration, Werkzeug) und Preis der Übernahme gegen Preis des Bleibens.
+      gegen das, was das Repo hat (§3), mit einer Antwort *befolgt · Lücke · nicht anwendbar*; (B) die **Reste der
+      Namensregel**, die in [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) und
+      [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) nicht stehen — die Defaults des Werkzeugs
+      (`planning.waves.glob` und `results-glob` heißen `welle-*`, die Vorlage `.d-check.yml` des Regelwerks nennt `wave-*`),
+      die Beispiel-Pfade, die das Werkzeug und das Handbuch **Konsumenten** zeigen (`spec/spezifikation.md` in
+      `--print-config`, `--suggest-config` und im Handbuch) und das Verhalten für einen Konsumenten mit den
+      neuen Namen — je Rest die **gezählte** Reichweite und Preis der Übernahme gegen Preis des Bleibens.
 - [ ] `make gates` grün.
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
@@ -105,7 +110,7 @@ Aussagen-Berührung steht hier gar nicht.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `baseline-v700-neuerungen.md` unter `docs/plan/planning/` | neu | **die** Entscheidungsvorlage; der Ort ist die Antwort auf Frage 6 in [welle-98 §5](../welle-98-baseline-v700.md) (Vorschlag: flach in `planning/`, der Name trifft den Glob `welle-*.md` des Moduls `planning` nicht). Aus nichts kopiert — die Klasse hat keine Vorlage im Baum; die Spalten stehen in §3 unten |
+| `baseline-v700-neuerungen.md` unter `docs/plan/planning/` | neu | **die** Entscheidungsvorlage; der Ort ist die Antwort auf Frage 11 in [welle-98 §5](../welle-98-baseline-v700.md) (Vorschlag: flach in `planning/`, der Name trifft weder den Glob `welle-*.md` noch (nach Frage 3) `wave-*.md` des Moduls `planning`). Aus nichts kopiert — die Klasse hat keine Vorlage im Baum; die Spalten stehen in §3 unten |
 | `docs/plan/planning/observations/` | update | nur, falls die Sichtung ein Auftreten belegt (Evidenz-Datei), sonst „keine Beobachtung angefallen“ in §7 |
 
 Keine Testdatei: Der Slice schreibt Markdown, keinen Code; die Sensoren sind `make doc-check` (Links, Anker,
@@ -128,7 +133,10 @@ Empfehlung · *Entscheidung des Auftraggebers* (leer). Die laufende Nummer in Sp
    `templates/README.md` (35), danach der Rest nach Größe.
 3. **Klassifizieren**, mit dem Beleg, den die Klasse verlangt (§2). Eine Bewegung, die ein Entscheid des Auftraggebers
    oder eine aktive Adaption schon beantwortet, steht in *nicht anwendbar* mit dem Grund „entschieden“ und der
-   Fundstelle der Entscheidung — das sind die Zeilen zur Spezifikation (Entscheid 1).
+   Fundstelle der Entscheidung — das sind die Zeilen zur Namensregel (Entscheid 1: der Absatz *Dateinamen sind
+   englisch* in `grundlagen-harness-dateien.md` und die sieben Vorlagen-Namen), deren Umsetzung
+   [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) und
+   [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) tragen.
 4. **Frage (A), Umgebungs-Zusage.** Je Bestandteil des neuen Kapitels in `modul-14` und je Abschnitt der Vorlage
    `environment-check.template.md` eine Zeile: *die Zusage selbst* (festgelegt **und** adressierbar; als `LH-QA-*`
    geführt — trägt das Repo eine solche Anforderung? `git grep -n "Umgebung" -- spec/lastenheft.md` ist der Anfang der
@@ -139,15 +147,17 @@ Empfehlung · *Entscheidung des Auftraggebers* (leer). Die laufende Nummer in Sp
    leeren Kontext* gegen `make guard-probe`. Je Zeile: *befolgt* (Beleg), *Lücke* (kleinste Antwort mit Preis) oder
    *nicht anwendbar* (Grund an der Bedingung der Regel, am **Wortlaut** des Kapitels belegt und nicht aus diesem
    Plan übernommen: ob der zweite Träger neben dem Docker-Träger gilt, sagt das Kapitel, nicht der Planner).
-5. **Frage (B), Bezeichner.** Je Klasse eine **gezählte** Reichweite, jede mit der Form ihrer Zählung
-   ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 14): Dateinamen `welle-<Kennung>` (Maßstab am 2026-11-25:
-   `git ls-files | grep -c 'welle-[0-9]'` zählt **344** Pfade, davon **14** außerhalb von `done/`), der Herkunfts-Anker
-   `seit welle-` (`git grep -l 'seit welle-' -- . ':!.harness/baseline' ':!docs/plan/planning/done' ':!docs/reviews'`
-   zählt **19** Dateien), `…-results.md`, `archiv.zip` und das Verhalten von `tools/archive-wave/`, die
-   Konfiguration (`matrix`-Klasse `welle` und `planning.waves` in der [`.d-check.yml`](../../../../.d-check.yml)),
-   Kommentare, die Command-Dateien. Die Maßstäbe sind Erwartung; der Implementer zählt neu. Je Klasse
-   *Preis der Übernahme* gegen *Preis des Bleibens* (eine Adaption mit Auflösungs-Trigger) — **beide**, nicht nur der
-   eine, auf den die Empfehlung fällt.
+5. **Frage (B), Reste der Namensregel.** Je Rest eine **gezählte** Reichweite, jede mit der Form ihrer Zählung
+   ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 14): (i) die **Defaults** des Werkzeugs für `planning.waves`
+   (`welle-*.md`, `welle-*-results.md`: `internal/hexagon/core/model/config.go` Z. 481 und 490; die Schema-Zeilen der
+   Spezifikation; das Handbuch) gegen die Vorlage `.d-check.yml` des Regelwerks, die `wave-*` verlangt — ein Konsument,
+   der dem Regelwerk folgt, muss heute beide Globs setzen; (ii) die **Beispiel-Pfade** für Konsumenten
+   (`config_template.go` Z. 56–57, `suggest.go` Z. 379–380, `benutzerhandbuch.md` Z. 372–373: `spec/spezifikation.md`);
+   (iii) was ein Konsument sieht, dessen Wellen `wave-<NN>` heißen und dessen Archiv `archive.zip` heißt (aus der Probe
+   in [welle-98 §1](../welle-98-baseline-v700.md), Punkt 5 und 6, übernommen als Erwartung, am Image des Hauptzweigs
+   neu gemessen). Je Rest *Preis der Übernahme* gegen *Preis des Bleibens* (ein Default ist ein Vertrag mit
+   Konsumenten: [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
+   — **beide**, nicht nur der eine, auf den die Empfehlung fällt.
 6. **Die Vorlage schreiben** und dem Reviewer übergeben. Die Spalte *Entscheidung des Auftraggebers* bleibt leer;
    der Slice schließt, wenn sie dem Auftraggeber **vorliegt**, nicht wenn er geantwortet hat.
 
@@ -156,9 +166,9 @@ Empfehlung · *Entscheidung des Auftraggebers* (leer). Die laufende Nummer in Sp
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
-**Start** (`next` → `in-progress`): [`slice-295`](../open/slice-295-baseline-v700-bump.md) liegt in `done/` (der Baum von
+**Start** (`next` → `in-progress`): [`slice-295`](../open/slice-295-baseline-v700-bump.md), [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) liegen in `done/` (der Baum von
 `v7.0.0` ist vendort, `ls .harness/baseline` nennt nur ihn, und der Bump-Eintrag nennt den Vor-Bump-Commit);
-`in-progress/` trägt keinen Slice; die Antwort auf Frage 6 (Ort der Vorlage) liegt im Architect-Verdikt vor;
+`in-progress/` trägt keinen Slice; die Antwort auf Frage 11 (Ort der Vorlage) liegt im Architect-Verdikt vor;
 `Verantwortlich:` beim Übergang `open` → `next` gesetzt.
 
 **Rückführungen — vorab benennen, nicht erst im Nachhinein begründen:**
@@ -169,7 +179,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   zwei Slices, die Vorlage dann in zwei Dateien; dann gilt die Form von
   [`MR-066`](../../../../harness/conventions.md#mr-066).
 - `in-progress` → `open` (blockiert): Der vendorte Baum von `v7.0.0` fehlt oder der Vor-Bump-Commit ist nicht
-  auflösbar (`git cat-file -e <Vor-Bump>`), oder das Architect-Verdikt zu Frage 6 steht aus.
+  auflösbar (`git cat-file -e <Vor-Bump>`), oder das Architect-Verdikt zu Frage 11 steht aus.
 
 ## 5. Closure-Trigger
 
@@ -277,13 +287,13 @@ Sub-Area-Prüfung.
 (verkörpert, 19× — das Inventar der 39 Dateien wird gezählt, nicht aus dieser Liste übernommen),
 [`BEO-ALL/rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md)
 (gemischt, 9× — die Sichtung geht den **Bestand** der 39 Dateien durch, nicht nur die zwei benannten Anlässe
-`environment-check` und die Bezeichner). **Kein Treffer:** keine Beobachtung zu Entscheidungsvorlagen als Klasse.
+`environment-check` und die Reste der Namensregel). **Kein Treffer:** keine Beobachtung zu Entscheidungsvorlagen als Klasse.
 Der Zähler folgt aus den Dateien der Closure.
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
 `make nightly-state` am 2026-11-25: `image-scan` **grün** (jüngster Lauf 2026-11-25T12:59:28Z). `upstream-drift`
 **rot** (jüngster Lauf 2026-11-25T09:26:13Z), der Log war über `gh run view` nicht abrufbar; gelesen ist
 `make baseline-freshness` (Exit 3, neuer Release `v7.0.0`) — der Gegenstand der Welle, **planmäßig gelesen**. Zum
-Zeitpunkt dieses Slice ist [`slice-295`](../open/slice-295-baseline-v700-bump.md) `done/`; der Stand wird beim Start neu gelesen.
+Zeitpunkt dieses Slice sind [`slice-295`](../open/slice-295-baseline-v700-bump.md), [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) `done/`; der Stand wird beim Start neu gelesen.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
