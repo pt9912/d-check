@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.115.1
+**Version:** 0.115.2
 
 **Status:** Draft
 
@@ -4759,7 +4759,7 @@ Rechtschreib-Regeln** — der Ausschluss in [§5](#5-globale-out-of-scope-punkte
 ### DC-QA-01 — Performance
 
 - **Anforderung:** Ein vollständiger Lauf der Default-Module über ein Repository mit 1.000 Markdown-Dateien (insgesamt ≤ 20 MB) terminiert in < 5 s auf Standard-Entwickler-Hardware (2 vCPU); das Modul `external` ist von dieser Schranke ausgenommen.
-- **Messmethode:** Benchmark-Lauf gegen ein generiertes Fixture-Repo, Definition in `spec/spezifikation.md`.
+- **Messmethode:** Benchmark-Lauf gegen ein generiertes Fixture-Repo, Definition in `spec/specification.md`.
 
 ### DC-QA-02 — Determinismus
 
@@ -4804,6 +4804,7 @@ Rechtschreib-Regeln** — der Ausschluss in [§5](#5-globale-out-of-scope-punkte
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.115.2 | 2026-11-26 | Redaktionell: der Pfad der Messmethode zu [`DC-QA-01`](#dc-qa-01--performance) folgt der Umbenennung der Spezifikation (`spec/specification.md`); keine inhaltliche Änderung, kein `DC-*` ändert sich | — |
 | 0.115.1 | 2026-11-24 | Nachzug nach Review an [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) (0.115.0), präzisiert — keine Verhaltensänderung: der Satz, die übrigen Module lasen eine eingerückte Zeile weiter nicht als Tabellenzeile, gilt nur für `targets`, `planning.waves` und `structure`; der Leser der Requirements Traceability Matrix und der Leser des Beobachtungs-Registers in `planning` trimmen die Zeile und lesen eine eingerückte Tabellenzeile. Der Absatz zur geteilten Lexik nennt die drei Module, wie das Kriterium „Ausnahme (b), andere Module unverändert“ sie nennt. Anlass: Review | — |
 | 0.115.0 | 2026-11-24 | [`DC-FA-LLEN-001`](#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in) (`linelength.exempt-tables`): die Ausnahme (b) nimmt auch eine `\|`-Zeile aus, vor deren erstem `\|` null bis drei Leerzeichen (U+0020) und sonst nichts stehen — eine Verhaltensänderung. Vier und mehr Leerzeichen, ein Tab, ein geschütztes Leerzeichen (U+00A0), `> \|` und eine eingerückte `\|`-Zeile im Zaun bei `exempt-code-blocks: false` bleiben Befund; der Punkt „Tabellenzeile heißt …“ nennt die Grenzen mit ihrer Bedingung (Prosa-Zeile mit `\|` ohne Tabelle ausgenommen, `- \| a \| b \|` gemessen, Tabelle unter `10. ` oder in einer verschachtelten Liste gemessen). Die Zusage „dieselbe Antwort … keine zweite“ und der Out-of-Scope-Satz (4) sind umgeschrieben: die Antwort auf die Tabellenzeile kommt weiter aus der geteilten Lexik, auf eine eigene, benannte Frage; die übrigen Module lesen eine eingerückte Zeile weiter nicht als Tabellenzeile. Das Kriterium „Ausnahme (b), Grenzen“ ist ersetzt, fünf Kriterien kommen hinzu. Gegen §5 gehalten: kein globaler Ausschluss getroffen — die Zeilenlänge läuft weiter mit der Markdown-Lexik der übrigen Module. Anlass: Feldmeldung eines Adopters (GitHub-Issue 20). Begründung in begleitender ADR | — |
 | 0.114.3 | 2026-11-24 | Nachzug nach Review an [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) (`vcs.follow-renames`), präzisiert — die Teilnahme-Regel von 0.114.2 bleibt, ihr Satz lässt sich aber nicht mehr als Ausschluss der Rotation lesen. Er sagt, dass eine Umbenennung, deren Ende in BASE lag oder auch Ende einer zweiten Quelle ist, keinen ihrer Pfade **über sich** teilnehmen lässt, und dass ein Pfad aus BASE, der Ende einer solchen und Quelle einer teilnehmenden Umbenennung ist, als deren Quelle teilnimmt (Rotation). Eine Grenze benennt die drei Fälle, die etwas durchlassen, das man als Drift erwarten könnte — freigemachter Name, zwei Quellen auf ein Ende, Rotation. Zwei Kriterien kommen hinzu (zwei Quellen auf ein Ende, Rotation). Anlass: Review | — |
