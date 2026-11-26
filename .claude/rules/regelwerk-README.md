@@ -1,1 +1,1 @@
-../../.harness/baseline/v6.18.1/regelwerk/README.md
+../../.harness/baseline/v7.0.0/regelwerk/README.md

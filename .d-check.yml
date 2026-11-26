@@ -389,6 +389,27 @@ ignore-refs:
     refs: [".harness/baseline/v6.9.0/**"]
   - in: harness/conventions/done/MR-062-wellenloser-slice-archiv-move.md
     refs: [".harness/baseline/v6.9.0/**"]
+  # Tombstone der Baseline-Hebung auf v7.0.0 (MR-081). Datei-skopiert, wie beim
+  # v6.9.0-Block: sieben eingefrorene Artefakte tragen je einen Markdown-Link auf
+  # den entfernten v6.18.1-Baum -- die Accepted-ADRs 0112 bis 0116 in ihrer
+  # Regeln-Zeile, slice-274 in seinem Rot-Beleg und der Architect-Verdikt zu
+  # welle-93 in seinem Verweis auf modul-05 §Ziel-Form: Slice. Sie zitieren den Stand ihrer Zeit
+  # (MR-069); der alte Baum liegt in der git-Historie (MR-052). GRENZE: in diesen
+  # sieben Dateien wird jeder kuenftige Link auf .harness/baseline/v6.18.1/ still.
+  - in: docs/plan/adr/0112-metrics-modul.md
+    refs: [".harness/baseline/v6.18.1/**"]
+  - in: docs/plan/adr/0113-pinsync-modul.md
+    refs: [".harness/baseline/v6.18.1/**"]
+  - in: docs/plan/adr/0114-linelength-modul.md
+    refs: [".harness/baseline/v6.18.1/**"]
+  - in: docs/plan/adr/0115-vcs-folgt-umbenennung.md
+    refs: [".harness/baseline/v6.18.1/**"]
+  - in: docs/plan/adr/0116-linelength-eingerueckte-tabellenzeilen.md
+    refs: [".harness/baseline/v6.18.1/**"]
+  - in: docs/plan/planning/done/wellenlos/slice-274-trace-requirements-als-liste-von-quellen.md
+    refs: [".harness/baseline/v6.18.1/**"]
+  - in: docs/reviews/2026-10-30-welle-93-architect-verdikt.md
+    refs: [".harness/baseline/v6.18.1/**"]
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.

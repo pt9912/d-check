@@ -18,7 +18,7 @@ Lies den MR-Block in `harness/conventions.md`; die planungs-relevanten:
 
 - **Neue Artefakte per `cp` aus den vendored Templates** (`.harness/baseline/<tag>/templates/…`),
   dann **in-place** ausfüllen — **keine handgeschriebenen Kopien und kein Modellieren auf ein
-  bestehendes Artefakt.** Das gilt für den Welle-Plan (`welle.template.md`) **und** jeden neuen
+  bestehendes Artefakt.** Das gilt für den Welle-Plan (`wave.template.md`) **und** jeden neuen
   Slice (`slice.template.md`).
 - **Strenges Doc-Gate (d-check).** Jede `DC-`/`ADR-`/`MR-`/`slice-`-Kennung in einer gescannten
   `.md` muss ein klickbarer Anker-Link sein (link-policy: always) — ein bares Kennungs-Token bricht
@@ -69,7 +69,7 @@ die Antwort und wird notiert.
 
 ## Welle-Plan per cp anlegen und füllen (der Kern-Schritt)
 
-7. **`cp` aus `.harness/baseline/<tag>/templates/docs/plan/planning/welle.template.md` nach
+7. **`cp` aus `.harness/baseline/<tag>/templates/docs/plan/planning/wave.template.md` nach
    `docs/plan/planning/<welle-id>.md`** — flach in `planning/`, kein Lifecycle-Ordner. Provenienz mit
    `diff -q <template> <ziel>` belegen (byte-identisch, dann füllen).
 8. **In-place füllen** (Edits, **kein** Voll-Überschreiben): den `> **Template-Hinweis.**`-Block

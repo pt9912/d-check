@@ -255,7 +255,7 @@ in **jedem** Slice-Plan — sie hängen weder am Modus noch am Slice-Typ. Beding
 ist allein der Modus-Begründungsblock am Ende; deshalb nennt der Titel beide
 Hälften.
 
-<!-- d-check:cite .harness/baseline/v6.18.1/regelwerk/modul-05-planning-harness.md:373-374 -->
+<!-- d-check:cite .harness/baseline/v7.0.0/regelwerk/modul-05-planning-harness.md:416-417 -->
 
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
@@ -267,7 +267,7 @@ lesend `.harness/baseline/` und das Repo, aus dem die Beläge der Zeilen stammen
 unberührt; wird eine Zeile der Vorlage zu einer Übernahme in `tools/harness/`, ist das ein Folge-Slice mit eigener
 Sub-Area-Prüfung.
 
-<!-- d-check:cite .harness/baseline/v6.18.1/regelwerk/modul-05-planning-harness.md:379-379 -->
+<!-- d-check:cite .harness/baseline/v7.0.0/regelwerk/modul-05-planning-harness.md:422-422 -->
 
 > **Offene Beobachtungen sichten.** Das
 

@@ -23,7 +23,7 @@ Wellen-Closure), Modul 7 (Carveouts), Modul 5 (Lifecycle). Bei Konflikt gilt der
   Anker-Links — die Results-Notiz und die Roadmap werden gescannt. **`welle-NN` ist keine
   Traceability-Klasse** — Welle-Commits tragen zusätzlich eine slice-/MR-ID.
 - **Neue Artefakte per `cp` aus den vendored Templates** — die Results-Notiz entsteht per `cp` aus
-  `.harness/baseline/<tag>/templates/docs/plan/planning/welle-results.template.md` und wird danach
+  `.harness/baseline/<tag>/templates/docs/plan/planning/wave-results.template.md` und wird danach
   ausgefüllt; die Welle-Datei bleibt Quelle der Plan-Struktur für alles, was das Template offenlässt.
 - **Commit via Message-Datei** (`git commit -F <datei>`); Move-Commits bleiben rein (100 %), die
   Link-Tiefen-Korrektur kommt als eigener Commit.
@@ -50,7 +50,7 @@ Wellen-Closure), Modul 7 (Carveouts), Modul 5 (Lifecycle). Bei Konflikt gilt der
    Klasse eine belegte „0 offen"-Feststellung, kein Auslassen. **Ein Trigger ohne Wächter ist eine
    Absichtserklärung mit Verfallsdatum.**
 4. **Schritt 3 — Closure-Notiz `done/<welle-id>-results.md` schreiben** (per `cp` aus dem vendored
-   `welle-results.template.md`, dann füllen). Hält fest, *was gelernt wurde*: geliefert · was
+   `wave-results.template.md`, dann füllen). Hält fest, *was gelernt wurde*: geliefert · was
    funktionierte · was anders lief · **Steering-Loop-Einträge** (geschärfte Regel / neuer Sensor /
    benannte Spec-Lücke) · Zeiger aufs Beobachtungs-Register · Folge-Slices · Verifikation (die Belege
    aus Schritt 1). **Ohne Lerneintrag ist die Welle nicht „fertig", nur „weg".**
@@ -76,8 +76,8 @@ Wellen-Closure), Modul 7 (Carveouts), Modul 5 (Lifecycle). Bei Konflikt gilt der
    Fällen: etwas wurde versprochen und nicht angelegt.
 5. **Schritt 4 — Zeitdokumente der Welle archivieren.** Ihre Slice-Dateien, ihr Plan und die
    Review-Reports dieser Slices wandern nach `done/<welle-id>/archiv.zip`; an ihrer Stelle bleiben
-   gekürzte Stubs — per `cp` aus den vendored Vorlagen `archiv-stub-slice.template.md` bzw.
-   `archiv-stub-welle.template.md`; ein Stub trägt keine Abschnittsüberschriften, Review-Reports
+   gekürzte Stubs — per `cp` aus den vendored Vorlagen `archive-stub-slice.template.md` bzw.
+   `archive-stub-wave.template.md`; ein Stub trägt keine Abschnittsüberschriften, Review-Reports
    bekommen keinen. Die **Ergebnisnotiz bleibt vollständig und flach**. Eingesammelt wird nach der
    Welle, nicht nach dem Verzeichnis: die Slices, deren `Welle:` diese Welle nennt, **und** die
    wellenlosen seit der letzten Closure; Slices einer noch offenen Welle bleiben liegen.

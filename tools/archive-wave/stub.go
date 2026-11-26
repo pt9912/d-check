@@ -1,5 +1,5 @@
 // Erzeugt die gekuerzten Stub-Texte nach den beiden Baseline-Templates
-// (archiv-stub-slice.template.md, archiv-stub-welle.template.md). Ein Stub
+// (archive-stub-slice.template.md, archive-stub-wave.template.md). Ein Stub
 // traegt keine Abschnittsueberschriften -- das ist die Kuerzung, die die
 // Templates form-pruefbar machen.
 package main
@@ -140,7 +140,7 @@ func SliceStub(id, title, welleField, welleID, hervorgegangen string) string {
 // `WellenlosArchiveDir` (archive.go), und es gibt keine einsammelnde Welle --
 // an die Stelle von "Archiviert mit: <welle-id>" tritt "Archiviert: <Datum>
 // (eigene Closure)". Dasselbe vendorte Template
-// (`archiv-stub-slice.template.md`) beschreibt beide Faelle: sein
+// (`archive-stub-slice.template.md`) beschreibt beide Faelle: sein
 // "Archiviert mit"-Feld benennt die *Einsammlung*, hier eben durch die
 // eigene Closure statt durch eine Welle -- keine neue Norm, nur ein neuer
 // Feldwert. Der d-check:ignore-Marker auf der Hervorgegangen-Zeile exempt sie
