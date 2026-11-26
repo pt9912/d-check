@@ -1,6 +1,6 @@
 # ADR-0117: Die neuen Wellen-Namen laufen über die Konfiguration dieses Repos — die Bestands-Wellen bleiben ungewächtert
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Datum:** 2026-11-26
 
@@ -89,3 +89,4 @@ Konfiguration verlangt Gleichheit). Gemessen in einem Wegwerf-Klon, Stand `590dd
 | Datum | Ereignis | Verweis |
 |---|---|---|
 | 2026-11-26 | Proposed: Architect-Verdikt zur Hebung der Baseline, Frage 3 | slice-298 <!-- d-check:status-provenance --> |
+| 2026-11-26 | Accepted: die Konfiguration steht (slice-298), das Review ohne HIGH und MEDIUM, die Verifikation hat die Probe der Fitness Function in einer Wegwerf-Kopie gefahren (ohne Zeiger `wave-drift`, mit Zeiger Exit 0) und die Gegenseite still gesehen (flache `welle-<NN>`-Datei ohne Zeiger, 0 Befunde). Entscheidung, Senkung und Fitness Function sind gegenüber der Fassung als `Proposed` unverändert; geändert wurden die Beispiel-Kennung (Platzhalter) und in Alternative B die Bestandszahlen, die dem Verweis auf [`MR-082`](../../../harness/conventions/MR-082-wave-welle-koexistenz.md) gewichen sind | slice-298 <!-- d-check:status-provenance --> |
