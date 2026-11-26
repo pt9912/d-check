@@ -1,4 +1,4 @@
-# Welle welle-98: Baseline-Pin auf `v7.0.0` heben, die Namensregel für Neues einführen und die übrigen Neuerungen vorlegen
+# Welle wave-98: Baseline-Pin auf `v7.0.0` heben, die Namensregel für Neues einführen und die übrigen Neuerungen vorlegen
 
 **Lifecycle:** Diese Datei entsteht bei der **Eröffnung** der Welle und liegt
 flach unter `docs/plan/planning/`; bei Closure wandert sie per `git mv` nach
@@ -251,7 +251,7 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     ohne die Welle:* (d) ist **nicht** rot, wenn nichts geschieht — es hält eine Zusage fest, die der Rename
     verletzen könnte (ein mitgeänderter Quelltext, eine sechste Abweichungsklasse in `--manual`).
   - **(e) Das Trigger-Audit** (seit [`slice-241`](done/wellenlos/slice-241-trigger-audit-adoption.md)) ist über
-    die Closure vollzogen und in `welle-98-results.md` belegt. Fällig ist mindestens der Auflösungs-Trigger von
+    die Closure vollzogen und in `wave-98-results.md` belegt. Fällig ist mindestens der Auflösungs-Trigger von
     [`MR-080`](../../../harness/conventions.md#mr-080) („die nächste Pin-Hebung“); die übrigen Trigger-Klassen
     liest die Closure, sie sind hier nicht vorweggenommen.
   - **(f) Die Entscheidungsvorlage liegt dem Auftraggeber vor.** Jede der **39** Dateien mit Bewegung (31
@@ -269,7 +269,7 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     `git diff --stat -M <Vor-Bump>..HEAD -- docs/plan/planning/done` nennt außer den Nachzügen aus Frage 5 keine Datei
     (Bestand bleibt). *Rot ohne die Welle:* gemessen im Probelauf (Punkt 5 und 6 in §1): `wave-99` unsichtbar für
     `planning-check`, `archive-wave` bricht mit Exit 2.
-- Closure-Notiz in `welle-98-results.md`.
+- Closure-Notiz in `wave-98-results.md`.
 
 ## 4. Slices in dieser Welle
 
@@ -387,5 +387,5 @@ Regeln dieser Sektion: Baseline-Regelwerk `grundlagen-traceability.md`
 beiden Zeiger unten sind so zu schreiben, wie sie vom Ruheort `done/` auflösen,
 nicht vom Schreibort.
 
-Ergebnis: `welle-98-results.md` (Geschwister im Ruheort `done/`, entsteht bei der Closure)
+Ergebnis: `wave-98-results.md` (Geschwister im Ruheort `done/`, entsteht bei der Closure)
 Zähler: [Beobachtungs-Register](observations/README.md)

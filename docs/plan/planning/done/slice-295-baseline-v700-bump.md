@@ -9,7 +9,7 @@ aus `open/` oder `next/` nach `done/` — §7 nennt in der Zeile `Gegenstand:`
 Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 (§Ein Slice, dessen Gegenstand ein anderer übernimmt).
 
-**Welle:** [`welle-98-baseline-v700`](../welle-98-baseline-v700.md).
+**Welle:** [`wave-98-baseline-v700`](../wave-98-baseline-v700.md).
 
 **Bezug:** [`MR-080`](../../../../harness/conventions.md#mr-080) (die vorige Pin-Hebung und ihre Form),
 [`MR-011`](../../../../harness/conventions.md#mr-011) (die Pin-Kette),
@@ -47,7 +47,7 @@ pin-gebundenen Verweise samt der `d-check:cite`-Spannen nachziehen, die sieben u
 Verweisen des Repos beim neuen Namen nennen — und die Hebung als Eintrag in `harness/conventions/` führen
 (Delta vollständig nach Datei, **keine Neuerung übernommen** — die Namensregel führt nicht dieser Slice, sondern
 [`slice-297`](slice-297-spezifikation-heisst-specification.md) und
-[`slice-298`](../in-progress/slice-298-neue-namen-wave-archive-anker.md); Entscheid 1 der [Welle](../welle-98-baseline-v700.md)).
+[`slice-298`](../in-progress/slice-298-neue-namen-wave-archive-anker.md); Entscheid 1 der [Welle](../wave-98-baseline-v700.md)).
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
@@ -69,7 +69,7 @@ Verweisen des Repos beim neuen Namen nennen — und die Hebung als Eintrag in `h
 - **Frozen-Dateien bleiben byte-stabil** — `done/`-Slices und -Wellen, `docs/reviews/`, `CHANGELOG.md`,
   `conventions/done/`, eingehende CRs und der Kern der `Accepted`-ADRs nennen den alten Pin als
   Vergangenheits-Aussage (Bestand bewusst). Die Ausnahme ist allein die Antwort auf Frage 5 in
-  [welle-98 §5](../welle-98-baseline-v700.md): sieben eingefrorene Dateien **verlinken** den alten Baum; nach dem Nachtrag V1 des Verdikts sind es fünf hinter dem Ventil, die zwei übrigen werden retargetet (Plan-Änderung in §3).
+  [wave-98 §5](../wave-98-baseline-v700.md): sieben eingefrorene Dateien **verlinken** den alten Baum; nach dem Nachtrag V1 des Verdikts sind es fünf hinter dem Ventil, die zwei übrigen werden retargetet (Plan-Änderung in §3).
 - **`tools/harness/selbstpruefung.sh`** — sein Stand-Vermerk nennt die Version des Schwester-Werkzeugs
   `ai-harness-init`, nicht den Baseline-Pin (anderer Gegenstand; dieselbe Abgrenzung wie in
   [`slice-277`](../done/wellenlos/slice-277-baseline-v6181-bump.md)).
@@ -196,7 +196,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
 **Start** (`next` → `in-progress`): `in-progress/` trägt keinen Slice (nur die Roadmap); das **Architect-Verdikt**
-zu den zwölf Fragen in [welle-98 §5](../welle-98-baseline-v700.md) (für diesen Slice tragend: 5, 9, 12) liegt vor: [Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md);
+zu den zwölf Fragen in [wave-98 §5](../wave-98-baseline-v700.md) (für diesen Slice tragend: 5, 9, 12) liegt vor: [Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md);
 Priorisierung gesetzt, `Verantwortlich:` beim Übergang `open` → `next` gesetzt.
 
 **Rückführungen — vorab benennen, nicht erst im Nachhinein begründen:**
@@ -218,7 +218,7 @@ DoD vollständig (§2) und `make gates` grün; Review- und Verifikations-Report 
 Closure-Notiz mit Lerneintrag geschrieben. **Review-Vorgabe der Welle:** höchstens zwei Runden, eingearbeitet
 werden nur HIGH und MEDIUM; jede Nachbesserung zitiert die Stelle, die sie trägt
 ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 18). Was die **Welle** einlöst — Gegenmessung am Endstand,
-Produkt unverändert, Trigger-Audit — steht in [ihrem Closure-Trigger](../welle-98-baseline-v700.md) und nicht in
+Produkt unverändert, Trigger-Audit — steht in [ihrem Closure-Trigger](../wave-98-baseline-v700.md) und nicht in
 dieser DoD ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 10).
 
 ## 6. Risiken und offene Punkte
@@ -341,7 +341,7 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   Antwort des Auftraggebers auf die Spec-Lücken-Frage entscheidet, ob einer entsteht.
 - **Risiken aus §6:** Risiko 1 *entfallen*, 2 *entfallen*, 3 *entfallen*, 4 *eingetreten* (Beleg: die Evidenz-Datei
   oben), 5 *weiter offen* → `slice-298` — Begründung je Risiko in §6.
-- **Die drei Paarungen**, hier vorab geprüft (getragen von der Closure von welle-98): (a) Anker — kein
+- **Die drei Paarungen**, hier vorab geprüft (getragen von der Closure von wave-98): (a) Anker — kein
   Steering-Loop-Eintrag mit `liegt in`-Feld, keine Paarung auszulösen; (b) Folge-Slice — `slice-298` besteht als Datei
   in `open/`; (c) Register — beide genannten Verzeichnisse existieren und tragen nicht leere `evidence/`.
 

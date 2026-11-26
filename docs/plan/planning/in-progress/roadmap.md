@@ -32,7 +32,7 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
-- [`welle-98-baseline-v700`](../welle-98-baseline-v700.md)
+- [`wave-98-baseline-v700`](../wave-98-baseline-v700.md)
 
 ## Nächste Wellen
 

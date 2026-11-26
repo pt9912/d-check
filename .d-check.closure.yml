@@ -264,8 +264,14 @@ structure:
     open-tasks-require-marker-section: '^#{1,3} [0-9]+\. Closure-Notiz'
     hint: "Ein geschlossener Slice trägt einen DoD-Abschnitt, dessen Haken alle gesetzt sind — sonst gehört er zurück nach in-progress/, oder eine **Gegenstand:**-Zeile im Closure-Notiz-Abschnitt erklärt, warum nicht"
 
-  # Jede Wellen-Ergebnisnotiz beantwortet die erste Pflichtfrage.
-  - files: "docs/plan/planning/done/welle-*-results.md"
+  # Jede Wellen-Ergebnisnotiz beantwortet die erste Pflichtfrage -- in beiden
+  # Schreibweisen, welle-<NN>-results.md und wave-<NN>-results.md (MR-082).
+  # Ein Glob je Schreibweise meldet section-missing, sobald einer keine Datei
+  # trifft (Nullmengen-Haerte, SPEC-049); ein Glob liest beide.
+  # GRENZE: das Muster liest jede *-results.md unter done/; heute sind es
+  # genau die welle-<NN>-Notizen (Kommando: git ls-files | grep -E
+  # 'done/[^/]*-results.md$' | grep -vc 'done/welle-' ergibt 0).
+  - files: "docs/plan/planning/done/*-results.md"
     section-pattern: '^## Was wurde geliefert'
     non-empty: true
 

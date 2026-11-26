@@ -9,7 +9,7 @@ aus `open/` oder `next/` nach `done/` — §7 nennt in der Zeile `Gegenstand:`
 Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 (§Ein Slice, dessen Gegenstand ein anderer übernimmt).
 
-**Welle:** [`welle-98-baseline-v700`](../welle-98-baseline-v700.md).
+**Welle:** [`wave-98-baseline-v700`](../wave-98-baseline-v700.md).
 
 **Bezug:** [`DC-FA-CLI-013`](../../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen)
 (der Vertrag bleibt im Wortlaut; die Kopfzeile von `--manual` trägt den Pfad),
@@ -21,7 +21,7 @@ durch), [`ADR-0025`](../../adr/0025-codepaths-ignore-refs.md) (das Tombstone-Reg
 [`MR-070`](../../../../harness/conventions.md#mr-070) (Frozen-Klassen vor mechanischer Ersetzung),
 [`MR-032`](../../../../harness/conventions.md#mr-032) (Lastenheft-Historie, Zeile 4762),
 [`AGENTS.md`](../../../../AGENTS.md) §3.3 (Move und Inhalt in zwei Commits). Anlass: Entscheid 1 der
-[Welle](../welle-98-baseline-v700.md) (Namensregel, „ab jetzt, Bestand bleibt“).
+[Welle](../wave-98-baseline-v700.md) (Namensregel, „ab jetzt, Bestand bleibt“).
 
 **Berührte Spec-Stellen:** die Datei `spec/spezifikation.md` selbst (ihr Name und ihre 161 Selbst-Verweise) ·
 [`DC-FA-CLI-013.a`](../../../../spec/specification.md#dc-fa-cli-013a--handbuch-und-spezifikation-ausgeben---manual)
@@ -117,7 +117,7 @@ Datei bzw. Zeile**, die die Zeichenkette `spezifikation.md` trägt (`git grep`),
 Datei ([`MR-070`](../../../../harness/conventions.md#mr-070): eingefroren ist, was ein Beleg, eine `Accepted`-ADR, ein
 Lauf-Bericht ist — nicht, was in `done/` liegt), nicht nach dem Verzeichnis. Stand `590dde3d`; der Implementer
 **wiederholt** die Zählung vor der ersten Änderung. Die Zahlen stammen aus dem Probelauf in einem Wegwerf-Klon
-([welle-98 §1](../welle-98-baseline-v700.md)), dort auch ihre Messung am Gate.
+([wave-98 §1](../wave-98-baseline-v700.md)), dort auch ihre Messung am Gate.
 
 | Datei / Komponente | Änderungs-Art | Begründung und Zahl |
 |---|---|---|
@@ -143,7 +143,7 @@ Zeilen) und dazu **sechs Dateien mit je einem Link-Ziel, die keine Zeile der Tab
 | Dateien | Zeilen | Eigenschaft | Kommando |
 |---|---|---|---|
 | vier Dateien unter `docs/plan/planning/observations/` (`BEO-ALL/schwelle-mit-mehreren-traegern-ohne-gleichhalter/evidence/slice-259.md`, `BEO-ALL/spezifikation-und-code-weichen-am-rand-ab/evidence/slice-289.md`, `BEO-ALL/grenze-der-scan-menge-nur-bei-einem-modul-benannt/evidence/slice-289.md`, `BEO-HARN/commit-msg-hook-sperrt-junges-repo/observation.md`) | 4 | Register-Belege und eine Beobachtung: der Link zeigte immer auf die **lebende** Datei (Frage 5, dieselbe Begründung wie bei den 39) | `git grep -c '\](\([^)]*/\)\?spezifikation\.md' -- docs/plan/planning/observations` |
-| dieser Plan (Z. 27 und 58) und die Welle `welle-98-baseline-v700.md` (Z. 151) | 3 | lebende Pläne mit Link auf den Abschnitt der Spezifikation zu [`DC-FA-CLI-013`](../../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen); ihre Inline-Code-Nennungen des alten Namens beschreiben den Gegenstand und bleiben (Ventil) | `git grep -c '\](\([^)]*/\)\?spezifikation\.md' -- docs/plan/planning/in-progress docs/plan/planning/open docs/plan/planning/welle-98-baseline-v700.md` |
+| dieser Plan (Z. 27 und 58) und die Welle `wave-98-baseline-v700.md` (Z. 151) | 3 | lebende Pläne mit Link auf den Abschnitt der Spezifikation zu [`DC-FA-CLI-013`](../../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen); ihre Inline-Code-Nennungen des alten Namens beschreiben den Gegenstand und bleiben (Ventil) | `git grep -c '\](\([^)]*/\)\?spezifikation\.md' -- docs/plan/planning/in-progress docs/plan/planning/open docs/plan/planning/wave-98-baseline-v700.md` |
 
 Alle sieben Zeilen: **nur** das Link-Ziel, nach der Wortgrenze (`](`, optional ein Pfad bis `/`, dann `spezifikation.md`). Sie reisen im
 **zweiten** Commit, nicht im Move-Commit — dessen Menge (64 + 39 = 103 `M`) bleibt wie in §3. Die Summe aller Link-Ziele geht auf:
@@ -216,7 +216,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 **Start** (`next` → `in-progress`): [`slice-295`](../done/slice-295-baseline-v700-bump.md) liegt in `done/`;
 `in-progress/` trägt keinen Slice (nur die Roadmap); das **Architect-Verdikt** zu den zwölf Fragen in
-[welle-98 §5](../welle-98-baseline-v700.md) (für diesen Slice tragend: 4, 5, 6, 7) liegt vor: [Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md);
+[wave-98 §5](../wave-98-baseline-v700.md) (für diesen Slice tragend: 4, 5, 6, 7) liegt vor: [Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md);
 Priorisierung gesetzt, `Verantwortlich:` beim Übergang `open` → `next` gesetzt.
 
 **Rückführungen — vorab benennen, nicht erst im Nachhinein begründen:**
@@ -239,7 +239,7 @@ Closure-Notiz mit Lerneintrag geschrieben. **Review-Vorgabe der Welle:** höchst
 werden nur HIGH und MEDIUM; jede Nachbesserung zitiert die Stelle, die sie trägt
 ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 18). Was die **Welle** einlöst — das Produkt ändert sich an genau den
 benannten Stellen, die Abweichungsklassen von `--manual`, die Gegenmessung am Endstand — steht in
-[ihrem Closure-Trigger](../welle-98-baseline-v700.md) und nicht in dieser DoD
+[ihrem Closure-Trigger](../wave-98-baseline-v700.md) und nicht in dieser DoD
 ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 10).
 
 ## 6. Risiken und offene Punkte
@@ -338,7 +338,7 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   `5e607ad3`** (Form: die `codepath-missing`-Befunde von `d-check` im Wegwerf-Klon **ohne** den Eintrag in
   `codepaths.ignore-refs`, `docker run --rm --network none -v <Klon>:/repo:ro d-check:latest`, nach Pfad gruppiert;
   Verifier und Planner fuhren es unabhängig, beide 120): **Befunde insgesamt 119 → 120; Nennungen in den Plänen der Welle
-  9 → 10** (`welle-98` 4, dieser Plan 4, `slice-296` 2); **lebende Nennungen insgesamt 10 → 11** (die zehn Nennungen der
+  9 → 10** (`wave-98` 4, dieser Plan 4, `slice-296` 2); **lebende Nennungen insgesamt 10 → 11** (die zehn Nennungen der
   Pläne und [`MR-081`](../../../../harness/conventions.md#mr-081) mit einer); **eingefroren unverändert 109** (`done/` 51, ADRs 44, `conventions/done` 6, Register-Belege
   5, `CHANGELOG.md` 2, `docs/plan/cr` 1). Die Summe 11 + 109 ist 120. Die Einteilung gilt für diesen Stand. **Lernsignal 2,
   mit Ursache:** Review F-2 traf dieselbe Klasse wie [`MR-070`](../../../../harness/conventions.md#mr-070), eine Ebene
@@ -379,14 +379,14 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 - **Welle-Closure, nicht dieser Slice:** `make blackbox-probe REF=738d2bca`, der Vergleich von `--manual` je Begriff mit den **fünf**
   Klassen und `make fullbuild` sind hier **nicht** gefahren; die Verifikation zeigte nur, dass Kopfzeile und Zeile 920 den neuen
   Pfad tragen (`docker run … d-check:latest --manual manual`). Sie gehören dem Closure-Trigger von
-  [`welle-98`](../welle-98-baseline-v700.md).
+  [`wave-98`](../wave-98-baseline-v700.md).
 - **Folge-Slices:** keine neuen. [`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md) (Frage B, das
   Konsumenten-Beispiel) und [`slice-298`](../in-progress/slice-298-neue-namen-wave-archive-anker.md) (der Umzug von `welle-98`, der die
   Verweise dieses Slice mitzieht) bestehen schon in `open/`. Für die Kommentarzeilen mit altem Namen ist **kein** Slice
   geschnitten: das Verdikt (Frage 7) hat sie entschieden, der Nachzug ist die größere Antwort und ein eigener Akt.
 - **Risiken aus §6:** Risiko 1 *eingetreten* (Beleg: die Evidenz-Datei zu F-2), 2 *weiter offen* (bis Push und CI), 3 *entfallen*,
   4 *entfallen*, 5 *eingetreten* (Beleg: die Evidenz-Datei zu F-3 und V-2) — Begründung je Risiko in §6.
-- **Die drei Paarungen**, hier vorab geprüft (getragen von der Closure von welle-98): (a) Anker — kein Steering-Loop-Eintrag
+- **Die drei Paarungen**, hier vorab geprüft (getragen von der Closure von wave-98): (a) Anker — kein Steering-Loop-Eintrag
   mit `liegt in`-Feld, keine Paarung auszulösen; (b) Folge-Slice — `slice-296` und `slice-298` bestehen als Dateien in `open/`;
   (c) Register — beide genannten Verzeichnisse existieren und tragen nicht leere `evidence/`.
 

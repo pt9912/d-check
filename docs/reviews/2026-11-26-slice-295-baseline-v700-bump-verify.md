@@ -1,7 +1,7 @@
 # Verifikation — slice-295: Baseline-Pin auf v7.0.0, mechanisch
 
 - **Rolle:** Verifier (Modul 11) — DoD, Plan und MR gegen den Stand
-- **Gegenstand:** `docs/plan/planning/in-progress/slice-295-baseline-v700-bump.md` §1, §2, §3 (samt beiden Plan-Änderungen), §4, §6; [MR-081](../../harness/conventions/MR-081-baseline-v700.md); Architect-Verdikt zu welle-98 samt Nachtrag V1; Review-Report [r1](2026-11-26-slice-295-baseline-v700-bump-r1.md) nur als Kontext
+- **Gegenstand:** `docs/plan/planning/in-progress/slice-295-baseline-v700-bump.md` §1, §2, §3 (samt beiden Plan-Änderungen), §4, §6; [MR-081](../../harness/conventions/MR-081-baseline-v700.md); Architect-Verdikt zu wave-98 samt Nachtrag V1; Review-Report [r1](2026-11-26-slice-295-baseline-v700-bump-r1.md) nur als Kontext
 - **Range:** `738d2bca..HEAD` (Spitze `0985933f`, 12 Commits); Arbeitsbaum sauber
 - **Datum:** 2026-11-26
 - **Wegwerf:** alles im Scratchpad (`…/scratchpad/verify295/`), nichts im Arbeitsbaum; Mutationen in einem Klon
@@ -33,7 +33,7 @@ Alter Baum aus `git archive 738d2bca .harness/baseline/v6.18.1`, neuer Baum der 
 | Frozen 17 / 51 (8/29 `done/`, 8/21 Reviews, 1/1 CHANGELOG); `conventions/done/` und CR 0 | gleich; `conventions/done` und `docs/plan/cr` 0 Dateien |
 | 14 Dateien / 40 Vorkommen byte-stabil (7/28, 6/11, 1/1), drei mit je einer geänderten Zeile | Schleife des Eintrags: 14 / 40; `done/` 28, Reviews 11; die drei: `slice-274`, `slice-277`-Verifikation, Verdikt welle-93, je 1 Zeile, nur Link-Ziel (`git diff -U0`) |
 | ADRs 5 / 5, Pläne der Welle 5 / 25, `MR-080` 1 / 9, lebend retargetet 49 / 100 | 5; 5 / 25 (`-o`; `-c` zählt 24 Zeilen — der Eintrag zählt Vorkommen, stimmt); 9; 49 / 100 |
-| Treffermenge nach dem Bump: 10 Dateien | Kommando des Eintrags: `.d-check.yml`, `MR-081`, ADR 0112–0116, `slice-295`, `slice-296`, `welle-98` = 10; 0 Treffer in der Form `6.18.1` ohne `v` außerhalb |
+| Treffermenge nach dem Bump: 10 Dateien | Kommando des Eintrags: `.d-check.yml`, `MR-081`, ADR 0112–0116, `slice-295`, `slice-296`, `wave-98` = 10; 0 Treffer in der Form `6.18.1` ohne `v` außerhalb |
 | 7 Symlinks lösen gegen `v7.0.0` auf | `readlink`-Schleife `grep -c 'v6\.18\.1'` = 0; alle 9 Einträge unter `.claude/rules/` lösen auf (`[ -e ]`), Modus 120000 |
 | Ventil 35 statt 30 Einträge, 13 statt 12 Tags | `grep -c` 35 / 30; Tags 13 / 12 (am Vorzustand mit `git show 738d2bca:.d-check.yml`); Diff `.d-check.yml` = ein Kommentarblock plus fünf Einträge (ADR 0112–0116) |
 | „alt gegen neu: eine abweichende Zeile" (`modul-04` §Ziel-Form: ADR (MADR)) | Abschnitt je 14 Zeilen, `diff`: genau Zeile 3, `NNNN-titel.template.md` → `NNNN-title.template.md` |
@@ -74,7 +74,7 @@ Klon `…/verify295/clone` (HEAD `0985933f`), `d-check:latest` mit `--network no
 
 ## Abgrenzung (nichts aus slice-296/297/298)
 
-Diff `738d2bca..HEAD` außerhalb Baum, Plänen, Reviews, `harness/`, `.claude/`, `.harness/skills/`: nur `spec/architecture.md` und `spec/spezifikation.md` (je die **Rolle**-Zeile, Pin), `tools/archive-wave/stub.go` (zwei Kommentarzeilen), `.d-check.yml`. `internal/`, `Makefile`, `Dockerfile`, `docs/user`, READMEs, `CHANGELOG.md`, `spec/lastenheft.md`, `tools/harness/` unberührt (`git diff --stat` leer). `spec/spezifikation.md` weder umbenannt noch sonst inhaltlich berührt; keine `wave-`-Konfiguration; `MR-081` übernimmt keine Neuerung. Die vier Pläne tragen nur Spannen-Neuankerung und die zwei Plan-Änderungs-Texte (`welle-98` Z. 213/324–325 auf fünf).
+Diff `738d2bca..HEAD` außerhalb Baum, Plänen, Reviews, `harness/`, `.claude/`, `.harness/skills/`: nur `spec/architecture.md` und `spec/spezifikation.md` (je die **Rolle**-Zeile, Pin), `tools/archive-wave/stub.go` (zwei Kommentarzeilen), `.d-check.yml`. `internal/`, `Makefile`, `Dockerfile`, `docs/user`, READMEs, `CHANGELOG.md`, `spec/lastenheft.md`, `tools/harness/` unberührt (`git diff --stat` leer). `spec/spezifikation.md` weder umbenannt noch sonst inhaltlich berührt; keine `wave-`-Konfiguration; `MR-081` übernimmt keine Neuerung. Die vier Pläne tragen nur Spannen-Neuankerung und die zwei Plan-Änderungs-Texte (`wave-98` Z. 213/324–325 auf fünf).
 
 ## Befunde
 

@@ -1,7 +1,7 @@
 # Verifikation — slice-297: Die Spezifikation heißt `specification.md`
 
 - **Rolle:** Verifier (Modul 11) — DoD, Plan und Verdikt gegen den Stand
-- **Gegenstand:** `docs/plan/planning/in-progress/slice-297-spezifikation-heisst-specification.md` §1, §2, §3 (samt beiden Plan-Änderungen), §4, §6; Architect-Verdikt zu welle-98 (Fragen 4–7, Nachtrag V1); Review-Report [r1](2026-11-26-slice-297-spezifikation-heisst-specification-r1.md) als Kontext; `welle-98-baseline-v700.md` §3 (b), (c), (d1), (g)-Anteile
+- **Gegenstand:** `docs/plan/planning/in-progress/slice-297-spezifikation-heisst-specification.md` §1, §2, §3 (samt beiden Plan-Änderungen), §4, §6; Architect-Verdikt zu wave-98 (Fragen 4–7, Nachtrag V1); Review-Report [r1](2026-11-26-slice-297-spezifikation-heisst-specification-r1.md) als Kontext; `wave-98-baseline-v700.md` §3 (b), (c), (d1), (g)-Anteile
 - **Range:** `f44c6e65..HEAD` (Spitze `5e607ad3`, 9 Commits); Arbeitsbaum sauber, nichts gepusht (`main` 34 Commits vor `origin/main`, davon 9 dieses Slice)
 - **Datum:** 2026-11-26
 - **Wegwerf:** alles im Scratchpad (`…/scratchpad/v297/`, Klon `…/v297/clone`); Mutationen und Zwischenstände nur im Klon, der Arbeitsbaum blieb unberührt
@@ -41,7 +41,7 @@
 
 ## Ventil (`codepaths.ignore-refs`)
 
-Klon bei `5e607ad3`, Eintrag `"spec/spezifikation.md"` aus der Liste entfernt, `d-check:latest` mit `--network none`: **`1325 Datei(en) geprüft, 120 Befund(e)`**, alle `codepath-missing`, in **80** Dateien (ohne die Kopfzeile des Laufs gezählt). Aufteilung nach Pfad: `done/` 51, ADRs 44, Register-Belege 5, `conventions/done` 6, `CHANGELOG.md` 2, `docs/plan/cr` 1 (= **109** eingefroren); lebend **11**: `welle-98` 4, `slice-297` 4, `slice-296` 2, `MR-081` 1. Mit dem Eintrag: 0 (M2). Das stimmt mit der Endstand-Messung in `welle-98` (Commit `0315fc57`) überein.
+Klon bei `5e607ad3`, Eintrag `"spec/spezifikation.md"` aus der Liste entfernt, `d-check:latest` mit `--network none`: **`1325 Datei(en) geprüft, 120 Befund(e)`**, alle `codepath-missing`, in **80** Dateien (ohne die Kopfzeile des Laufs gezählt). Aufteilung nach Pfad: `done/` 51, ADRs 44, Register-Belege 5, `conventions/done` 6, `CHANGELOG.md` 2, `docs/plan/cr` 1 (= **109** eingefroren); lebend **11**: `wave-98` 4, `slice-297` 4, `slice-296` 2, `MR-081` 1. Mit dem Eintrag: 0 (M2). Das stimmt mit der Endstand-Messung in `wave-98` (Commit `0315fc57`) überein.
 
 **Endzahlen für die Closure-Notiz (F-3):** 119 → **120** Befunde; die Pläne dieser Welle 9 → **10** Nennungen (4 + 4 + 2), lebende Nennungen insgesamt 10 → **11** (mit `MR-081`); eingefroren unverändert 109. Die Formulierung „9 → 11“ des Auftrags trifft die Pläne nicht (9 → 10) und die lebenden insgesamt nicht (10 → 11); die Closure-Notiz sollte die zwei Paare getrennt nennen.
 
@@ -73,7 +73,7 @@ Genau die beiden vom Plan vorab benannten Stände sind einzeln rot; die Plan-Än
 - **Inhalt und Code — erfüllt.** Selbst-Verweise 158 + Z. 920; lebende Dateien, Konfiguration, `manual.go`, zwei Tests, `tools/image-test.sh` nachgezogen; **ein** `ignore-refs`-Eintrag mit `GRENZE:`-Kommentar in der Form des Vorgängers; `doc-check` 0, `make test` grün; beide Tests laufen ohne den Nachzug aus dem richtigen Grund rot (Meldungen gelesen).
 - **Lastenheft — erfüllt.** Version 0.115.2, Z. 4762, eine Historie-Zeile in der Form der übrigen, kein `DC-*` geändert.
 - **`make gates` grün; `make image-test` grün — erfüllt** (M1, M7; die Zeile 163 prüft die Kopfzeile, bei Mutation rot).
-- **Review durchgeführt — erfüllt.** Report r1 liegt vor (1 MEDIUM an die Welle, 2 LOW, 3 INFO); F-1 durch `0315fc57` (welle-98 führt fünf Klassen, „Eine sechste Klasse ist ein Befund“, Endzahlen des Ventils), F-2 durch `5e607ad3` (`MR-006` gegen `f44c6e65` netto unverändert, `git diff --stat` leer); F-3 steht für die Closure-Notiz an (Endzahlen oben bestätigt).
+- **Review durchgeführt — erfüllt.** Report r1 liegt vor (1 MEDIUM an die Welle, 2 LOW, 3 INFO); F-1 durch `0315fc57` (wave-98 führt fünf Klassen, „Eine sechste Klasse ist ein Befund“, Endzahlen des Ventils), F-2 durch `5e607ad3` (`MR-006` gegen `f44c6e65` netto unverändert, `git diff --stat` leer); F-3 steht für die Closure-Notiz an (Endzahlen oben bestätigt).
 - **Closure-Notiz mit Lerneintrag — offen.** §7 trägt `*(Wird bei der Closure gefüllt.)*`; Sache des Planners.
 - **Beobachtungs-Register fortgeschrieben — offen.** Keine Evidenz-Datei für `slice-297` im Diff (`docs/plan/planning/observations/` nur die vier Link-Ziel-Nachzüge); „keine Beobachtung“ oder eine Datei zu `BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand` (Zahl zählt ihre eigene Nennung, F-3) ist in §7 zu antworten.
 - **Jedes Risiko aus §6 trägt einen Ausgang — offen (formal), Inhalt gemessen:**
@@ -86,7 +86,7 @@ Genau die beiden vom Plan vorab benannten Stände sind einzeln rot; die Plan-Än
 
 ## Abgrenzung (nichts aus slice-296/298)
 
-Keine Datei zu `slice-296`/`slice-298`, `archive`, `stub`, `wave-` oder einer neuen ADR im Diff (`git diff --name-only f44c6e65..HEAD` gefiltert: leer; `slice-296` und `welle-98` nur als Link-Ziel-Nachzug bzw. die dokumentierte Plan-Änderung am Wellen-Plan). `CHANGELOG.md`, READMEs außer den zwei Link-Zielen, Handbuch-Kopf, `Dockerfile`, `Makefile`, `config_template.go`, `suggest.go`, Pin-Zeile der Spezifikation, `go.mod` unberührt. Die Messungen der Welle (`make blackbox-probe REF=738d2bca`, Vergleich von `--manual` je Begriff, `fullbuild`) sind **nicht** gefahren und gehören der Welle-Closure.
+Keine Datei zu `slice-296`/`slice-298`, `archive`, `stub`, `wave-` oder einer neuen ADR im Diff (`git diff --name-only f44c6e65..HEAD` gefiltert: leer; `slice-296` und `wave-98` nur als Link-Ziel-Nachzug bzw. die dokumentierte Plan-Änderung am Wellen-Plan). `CHANGELOG.md`, READMEs außer den zwei Link-Zielen, Handbuch-Kopf, `Dockerfile`, `Makefile`, `config_template.go`, `suggest.go`, Pin-Zeile der Spezifikation, `go.mod` unberührt. Die Messungen der Welle (`make blackbox-probe REF=738d2bca`, Vergleich von `--manual` je Begriff, `fullbuild`) sind **nicht** gefahren und gehören der Welle-Closure.
 
 ## Befunde
 

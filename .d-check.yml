@@ -416,7 +416,7 @@ ignore-refs:
 # (Changelog, Review-Reports) aus; Beispiel-IDs tragen d-check:ignore.
 ids:
   patterns:
-    # "docs/plan/planning/done/welle-*/*.md" ist der Archiv-Stub-Pfad
+    # "docs/plan/planning/done/{welle,wave}-*/*.md" ist der Archiv-Stub-Pfad
     # (tools/archive-wave, slice-191): das Hervorgegangen-Feld traegt bare
     # Kennungen aus dem archivierten Original-Volltext, absichtlich
     # unverlinkt -- dieselbe Literal-Erhaltung wie beim Review-Report-Grund
@@ -425,7 +425,7 @@ ids:
     - regex: 'ADR-\d{4}'
       target: docs/plan/adr/
       link-policy: always
-      exempt-paths: [CHANGELOG.md, "docs/reviews/**", "docs/plan/planning/done/welle-*/*.md"]
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**", "docs/plan/planning/done/welle-*/*.md", "docs/plan/planning/done/wave-*/*.md"]
     - regex: 'MR-\d{3}'
       target: harness/conventions/
       link-policy: always
@@ -433,7 +433,7 @@ ids:
     - regex: 'DC-(FA-[A-Z]+|QA)-\d+'
       target: spec/lastenheft.md
       link-policy: always
-      exempt-paths: [CHANGELOG.md, "docs/reviews/**", "docs/plan/planning/done/welle-*/*.md"]
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**", "docs/plan/planning/done/welle-*/*.md", "docs/plan/planning/done/wave-*/*.md"]
     # Struktur-IDs der Spec-Straten (Baseline-Default seit welle-80, MR-000):
     # Wortgrenzen sind Pflicht: ohne die abschliessende \b meldete eine
     # vierstellige Kennung ihr dreistelliges Praefix als Ziel (dieselbe
@@ -546,6 +546,12 @@ matrix:
       # hier unbewacht, WEIL Welle keine matrix-Klasse war; mit dieser Klasse
       # faellt diese Bedingung weg (MR-006 §Scope-Grenze C-4, MR-034).
       token: 'welle-\d{2,}'
+    - name: wave
+      paths: ["docs/plan/planning/**/wave-*.md"]
+      # Die neue Schreibweise der Welle (MR-082), dieselbe Token-Mechanik wie die
+      # Klasse welle: jede Klasse liest nur ihre eigene Schreibweise. Die Ziffern
+      # sind Pflicht, `wave-drift` (ein Grund-Code, kein Dokument) ist kein Treffer.
+      token: 'wave-\d{2,}'
     - name: commit-hash
       # Vierte der fuenf Referenz-Kategorien, die AGENTS.md §3.4 den
       # Spec-Straten verbietet (DC-FA-MTX-003, MR-006). TOKEN-ZIEL: kein
@@ -596,6 +602,7 @@ matrix:
     - {from: sicht, to: adaptionsblock, allow: false}
     - {from: spec-straten, to: slice, allow: false}
     - {from: spec-straten, to: welle, allow: false}
+    - {from: spec-straten, to: wave, allow: false}
     - {from: spec-straten, to: commit-hash, allow: false}
     # Ersatz fuer die entfallene Richtungs-Kante: die Sicht ist die unterste
     # Schicht, ein Verweis aus den Straten auf sie ist abwaerts.
@@ -605,11 +612,13 @@ matrix:
     - {from: sicht, to: adr, allow: false}
     - {from: sicht, to: slice, allow: false}
     - {from: sicht, to: welle, allow: false}
+    - {from: sicht, to: wave, allow: false}
     - {from: sicht, to: commit-hash, allow: false}
     # Und das eine, das nur fuer sie gilt.
     - {from: sicht, to: modul-pfad, allow: false}
     - {from: adr, to: slice, allow: false}
     - {from: adr, to: welle, allow: false}
+    - {from: adr, to: wave, allow: false}
   status:
     forbidden: [superseded, deprecated]
     # Der Kanon laesst ADR->ADR ausdruecklich zu (grundlagen-referenz-richtung.md:
@@ -672,7 +681,7 @@ codepaths:
   #   docs/user/releasing.md oder das Verzeichnis docs/user/maintainer in
   #   Inline-Code, bleibt das still (docs/user/maintainer/releasing.md meldet
   #   codepaths weiter); einen Link meldet links
-  # - spec/spezifikation.md: umbenannt nach spec/specification.md; Accepted-ADRs, geschlossene Slices, Reviews und Belege nennen den alten Pfad in Inline-Code, die Pläne der Welle und MR-081 als Gegenstand · seit welle-98
+  # - spec/spezifikation.md: umbenannt nach spec/specification.md; Accepted-ADRs, geschlossene Slices, Reviews und Belege nennen den alten Pfad in Inline-Code, die Pläne der Welle und MR-081 als Gegenstand · seit wave-98
   #   GRENZE: der Eintrag wirkt repo-weit -- nennt lebende Doku künftig
   #   spec/spezifikation.md in Inline-Code, bleibt das still; einen Link meldet links
   ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh", "tools/trace-check.sh", "tools/planning-consistency.sh", "tools/arch-check.sh", "tools/gate-consistency.sh", "tools/harness/closure-outcomes.sh", "docs/user/releasing.md", "docs/user/maintainer", "spec/spezifikation.md"]
@@ -935,6 +944,16 @@ planning:
   # Alle uebrigen Schluessel stehen auf den Konventions-Defaults.
   waves:
     dir: docs/plan/planning
+    # Neue Wellen heissen wave-<NN> (MR-082). Das Modul liest EIN literales
+    # Praefix, glob und results-glob tragen dasselbe.
+    # GRENZE (ADR-0117): die Bestands-Wellen welle-<NN> sind fuer wave-drift und
+    # wave-results-missing ungewaechtert -- ihre Register-Zeilen
+    # (grep -c '^| welle-' docs/plan/planning/in-progress/roadmap.md) und ihre
+    # Ergebnisnotizen (git ls-files | grep -c 'done/welle-[0-9]*-results.md$')
+    # melden keinen Befund, auch wo einer stuende. matrix, das Closure-Profil
+    # und archive-wave lesen beide Schreibweisen.
+    glob: "wave-*.md"
+    results-glob: "wave-*-results.md"
     # Kennungs-Bijektion statt Singleton (DC-FA-PLAN-001 0.62.0): dieses
     # Repo faehrt das Offene-Wellen-Modell. Erst nach Release und
     # Digest-Backfill gesetzt — ein aelterer Pruefer braeche am

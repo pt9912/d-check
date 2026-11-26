@@ -9,7 +9,7 @@ aus `open/` oder `next/` nach `done/` — §7 nennt in der Zeile `Gegenstand:`
 Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 (§Ein Slice, dessen Gegenstand ein anderer übernimmt).
 
-**Welle:** [`welle-98-baseline-v700`](../welle-98-baseline-v700.md).
+**Welle:** [`wave-98-baseline-v700`](../wave-98-baseline-v700.md).
 
 **Bezug:** [`MR-011`](../../../../harness/conventions.md#mr-011) (die Pin-Kette),
 [`MR-080`](../../../../harness/conventions.md#mr-080) (die vorige Hebung; ihr Delta stand „vollständig nach Datei,
@@ -48,7 +48,7 @@ Auftraggeber entscheidet je Zeile; **der Slice übernimmt nichts**.
   Auftraggebers, je Übernahme einer, und keiner wird hier vorab angelegt: Ein Slice ohne Entscheid wäre ein Plan
   für etwas, das niemand verlangt hat
   ([`BEO-ALL/empfehlung-weitet-anforderung-ueber-den-anlass`](../observations/BEO-ALL/empfehlung-weitet-anforderung-ueber-den-anlass/observation.md)).
-- **Kein Durchgang durch die Adaptions-Liste** (Freshness-Audit) — Frage 10 in [welle-98 §5](../welle-98-baseline-v700.md).
+- **Kein Durchgang durch die Adaptions-Liste** (Freshness-Audit) — Frage 10 in [wave-98 §5](../wave-98-baseline-v700.md).
   Die Vorlage nennt zu einer Bewegung die aktive Adaption, die sie berührt, **wenn** die Lektüre sie findet; sie
   prüft die 41 Einträge nicht je einzeln.
 - **Kein Wort über die Namensregel selbst hinaus.** Entscheid 1 ist gefallen und in [`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../in-progress/slice-298-neue-namen-wave-archive-anker.md) umgesetzt; die Vorlage führt die
@@ -110,7 +110,7 @@ Aussagen-Berührung steht hier gar nicht.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `baseline-v700-neuerungen.md` unter `docs/plan/planning/` | neu | **die** Entscheidungsvorlage; der Ort ist die Antwort auf Frage 11 in [welle-98 §5](../welle-98-baseline-v700.md) (Vorschlag: flach in `planning/`, der Name trifft weder den Glob `welle-*.md` noch (nach Frage 3) `wave-*.md` des Moduls `planning`). Aus nichts kopiert — die Klasse hat keine Vorlage im Baum; die Spalten stehen in §3 unten |
+| `baseline-v700-neuerungen.md` unter `docs/plan/planning/` | neu | **die** Entscheidungsvorlage; der Ort ist die Antwort auf Frage 11 in [wave-98 §5](../wave-98-baseline-v700.md) (Vorschlag: flach in `planning/`, der Name trifft weder den Glob `welle-*.md` noch (nach Frage 3) `wave-*.md` des Moduls `planning`). Aus nichts kopiert — die Klasse hat keine Vorlage im Baum; die Spalten stehen in §3 unten |
 | `docs/plan/planning/observations/` | update | nur, falls die Sichtung ein Auftreten belegt (Evidenz-Datei), sonst „keine Beobachtung angefallen“ in §7 |
 
 Keine Testdatei: Der Slice schreibt Markdown, keinen Code; die Sensoren sind `make doc-check` (Links, Anker,
@@ -154,7 +154,7 @@ Empfehlung · *Entscheidung des Auftraggebers* (leer). Die laufende Nummer in Sp
    der dem Regelwerk folgt, muss heute beide Globs setzen; (ii) die **Beispiel-Pfade** für Konsumenten
    (`config_template.go` Z. 56–57, `suggest.go` Z. 379–380, `benutzerhandbuch.md` Z. 372–373: `spec/spezifikation.md`);
    (iii) was ein Konsument sieht, dessen Wellen `wave-<NN>` heißen und dessen Archiv `archive.zip` heißt (aus der Probe
-   in [welle-98 §1](../welle-98-baseline-v700.md), Punkt 5 und 6, übernommen als Erwartung, am Image des Hauptzweigs
+   in [wave-98 §1](../wave-98-baseline-v700.md), Punkt 5 und 6, übernommen als Erwartung, am Image des Hauptzweigs
    neu gemessen). Je Rest *Preis der Übernahme* gegen *Preis des Bleibens* (ein Default ist ein Vertrag mit
    Konsumenten: [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
    — **beide**, nicht nur der eine, auf den die Empfehlung fällt.
@@ -191,7 +191,7 @@ DoD vollständig (§2) und `make gates` grün; Review- und Verifikations-Report 
 Closure-Notiz mit Lerneintrag geschrieben. **Review-Vorgabe der Welle:** höchstens zwei Runden, eingearbeitet
 werden nur HIGH und MEDIUM; jede Nachbesserung zitiert die Stelle, die sie trägt
 ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 18). **Die Antworten des Auftraggebers sind keine Closure-Bedingung**;
-dass die Vorlage ihm vorliegt, hält der Closure-Trigger der [Welle](../welle-98-baseline-v700.md), nicht diese DoD
+dass die Vorlage ihm vorliegt, hält der Closure-Trigger der [Welle](../wave-98-baseline-v700.md), nicht diese DoD
 ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 10).
 
 ## 6. Risiken und offene Punkte
