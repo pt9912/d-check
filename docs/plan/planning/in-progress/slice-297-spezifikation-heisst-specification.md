@@ -84,26 +84,26 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] **Rename und Link-Ziele in einem Commit:** `specification.md` (unter `spec/`) entsteht per **reinem** `git mv` (R100); derselbe
+- [x] **Rename und Link-Ziele in einem Commit:** `specification.md` (unter `spec/`) entsteht per **reinem** `git mv` (R100); derselbe
       Commit trägt die Link-Ziel-Nachzüge der 64 ADRs (und, nach Frage 5, der 39 eingefrorenen Nicht-ADR-Dateien).
       `git diff --cached --name-status -M` vor dem Commit nennt genau **eine** `R100`-Zeile und sonst nur `M`;
       `make adr-check STAGED=1` endet mit Exit 0, und `make adr-check RANGE=<Vor-Bump>..HEAD` ebenfalls.
-- [ ] **Inhalt und Code:** Die Spezifikation trägt ihre Selbst-Verweise auf den neuen Namen (161 Zeilen), jede lebende
+- [x] **Inhalt und Code:** Die Spezifikation trägt ihre Selbst-Verweise auf den neuen Namen (161 Zeilen), jede lebende
       Fundstelle (die Klassen und Zahlen in §3) nennt `specification.md`, `.d-check.yml`, `manual.go`, die zwei Tests und
       `tools/image-test.sh` folgen, und der **eine** `codepaths.ignore-refs`-Eintrag für die eingefrorenen
       Inline-Code-Nennungen steht mit seiner Grenze im Kommentar; `make doc-check` meldet 0 Befunde, `make test` ist grün,
       und beide Tests laufen **ohne** den Nachzug aus dem richtigen Grund rot (die Meldung ist gelesen, §3).
-- [ ] **Lastenheft** (Auftrag, Verdikt Frage 6): Zeile 4762 nennt `specification.md` (unter `spec/`), `**Version:**` 0.115.1 → 0.115.2,
+- [x] **Lastenheft** (Auftrag, Verdikt Frage 6): Zeile 4762 nennt `specification.md` (unter `spec/`), `**Version:**` 0.115.1 → 0.115.2,
       **eine** Historie-Zeile in der Form der übrigen („Redaktionell: …; keine inhaltliche Änderung“, Verweis `—`) nach
       [`MR-032`](../../../../harness/conventions.md#mr-032); kein `DC-*` ändert sich, kein weiterer Satz.
-- [ ] `make gates` grün; `make image-test` grün (die Zeile 163 von `tools/image-test.sh` prüft die Kopfzeile wörtlich).
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün; `make image-test` grün (die Zeile 163 von `tools/image-test.sh` prüft die Kopfzeile wörtlich).
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
 ## 3. Plan (vor Code)
 
@@ -253,23 +253,36 @@ dasteht.
   endet, ein Konsumenten-Beispiel, eine Vergangenheits-Aussage
   ([`BEO-ALL/mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md),
   5×). Im Probelauf ist es **eingetreten** (ein Link in `welle-80-results.md` zeigte danach auf einen Namen, den es nicht
-  gibt). — **Ausgang:** *entfallen*, wenn `make doc-check` 0 Befunde meldet und `git diff -U0 -- docs/user/benutzerhandbuch.md`
-  genau die Zeile 2792 nennt; sonst *eingetreten* mit einer Evidenz-Datei.
-- **Der Move-Commit allein ist nicht baubar** und wird die Spitze eines Push. — **Ausgang:** *entfallen*, wenn
-  `git log origin/main..HEAD` beide Commits in **einem** Push zeigt und die CI am Spitzen-Commit grün ist; sonst
-  *eingetreten*.
+  gibt). — **Ausgang:** *eingetreten.* Die zwei Messungen des Plans halten — `make doc-check` meldet 0 Befunde
+  (Verifikation M2: 1325 Dateien), `git diff -U0 f44c6e65..HEAD -- docs/user/benutzerhandbuch.md` nennt genau einen Hunk,
+  `@@ -2792 +2792 @@`, die zwei Dateien, die auf `spezifikation.md` enden, stehen nicht im Diff, und die Substitutionsprobe
+  fand 103 von 103 Dateien des Move-Commits identisch zur reinen Ersetzung des Link-Ziels —, aber sie haben die Klasse
+  „Vergangenheits-Aussage“ nicht gefangen: Der Review fand in [`MR-006`](../../../../harness/conventions.md#mr-006) eine Zeile,
+  die den Namen als Aussage über das Template-Set von 2026-06 führte und von `340f3f15` mitersetzt wurde (R1 F-2, LOW;
+  behoben in `5e607ad3`). Der Ausgang „entfallen“ nach dem Wortlaut des Plans wäre formal wahr und in der Sache falsch.
+  Evidenz-Datei `evidence/slice-297.md` unter dem genannten Eintrag, jetzt 6×.
+- **Der Move-Commit allein ist nicht baubar** und wird die Spitze eines Push. — **Ausgang:** *weiter offen.* Nichts ist
+  gepusht (`git log origin/main..HEAD` zeigt die Commits dieses Slice an der Spitze von 34 ungepushten), die Bedingung des
+  Plans, ein Push und die CI am Spitzen-Commit, ist zur Closure nicht erfüllbar; „eingetreten“ wäre ebenso falsch, denn
+  der Zwischenstand ist nicht die Spitze eines Push geworden. Die Spitze `5e607ad3` ist lokal grün (Verifikation M1,
+  M7); die Lesung der CI nach dem Push trägt die Push-Pflicht in §7.
 - **Ein Test läuft grün, ohne die Regel zu fahren**
   ([`BEO-ALL/testfall-faehrt-seine-regel-nicht`](../observations/BEO-ALL/testfall-faehrt-seine-regel-nicht/observation.md),
-  2×). — **Ausgang:** *entfallen*, wenn die Closure-Notiz je Test die Mutation (Nachzug zurücknehmen) und die gelesene
-  Meldung nennt und beide rot waren — im Probelauf waren sie es, mit den Meldungen aus §3; sonst *eingetreten* mit einer
-  Evidenz-Datei (dann 3×).
+  2×). — **Ausgang:** *entfallen.* Die Verifikation fuhr je Test die Mutation im Wegwerf-Klon und las die Meldung; beide
+  waren rot, aus dem behaupteten Grund (§7).
 - **Das repo-weite Ventil verdeckt künftig einen lebenden Verweis auf den alten Pfad** (benannte Grenze von `ignore-refs`).
-  — **Ausgang:** *entfallen*, wenn der Kommentar am Eintrag die Grenze nennt, in der Form des Vorgängers für `docs/user/releasing.md`
-  ([`ADR-0025`](../../adr/0025-codepaths-ignore-refs.md), „GRENZE: … bleibt das still“); sonst *weiter offen* → Register.
+  — **Ausgang:** *entfallen.* Der Kommentar am Eintrag in der [`.d-check.yml`](../../../../.d-check.yml) trägt die Grenze mit ihrer
+  Bedingung (eine `GRENZE:`-Zeile: der Eintrag wirkt repo-weit, eine lebende Inline-Code-Nennung des alten Pfads bleibt
+  still, ein Link darauf wird von `links` gemeldet), in der Form des Vorgängers für `docs/user/releasing.md`
+  ([`ADR-0025`](../../adr/0025-codepaths-ignore-refs.md)); der Reviewer fuhr die Probe (lebende Nennung still, lebender
+  Link `target-missing`, ein anderer toter Pfad `codepath-missing`).
 - **Eine Zahl dieses Plans stimmt nicht** — Zählung am Proxy statt am Gegenstand
   ([`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md),
-  10×). — **Ausgang:** *entfallen*, wenn Reviewer und Verifier jede Zahl in §3 mit dem genannten Kommando nachzählen und
-  keine abweicht; sonst *eingetreten* mit einer Evidenz-Datei.
+  10×). — **Ausgang:** *eingetreten.* Reviewer (F-3) und Verifier (V-2) zählten das Ventil nach: 120 Befunde statt 119,
+  elf lebende Nennungen statt zehn, zehn Nennungen in den Plänen der Welle statt neun (die Paare mit Kommando in §7); alle
+  übrigen Zahlen aus §3 reproduzierten sich. Behoben im Wellen-Plan (`0315fc57`) und in der Closure-Notiz; die Zahlen in
+  §3 bleiben als Plan-Stand stehen, die Plan-Änderungen überschreiben die Tabelle ausdrücklich. Evidenz-Datei
+  `evidence/slice-297.md` unter dem genannten Eintrag, jetzt 12×.
 
 ## 7. Closure-Notiz
 
@@ -285,7 +298,97 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-*(Wird bei der Closure gefüllt.)*
+- **Was hat funktioniert:** Der Zuschnitt „reiner Rename, Link-Ziele, kein Wortlaut“ hielt. Der Move-Commit `56c8f62f` ist
+  **eine** `R100`-Zeile und 103 `M`, ohne `D`/`A`-Paar; je Datei gegengerechnet (der alte Stand mit ersetztem Link-Ziel hinter
+  `](` gegen den neuen) sind 103 von 103 identisch, und `make adr-check RANGE=f44c6e65..HEAD` endet über die Spanne und
+  beide Teilspannen mit 0 Befunden. Die Zerlegung nach [`AGENTS.md`](../../../../AGENTS.md) §3.3 trug, wie der Plan sie vorab
+  sagte: einzeln rot sind nur `56c8f62f` (nicht baubar, `doc-check` Exit 2 „konfiguriertes ids-Target existiert nicht“) und
+  `340f3f15` (212 Befunde, 205 `target-missing` und 7 `matrix-forbidden`, alle in der Spezifikation), die sieben übrigen
+  Commits der Spanne melden 0. Eine Review-Runde (1 MEDIUM, 2 LOW, 3 INFO) und eine Fixrunde.
+- **Die Mutation je Test (Risiko 3), im Wegwerf-Klon bei `5e607ad3`, die Meldung gelesen:** Mit dem alten Namen in
+  `cli_manual_test.go` Z. 21 endet `make test` mit Exit 2, `--- FAIL: TestManual_GibtAbschnitteAus`, Meldung „Ausgabe ohne
+  ==> spec/spezifikation.md:“ — die Kopfzeile des Produkts trägt den neuen Namen, der Test erwartete den alten, also aus dem
+  behaupteten Grund. Mit dem alten Namen in `diagnose_test.go` Z. 73: Exit 2,
+  `--- FAIL: TestAllReasonsDeckungGegenSpezifikationGrundCodes`, „Spezifikation nicht lesbar (fail-closed): open
+  ../../../../spec/spezifikation.md: no such file or directory“ (Meldung wie im Plan). Mit dem alten Namen in
+  `tools/image-test.sh` Z. 163: `make image-test` Exit 2, „image-test: FAIL — --manual: kein Abschnitt aus der
+  Spezifikation“. Mit dem alten Pfad im `//go:embed` von `manual.go`: der Build bricht, „pattern spec/spezifikation.md: no
+  matching files found“ — der Grund, warum der Move allein nicht baubar ist.
+- **Was ging anders als geplant:** **(1) Sechs Dateien trugen ein Link-Ziel, das keine Zeile der Tabelle führte** (vier
+  Register-Belege, zwei Pläne); Plan-Änderung vor dem Code (`e0a48bb9`), dazu die feinere Zerlegung in vier Commits.
+  **(2) Das Konsumenten-Beispiel der Spezifikation (zwei Zeilen im Konfigurations-Beispiel) bleibt**, damit trägt sie 159
+  geänderte Zeilen statt 161; das Ventil deckt 119 Befunde statt 104; die Prosa-Zeile 920 (der Pfad zu `--manual`) ist eine
+  fünfte Klasse der Ausgabe von `--manual` — zweite Plan-Änderung vor dem Code (`8a458a27`). **(3) Review F-1 (MEDIUM): die
+  „fünfte Klasse“ hatte keinen Träger.** Der Slice-Plan sagte, die Welle führe sie; der Wellen-Plan führte weiter vier Klassen
+  und den Satz „Eine fünfte Klasse ist ein Befund“, die Gegenmessung am Endstand hätte die Zeile 920 als Abweichung
+  gefunden. Behoben in `0315fc57` (die Welle führt fünf Klassen, „Eine sechste Klasse ist ein Befund“, die Endzahlen des
+  Ventils). **(4) Review F-2 (LOW): eine Vergangenheits-Aussage in einer lebenden Datei wurde mitersetzt.**
+  [`MR-006`](../../../../harness/conventions.md#mr-006) (Datum 2026-06-10) sagt, welchen Namen das damals adoptierte
+  Template-Set trug; `340f3f15` setzte den neuen. Behoben in `5e607ad3` (gegen `f44c6e65` netto unverändert, das Diff der Datei ist
+  leer). **(5) Review F-3 (LOW) und Verifikation V-2: Zahlen des Plans** — Lernsignal 1.
+- **Vorbehalt zum DoD-Punkt „Review durchgeführt“:** Die Fixrunde (`0315fc57`, `5e607ad3`) bekam keine zweite Review-Runde. Anders
+  als bei [`slice-295`](../done/slice-295-baseline-v700-bump.md) änderte sie **keine Gate-Konfiguration**: ein Satz-Nachzug im
+  Wellen-Plan und eine Zeile in [`MR-006`](../../../../harness/conventions.md#mr-006). Der Verifier las beide und bestätigte F-1 und F-2 als behoben; der Haken steht mit
+  diesem Vorbehalt.
+- **Steering-Loop-Eintrag:** mit diesem Slice ist keine Regel, kein Sensor und keine benannte Spec-Lücke verkörpert; zwei
+  Beobachtungen sind belegt (Register unten). **Lernsignal 1, mit Ursache:** Die Zahl des Ventils stimmte am Endstand
+  nicht (119 statt 120), **weil** die Plan-Änderung, die sie nennt, den alten Pfad selbst in Inline-Code schreibt und damit
+  zu der Menge gehört, die das Ventil deckt: Gezählt wurde vor dem Schreiben des Absatzes, gelesen wurde nach ihm. Gefunden haben
+  es Reviewer (F-3) und Verifier (V-2), die das Kommando fuhren, nicht der Zählende. **Die Paare, getrennt, am Stand
+  `5e607ad3`** (Form: die `codepath-missing`-Befunde von `d-check` im Wegwerf-Klon **ohne** den Eintrag in
+  `codepaths.ignore-refs`, `docker run --rm --network none -v <Klon>:/repo:ro d-check:latest`, nach Pfad gruppiert;
+  Verifier und Planner fuhren es unabhängig, beide 120): **Befunde insgesamt 119 → 120; Nennungen in den Plänen der Welle
+  9 → 10** (`welle-98` 4, dieser Plan 4, `slice-296` 2); **lebende Nennungen insgesamt 10 → 11** (die zehn Nennungen der
+  Pläne und [`MR-081`](../../../../harness/conventions.md#mr-081) mit einer); **eingefroren unverändert 109** (`done/` 51, ADRs 44, `conventions/done` 6, Register-Belege
+  5, `CHANGELOG.md` 2, `docs/plan/cr` 1). Die Summe 11 + 109 ist 120. Die Einteilung gilt für diesen Stand. **Lernsignal 2,
+  mit Ursache:** Review F-2 traf dieselbe Klasse wie [`MR-070`](../../../../harness/conventions.md#mr-070), eine Ebene
+  tiefer: nicht eine Datei der Frozen-Liste, sondern **eine Zeile** in einer lebenden Datei, die einen Namen als Aussage über
+  einen Fremdbestand führt. Der Plan zählte [`MR-006`](../../../../harness/conventions.md#mr-006) unter den 49 lebenden Zeilen, ohne sie gelesen zu haben, **weil** die
+  Einteilung nach Datei-Eigenschaft eine Zeile in einer lebenden Datei nicht sehen kann — die Grenze, die der Eintrag und
+  die Beobachtung schon benennen, hier zum sechsten Mal.
+- **Beobachtungs-Register (`../observations/`):** je eine `evidence/slice-297.md` in
+  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
+  (12×, `verkörpert`; Risiko 5: F-3 und V-2, die Zahl zählt ihre eigene Nennung) und in
+  [`BEO-ALL/mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md)
+  (6×, `verkörpert` in [`MR-070`](../../../../harness/conventions.md#mr-070); Risiko 1: F-2). Benannt, nicht gezählt: F-1 (ein
+  Folgeakt am Plan einer anderen Stelle, im Slice-Plan benannt, ohne dass dort ein Träger stand; behoben, ein erster Fall
+  ohne Beobachtung im Register); F-4 und V-3 (das Ventil deckt elf lebende Nennungen mit, wo [`ADR-0025`](../../adr/0025-codepaths-ignore-refs.md) für lebende
+  Dateien den Zeilen-Marker führt; gemessen ohne Wirkung, der Eintrag ist wegen der 109 eingefrorenen ohnehin repo-weit);
+  F-5 (die Historie der Spezifikation führt keine Zeile zum Namenswechsel, das Lastenheft schon; keine Regel verlangt sie);
+  F-6 (das Konsumenten-Beispiel nennt weiter den alten Namen, und `--suggest-config` schlägt ihn vor — Träger ist die
+  Sichtung, [`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md) Frage B); V-1 (die zwei einzeln roten
+  Zwischenstände, in der Push-Pflicht). Keine davon ist umgesetzt.
+- **Architektur-Beobachtung:** Ein Rename trägt drei Gegenstände, und drei Wächter urteilen je über einen: die **Link-Ziele**
+  (`links`, `anchors`, dazu der ADR-Gate: ein Commit meldet 0 `core-drift-vcs`, zwei Commits meldeten 60, gemessen im Plan —
+  deshalb reisen die Link-Ziele der ADRs im Move-Commit), die **Inline-Code-Nennungen** (`codepaths`, das repo-weite Ventil
+  mit 120 Befunden dahinter) und die **Kommentar- und Prosa-Nennungen**, die **kein** Wächter hält: 95 Go-Kommentarzeilen in
+  38 Dateien, je eine in `Dockerfile` und `Makefile`, zwei in `tools/` — das benannte Negativ des Architect-Verdikts zu
+  Frage 7, ohne Wirkung auf Verhalten. Dazu ein Spiegel, den keiner dieser Wächter hält: ein Beispiel, das an vier Stellen
+  gleich steht ([`MR-025`](../../../../harness/conventions.md#mr-025)), ändert sich an allen oder an keiner; hier an keiner,
+  und nur die Sichtung entscheidet es.
+- **Push-Pflicht:** Die Commits `e0a48bb9` bis `5e607ad3` (neun) gehören in **einen** Push, **zusammen** mit den Commits davor
+  und danach, die noch vor `origin/main` liegen: `56c8f62f` (nicht baubar) und `340f3f15` (212 Befunde) sind einzeln rot — der
+  Zwischenstand, den der Plan vorab benennt, solange er nicht die Spitze eines Push wird. Nach dem Push die CI an der
+  **Spitze** lesen, nicht aus dem lokalen Stand schließen; Risiko 2 bleibt bis dahin offen.
+- **Release-Prep-Notiz für das `CHANGELOG`** (nicht im Feature-Commit,
+  [`AGENTS.md`](../../../../AGENTS.md) §5 Regel 17): Die Ausgabe von `d-check --manual` ändert sich an vier Stellen — die
+  Kopfzeile `==> spec/specification.md:<Zeile>` statt des deutschen Namens, die Link-Ziele der Spezifikation in der Ausgabe
+  (158), die Handbuch-Zeile 2792 und die Prosa-Zeile 920 der Spezifikation (der Pfad zu `--manual`). Der Vertrag
+  [`DC-FA-CLI-013`](../../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen) bleibt im
+  Wortlaut; ein Konsument, der die Kopfzeile parst, sieht den neuen Namen.
+- **Welle-Closure, nicht dieser Slice:** `make blackbox-probe REF=738d2bca`, der Vergleich von `--manual` je Begriff mit den **fünf**
+  Klassen und `make fullbuild` sind hier **nicht** gefahren; die Verifikation zeigte nur, dass Kopfzeile und Zeile 920 den neuen
+  Pfad tragen (`docker run … d-check:latest --manual manual`). Sie gehören dem Closure-Trigger von
+  [`welle-98`](../welle-98-baseline-v700.md).
+- **Folge-Slices:** keine neuen. [`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md) (Frage B, das
+  Konsumenten-Beispiel) und [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) (der Umzug von `welle-98`, der die
+  Verweise dieses Slice mitzieht) bestehen schon in `open/`. Für die Kommentarzeilen mit altem Namen ist **kein** Slice
+  geschnitten: das Verdikt (Frage 7) hat sie entschieden, der Nachzug ist die größere Antwort und ein eigener Akt.
+- **Risiken aus §6:** Risiko 1 *eingetreten* (Beleg: die Evidenz-Datei zu F-2), 2 *weiter offen* (bis Push und CI), 3 *entfallen*,
+  4 *entfallen*, 5 *eingetreten* (Beleg: die Evidenz-Datei zu F-3 und V-2) — Begründung je Risiko in §6.
+- **Die drei Paarungen**, hier vorab geprüft (getragen von der Closure von welle-98): (a) Anker — kein Steering-Loop-Eintrag
+  mit `liegt in`-Feld, keine Paarung auszulösen; (b) Folge-Slice — `slice-296` und `slice-298` bestehen als Dateien in `open/`;
+  (c) Register — beide genannten Verzeichnisse existieren und tragen nicht leere `evidence/`.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
