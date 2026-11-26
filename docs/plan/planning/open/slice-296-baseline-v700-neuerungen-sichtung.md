@@ -51,7 +51,7 @@ Auftraggeber entscheidet je Zeile; **der Slice übernimmt nichts**.
 - **Kein Durchgang durch die Adaptions-Liste** (Freshness-Audit) — Frage 10 in [welle-98 §5](../welle-98-baseline-v700.md).
   Die Vorlage nennt zu einer Bewegung die aktive Adaption, die sie berührt, **wenn** die Lektüre sie findet; sie
   prüft die 41 Einträge nicht je einzeln.
-- **Kein Wort über die Namensregel selbst hinaus.** Entscheid 1 ist gefallen und in [`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../next/slice-298-neue-namen-wave-archive-anker.md) umgesetzt; die Vorlage führt die
+- **Kein Wort über die Namensregel selbst hinaus.** Entscheid 1 ist gefallen und in [`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../in-progress/slice-298-neue-namen-wave-archive-anker.md) umgesetzt; die Vorlage führt die
   Zeilen dazu mit „entschieden“ und fragt nicht erneut — gefragt wird nur nach den **Resten** (Frage B).
 - **Kein CR an den Kurs.** Findet die Sichtung einen Widerspruch im Regelwerk, steht er in der Vorlage; ein
   ausgehender Change Request ([`MR-035`](../../../../harness/conventions.md#mr-035)) ist ein eigener Vorgang.
@@ -87,7 +87,7 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 - [ ] **Die zwei benannten Fragen:** (A) Umgebungs-Zusage und `environment-check` — je Bestandteil des Kapitels
       gegen das, was das Repo hat (§3), mit einer Antwort *befolgt · Lücke · nicht anwendbar*; (B) die **Reste der
       Namensregel**, die in [`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) und
-      [`slice-298`](../next/slice-298-neue-namen-wave-archive-anker.md) nicht stehen — die Defaults des Werkzeugs
+      [`slice-298`](../in-progress/slice-298-neue-namen-wave-archive-anker.md) nicht stehen — die Defaults des Werkzeugs
       (`planning.waves.glob` und `results-glob` heißen `welle-*`, die Vorlage `.d-check.yml` des Regelwerks nennt `wave-*`),
       die Beispiel-Pfade, die das Werkzeug und das Handbuch **Konsumenten** zeigen (`spec/spezifikation.md` in
       `--print-config`, `--suggest-config` und im Handbuch) und das Verhalten für einen Konsumenten mit den
@@ -136,7 +136,7 @@ Empfehlung · *Entscheidung des Auftraggebers* (leer). Die laufende Nummer in Sp
    Fundstelle der Entscheidung — das sind die Zeilen zur Namensregel (Entscheid 1: der Absatz *Dateinamen sind
    englisch* in `grundlagen-harness-dateien.md` und die sieben Vorlagen-Namen), deren Umsetzung
    [`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) und
-   [`slice-298`](../next/slice-298-neue-namen-wave-archive-anker.md) tragen.
+   [`slice-298`](../in-progress/slice-298-neue-namen-wave-archive-anker.md) tragen.
 4. **Frage (A), Umgebungs-Zusage.** Je Bestandteil des neuen Kapitels in `modul-14` und je Abschnitt der Vorlage
    `environment-check.template.md` eine Zeile: *die Zusage selbst* (festgelegt **und** adressierbar; als `LH-QA-*`
    geführt — trägt das Repo eine solche Anforderung? `git grep -n "Umgebung" -- spec/lastenheft.md` ist der Anfang der
@@ -166,7 +166,7 @@ Empfehlung · *Entscheidung des Auftraggebers* (leer). Die laufende Nummer in Sp
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
-**Start** (`next` → `in-progress`): [`slice-295`](../done/slice-295-baseline-v700-bump.md), [`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../next/slice-298-neue-namen-wave-archive-anker.md) liegen in `done/` (der Baum von
+**Start** (`next` → `in-progress`): [`slice-295`](../done/slice-295-baseline-v700-bump.md), [`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../in-progress/slice-298-neue-namen-wave-archive-anker.md) liegen in `done/` (der Baum von
 `v7.0.0` ist vendort, `ls .harness/baseline` nennt nur ihn, und der Bump-Eintrag nennt den Vor-Bump-Commit);
 `in-progress/` trägt keinen Slice; die Antwort auf Frage 11 (Ort der Vorlage) liegt im Architect-Verdikt vor;
 `Verantwortlich:` beim Übergang `open` → `next` gesetzt.
@@ -294,6 +294,6 @@ Der Zähler folgt aus den Dateien der Closure.
 `make nightly-state` am 2026-11-25: `image-scan` **grün** (jüngster Lauf 2026-11-25T12:59:28Z). `upstream-drift`
 **rot** (jüngster Lauf 2026-11-25T09:26:13Z), der Log war über `gh run view` nicht abrufbar; gelesen ist
 `make baseline-freshness` (Exit 3, neuer Release `v7.0.0`) — der Gegenstand der Welle, **planmäßig gelesen**. Zum
-Zeitpunkt dieses Slice sind [`slice-295`](../done/slice-295-baseline-v700-bump.md), [`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../next/slice-298-neue-namen-wave-archive-anker.md) `done/`; der Stand wird beim Start neu gelesen.
+Zeitpunkt dieses Slice sind [`slice-295`](../done/slice-295-baseline-v700-bump.md), [`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../in-progress/slice-298-neue-namen-wave-archive-anker.md) `done/`; der Stand wird beim Start neu gelesen.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
