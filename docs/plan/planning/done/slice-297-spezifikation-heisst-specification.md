@@ -53,7 +53,7 @@ stehen unter einem benannten Ventil — `make doc-check` ohne Befund, `make adr-
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Kein Bestand an anderen Namen.** `welle-<NN>`, `archiv.zip`, `seit welle-` bleiben; die **neuen** Namen der Wellen,
-  Archive und Anker gehören in [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) — der Rename kommt ohne
+  Archive und Anker gehören in [`slice-298`](../next/slice-298-neue-namen-wave-archive-anker.md) — der Rename kommt ohne
   sie aus und sie ohne den Rename (zwei Hälften, zwei Slices; sonst vier Liefer-Punkte).
 - **Keine Änderung des Wortlauts von [`DC-FA-CLI-013`](../../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen)** und der Spezifikation §[`DC-FA-CLI-013.a`](../../../../spec/specification.md#dc-fa-cli-013a--handbuch-und-spezifikation-ausgeben---manual), kein Standardwert, kein
   Grund-Code, keine Logik. Die Ausgabe von `--manual` ändert sich als **Folge** (Kopfzeile, Link-Ziele der Spezifikation,
@@ -381,7 +381,7 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   Pfad tragen (`docker run … d-check:latest --manual manual`). Sie gehören dem Closure-Trigger von
   [`welle-98`](../welle-98-baseline-v700.md).
 - **Folge-Slices:** keine neuen. [`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md) (Frage B, das
-  Konsumenten-Beispiel) und [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) (der Umzug von `welle-98`, der die
+  Konsumenten-Beispiel) und [`slice-298`](../next/slice-298-neue-namen-wave-archive-anker.md) (der Umzug von `welle-98`, der die
   Verweise dieses Slice mitzieht) bestehen schon in `open/`. Für die Kommentarzeilen mit altem Namen ist **kein** Slice
   geschnitten: das Verdikt (Frage 7) hat sie entschieden, der Nachzug ist die größere Antwort und ein eigener Akt.
 - **Risiken aus §6:** Risiko 1 *eingetreten* (Beleg: die Evidenz-Datei zu F-2), 2 *weiter offen* (bis Push und CI), 3 *entfallen*,
