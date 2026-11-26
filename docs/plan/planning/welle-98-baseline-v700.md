@@ -201,8 +201,8 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
   - **(b) Kein lebender Verweis nennt mehr den alten Pin.** Die Treffermenge von
     `git grep -l 'v6\.18\.1' -- . ':!docs/plan/planning/done' ':!docs/reviews' ':!CHANGELOG.md' ':!harness/conventions/done' ':!.harness/baseline'`
     ist **genau** die Menge, die der Bump-Eintrag als Vergangenheits-Aussage oder eingefrorene Nennung
-    mit benanntem Grund führt (erwartet: der Bump-Eintrag selbst, die eingefrorenen `Accepted`-ADRs, falls der
-    Architect das Ventil wählt, §5 Frage 5). **Und** die Symlinks lösen auf den neuen Baum auf
+    mit benanntem Grund führt (erwartet: der Bump-Eintrag selbst und die eingefrorenen Dateien hinter dem
+    Ventil, §5 Frage 5). **Und** die Symlinks lösen auf den neuen Baum auf
     (`for l in .claude/rules/*; do readlink "$l"; done | grep -c 'v6\.18\.1'` ergibt 0 — `git grep` liest keinen
     Symlink-Inhalt). *Rot ohne die Welle:* 55 Dateien mit 103 Zeilen (Stand `76cf7d51`, vor Anlage dieser Pläne)
     und 7 Symlinks. Die Zählung nennt ihre Form: gezählt wird die Zeichenkette in Dateien, nicht der Verweis.
@@ -210,8 +210,9 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     `citations` für die **15** lebenden `d-check:cite`-Spannen auf den Baum (davon verschieben sich **7**, am
     Vergleich derselben Zeilenbereiche beider Bäume gemessen) und die Spannen der Pläne dieser Welle, **und** `links`
     und `codepaths` nach dem Umbenennen der Spezifikation; `ignore-refs` in der
-    [`.d-check.yml`](../../../.d-check.yml) wächst nur um die im Bump-Eintrag und im Eintrag der Koexistenz benannten
-    Einträge ([`MR-069`](../../../harness/conventions.md#mr-069)). `make adr-check RANGE=<Vor-Bump>..HEAD` — die
+    [`.d-check.yml`](../../../.d-check.yml) wächst nur um die sieben Einträge des Bump-Eintrags
+    ([`MR-069`](../../../harness/conventions.md#mr-069)) und den einen `codepaths`-Eintrag der Spezifikation
+    ([`ADR-0025`](../adr/0025-codepaths-ignore-refs.md)). `make adr-check RANGE=<Vor-Bump>..HEAD` — die
     Spanne, die die CI fährt — endet mit Exit 0. *Rot ohne die Welle:* nach dem Entfernen des alten Baums
     melden die Pfad-Links und die Spannen Befunde (Pfad-Links `target-missing`, Spannen das Modul `citations`); nach
     dem bloßen Tag-Tausch bleiben die 7 verschobenen Spannen rot; nach dem bloßen Umbenennen der Spezifikation
@@ -219,9 +220,8 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
   - **(d) Das Produkt ändert sich an genau den benannten Stellen.** (d1) **Quelltext:** `git diff --stat
     <Vor-Bump>..HEAD -- '*.go' ':!tools' Dockerfile go.mod` nennt **nur** `manual.go` (die Pfad-Konstante und das
     `go:embed`), `internal/adapter/driving/cli/cli_manual_test.go` und `internal/hexagon/core/app/diagnose_test.go`
-    — und, **nur wenn** der Architect Frage 7 mit ja beantwortet, Kommentarzeilen (dann: jede geänderte Zeile
-    beginnt nach dem Einrücken mit `//`; `git diff -U0 | grep '^[+-]' | grep -v '^[+-]\s*//'` nennt nur die
-    Dateikopf-Zeilen). Kein Standardwert, keine Logik, kein Grund-Code. (d2) `make blackbox-probe REF=<Vor-Bump>` —
+    — keine Kommentarzeile (§5 Frage 7). Kein Standardwert, keine Logik, kein Grund-Code. (d2)
+    `make blackbox-probe REF=<Vor-Bump>` —
     der Commit **vor** dem ersten Bump-Commit — endet mit „byte-identisch“ über seine Vergleiche (stdout, stderr,
     Exit getrennt; Formen: Standard, `--json`, `--yaml`, `--doctor`). **Nicht `REF=v0.93.0`:** auch dieses
     Vorher-Image kennt das Profil (`.d-check.yml` ist seit `v0.93.0` unverändert, `git diff --stat v0.93.0..HEAD --
@@ -305,112 +305,34 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   `v7.0.0` und das Repo **nach** der Namensregel, nicht das Scratchpad, und den alten Baum aus `git archive <Vor-Bump>`;
   ein Audit gegen zwei Stände, von denen einer nirgends im Repo liegt, ist kein Audit (dieselbe Begründung wie in
   der Vorgänger-Migration [`welle-85`](done/welle-85/welle-85-baseline-v5120-migration.md) §5). Das WIP-Limit 1 hält
-  sie ohnehin nacheinander. **Rollenfolge:** vor `in-progress` steht das Architect-Verdikt zu den Fragen unten, je Slice
+  sie ohnehin nacheinander. **Rollenfolge:** vor `in-progress` steht das Architect-Verdikt zu den Fragen unten (liegt vor), je Slice
   ein frischer Kontext für Implementer, Reviewer und Verifier.
-- **Offene Fragen an den Architect — Antwort vor dem Start von slice-295.** Je Frage steht die kleinste Antwort,
-  die den Anlass trägt; die größere steht daneben, damit ihr Mehraufwand vor der Bestätigung sichtbar ist.
-  1. *Form der Koexistenz-Adaption: eigener MR, Auflösungs-Trigger oder permanent?* — **kleinste Antwort: ein eigener
-     Eintrag, geschrieben im Lauf von [`slice-298`](open/slice-298-neue-namen-wave-archive-anker.md)**, der die
-     Gegenstände einzeln nennt (`wave-<NN>` neben `welle-<NN>`, `archive.zip` neben `archiv.zip`, `seit wave-<NN>` neben
-     `seit welle-<NN>`), je mit der Auskunft, welcher Sensor beide Formen liest und welcher nur die neue (Frage 3). Der
-     Bump-Eintrag löst sich bei der nächsten Pin-Hebung auf ([`MR-080`](../../../harness/conventions.md#mr-080):
-     „die nächste Pin-Hebung“ und `conventions/done/`), die Koexistenz gilt über Hebungen hinweg — zwei
-     Lebensdauern, zwei Dateien. **Auflösungs-Trigger:** der Bestand ist weg oder umbenannt (nach dem Stand dieser
-     Welle: nie ohne eigenen Beschluss) — also *permanent*, mit einem benannten Wiedervorlage-Anlass („der
-     Auftraggeber entscheidet, den Bestand zu migrieren“). Die größere Antwort (ein Eintrag je Gegenstand) trüge drei
-     Dateien mit je eigenem Trigger, ohne dass die Gegenstände unabhängig auflösbar wären. Der Eintrag steht in der Form
-     von [`MR-069`](../../../harness/conventions.md#mr-069) (Gate-Senkung benannt), weil Frage 3 eine Senkung bedeutet.
-  2. *Heißt `welle-98` schon `wave-98`?* — **Rat des Planners, keine Entscheidung: ja.** Die Welle ist neu, ungepusht
-     und wird **nach** der Regel geschlossen; eine Welle, die die Namensregel einführt und selbst gegen sie
-     verstößt, ist ein unnötiger Bestand. Der Preis ist ein reiner `git mv` der Plan-Datei (kein Inhalt im selben
-     Commit) und der Nachzug der **14 Zeilen in 4 Dateien**, die am Eröffnungs-Commit `welle-98` nennen (`git grep -c 'welle-98' -- .
-     ':!.harness/baseline'`: Roadmap-Zeiger, die Slices dieser Welle, der Plan selbst; Stand `590dde3d`, mit den neuen Plänen mehr); `make planning-check`
-     sieht `wave-98` erst, wenn `slice-298` die Konfiguration umstellt (bis dahin ist die Welle für das Gate
-     unsichtbar — dieselbe Lücke, die Frage 3 benennt, nur früher). Die Alternative **bleibt `welle-98`**: die letzte
-     Welle in der alten Schreibweise, ab `welle-99` neu; `planning-check` bewacht sie bis zur Umstellung und danach
-     nicht mehr (Bestand). Die Dateien dieser Welle sind der Beleg beider Wege; das Verdikt entscheidet, bevor
-     `slice-295` startet, damit die Pläne **einmal** umziehen.
-  3. *Reichweite der Sensor-Anpassung: Konfiguration oder Produkt?* — **kleinste Antwort: die Konfiguration.**
-     `planning.waves.glob` auf `wave-*.md` und `results-glob` auf `wave-*-results.md` **umstellen**, die `matrix`-Klasse
-     `wave` (Pfad `**/wave-*.md`, Token `wave-\d{2,}`) und ihre drei Verbote **neben** die Klasse `welle` setzen, die
-     zwei `exempt-paths` um `done/wave-*/*.md` und das Closure-Profil um die Regel für `wave-*-results.md` ergänzen
-     (zusammen **13** Zeilen: 2 für die Globs, 3 für die Klasse, 3 Verbote, 2 `exempt-paths`, 3 im Closure-Profil — gezählt an
-     den Fundstellen `.d-check.yml` Z. 410, 418, 518–530, 580–594 und `.d-check.closure.yml` Z. 268). **Preis, gemessen:**
-     die 38 Register-Zeilen und Ergebnisnotizen des Bestands sind danach **ungewächtert** (Probelauf Punkt 5) — benannt
-     im Koexistenz-Eintrag als Gate-Senkung, mit Wiedervorlage „das Modul liest mehrere Präfixe“. **Größere Antwort:**
-     das Modul `planning` nimmt eine **Liste** von Präfixen (`wavePrefix` an acht Stellen, die Config-Prüfung, 100 Test-Zeilen
-     in 10 Dateien mit `welle-`, davon 79 in `planning_waves_test.go`; [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) im Lastenheft, §[`DC-FA-PLAN-001.a`](../../../spec/spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) und die
-     Schema-Zeilen 4050–4051 in der Spezifikation, ein ADR, das Handbuch, ein Release) — ein Produkt-Merkmal, das dem
-     Auftraggeber gehört und **nicht** in diese Welle. Der Rat: die kleinste Antwort jetzt, die größere als Folge-Slice,
-     falls der Auftraggeber den Bestand weiter bewacht haben will.
-  4. *Die ADR-Link-Ziele und die Commit-Zerlegung.* **Gemessen** (§1, Punkt 3): Der reine Rename und der Link-Ziel-Nachzug
-     der 64 ADRs gehören in **einen** Commit — [`AGENTS.md`](../../../AGENTS.md) §3.3 nennt das Mitreisen anderer Dateien im
-     Move-Commit für den Lifecycle-Übergang nach `done/`, solange die bewegte Datei selbst rein bleibt; für diesen Rename
-     ist es eine **Lesart**. Zwei Commits geben 60 `core-drift-vcs` am lokalen Hook. **Kleinste Antwort: ein Commit, die Spezifikation selbst (161 Zeilen Selbst-Links) im zweiten.** Preis: Der
-     erste Commit ist **nicht baubar** (`go:embed`), beide gehören in **denselben Push**. Frage: bestätigen, und ob die
-     Zusage „der Move-Commit trägt nichts außer dem Rename“ für diesen Fall so gelesen werden darf.
-  5. *Eingefrorene Dateien, die die Spezifikation **verlinken** (39 Nicht-ADR-Dateien, 80 Zeilen) und der Alt-Baum
-     (7 Dateien verlinken `v6.18.1`) — Ventil oder Nachzug?* **Kleinste Antwort für die Spezifikation: Nachzug der
-     Link-Ziele** (kein Inhalt ändert sich, die Probe lief damit auf 0 Befunde; [ADR-0103](../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md) trägt es für ADRs, für die
-     übrigen steht kein Gate dagegen), **plus ein einziger Eintrag `codepaths.ignore-refs`** für die 104
-     Inline-Code-Nennungen in eingefrorenen Dateien (`spec/spezifikation.md`; **wirkt repo-weit** — ein künftiger
-     lebender Verweis auf den alten Pfad bleibt still; das ist die Senkung, [`ADR-0025`](../adr/0025-codepaths-ignore-refs.md)
-     ist die Form). **Größere Antwort:** `links.ignore-refs` je eingefrorener Klasse (`in: docs/reviews/**` ist als Glob
-     möglich) statt des Nachzugs — kein Byte der eingefrorenen Dateien ändert sich, `ignore-refs` wächst um drei bis
-     vier Einträge. Für den Alt-Baum (`v6.18.1`) gilt dieselbe Abwägung mit **7** Dateien (fünf ADRs, `slice-274`,
-     ein Architect-Verdikt) und der Präzedenz [`MR-069`](../../../harness/conventions.md#mr-069) (heute 30 Einträge
-     über 12 Tags, `grep -c 'refs: \[".harness/baseline' .d-check.yml`). Fallstrick der mechanischen Ersetzung: zwei Dateinamen
-     **enden** auf `spezifikation.md` (§1) — ein Token-Tausch ohne Wortgrenze trifft einen Link in `welle-80-results.md`
-     ([`MR-070`](../../../harness/conventions.md#mr-070), im Probelauf als `target-missing` aufgetreten).
-  6. *Das Lastenheft nennt den Pfad in Zeile 4762* (Messmethode zu [`DC-QA-01`](../../../spec/lastenheft.md#dc-qa-01--performance)). **Kleinste Antwort: den Pfad im Lastenheft
-     nachziehen** — ein Versions-Bump und eine Historie-Zeile ([`MR-032`](../../../harness/conventions.md#mr-032)), kein
-     `DC-*` ändert sich. **Alternative:** die Zeile stehen lassen; dann nennt der Vertrag eine Datei, die es nicht gibt, und
-     `codepaths` sieht sie nicht (das Lastenheft liegt in den Scan-Wurzeln, aber der Eintrag aus Frage 5 deckt den
-     alten Pfad repo-weit). **Das Lastenheft ändert allein der Auftraggeber** ([`AGENTS.md`](../../../AGENTS.md) §5
-     Zeile 3) — hier die Frage an ihn, durch den Architect gestellt. Dazu: Der CHANGELOG-Hinweis zu `--manual` ist
-     Release-Prep (§1 Befund 3), kein Slice-Inhalt.
-  7. *Die 90 Kommentarzeilen in 33 Go-Dateien, dazu je eine in `Dockerfile` und `Makefile` und zwei in `tools/*.sh`, die
-     `spec/spezifikation.md` als Rang-Zeiger nennen.* **Kleinste Antwort: nur was funktioniert** (`manual.go`, zwei Tests,
-     `tools/image-test.sh`); die Kommentare bleiben, ihr Zeiger ist ein toter Pfad ohne Wirkung (`codepaths` liest kein
-     Go, kein Dockerfile). **Preis:** [`AGENTS.md`](../../../AGENTS.md) §3.7 („ein Kommentar beschreibt, was da ist“) — 94
-     Zeilen beschreiben eine Datei, die es nicht mehr gibt. **Größere Antwort:** ein mechanischer Nachzug der
-     Kommentarzeilen (Produkt-Quelltext, kommentar-only, `make test` und `make lint` tragen es; der `git diff` ist über
-     die Regel in (d1) prüfbar, mit `Dockerfile` als einer Kommentarzeile mehr). Die Konsumenten-Beispiele (`config_template.go`, `suggest.go`, 4
-     Zeilen) bleiben in jedem Fall: sie zeigen, wie **ein Konsument** seine Spec-Straten nennt, nicht diese Datei.
-  8. *Wie weit gilt `archive.zip` im Werkzeug?* **Kleinste Antwort:** der Welle-Modus (`done/<wave-id>/archive.zip`, die
-     Stubs aus den `archive-stub-…`-Vorlagen). **Größere Antwort:** auch der wellenlose Slice (`<slice-id>-archiv.zip`
-     → `<slice-id>-archive.zip`, `modul-05` §Lifecycle) und der eigenständige Review (`<basis>-archiv.zip`) — die
-     Regelwerk-Fassung nennt die Slice-Form wörtlich (die Diff-Zeile steht in der Vorlage), die Review-Form nennt sie nicht
-     wörtlich. Gemessen im Werkzeug: 15 Zeilen, 16 Test-Zeilen mit `archiv.zip`/`-archiv`.
-  9. *Der alte Baum fällt im Bump, nicht nach dem Review.* Der Kanon sagt: „Das alte Verzeichnis fällt
-     erst, wenn der Review durch ist.“ (`modul-02-harness-bootstrap.md` §Freshness-Audit, Absatz „Der Review
-     vergleicht auch die Form, nicht nur die Regeln“); die Praxis dieses Repos seit
-     [`MR-021`](../../../harness/conventions.md#mr-021) (1) und
-     [`welle-85`](done/welle-85/welle-85-baseline-v5120-migration.md) entfernt ihn in der Bump-Etappe, und der alte
-     Baum bleibt über die git-Historie lesbar ([`MR-052`](../../../harness/conventions.md#mr-052)). **Kleinste Antwort: die
-     Praxis bleibt**, der Bump-Eintrag nennt den Vor-Bump-Commit, aus dem die Sichtung vergleicht. Frage: bestätigen, und
-     ob der Satz im Eintrag als Abweichung vom Kanon steht.
-  10. *Gehört der Durchgang durch die Adaptions-Liste (Freshness-Audit) in diese Welle?* — **kleinste Antwort: nein.**
-     Gelesen: [`MR-060`](../../../harness/conventions/done/MR-060-baseline-v600.md) (das letzte Major),
-     [`MR-074`](../../../harness/conventions/done/MR-074-baseline-v6170.md) und
-     [`MR-080`](../../../harness/conventions.md#mr-080) beschreiben keinen Durchgang durch die Adaptions-Liste
-     (`grep -n Freshness` trifft dort höchstens eine Aussage über das Altern des Baums); als eigene Etappe stand er in
-     [`welle-85`](done/welle-85/welle-85-baseline-v5120-migration.md) — die dazwischenliegenden Bump-Slices sind
-     nicht gelesen. Gemessen als Dateinamen-Join von
-     `Geltungsbereich`/`Ersetzt-Baseline-Regel` der 41 aktiven Einträge mit den 19 inhaltlich geänderten
-     Regelwerk-Dateien: **höchstens 17 Treffer** (Obergrenze, ungeprüft — `README` trifft auch `harness/README.md`).
-     Die größere Antwort ist ein weiterer Slice mit je einer Frage pro Treffer; sie ist die Entscheidung, ob ein
-     Major ihn verlangt.
-  11. *Wo liegt die Entscheidungsvorlage?* **Eine Konvention für diese Klasse gibt es nicht** (`docs/plan/` trägt
-     `adr/`, `carveouts/`, `cr/`, `planning/`). Die Vorgänger-Delta-Audits lebten in §9 ihres Slice
-     ([`welle-85`](done/welle-85/welle-85-baseline-v5120-migration.md): `slice-149`) und liegen nach der Closure im
-     Archiv — der Auftraggeber antwortet aber **nach** der Closure. **Kleinste Antwort:**
-     `baseline-v700-neuerungen.md` unter `docs/plan/planning/`, flach, mit einem Namen, den der Glob `welle-*.md` des
-     Moduls `planning` nicht trifft (und nach Frage 3 auch nicht der Glob `wave-*.md`); sie überlebt die Closure und wird bei
-     der Antwort fortgeschrieben. Die Frage an den Architect: Ort bestätigen, und ob die Klasse einen Eintrag braucht.
-  12. *Die zwei Kommentarzeilen in `tools/archive-wave/stub.go`* nennen die alten Vorlagen-Namen. **Kleinste
-     Antwort: im Bump nachziehen** — ein Kommentar, der eine Datei nennt, die es nicht mehr gibt, ist falsch
-     ([`AGENTS.md`](../../../AGENTS.md) §3.7), und `make archive-wave-test` hält den Rest. Kein Verhalten ändert sich.
+- **Die zwölf Fragen an den Architect — beantwortet** im
+  [Architect-Verdikt vom 2026-11-26](../../reviews/2026-11-26-welle-98-architect-verdikt.md) (dort je Frage Begründung, kleinste
+  Antwort und die größere Antwort mit ihrem Mehraufwand). Die Nummern sind die der Fragen, wie sie hier standen; die Antworten:
+  1. *Koexistenz-Adaption:* **ein eigener Eintrag**, geschrieben im Lauf von [`slice-298`](open/slice-298-neue-namen-wave-archive-anker.md),
+     Auflösungs-Trigger **der Bestand ist weg** (Kommando im Verdikt), nicht *permanent*; die Senkung steht in
+     [`ADR-0117`](../adr/0117-wellen-namen-ueber-die-konfiguration.md), der Eintrag zeigt dorthin.
+  2. *`wave-98`:* **ja, aber erst in `slice-298`**, zusammen mit der Konfiguration (Auftraggeber, 2026-11-26): reiner Move, dann der
+     Nachzug aller Verweise; keine Lücke für `planning-check`. Bis dahin heißt die Welle `welle-98`.
+  3. *Sensor-Reichweite:* **die Konfiguration**; 38 Register-Zeilen und 38 Ergebnisnotizen sind danach ungewächtert — benannt in
+     [`ADR-0117`](../adr/0117-wellen-namen-ueber-die-konfiguration.md) (Senkung nach [`AGENTS.md`](../../../AGENTS.md) §3.6).
+     Größere Antwort: das Modul liest mehrere Präfixe — Produkt-Merkmal des Auftraggebers, nicht in dieser Welle.
+  4. *Commit-Zerlegung:* **ein Commit** für Rename und Link-Nachzüge, die Spezifikation selbst im zweiten; **zulässig ohne
+     Ausnahme** — [`AGENTS.md`](../../../AGENTS.md) §3.3 schützt die bewegte Datei, sie bleibt `R100`; beide Commits in **einen** Push.
+  5. *Eingefrorene Link-Ziele:* Spezifikation → **Nachzug** der Link-Ziele (64 ADRs, 39 Dateien), dazu **ein**
+     `codepaths.ignore-refs`-Eintrag ([`ADR-0025`](../adr/0025-codepaths-ignore-refs.md)); alter Baum (7 Dateien) → **Ventil**
+     (sieben datei-skopierte `links.ignore-refs`-Einträge, [`MR-069`](../../../harness/conventions.md#mr-069)).
+  6. *Lastenheft Z. 4762:* **nachziehen** (Auftraggeber, 2026-11-26) — Version, eine Historie-Zeile
+     ([`MR-032`](../../../harness/conventions.md#mr-032)); Plan-Auftrag in [`slice-297`](open/slice-297-spezifikation-heisst-specification.md).
+  7. *Kommentarzeilen:* **nur was funktioniert**; die 94 Kommentarzeilen bleiben als benanntes Negativ
+     ([`AGENTS.md`](../../../AGENTS.md) §3.7, Grund im Verdikt); der Nachzug ist die größere Antwort (ein Commit, 36 Dateien).
+  8. *`archive.zip`:* **alle drei Modi** (Welle folgt dem Präfix der Kennung; Slice und Review schreiben `-archive.zip`).
+  9. *Alter Baum fällt im Bump:* **Praxis bleibt**; die Abweichung vom Kanon trägt [`MR-021`](../../../harness/conventions.md#mr-021) (1)
+     schon, der Bump-Eintrag zeigt dorthin und nennt den Vor-Bump-Commit.
+  10. *Freshness-Audit der Adaptionen:* **nein**; die Obergrenze von 17 Treffern bleibt Messung.
+  11. *Ort der Entscheidungsvorlage:* **`baseline-v700-neuerungen.md`** unter `docs/plan/planning/`, flach; kein Eintrag für die Klasse.
+  12. *`stub.go`, zwei Kommentarzeilen:* **im Bump nachziehen**, in [`slice-295`](open/slice-295-baseline-v700-bump.md).
 - **Review-Vorgabe der Welle** (Lehre aus welle-96 und welle-97): je Slice **höchstens zwei Runden**,
   eingearbeitet werden nur HIGH und MEDIUM; LOW und INFO bleiben im Report. Jede Nachbesserung zitiert die
   Stelle, die sie trägt, statt sie nachzuerzählen

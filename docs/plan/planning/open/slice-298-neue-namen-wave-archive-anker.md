@@ -14,6 +14,7 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 **Bezug:** [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 (die Wellen-Invariante liest ein literales Präfix; die Defaults bleiben),
 [`ADR-0055`](../../adr/0055-wellen-invariante-artefakt-und-grund-codes.md) (`wave-drift` und die Register-Aussagen),
+[`ADR-0117`](../../adr/0117-wellen-namen-ueber-die-konfiguration.md) (die Senkung von `planning`, `Proposed` bis zur Closure dieses Slice),
 [`MR-069`](../../../../harness/conventions.md#mr-069) (eine Senkung wird benannt),
 [`MR-050`](../../../../harness/conventions.md#mr-050) (der Herkunfts-Anker `seit <welle>`),
 [`MR-053`](../../../../harness/conventions.md#mr-053) und
@@ -57,11 +58,7 @@ Herkunfts-Anker `seit wave-<NN>` — das Werkzeug `tools/archive-wave`, die Sens
   ([`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md), Frage B).
 - **Die Prosa bleibt deutsch:** das Wort *Welle*, das Slice-Feld `**Welle:**`, die Roadmap-Überschriften (`## Offene Wellen`
   …), die Grund-Codes (`wave-drift` heißt schon so).
-- **Keine Umbenennung von `welle-98`** — ob die Welle schon `wave-98` heißt, entscheidet das Architect-Verdikt (Frage 2); das ist
-  ein reiner Move des Planners **vor** dem Start von [`slice-295`](../open/slice-295-baseline-v700-bump.md), nicht dieser
-  Slice. Wird `wave-98` gewählt, stellt dieser Slice die Konfiguration so um, dass sie sie sieht.
-- **Der Wellen-Modus der slice-übergreifenden Archive** nur nach Frage 8 (`<slice>-archive.zip`, `<review>-archive.zip`): die
-  kleinste Antwort ist der Welle-Modus.
+- **`welle-98` zieht um** (neu und ungepusht; Verdikt Frage 2): die einzige Datei, deren Namen dieser Slice ändert.
 - **Keine weitere Neuerung** (Entscheid 2), insbesondere nicht `.claude/worktrees/**` im Scan-Ignore und kein Vorlagen-Paar.
 - **Kein Release.** Das Werkzeug `tools/archive-wave` ist kein Produkt-Bestandteil des Images
   (`make archive-wave-test` ist nicht Teil von `make gates`); sein Verhalten für Bestand bleibt byte-gleich.
@@ -78,9 +75,10 @@ gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst —
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
 - [ ] **Werkzeug:** `tools/archive-wave` liest `wave-<NN>` im `**Welle:**`-Feld der Slices und `-welle=wave-<NN>`
-      **neben** `welle-<NN>` und schreibt für eine neue Welle `done/<wave-id>/archive.zip`; ein Bestands-Lauf
-      (`make archive-wave WELLE=welle-97`, Dry-Run) ist vorher und nachher **byte-gleich**; jeder neue Test läuft ohne die
-      Änderung **aus dem richtigen Grund** rot (die Meldung ist gelesen, §3); `make archive-wave-test` grün.
+      **neben** `welle-<NN>` und schreibt für eine neue Welle `done/<wave-id>/archive.zip`; der Slice- und der Review-Modus schreiben
+      `-archive.zip` (Verdikt Frage 8); ein Bestands-Lauf (`make archive-wave WELLE=welle-97`, Dry-Run) ist vorher und nachher
+      **byte-gleich**; jeder neue Test läuft ohne die Änderung **aus dem richtigen Grund** rot (die Meldung ist gelesen, §3);
+      `make archive-wave-test` grün.
 - [ ] **Sensoren:** `planning.waves.glob` und `results-glob` stehen auf `wave-*`, die `matrix`-Klasse `wave` mit ihren drei
       Verboten steht **neben** `welle`, beide `exempt-paths` und das Closure-Profil tragen die neue Form; an der Umstellung
       steht die **Grenze** im Kommentar (der Bestand ist ungewächtert), und die Probe aus
@@ -90,8 +88,8 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       nennen für Neues `wave-<NN>`, `wave-<NN>-results.md`, `archive.zip`, `seit wave-<NN>` (und für den Bestand weiter die
       alten Formen); `AGENTS.md` §3.7 nennt beide Anker-Formen; die Sensor-Dateien `harness/sensors/planning-check.md` und
       `harness/sensors/archive-wave.md` tragen die Grenze; der **Koexistenz-Eintrag** steht unter `harness/conventions/` in der
-      Form, die das Architect-Verdikt festlegt (Frage 1), im Index, als deklarierte Gate-Senkung nach
-      [`MR-069`](../../../../harness/conventions.md#mr-069).
+      Form, die das Architect-Verdikt festlegt (Frage 1), im Index; die Senkung von `planning` trägt
+      [`ADR-0117`](../../adr/0117-wellen-namen-ueber-die-konfiguration.md), der Eintrag zeigt auf sie; sie geht mit der Closure nach `Accepted`.
 - [ ] `make gates` grün; `make archive-wave-test` grün.
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
@@ -124,7 +122,8 @@ Implementer **wiederholt** die Zählung vor der ersten Änderung.
 | `.claude/commands/plan-welle.md`, `close-welle.md`, `implement-slice.md` | update | **13** Muster-Zeilen (`welle-<…>`, `<welle-id>`, `welle-NN`, `archiv.zip`, `seit welle-<…>`; gezählt mit `git grep -n 'welle-<\|welle-NN\|<welle-id>\|welle-\*\|archiv\.zip' -- .claude/commands`); die Vorlagen-Namen zog [`slice-295`](../open/slice-295-baseline-v700-bump.md) schon nach |
 | `AGENTS.md` | update | **1** Zeile (§3.7, Z. 230: Herkunft „nur als **ein** auflösbares Feld … `seit welle-<NN>`“) nennt beide Formen; die Instanzen (`seit welle-73`, `seit welle-80`) bleiben |
 | `harness/sensors/planning-check.md`, `harness/sensors/archive-wave.md` | update | die **Grenze** der Umstellung (der Bestand ist ungewächtert) — [`AGENTS.md`](../../../../AGENTS.md) §3.8: ein Modul verspricht nur über das, was es scannt |
-| neue Eintrags-Datei unter `harness/conventions/` (Koexistenz) | neu | aus `MR-<NNN>-title.template.md` des **vendorten** Baums (`cp`, `diff -q`); Form (eigener Eintrag, Trigger oder *permanent*) aus dem Verdikt, Frage 1; der **Architect** schreibt sie; Index in `harness/conventions.md` |
+| neue Eintrags-Datei unter `harness/conventions/` (Koexistenz) | neu | aus `MR-<NNN>-title.template.md` des **vendorten** Baums (`cp`, `diff -q`); **Felder, Nummer und Trigger legt das [Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md) fest (Frage 1)**, der **Implementer** schreibt sie in diesem Slice mit den dann gemessenen Zahlen; Index in `harness/conventions.md` |
+| [`ADR-0117`](../../adr/0117-wellen-namen-ueber-die-konfiguration.md) und `docs/plan/adr/README.md` | update (Status) | `**Status:**` `Proposed` → `Accepted` bei der Closure, Geschichte-Zeile, Index-Zeile; der Status-Übergang ist dem ADR-Gate erlaubt |
 | `docs/plan/planning/README.md` | prüfen | nennt „flache Welle-Dateien“ — prüfen, ob es einen Namen trägt (Prosa bleibt) |
 
 **Reihenfolge und Commit-Zerlegung** ([`AGENTS.md`](../../../../AGENTS.md) §3.3):
@@ -134,11 +133,13 @@ Implementer **wiederholt** die Zählung vor der ersten Änderung.
    [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) sind `done/`.
 2. **Commit 1: das Werkzeug** samt Tests (`make archive-wave-test`), unabhängig von der Konfiguration — es liest beide Formen,
    solange nichts umgestellt ist.
-3. **Commit 2: Konfiguration und Sensoren** — **erst jetzt**, weil die Umstellung von `planning.waves` die
-   `welle-`-Wächter des Bestands abschaltet (Probelauf Punkt 5 in [welle-98 §1](../welle-98-baseline-v700.md)); ein
-   Roadmap-Zeiger der offenen Welle muss dabei **schon** auf `wave-` lauten, sonst meldet `planning-check` `wave-drift`
-   (Frage 2: heißt `welle-98` schon `wave-98`? bei ja ist das Voraussetzung, bei nein ist `welle-98` zu diesem Zeitpunkt die
-   **letzte** Welle in der alten Form und für das Gate danach nicht mehr sichtbar).
+3. **Commit 2: der Name der Welle, die Konfiguration und die Sensoren** — **erst jetzt**, weil die Umstellung von `planning.waves` die
+   `welle-`-Wächter des Bestands abschaltet (Probelauf Punkt 5 in [welle-98 §1](../welle-98-baseline-v700.md)). Verdikt Frage 2: `welle-98`
+   heißt ab hier `wave-98`; **keine Lücke**, weil Move, Roadmap-Zeiger und Konfiguration im selben Arbeitsbaum stehen und der Hook ihn prüft.
+   Zuerst der **reine** `git mv` der Welle-Datei (R100, [`AGENTS.md`](../../../../AGENTS.md) §3.3), dann der Nachzug **aller** Verweise
+   auf den alten Namen (`git grep -c 'welle-98' -- . ':!.harness/baseline'` neu zählen: Roadmap-Zeiger, `**Welle:**`-Felder, Closure-Notizen und
+   Reports von [`slice-295`](../open/slice-295-baseline-v700-bump.md) und [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md), der Plan selbst; darin
+   `welle-98-results.md` → `wave-98-results.md`) und die Umstellung der Konfiguration. Pfad-begrenzt committen (`BEO-ALL/path-scoped-commit-carries-staged-rest`).
 4. **Commit 3: Commands, Briefing, Sensor-Dateien und der Koexistenz-Eintrag.**
 5. Review (höchstens zwei Runden), Verifikation, Closure. `git commit -F <datei> -- <Pfade>`, vorher `git diff --cached --stat`.
 
@@ -153,7 +154,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 **Start** (`next` → `in-progress`): [`slice-295`](../open/slice-295-baseline-v700-bump.md) und
 [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) liegen in `done/`; `in-progress/` trägt keinen Slice
 (nur die Roadmap); das **Architect-Verdikt** zu den zwölf Fragen in [welle-98 §5](../welle-98-baseline-v700.md) (für diesen
-Slice tragend: 1, 2, 3, 8) liegt als Datei unter `docs/reviews/` vor; Priorisierung gesetzt, `Verantwortlich:` beim Übergang
+Slice tragend: 1, 2, 3, 8) liegt vor: [Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md); Priorisierung gesetzt, `Verantwortlich:` beim Übergang
 `open` → `next` gesetzt.
 
 **Rückführungen — vorab benennen, nicht erst im Nachhinein begründen:**
@@ -201,8 +202,8 @@ dasteht.
 - **Die Umstellung von `planning.waves` schaltet die Wächter des Bestands ab** (38 Register-Zeilen, 38 Ergebnisnotizen; gemessen
   im Probelauf) — das ist die **gewollte** Folge der kleinsten Antwort, keine Panne. — **Ausgang:** *weiter offen* → Register
   (neue Beobachtung mit Beleg `evidence/slice-298.md`: „eine Umstellung des Präfixes schaltet die Wächter der anderen
-  Schreibweise ab“) und im Koexistenz-Eintrag als Gate-Senkung mit Wiedervorlage „das Modul liest mehrere Präfixe“
-  ([welle-98 §5](../welle-98-baseline-v700.md) Frage 3, größere Antwort).
+  Schreibweise ab“); die Senkung selbst und ihre Wiedervorlage „das Modul liest mehrere Präfixe“ trägt
+  [`ADR-0117`](../../adr/0117-wellen-namen-ueber-die-konfiguration.md) ([welle-98 §5](../welle-98-baseline-v700.md) Frage 3, größere Antwort).
 - **Ein `wave-<NN>`-Token trifft einen falschen Treffer** in Spec, Sicht oder ADR (die Klasse `wave` braucht Ziffern:
   `wave-drift` ist kein Treffer). — **Ausgang:** *entfallen*, wenn `make doc-check` nach dem Anlegen der Klasse 0 Befunde
   meldet — am Stand `590dde3d` trägt kein Dokument außerhalb dieser Pläne ein `wave-<NN>`-Token (`git grep -l -E

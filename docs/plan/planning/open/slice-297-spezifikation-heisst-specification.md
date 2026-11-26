@@ -19,15 +19,15 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 durch), [`ADR-0025`](../../adr/0025-codepaths-ignore-refs.md) (das Tombstone-Register von `codepaths`),
 [`MR-069`](../../../../harness/conventions.md#mr-069) (`ignore-refs` als deklarierte Gate-Senkung),
 [`MR-070`](../../../../harness/conventions.md#mr-070) (Frozen-Klassen vor mechanischer Ersetzung),
-[`MR-032`](../../../../harness/conventions.md#mr-032) (Lastenheft-Historie, nur bei Frage 6),
+[`MR-032`](../../../../harness/conventions.md#mr-032) (Lastenheft-Historie, Zeile 4762),
 [`AGENTS.md`](../../../../AGENTS.md) §3.3 (Move und Inhalt in zwei Commits). Anlass: Entscheid 1 der
 [Welle](../welle-98-baseline-v700.md) (Namensregel, „ab jetzt, Bestand bleibt“).
 
 **Berührte Spec-Stellen:** die Datei `spec/spezifikation.md` selbst (ihr Name und ihre 161 Selbst-Verweise) ·
 [`DC-FA-CLI-013.a`](../../../../spec/spezifikation.md#dc-fa-cli-013a--handbuch-und-spezifikation-ausgeben---manual)
 Schritt 5 (die Kopfzeile `==> <pfad>:<zeile>` — der Wortlaut bleibt, die Ausgabe trägt den neuen Pfad) ·
-`spec/architecture.md` Z. 26 (der Link auf die Spezifikation) · `spec/lastenheft.md` Z. 4762 (**nur**, wenn
-[welle-98 §5](../welle-98-baseline-v700.md) Frage 6 mit ja beantwortet wird). Der Verweis zeigt **aufwärts**: Die
+`spec/architecture.md` Z. 26 (der Link auf die Spezifikation) · `spec/lastenheft.md` Z. 4762 (Auftrag des Auftraggebers,
+[Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md) Frage 6). Der Verweis zeigt **aufwärts**: Die
 Spec nennt diesen Slice nie.
 
 **Verantwortlich:** —
@@ -62,9 +62,9 @@ stehen unter einem benannten Ventil — `make doc-check` ohne Befund, `make adr-
   `benutzerhandbuch.md` Z. 372–373 zeigen, wie **ein Konsument** seine Spec-Straten nennt, nicht diese Datei; sie
   bleiben in jedem Fall (die Vorlage des Regelwerks nennt dort künftig `specification.md` — das ist Sache der
   [Sichtung](../open/slice-296-baseline-v700-neuerungen-sichtung.md), Frage B).
-- **Keine Kommentarzeilen**, außer die Antwort auf Frage 7 der Welle verlangt sie (90 Zeilen in 33 Go-Dateien, dazu je
-  eine in `Dockerfile` und `Makefile`, zwei in `tools/`): sie sind Rang-Zeiger ohne Wirkung, ihr Nachzug ein eigener Akt.
-- **Das Lastenheft, außer bei Frage 6.** Allein der Auftraggeber ändert es; eine Zeile (4762) nennt den Pfad.
+- **Keine Kommentarzeilen** (Verdikt Frage 7: entschieden, sie bleiben): 90 Zeilen in 33 Go-Dateien, dazu je eine in `Dockerfile`
+  und `Makefile`, zwei in `tools/` sind Rang-Zeiger ohne Wirkung; der Nachzug ist die größere Antwort und ein eigener Akt.
+- **Das Lastenheft, außer Zeile 4762** (Auftrag des Auftraggebers, Verdikt Frage 6). Jede weitere Änderung dort ist nicht Teil des Slice.
 - **Der Pin-Text der Spezifikation (Zeile 8)** gehört dem Bump ([`slice-295`](../open/slice-295-baseline-v700-bump.md)).
 - **CHANGELOG, READMEs, Handbuch-Kopf, Release** — Release-Prep ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 17); der
   Hinweis auf die geänderte Kopfzeile von `--manual` steht in der Closure-Notiz, nicht im Feature-Commit. **Ausnahme,
@@ -93,9 +93,9 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       `tools/image-test.sh` folgen, und der **eine** `codepaths.ignore-refs`-Eintrag für die eingefrorenen
       Inline-Code-Nennungen steht mit seiner Grenze im Kommentar; `make doc-check` meldet 0 Befunde, `make test` ist grün,
       und beide Tests laufen **ohne** den Nachzug aus dem richtigen Grund rot (die Meldung ist gelesen, §3).
-- [ ] **Lastenheft** (nur bei Frage 6 mit ja): Zeile 4762 nennt `specification.md` (unter `spec/`), Version und Historie-Zeile stehen
-      nach [`MR-032`](../../../../harness/conventions.md#mr-032), kein `DC-*` ändert sich. *(Bei nein entfällt der Punkt, und
-      §7 nennt die Zeile 4762 als benannte Abweichung.)*
+- [ ] **Lastenheft** (Auftrag, Verdikt Frage 6): Zeile 4762 nennt `specification.md` (unter `spec/`), `**Version:**` 0.115.1 → 0.115.2,
+      **eine** Historie-Zeile in der Form der übrigen („Redaktionell: …; keine inhaltliche Änderung“, Verweis `—`) nach
+      [`MR-032`](../../../../harness/conventions.md#mr-032); kein `DC-*` ändert sich, kein weiterer Satz.
 - [ ] `make gates` grün; `make image-test` grün (die Zeile 163 von `tools/image-test.sh` prüft die Kopfzeile wörtlich).
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
@@ -131,8 +131,8 @@ Lauf-Bericht ist — nicht, was in `done/` liegt), nicht nach dem Verzeichnis. S
 | `internal/adapter/driving/cli/cli_manual_test.go` Z. 21 | update | erwartet die Kopfzeile `==> spec/spezifikation.md:`; **rot ohne den Nachzug** (gemessen: „Ausgabe ohne `==> spec/spezifikation.md:`“) |
 | `internal/hexagon/core/app/diagnose_test.go` Z. 73 | update | liest die Spezifikation am Pfad; **rot ohne den Nachzug** (gemessen: „Spezifikation nicht lesbar (fail-closed)“) |
 | `tools/image-test.sh` Z. 163 | update | `grep -q '^==> spec/spezifikation.md:'` — funktional; `make image-test` ist sein Sensor |
-| `spec/lastenheft.md` Z. 4762 und Historie | update (Frage 6) | **1** Zeile + Version + Historie-Zeile; nur auf Antwort des Auftraggebers |
-| Kommentare: 90 Zeilen in 33 Go-Dateien, `Dockerfile` 1, `Makefile` 1, `tools/*.sh` 2 | update (Frage 7, größere Antwort) | `git grep -n 'spezifikation\.md' -- '*.go' Dockerfile Makefile tools`; ohne Wirkung auf Verhalten |
+| `spec/lastenheft.md` Z. 4762 und Historie | update (Frage 6, Auftrag) | **1** Zeile + Version (0.115.1 → 0.115.2) + **1** Historie-Zeile; das Lastenheft ist Rang 1, die Änderung führt der Implementer im Auftrag des Auftraggebers |
+| Kommentare: 90 Zeilen in 33 Go-Dateien, `Dockerfile` 1, `Makefile` 1, `tools/*.sh` 2 | **unverändert** (Frage 7) | `git grep -n 'spezifikation\.md' -- '*.go' Dockerfile Makefile tools`; benanntes Negativ im Verdikt: ohne Wirkung auf Verhalten, §3.7 für 94 Zeilen |
 | `config_template.go` (2), `suggest.go` (2), `benutzerhandbuch.md` Z. 372–373 | **unverändert** | Konsumenten-Beispiele (§1) |
 
 **Reihenfolge und Commit-Zerlegung** ([`AGENTS.md`](../../../../AGENTS.md) §3.3, [`BEO-ALL/path-scoped-commit-carries-staged-rest`](../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/observation.md)):
@@ -145,7 +145,9 @@ Lauf-Bericht ist — nicht, was in `done/` liegt), nicht nach dem Verzeichnis. S
    Zwischenstand brechen. **Commit 1:** `git mv` plus die Link-Ziel-Nachzüge (64 ADRs, 39 eingefrorene Dateien) —
    `git diff --cached --name-status -M` nennt eine `R100`-Zeile und 103 `M`-Zeilen (**kein** `D`/`A`-Paar,
    sonst ist die Rename-Erkennung weg); `make adr-check STAGED=1` Exit 0. **Commit 2:** alles andere der Tabelle.
-   Beide Commits in **denselben Push**: Der erste ist allein nicht baubar.
+   Beide Commits in **denselben Push**: Der erste ist allein nicht baubar. **Lesart, keine Ausnahme** ([Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md), Frage 4):
+   [`AGENTS.md`](../../../../AGENTS.md) §3.3 schützt die Rename-Erkennung der **bewegten** Datei, sie bleibt `R100`; die Link-Ziele
+   **anderer** Dateien reisen mit, und die Spezifikation selbst (Selbst-Links) folgt im zweiten Commit. Ein eigener MR entfällt.
 4. Review (höchstens zwei Runden), Verifikation, Closure. `git commit -F <datei> -- <Pfade>`, vorher
    `git diff --cached --stat`.
 
@@ -160,8 +162,8 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 **Start** (`next` → `in-progress`): [`slice-295`](../open/slice-295-baseline-v700-bump.md) liegt in `done/`;
 `in-progress/` trägt keinen Slice (nur die Roadmap); das **Architect-Verdikt** zu den zwölf Fragen in
-[welle-98 §5](../welle-98-baseline-v700.md) (für diesen Slice tragend: 4, 5, 6, 7) liegt als Datei unter `docs/reviews/`
-vor; Priorisierung gesetzt, `Verantwortlich:` beim Übergang `open` → `next` gesetzt.
+[welle-98 §5](../welle-98-baseline-v700.md) (für diesen Slice tragend: 4, 5, 6, 7) liegt vor: [Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md);
+Priorisierung gesetzt, `Verantwortlich:` beim Übergang `open` → `next` gesetzt.
 
 **Rückführungen — vorab benennen, nicht erst im Nachhinein begründen:**
 
@@ -208,9 +210,8 @@ dasteht.
   Meldung nennt und beide rot waren — im Probelauf waren sie es, mit den Meldungen aus §3; sonst *eingetreten* mit einer
   Evidenz-Datei (dann 3×).
 - **Das repo-weite Ventil verdeckt künftig einen lebenden Verweis auf den alten Pfad** (benannte Grenze von `ignore-refs`).
-  — **Ausgang:** *entfallen*, wenn der Kommentar am Eintrag die Grenze nennt und der Koexistenz-Eintrag aus
-  [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) den Eintrag als deklarierte Gate-Senkung führt
-  ([`MR-069`](../../../../harness/conventions.md#mr-069)); sonst *weiter offen* → Register.
+  — **Ausgang:** *entfallen*, wenn der Kommentar am Eintrag die Grenze nennt, in der Form des Vorgängers für `docs/user/releasing.md`
+  ([`ADR-0025`](../../adr/0025-codepaths-ignore-refs.md), „GRENZE: … bleibt das still“); sonst *weiter offen* → Register.
 - **Eine Zahl dieses Plans stimmt nicht** — Zählung am Proxy statt am Gegenstand
   ([`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md),
   10×). — **Ausgang:** *entfallen*, wenn Reviewer und Verifier jede Zahl in §3 mit dem genannten Kommando nachzählen und
