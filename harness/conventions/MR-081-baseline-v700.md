@@ -29,7 +29,7 @@
 
   **Inhaltliche Bewegungen — vollständig nach Datei, keine davon übernommen**
   (Abgrenzung, slice-295; die Namensregel führen
-  [`slice-297`](../../docs/plan/planning/open/slice-297-spezifikation-heisst-specification.md)
+  [`slice-297`](../../docs/plan/planning/next/slice-297-spezifikation-heisst-specification.md)
   und [`slice-298`](../../docs/plan/planning/open/slice-298-neue-namen-wave-archive-anker.md),
   die Klassifikation mit Empfehlung zu allen übrigen
   [`slice-296`](../../docs/plan/planning/open/slice-296-baseline-v700-neuerungen-sichtung.md);
@@ -67,7 +67,7 @@
      `templates/docs/plan/planning/observation.template.md` (4).
      **Dieses Repo ist betroffen und hat entschieden** (Auftraggeber,
      2026-11-25, „ab jetzt für Neues, der Bestand bleibt"): die Spezifikation
-     [`slice-297`](../../docs/plan/planning/open/slice-297-spezifikation-heisst-specification.md),
+     [`slice-297`](../../docs/plan/planning/next/slice-297-spezifikation-heisst-specification.md),
      Wellen, Archive und Anker
      [`slice-298`](../../docs/plan/planning/open/slice-298-neue-namen-wave-archive-anker.md).
      **In diesem Slice nur die Namen der sieben Vorlagen-Dateien in den Verweisen** — ein
