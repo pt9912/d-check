@@ -33,9 +33,13 @@
   `grep -c '^| welle-' docs/plan/planning/in-progress/roadmap.md` ergibt 38.
   Die Umbenennung wäre ein eigener Beschluss mit Eingriff in Belege.
 - **Auflösungs-Trigger:** der Bestand ist weg — `git ls-files | grep -c 'welle-[0-9]\|archiv\.zip'`
-  ergibt 0 (heute 435) **und**
-  `git grep -h -o 'seit welle-[0-9][0-9]*' -- . ':!.harness/baseline' ':!docs/plan/planning/done' ':!docs/reviews' | wc -l`
-  ergibt 0 (heute 19). Nicht *permanent*: es gibt einen Zähler. Er feuert nur auf
-  einen Beschluss des Auftraggebers; bis dahin gilt dieser Eintrag. Die Texte, die
-  den Bestand als Form nennen (`.claude/commands/`, `AGENTS.md` §3.7,
-  die beiden Sensor-Dateien), gehen mit der Auflösung.
+  ergibt 0 (gemessen mit `slice-298`: 435) **und** kein lebendes Dokument trägt
+  einen Anker `seit welle-<NN>`:
+  `git grep -h -o 'seit welle-[0-9][0-9]*' -- . ':!.harness/baseline' ':!docs/plan/planning/done' ':!docs/reviews' ':!docs/plan/cr' ':!harness/conventions/done' ':(exclude,glob)docs/plan/planning/**/slice-*.md' ':(exclude,glob)docs/plan/planning/**/wave-*.md' | wc -l`
+  ergibt 0 (gemessen mit `slice-298`: 14). Nicht mitgezählt werden die
+  eingefrorenen Bestände und die Slice- und Wellen-Pläne samt Evidence-Dateien:
+  sie zitieren Anker, sind aber nicht ihr Zielort. Nicht *permanent*: es gibt
+  einen Zähler. Er feuert nur auf einen Beschluss des Auftraggebers; bis dahin
+  gilt dieser Eintrag. Die Texte, die den Bestand als Form nennen
+  (`.claude/commands/`, `AGENTS.md` §3.7, die beiden Sensor-Dateien), gehen mit
+  der Auflösung.
