@@ -144,6 +144,40 @@ damit noch änderbar ([`AGENTS.md`](../../../../AGENTS.md) §3.5, nur `Accepted`
 Slice konfiguriert. Sie ist **Vorbedingung vor Commit 2** (die Konfiguration), nicht vor Commit 1 (das Werkzeug); liegt sie dort nicht vor, gilt
 die Rückführung `in-progress` → `open` aus §4.
 
+**Plan-Änderung (Implementer, vor dem ersten Code-Commit; Stand `db329ff2`, alle Zahlen am Arbeitsbaum dieses Standes gezählt):**
+
+1. **Die Vorbedingung vor Commit 2 ist erfüllt.** [`ADR-0117`](../../adr/0117-wellen-namen-ueber-die-konfiguration.md) trägt seit dem
+   Nachtrag V2 des [Verdikts](../../../reviews/2026-11-26-welle-98-architect-verdikt.md) in Z. 34 und 77 den Platzhalter `wave-<NN>` statt einer
+   Beispiel-Kennung (Commit `db329ff2`); die Rückführung `in-progress` → `open` aus §4 entfällt. Risiko 5 trägt damit wieder: die Treffermenge von
+   `git grep -l -E 'wave-[0-9]{2,}' -- . ':!.harness/baseline'` ist **vier** Dateien (dieser Plan, die Welle, das Verdikt, `planning_test.go`) statt
+   fünf, keine liegt in Spec, Sicht oder ADR; die Aussage „nennt nur `planning_test.go`“ aus §6 bleibt überholt, an ihre Stelle tritt die Zählung mit
+   ihrem Kommando.
+2. **Die Zählungen vor der ersten Änderung** (die Tabelle bleibt Plan-Stand, diese Zahlen überschreiben sie dort, wo sie abweichen):
+
+   | Gegenstand | Tabelle / Welle sagt | gemessen | Kommando |
+   |---|---|---|---|
+   | `archiv.zip` im Werkzeug (Quelltext) | 12 (Plan-Änderung oben) | **12** (`archive.go` 7, `stub.go` 4, `main.go` 1) | `git grep -c 'archiv\.zip' -- tools/archive-wave/archive.go tools/archive-wave/stub.go tools/archive-wave/main.go` |
+   | Zeilen mit `welle` in den Tests | 194 in 7 Dateien | **194 in 7 Dateien** (nur klein geschrieben: 149 in 6) | `git grep -i -c 'welle' -- 'tools/archive-wave/*_test.go'` |
+   | Zeilen mit `archiv.zip` in den Tests | 16 | **16** (davon **8** in den Tests des Slice- und des Review-Modus, sie erwarten `-archiv.zip` und ändern sich mit dem Verdikt Frage 8) | `git grep -c 'archiv\.zip' -- 'tools/archive-wave/*_test.go'` |
+   | Pfade mit `welle-<NN>` im Namen | 344 | **346** (dasselbe Kommando zählt am Stand `590dde3d` 345; das Verdikt vom 2026-11-26 kam hinzu) | `git ls-files \| grep -c 'welle-[0-9]'` |
+   | `archiv.zip` im Bestand | 188 | **188** | `git ls-files \| grep -c 'archiv\.zip$'` |
+   | Register-Zeilen `welle-` | 38 | **38** | `grep -c '^\| welle-' docs/plan/planning/in-progress/roadmap.md` |
+   | `seit welle-` im lebenden Bestand | 24 | **36** Zeilen, davon **17** die Platzhalter-Form `seit welle-<NN>` (Hard-Rule-Texte, Commands) und **19** mit Ziffern (1 × `seit welle-98`, der Anker an der Ventil-Zeile der `.d-check.yml`); die 24 reproduziert **kein** Kommando, die 36 sind die gezählte Form | `git grep -h -o 'seit welle-[0-9]*' -- . ':!.harness/baseline' ':!docs/plan/planning/done' ':!docs/reviews' \| wc -l` |
+   | Nennungen von `welle-98` (alle Formen) | „mehr als die 14 Zeilen“ (Verdikt Frage 2) | **71 Zeilen in 13 Dateien**, **100 Nennungen** (33 × Welle-Datei, 5 × Link-Text ohne `.md`, 5 × Ergebnisnotiz, 13 × Dateiname des Verdikts, 44 × der bare Name) | `git grep -c 'welle-98' db329ff2 -- . ':!.harness/baseline'` und `git grep -o -h 'welle-98[A-Za-z0-9_.-]*' db329ff2 -- . ':!.harness/baseline' \| sed 's/^db329ff2://' \| sort \| uniq -c` |
+
+3. **Der Nachzug von `welle-98` ist nicht mechanisch** ([`MR-070`](../../../../harness/conventions.md#mr-070)): ein Tausch über alle 71 Zeilen träfe drei Klassen,
+   die den alten Namen als **Gegenstand** tragen. (a) Der **Dateiname** des Verdikts (`2026-11-26-welle-98-architect-verdikt.md`, 13 Nennungen) bleibt, er ist
+   kein Name der Welle, sondern der eines Reports, den dieser Slice nicht umbenennt. (b) **Aussagen über den Umzug** selbst — dieser Plan (§1, §3), Frage 2 des
+   Verdikts und der Welle, die Vorbedingungs-Sätze in den Closure-Notizen — bleiben, weil sie den alten Namen nennen, um ihn zu benennen. (c) **Suchmuster**
+   in Zähl-Kommandos behalten das Muster, das sie zählen. Alles andere (Link-Ziele, Link-Texte, `**Welle:**`-Felder, Roadmap-Zeiger, der Anker an der Ventil-Zeile der
+   `.d-check.yml`, die Vergangenheits- und Zustandssätze, die die Welle als Bezug nennen) wird auf `wave-98` gezogen; das Ergebnis ist eine **Liste je Datei** im
+   Hand-back, nicht eine Summe.
+4. **Commit-Zerlegung, wie sie hier gefahren wird:** (1) das Werkzeug samt Tests; (2a) der **reine** `git mv` der Welle (`R100`); (2b) der Nachzug der Verweise **und**
+   die Umstellung der Konfiguration in **einem** Commit, weil Roadmap-Zeiger, Datei und `planning.waves` im selben Arbeitsbaum stehen müssen (Verdikt Frage 2); (3) Commands,
+   Briefing, Sensor-Dateien, der Koexistenz-Eintrag samt Index. **Zwischenstand, der nicht die Spitze eines Push werden darf:** (2a) allein — die Roadmap zeigt dort noch auf die
+   alte Datei. Der Übergang von [`ADR-0117`](../../adr/0117-wellen-namen-ueber-die-konfiguration.md) nach `Accepted` ist **nicht** Teil dieses Laufs: er gehört der Closure (§2, dritter Punkt), und nach `Accepted` ist die ADR immutabel — ein
+   Review-Befund an ihr bliebe sonst ohne den Weg über die Änderung.
+
 **Reihenfolge und Commit-Zerlegung** ([`AGENTS.md`](../../../../AGENTS.md) §3.3):
 
 1. **Vorbedingung, kein Commit dieses Slice:** das Architect-Verdikt zu den Fragen der Welle liegt vor,
