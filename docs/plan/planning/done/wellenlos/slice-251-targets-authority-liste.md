@@ -17,8 +17,8 @@ Vorgänger am selben Modul [ADR-0099](../../../adr/0099-targets-makefiles-glob.m
 [`DC-QA-02`](../../../../../spec/lastenheft.md#dc-qa-02--determinismus)
 (String-Form byte-identisch).
 
-**Berührte Spec-Stellen:** [§DC-FA-TGT-001.a](../../../../../spec/spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
-(Schritte 1 und 5), [`SPEC-005`](../../../../../spec/spezifikation.md#spec-005--d-checkyml)
+**Berührte Spec-Stellen:** [§DC-FA-TGT-001.a](../../../../../spec/specification.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
+(Schritte 1 und 5), [`SPEC-005`](../../../../../spec/specification.md#spec-005--d-checkyml)
 (Schema-Zeile `targets.authority`).
 
 **Verantwortlich:** pt9912.

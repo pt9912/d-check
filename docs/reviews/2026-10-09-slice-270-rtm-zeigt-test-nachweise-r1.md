@@ -9,7 +9,7 @@
 **Eingangs-Kontext:** Slice-Plan slice-270 samt §3 *Entscheidungen beim Beanspruchen*;
 [`DC-FA-COV-001`](../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)
 und
-[`DC-FA-COV-001.a`](../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage);
+[`DC-FA-COV-001.a`](../../spec/specification.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage);
 [`DC-FA-CLI-011`](../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code),
 [`DC-FA-DIST-001`](../../spec/lastenheft.md#dc-fa-dist-001--docker-image),
 [`DC-FA-CLI-007`](../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus),

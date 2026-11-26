@@ -17,8 +17,8 @@ Vorbild der Konfigurations-Weitung
 [`DC-QA-02`](../../../../../spec/lastenheft.md#dc-qa-02--determinismus)
 (ohne Glob-Eintrag byte-identisch).
 
-**Berührte Spec-Stellen:** [§DC-FA-TGT-001.a](../../../../../spec/spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
-(Schritte 1 und 2), [`SPEC-005`](../../../../../spec/spezifikation.md#spec-005--d-checkyml)
+**Berührte Spec-Stellen:** [§DC-FA-TGT-001.a](../../../../../spec/specification.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
+(Schritte 1 und 2), [`SPEC-005`](../../../../../spec/specification.md#spec-005--d-checkyml)
 (Schema-Zeile `targets.makefiles`).
 
 **Verantwortlich:** pt9912.

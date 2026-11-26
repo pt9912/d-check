@@ -88,7 +88,7 @@ Zeilenumbruch enden kann.
 
 ## Konsequenzen
 
-- Neuer Grund-Code `section-lines-exceeded` ([`SPEC-087`](../../../spec/spezifikation.md#4-grund--und-fehler-codes)),
+- Neuer Grund-Code `section-lines-exceeded` ([`SPEC-087`](../../../spec/specification.md#4-grund--und-fehler-codes)),
   neue Schema-Zeile `structure[].max-lines`. Ohne den Schlüssel byte-identisches
   Verhalten.
 - **Benannte Grenze:** Ein Abschnitt mit viel Beispielcode und wenig Prosa

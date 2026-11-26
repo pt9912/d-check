@@ -59,14 +59,14 @@
      ([`MR-075`](../../conventions.md#mr-075)); eingetragen sind die vier Gates
      `coverage-gate`, `lint`, `semgrep` und `baseline-verify`. Die übrigen
      Werkzeuge übernehmen slice-260 (Wächter, Hooks, Prüfer — eingelöst:
-     [`SPEC-093`](../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) bis
-     [`SPEC-096`](../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)) und slice-262
+     [`SPEC-093`](../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge) bis
+     [`SPEC-096`](../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)) und slice-262
      (Netz- und Nachtlauf-Werkzeuge — eingelöst:
-     [`SPEC-097`](../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) bis
-     [`SPEC-103`](../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge);
+     [`SPEC-097`](../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge) bis
+     [`SPEC-103`](../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge);
      `history-range-guard` und `selbstpruefung` mit eigenem Eintrag,
      `baseline-probe` als Selbsttest der Alias-Frage aus
-     [`SPEC-092`](../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+     [`SPEC-092`](../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
      ohne). **Bewegung 2 ist damit eingelöst.**
   3. **Reviewer** — `modul-10-review-harness.md`: kein Stil-Polizist
      (Formatierung oder Benennung ohne Konventions-Anker ist kein Finding),

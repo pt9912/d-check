@@ -18,7 +18,7 @@ Ziel-Glob); die heute gelebten Workarounds
 (Vendoring für Präsenz auf jedem Checkout) sind Einzelfall-Disziplin — dieses
 Modul mechanisiert die Klasse.
 **Schärft:** die neue Algorithmus-Sektion
-[`spec/spezifikation.md` §DC-FA-TRK-001.a](../../../spec/spezifikation.md#dc-fa-trk-001a--getrackt-status-auflösbarer-referenz-ziele-tracked)
+[`spec/spezifikation.md` §DC-FA-TRK-001.a](../../../spec/specification.md#dc-fa-trk-001a--getrackt-status-auflösbarer-referenz-ziele-tracked)
 (Index-Menge, Kandidaten, Ventil, Grund-Code `target-untracked`).
 
 ## Kontext

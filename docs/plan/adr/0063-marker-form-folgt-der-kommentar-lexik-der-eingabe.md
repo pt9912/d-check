@@ -3,15 +3,15 @@
 **Status:** Accepted
 **Datum:** 2026-08-27
 **Autor:** pt9912
-**Schärft:** [`DC-FA-CODE-001.a`](../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code)
-Schritt 1 und [`DC-FA-ID-001.a`](../../../spec/spezifikation.md#dc-fa-id-001a--kennungs-prüfung)
+**Schärft:** [`DC-FA-CODE-001.a`](../../../spec/specification.md#dc-fa-code-001a--pfade-in-inline-code)
+Schritt 1 und [`DC-FA-ID-001.a`](../../../spec/specification.md#dc-fa-id-001a--kennungs-prüfung)
 Bedingung 4 (je die **Form** des Zeilen-Markers)
 **Bezug:**
 [ADR-0062](0062-ventil-marker-versions-ist-eine-benannte-grenze.md) (dieselbe
 Frage für die **Lage** des Markers — diese ADR ist ihre zweite Hälfte),
 [ADR-0054](0054-geteilte-lexik-bindet-ihre-konsumenten.md) (die Trennlinie
 *andere Antwort* gegen *andere Frage*),
-[`DC-FA-DIAG-001.a`](../../../spec/spezifikation.md#dc-fa-diag-001a--kennungs-konsistenz-in-diagramm-fences-diagrams)
+[`DC-FA-DIAG-001.a`](../../../spec/specification.md#dc-fa-diag-001a--kennungs-konsistenz-in-diagramm-fences-diagrams)
 (die **festgelegte** Token-Form für `diagrams`)
 
 ## Kontext

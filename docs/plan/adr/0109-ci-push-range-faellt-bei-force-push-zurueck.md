@@ -29,7 +29,7 @@ Der Schritt „Traceability + ADR-Immutable + Slice-Closure-Übergang" der CI bi
 seine Commit-Range bei einem Push als `github.event.before..github.sha`. Nach
 einem Force-Push — jeder Rebase eines Dependabot-PR ist einer — ist `before` ein
 Commit, den der Klon nicht mehr kennt. `history-range-guard` meldet die Range
-dann zu Recht als nicht auflösbar (Exit 2, [`SPEC-102`](../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)), und der Push-Lauf wird
+dann zu Recht als nicht auflösbar (Exit 2, [`SPEC-102`](../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)), und der Push-Lauf wird
 rot, obwohl keine geprüfte Eigenschaft verletzt ist. Der Pflicht-Check trägt den
 Namen des Jobs, nicht des Ereignisses: der rote Push-Lauf sperrt den Merge eines
 PR, dessen eigener Lauf grün ist. Ein Merge ist dann nur noch mit
@@ -65,7 +65,7 @@ nur gegen eine echte CI-Ausführung prüfbar.
 | Option | Pro | Contra |
 |---|---|---|
 | Den Push-Lauf für Dependabot-Branches auslassen (`branches-ignore`) | kein roter Lauf | schaltet das Gate für genau die Commits ab, die es prüfen soll; ein Branch-Name wäre die Bedingung |
-| `history-range-guard` lockern (nicht auflösbar ⇒ Exit 0) | kein Eingriff in die CI | macht aus jedem fehlenden Klon-Zustand ein stilles Grün ([`SPEC-102`](../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)); der Wächter existiert, um das zu verhindern |
+| `history-range-guard` lockern (nicht auflösbar ⇒ Exit 0) | kein Eingriff in die CI | macht aus jedem fehlenden Klon-Zustand ein stilles Grün ([`SPEC-102`](../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)); der Wächter existiert, um das zu verhindern |
 | Den Pflicht-Check auf den Pull-Request-Lauf einschränken | der Check zählt nur den passenden Lauf | liegt in den GitHub-Einstellungen, ist aus dem Klon nicht auditierbar (`harness/README.md` §Gate-Taxonomie) |
 | Mit `--admin` mergen | sofort | umgeht die Policy, statt die Ursache zu beheben; jeder nächste Rebase wiederholt es |
 | Gewählt: Rückfall auf die Default-Branch-Range, laut auf dem Default-Branch | prüft mehr statt weniger; keine Umgehung | ein Feature-Branch mit alter, schon geprüfter Historie prüft sie erneut und kann Altlast melden |

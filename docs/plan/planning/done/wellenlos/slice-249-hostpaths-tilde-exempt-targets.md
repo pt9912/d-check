@@ -16,8 +16,8 @@ nach dem Schnitt-Kriterium von [ADR-0044](../../../adr/0044-geteiltes-referenz-v
 die Tilde-Erkennung, die bewusst schärft); Vorbild der Konfigurations-Weitung
 [ADR-0058](../../../adr/0058-konfigurations-flaechen-additiv-weiten.md).
 
-**Berührte Spec-Stellen:** `spezifikation.md` [§DC-FA-HOST-001.a](../../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung) (Muster,
-Ventil), [`SPEC-005`](../../../../../spec/spezifikation.md#spec-005--d-checkyml)
+**Berührte Spec-Stellen:** `spezifikation.md` [§DC-FA-HOST-001.a](../../../../../spec/specification.md#dc-fa-host-001a--host-pfad-erkennung) (Muster,
+Ventil), [`SPEC-005`](../../../../../spec/specification.md#spec-005--d-checkyml)
 (Schema-Zeilen `hostpaths.*`).
 
 **Verantwortlich:** pt9912.
@@ -72,7 +72,7 @@ Liefer-Punkte (3):
 
 - [x] Tilde-Erkennung: Lastenheft (Erweiterung, Versions-Bump +
       Historie-Zeile nach [`MR-032`](../../../../../harness/conventions.md#mr-032)),
-      Spezifikation [§DC-FA-HOST-001.a](../../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung), Kern-Regel; Tests Happy (`~/.claude/…`
+      Spezifikation [§DC-FA-HOST-001.a](../../../../../spec/specification.md#dc-fa-host-001a--host-pfad-erkennung), Kern-Regel; Tests Happy (`~/.claude/…`
       still), Negative (Tilde vor einem Nicht-Punkt-Segment gemeldet, in voller Form statt des heute abgeschnittenen Präfix-Treffers), Boundary (`~/` allein,
       `~user/`, URL-Tilde, Fence) — der Negative-Test lief ohne die Änderung
       aus dem richtigen Grund rot (Bewusstes Brechen, Modul 11).

@@ -18,9 +18,9 @@ Beobachtung
 [`DC-QA-02`](../../../../../spec/lastenheft.md#dc-qa-02--determinismus)
 (ohne den Schalter byte-identisch).
 
-**Berührte Spec-Stellen:** [§DC-FA-TGT-001.a](../../../../../spec/spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
-(neuer Schritt), [`SPEC-005`](../../../../../spec/spezifikation.md#spec-005--d-checkyml)
-(Schema-Zeile), [§4 Grund-Codes](../../../../../spec/spezifikation.md#4-grund--und-fehler-codes)
+**Berührte Spec-Stellen:** [§DC-FA-TGT-001.a](../../../../../spec/specification.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
+(neuer Schritt), [`SPEC-005`](../../../../../spec/specification.md#spec-005--d-checkyml)
+(Schema-Zeile), [§4 Grund-Codes](../../../../../spec/specification.md#4-grund--und-fehler-codes)
 (neue Zeile).
 
 **Verantwortlich:** pt9912.

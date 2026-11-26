@@ -13,7 +13,7 @@ die Falle erst auslöste) und [ADR-0008](0008-reparatur-ableitbarkeit.md)
 Ventil-Vorbild das datei-weite `codepaths.exempt-paths` und der
 zeilenweise `d-check:ignore`-Marker.
 **Schärft:** die Algorithmus-Sektion
-[`spec/spezifikation.md` §DC-FA-CODE-001.a](../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code)
+[`spec/spezifikation.md` §DC-FA-CODE-001.a](../../../spec/specification.md#dc-fa-code-001a--pfade-in-inline-code)
 (Referenz-Ventil-Schritt vor `codepath-missing`) und das §2-Schema
 (`codepaths.ignore-refs`).
 

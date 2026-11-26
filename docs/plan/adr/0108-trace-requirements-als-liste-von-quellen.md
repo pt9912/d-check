@@ -17,7 +17,7 @@ Quellenvertrag, der hier je Eintrag gilt);
 [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus).
 
 **Schärft:**
-[`DC-FA-REQ-001.a`](../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
+[`DC-FA-REQ-001.a`](../../../spec/specification.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
 
 **Regeln:** Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR (MADR).
 

@@ -17,7 +17,7 @@ git-Binary); Pin-Disziplin der neuen Dependency [ADR-0011](0011-digest-pins-buil
 Mechanik-Verwandtschaft [ADR-0013](0013-pr-ci-und-traceability-gate.md) (CI-Range +
 lokaler Hook, eine Quelle).
 **Schärft:** die neue Algorithmus-Sektion
-[`spec/spezifikation.md` §DC-FA-VCS-001.a](../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
+[`spec/spezifikation.md` §DC-FA-VCS-001.a](../../../spec/specification.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
 (Range-Semantik, Core-Definition, Grund-Code `core-drift-vcs`) und die
 VCS-Port-Rolle in [`spec/architecture.md` §1–§2](../../../spec/architecture.md#1-komponenten-übersicht).
 

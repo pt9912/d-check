@@ -18,7 +18,7 @@ Extraktion**, **standardmäßig an**. Eine neue ADR begleitet die Änderung
 (Nummer bei der Beanspruchung: die nächste freie).
 
 **Berührte Spec-Stellen:**
-[`DC-FA-LINK-001.a`](../../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+[`DC-FA-LINK-001.a`](../../../../spec/specification.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
 (Schritt 3, die dort als „normative Grenze für alle Module" geführte
 Zeilenbasiertheit).
 
@@ -195,7 +195,7 @@ Lerneintrag geschrieben.
 Zieladresse, die hinter `](` einen einzigen Zeilenumbruch trägt; ein totes
 Ziel meldet `target-missing` wie bei der Inline-Form, auf der öffnenden
 Zeile. `spec/lastenheft.md` (0.92.1), `spec/spezifikation.md`
-([`DC-FA-LINK-001.a`](../../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+([`DC-FA-LINK-001.a`](../../../../spec/specification.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
 Schritt 3) und
 [ADR-0092](../../adr/0092-links-zeilenumbruch-begrenzter-lookahead.md)
 (Accepted) tragen die Entscheidung.

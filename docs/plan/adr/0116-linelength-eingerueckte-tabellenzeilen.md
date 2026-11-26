@@ -21,9 +21,9 @@ im Übrigen (Zeilen außerhalb von Fenced-Code, die mit `|` beginnen; keine Tren
 übrigen Entscheidungen von ADR-0114 bleiben gültig.
 
 **Schärft:**
-[`DC-FA-LLEN-001.a`](../../../spec/spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength)
+[`DC-FA-LLEN-001.a`](../../../spec/specification.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength)
 Schritt 4, „Nicht Gegenstand“ und „Grenzen, am Gegenstand gelesen“, dazu die Zeile `linelength.exempt-tables`
-in [`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml).
+in [`SPEC-005`](../../../spec/specification.md#spec-005--d-checkyml).
 
 **Regeln:** Baseline-Regelwerk
 [`modul-04-adrs.md` §Ziel-Form: ADR (MADR)](../../../.harness/baseline/v6.18.1/regelwerk/modul-04-adrs.md).
@@ -40,7 +40,7 @@ Befunden in dieser Form (Angabe des Issues, von hier nicht gemessen).
 
 `tableRowLine` hat außer `linelength` drei Konsumenten. `targets` liest daraus Doku-Targets, die
 Spezifikation sagt ihm „erstes Zeichen ein Pipe, Spalte 0“ zu
-([`DC-FA-TGT-001.a`](../../../spec/spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
+([`DC-FA-TGT-001.a`](../../../spec/specification.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
 und die Schema-Zeile `targets.doc-tables`). Weitere Konsumenten sind `planning.waves` (Registerzeilen) und
 `structure` (Zell- und Reihenfolge-Bedingungen). `tableHeaderOrSeparator` baut auf `tableRowLine` auf;
 `tableSeparatorRow` prüft das führende `|` selbst an der rohen Zeile. Die Kopplung

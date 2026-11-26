@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Datum:** 2026-07-18
 **Autor:** pt9912
-**Schärft:** [`DC-FA-REQ-001.a`](../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) (Schritt 5, Datenzeilen/Tabellengrenze)
+**Schärft:** [`DC-FA-REQ-001.a`](../../../spec/specification.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) (Schritt 5, Datenzeilen/Tabellengrenze)
 **Bezug:** [`DC-FA-REQ-001`](../../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen), [`DC-FA-XREF-001`](../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in), [ADR-0037](0037-trace-tabellenquellen-nullmengen-guard.md), [ADR-0040](0040-kommentar-suffix-in-tabellenzeilen.md), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus).
 
 ## Kontext

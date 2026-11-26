@@ -12,7 +12,7 @@
 [ADR-0072](0072-workflows-modul.md) (Präzedenzfall: dieselbe Kapsel-Erweiterung
 für `gopkg.in/yaml.v3`, dort R3)
 
-**Schärft:** [`DC-FA-VCS-001.a`](../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
+**Schärft:** [`DC-FA-VCS-001.a`](../../../spec/specification.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
 Schritt 2 (die Kandidaten-Auflösung — der eingehende CR und sein Fix liegen
 in `slice-226` <!-- d-check:status-provenance -->)
 
@@ -79,7 +79,7 @@ Schnittstellen-Typ in Methoden-Signaturen und einem schlanken Wrapper
   — dieselbe Klasse von Zugeständnis wie bei R3 ([ADR-0072](0072-workflows-modul.md)).
   Ein dritter Adopter-Fall, der eine dritte Kapsel-Erweiterung verlangt, wäre
   ein Signal, die Regel selbst zu überdenken (Re-Evaluierungs-Trigger unten).
-- **Folgepflicht:** `spec/spezifikation.md` §[`DC-FA-VCS-001.a`](../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 bekommt
+- **Folgepflicht:** `spec/spezifikation.md` §[`DC-FA-VCS-001.a`](../../../spec/specification.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 bekommt
   einen Nachtrag zur Pack-Auflösung (in `slice-226` <!-- d-check:status-provenance -->, nicht hier — diese ADR
   trägt die Architektur-Entscheidung, nicht die Fach-Spezifikation).
 

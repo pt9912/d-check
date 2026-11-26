@@ -11,7 +11,7 @@ Filesystem-Port); Verteilungs-Kern
 („verteilen statt kopieren"); Port-/Ordner-Konvention
 [ADR-0005](0005-modul-layout-hexagon-ordner.md).
 **Schärft:** die neue Algorithmus-Sektion
-[`spec/spezifikation.md` §DC-FA-TGT-001.a](../../../spec/spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
+[`spec/spezifikation.md` §DC-FA-TGT-001.a](../../../spec/specification.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
 (zwei Richtungen `gate-phantom`/`gate-undocumented`, `^|`-Tabellen-Scoping,
 Zeilen-Heuristik, fail-closed).
 

@@ -9,8 +9,8 @@
 [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus),
 [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit),
 [ADR-0002](0002-distribution-ghcr-image.md), [ADR-0005](0005-modul-layout-hexagon-ordner.md)
-**Schärft:** [`DC-FA-CLI-008.a`](../../../spec/spezifikation.md#dc-fa-cli-008a--reparatur-patch)
-und [`DC-FA-CLI-007.a`](../../../spec/spezifikation.md#dc-fa-cli-007a--diagnose-modus)
+**Schärft:** [`DC-FA-CLI-008.a`](../../../spec/specification.md#dc-fa-cli-008a--reparatur-patch)
+und [`DC-FA-CLI-007.a`](../../../spec/specification.md#dc-fa-cli-007a--diagnose-modus)
 (begründet, warum nur bestimmte Befundarten einen Fix-Kandidaten bzw.
 Edit liefern) — nicht das Lastenheft.
 

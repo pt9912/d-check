@@ -17,7 +17,7 @@ Lauf vom 2026-09-27: **jede Definition mit Datei-Ziel**, **standardmäßig an**.
 Eine neue ADR begleitet die Änderung (die nächste freie Nummer).
 
 **Berührte Spec-Stellen:**
-[`DC-FA-LINK-001.a`](../../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+[`DC-FA-LINK-001.a`](../../../../spec/specification.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
 (Ziel-Menge des Moduls `links`).
 
 **Verantwortlich:** pt9912.
@@ -174,7 +174,7 @@ Link-Referenz-Definition (`[label]: ziel "titel"`) unabhängig davon, ob sie
 im Dokument verwendet wird; ein totes Dateiziel meldet `target-missing` wie
 bei einem Inline-Link, auf der Definitions-Zeile. `spec/lastenheft.md`
 (0.93.2), `spec/spezifikation.md`
-([`DC-FA-LINK-001.a`](../../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+([`DC-FA-LINK-001.a`](../../../../spec/specification.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
 Schritt 3) und eine
 dreigliedrige Entscheidungs-Kette (zwei Nachzüge, je Accepted → Superseded)
 mit

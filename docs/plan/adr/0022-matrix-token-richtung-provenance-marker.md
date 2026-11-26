@@ -9,7 +9,7 @@
 des adoptierten Regelwerks, die das Lab bewusst dem Reviewer überließ; setzt die
 `matrix`-Mechanik aus [ADR-0021](0021-matrix-klasseninterne-verweisrichtung.md)
 fort (dieselbe Linie wie [`MR-006`](../../../harness/conventions.md#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs)/`matrix`).
-**Schärft:** [`spec/spezifikation.md` §DC-FA-MTX-001.a](../../../spec/spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung)
+**Schärft:** [`spec/spezifikation.md` §DC-FA-MTX-001.a](../../../spec/specification.md#dc-fa-mtx-001a--klassen--und-status-auflösung)
 (neuer Token-/Marker-/Grandfathering-Schritt) sowie Config-Schema
 (`matrix.classes[].token`, `matrix.exempt-paths`).
 

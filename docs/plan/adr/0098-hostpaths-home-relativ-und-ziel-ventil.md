@@ -15,9 +15,9 @@ Konfigurations-Weitung wie
 eine Nutzer-Frage (2026-10-05), slice-249 <!-- d-check:status-provenance -->.
 
 **Schärft:**
-[`spec/spezifikation.md` §DC-FA-HOST-001.a](../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung)
+[`spec/spezifikation.md` §DC-FA-HOST-001.a](../../../spec/specification.md#dc-fa-host-001a--host-pfad-erkennung)
 und die Schema-Zeilen `hostpaths.*` unter
-[`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml).
+[`SPEC-005`](../../../spec/specification.md#spec-005--d-checkyml).
 
 **Regeln:** Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR (MADR).
 

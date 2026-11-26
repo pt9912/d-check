@@ -11,7 +11,7 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 F-1 (HIGH) aus dem Review von slice-260;
 [ADR-0048](../../../adr/0048-closure-note-struktur-im-planning-modul.md).
 
-**Berührte Spec-Stellen:** [`SPEC-095`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+**Berührte Spec-Stellen:** [`SPEC-095`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 (der Satz zum ausgelösten Lauf).
 
 **Verantwortlich:** pt9912
@@ -51,7 +51,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
       nicht.
 - [x] Die Altverstöße sind behoben; `make verify-closure-notes` und
       `make gates` grün.
-- [x] Zurückgenommen: der Satz in [`SPEC-095`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge), Grenze 4 und Vertrag von
+- [x] Zurückgenommen: der Satz in [`SPEC-095`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge), Grenze 4 und Vertrag von
       `harness/sensors/hooks.md`, Vertrag „direkt", Grenze 8 und Bindung von
       `harness/sensors/verify-closure-notes.md`, der GRENZE-Kommentar in
       `.githooks/pre-commit`.
@@ -67,7 +67,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 |---|---|---|
 | `.d-check.closure.yml` | update | Rekursion, Globs, Stub-Ausnahme |
 | `done/wellenlos/slice-240` bis `slice-243` | update | Altverstöße |
-| `spec/spezifikation.md` ([`SPEC-095`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)), `harness/sensors/{hooks,verify-closure-notes}.md`, `.githooks/pre-commit` | update | Rücknahme der Grenz-Aussagen |
+| `spec/spezifikation.md` ([`SPEC-095`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)), `harness/sensors/{hooks,verify-closure-notes}.md`, `.githooks/pre-commit` | update | Rücknahme der Grenz-Aussagen |
 | `.d-check.yml` (`reviews`), `harness/sensors/review-coverage.md` | update | **Plan-Änderung nach Review R1 F-1:** `make review-coverage` liest dieselbe Kandidatenmenge wie der Übergangs-Wächter — sonst antworten zwei Läufe verschieden auf dieselbe Frage; gemessen mit Rekursion: 0 Befunde |
 | `observations/BEO-ALL/` (neuer Eintrag) | create | **Plan-Änderung nach Review R1 F-2:** der offene Punkt aus slice-242 R2 bekommt den Ausgang *weiter offen* und braucht dafür einen Register-Eintrag |
 | `docs/plan/adr/0105-…` (neu), [ADR-0081](../../../adr/0081-reviews-modul.md) `## Geschichte`, ADR-Index | create/update | **Plan-Änderung nach Review R2 F-9:** die Rekursion in beiden Profilen widerspricht [ADR-0081](../../../adr/0081-reviews-modul.md) Entscheidung 4 — Folge-ADR nach `AGENTS.md` §3.6, `Proposed` bis zur Closure |

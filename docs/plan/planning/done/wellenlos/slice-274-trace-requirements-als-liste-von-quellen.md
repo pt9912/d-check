@@ -26,7 +26,7 @@ Anlass: eingehender CR eines Adopters, abgelegt unter `docs/plan/cr/` (kein
 Spec-Verweis, die Spec nennt ihn nur als „CR eines Adopters").
 
 **Berührte Spec-Stellen:** [`DC-FA-REQ-001`](../../../../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)
-(Lastenheft 0.106.0); [§`DC-FA-REQ-001.a`](../../../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
+(Lastenheft 0.106.0); [§`DC-FA-REQ-001.a`](../../../../../spec/specification.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
 Schritt 8 und die Schlüsseltabelle `trace.requirements`.
 
 **Verantwortlich:** pt9912

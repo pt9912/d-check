@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Datum:** 2026-08-27
 **Autor:** pt9912
-**Schärft:** [`DC-FA-CITE-001.a`](../../../spec/spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations)
+**Schärft:** [`DC-FA-CITE-001.a`](../../../spec/specification.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations)
 (Kopfsatz und Schritt 1, Marker-Erkennung)
 **Bezug:**
 [`DC-FA-CITE-001`](../../../spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in)
@@ -17,7 +17,7 @@
 
 ## Kontext
 
-[`DC-FA-CITE-001.a`](../../../spec/spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations)
+[`DC-FA-CITE-001.a`](../../../spec/specification.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations)
 sagt über den Marker-Scan zu: *„Arbeitet auf den rohen Zeilen (fence-aware wie
 die übrigen Module)."* Die Implementierung löste die zweite Hälfte des Satzes
 ein und die erste wörtlich: fence-bewusst ja, aber **inline-code-blind** —

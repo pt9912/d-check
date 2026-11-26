@@ -12,7 +12,7 @@
 [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
 (read-only).
 **Schärft:**
-[`spec/spezifikation.md` §DC-FA-CLI-006.a](../../../spec/spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag)
+[`spec/spezifikation.md` §DC-FA-CLI-006.a](../../../spec/specification.md#dc-fa-cli-006a--konfigurations-vorschlag)
 (technisches Vorlagen-/Ableitungs-Verhalten: Präfix-Quelle, Platzhalter
 statt stillem `DC-`) — nicht das Lastenheft.
 

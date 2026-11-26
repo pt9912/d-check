@@ -48,7 +48,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
   - `linelength.go` Z. 72.
 
   `targets` hat in der Spezifikation die Zusage „erstes Zeichen ein Pipe, Spalte 0“
-  ([spezifikation.md](../../spec/spezifikation.md) Z. 3040 und Schema Z. 4121). Dazu prüft `tableSeparatorRow`
+  ([spezifikation.md](../../spec/specification.md) Z. 3040 und Schema Z. 4121). Dazu prüft `tableSeparatorRow`
   (`markdown.go` Z. 208–211) das führende `|` selbst an der rohen Zeile. Eine Weitung von `tableRowLine`
   verschöbe drei Module gegen ihre Zusagen und bliebe halb, wenn sie die Trennzeile nicht mitnähme.
   **Entscheid: nicht weiten.**

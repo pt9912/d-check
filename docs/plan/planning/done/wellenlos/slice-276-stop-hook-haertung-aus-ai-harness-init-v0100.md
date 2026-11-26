@@ -11,13 +11,13 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 und Hooks), [`MR-005`](../../../../../harness/conventions.md#mr-005) (Härtung:
 inhaltsbasierter Nachweis), [`MR-076`](../../../../../harness/conventions.md#mr-076)
 (Nachweis im Rezept, Stop-Hook blockt bei unlesbarem Zustand),
-[`SPEC-094`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-094`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 (das Handoff-Gate), [`AGENTS.md`](../../../../../AGENTS.md) §3.6 (Gates werden nur
 per ADR gelockert). Anlass: `ai-harness-init` v0.10.0 liefert den Stop-Hook mit
 einem HEAD-Stempel und einem Fail-closed-`trap`, dessen **Default** das Handoff-Gate
 lockert; die Entscheidung des Auftraggebers lautet: übernehmen, **streng lassen**.
 
-**Berührte Spec-Stellen:** [`SPEC-094`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+**Berührte Spec-Stellen:** [`SPEC-094`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 
 **Verantwortlich:** pt9912
 
@@ -69,7 +69,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
       grün und beobachtet beide Ausgänge der Stop-Hook-Prüfung.
 - [x] **Entscheidung und Spiegel:** Ein neuer `MR` hält fest, was übernommen ist
       und was nicht (der lockere Default), und schärft
-      [`MR-076`](../../../../../harness/conventions.md#mr-076); [`SPEC-094`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) und die
+      [`MR-076`](../../../../../harness/conventions.md#mr-076); [`SPEC-094`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge) und die
       Sensor-Zeile in `harness/README.md` sind nachgezogen.
 - [x] `make gates` grün.
 - [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
@@ -90,7 +90,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `.harness/stop-gate-locker` | — (nicht angelegt) | Lockerungs-Schalter; dieses Repo legt ihn nicht an, Streng ist der Default ohne Schalter |
 | `tools/harness/selbstpruefung.sh` | update | Fassung v0.10.0 mit den Markern und den Stop-Hook-Zweigen; Belegung für d-check (`.githooks/commit-msg`, `make hooks`, `make gates`) |
 | `harness/conventions/MR-<neu>-….md`, `harness/conventions.md` | neu / update | die Übernahme samt Grenze; Index-Zeile |
-| `spec/spezifikation.md` | update | [`SPEC-094`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) und Historie: HEAD-Stempel, strenger Modus, Fail-closed |
+| `spec/spezifikation.md` | update | [`SPEC-094`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge) und Historie: HEAD-Stempel, strenger Modus, Fail-closed |
 | `harness/README.md` | update | Sensor-Zeile `selbstpruefung`, Grenzen-Absatz zum Stop-Hook |
 
 **Spiegel vor dem Editieren auflisten**
@@ -120,13 +120,13 @@ Abgrenzung in §1 bleibt.
 - **Betroffen:** `.claude/hooks/stop-require-gates.sh` (Modus-Bildung),
   `tools/harness/selbstpruefung.sh` (Abschnitt 5 misst: streng ohne Datei, locker mit
   `.harness/stop-gate-locker`, streng mit Variable trotz Datei, Commit ohne Nachweis),
-  `.harness/stop-gate-streng` (gelöscht), [`MR-079`](../../../../../harness/conventions.md#mr-079), [`SPEC-094`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge), [`SPEC-103`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge),
+  `.harness/stop-gate-streng` (gelöscht), [`MR-079`](../../../../../harness/conventions.md#mr-079), [`SPEC-094`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge), [`SPEC-103`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge),
   `harness/README.md`. Alles in §3 genannt, außer dass die Datei jetzt der
   Lockerungs-Schalter ist.
 - **Aussagen-Suche:** `grep -rn "stop-gate-streng"` über `.claude/`, `tools/`,
   `harness/`, `spec/`, `docs/plan/planning/in-progress/` und `.harness/`: Treffer in
   Hook, `record-gates.sh`, `selbstpruefung.sh`, [`MR-079`](../../../../../harness/conventions.md#mr-079), `harness/README.md`,
-  [`SPEC-094`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge), [`SPEC-103`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) und diesem Plan — jeder wird nachgezogen.
+  [`SPEC-094`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge), [`SPEC-103`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge) und diesem Plan — jeder wird nachgezogen.
 - **INFO 1 des Reports:** Die Selbstprüfung unterscheidet im Abschnitt „Commit ohne
   Nachweis", über welchen Pfad der Hook blockt (streng: über den Hash; locker: neuer
   `HEAD` plus abweichender Hash) und behauptet nicht beides für beide Zweige.

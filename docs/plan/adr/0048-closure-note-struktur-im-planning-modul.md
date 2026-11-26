@@ -14,9 +14,9 @@
 [ADR-0026](0026-completeness-in-product-gate.md) (Closure-Gate als
 in-Produkt-Flag außerhalb von `gates`).
 **Schärft:** die Erweiterung von
-[`spec/spezifikation.md` §DC-FA-PLAN-001.a](../../../spec/spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
+[`spec/spezifikation.md` §DC-FA-PLAN-001.a](../../../spec/specification.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
 (Schritte C1–C5) und die neue Sektion
-[§DC-FA-CLI-012.a](../../../spec/spezifikation.md#dc-fa-cli-012a--konfigurations-pfad---config).
+[§DC-FA-CLI-012.a](../../../spec/specification.md#dc-fa-cli-012a--konfigurations-pfad---config).
 
 ## Kontext
 

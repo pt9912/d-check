@@ -4,7 +4,7 @@
 **Datum:** 2026-08-10
 **Autor:** pt9912
 **Bezug:** [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
-(vierte Struktur-Bedingung), [§`DC-FA-PLAN-001.a`](../../../spec/spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
+(vierte Struktur-Bedingung), [§`DC-FA-PLAN-001.a`](../../../spec/specification.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
 Schritt C4b. **Verfeinert** [ADR-0048](0048-closure-note-struktur-im-planning-modul.md)
 um eine vierte Bedingung derselben Fähigkeit.
 **Change Request** des Konsumenten `ai-harness-course` (CR 2).

@@ -5,7 +5,7 @@
 **Autor:** pt9912
 **Bezug:** [`DC-FA-MOD-001`](../../../spec/lastenheft.md#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in)
 (die neue Anforderung; Spezifikation
-[§`DC-FA-MOD-001.a`](../../../spec/spezifikation.md#dc-fa-mod-001a--modalitäts-klassifikation-tracerequirementsmodality));
+[§`DC-FA-MOD-001.a`](../../../spec/specification.md#dc-fa-mod-001a--modalitäts-klassifikation-tracerequirementsmodality));
 [`DC-FA-CLI-009`](../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
 (Modality-Spalte) und
 [`DC-FA-CLI-011`](../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)

@@ -4,7 +4,7 @@
 `docs/plan/planning/in-progress/slice-281-print-mk-doc-manual.md`, Diff `4c955848..HEAD` ·
 **Bezug:** [`DC-FA-CLI-010`](../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben),
 [`DC-FA-CLI-013`](../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen),
-[`DC-FA-CLI-010.a`](../../spec/spezifikation.md#dc-fa-cli-010a--makefile-fragment) · Datum 2026-10-30.
+[`DC-FA-CLI-010.a`](../../spec/specification.md#dc-fa-cli-010a--makefile-fragment) · Datum 2026-10-30.
 Der Review-Report r1 wurde nicht übernommen; alle Belege sind selbst gefahren.
 
 ## DoD-Punkte

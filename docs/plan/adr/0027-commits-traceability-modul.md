@@ -16,12 +16,12 @@ Port-/Ordner-Konvention [ADR-0005](0005-modul-layout-hexagon-ordner.md); Distrol
 [ADR-0002](0002-distribution-ghcr-image.md) (bleibt — **kein** git-Binary); Pin-Disziplin
 der VCS-Dependency [ADR-0011](0011-digest-pins-build-gate-images.md); die immutable
 Skript-Referenz wird ein
-[`codepaths.ignore-refs`](../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code)-Tombstone
+[`codepaths.ignore-refs`](../../../spec/specification.md#dc-fa-code-001a--pfade-in-inline-code)-Tombstone
 ([ADR-0025](0025-codepaths-ignore-refs.md)); Verteilungs-Kern
 [`MR-007`](../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)
 („verteilen statt kopieren").
 **Schärft:** die neue Algorithmus-Sektion
-[`spec/spezifikation.md` §DC-FA-COMMITS-001.a](../../../spec/spezifikation.md#dc-fa-commits-001a--traceability-kennung-in-commit-messages-über-eine-commit-range-commits)
+[`spec/spezifikation.md` §DC-FA-COMMITS-001.a](../../../spec/specification.md#dc-fa-commits-001a--traceability-kennung-in-commit-messages-über-eine-commit-range-commits)
 (Quellen/Modi, Bereinigung, Grund-Code `commit-untraceable`) und die um Commit-Message-Lesen
 erweiterte VCS-Port-Rolle in [`spec/architecture.md` §2](../../../spec/architecture.md#2-schichten-und-constraints).
 

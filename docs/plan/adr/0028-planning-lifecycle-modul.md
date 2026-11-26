@@ -15,10 +15,10 @@ sondern verkörpert die bislang skript-/ADR-lose Durchsetzung; Port-/Ordner-Konv
 [`AGENTS.md` §3.3](../../../AGENTS.md#33-git-mv--inhaltsänderung--zwei-commits) (Slice-Lifecycle)
 und [`MR-013`](../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise);
 die immutable Skript-Referenz wird ein
-[`codepaths.ignore-refs`](../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code)-Tombstone
+[`codepaths.ignore-refs`](../../../spec/specification.md#dc-fa-code-001a--pfade-in-inline-code)-Tombstone
 ([ADR-0025](0025-codepaths-ignore-refs.md)).
 **Schärft:** die neue Algorithmus-Sektion
-[`spec/spezifikation.md` §DC-FA-PLAN-001.a](../../../spec/spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
+[`spec/spezifikation.md` §DC-FA-PLAN-001.a](../../../spec/specification.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
 (Invariante, Heading-Guard, Grund-Code `planning-drift`).
 
 ## Kontext

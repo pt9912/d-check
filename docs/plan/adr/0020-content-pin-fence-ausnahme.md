@@ -8,7 +8,7 @@
 (Fence-Öffnung `diagrams`), [ADR-0019](0019-versions-pin-fence-ausnahme.md)
 (Fence-Lesen `versions`), [ADR-0010](0010-semgrep-hermetisches-gate.md)
 (distroless/netzlos).
-**Schärft:** [`spec/spezifikation.md` §DC-FA-LINK-001.a](../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+**Schärft:** [`spec/spezifikation.md` §DC-FA-LINK-001.a](../../../spec/specification.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
 (Fence-Opazität der Vorverarbeitung) und die neue `pins`-Algorithmus-Sektion (`.a`).
 
 ## Kontext

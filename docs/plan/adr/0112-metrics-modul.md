@@ -17,7 +17,7 @@
 slice-282 <!-- d-check:status-provenance -->.
 
 **Schärft:**
-[`DC-FA-MET-001.a`](../../../spec/spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics)
+[`DC-FA-MET-001.a`](../../../spec/specification.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics)
 (neues Modul-Verfahren) und, in der Zuständigkeitsspalte des VCS-Adapters,
 [`ARC-005`](../../../spec/architecture.md#2-schichten-und-constraints) und [`ARC-010`](../../../spec/architecture.md#3-externe-abhängigkeiten)
 sowie die Fehlerzeile zum VCS-Adapter ([§5](../../../spec/architecture.md#5-fehlermodelle-und-resilienz)); die Kennungen stehen in Tabellenzellen ohne eigenen Anker.

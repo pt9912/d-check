@@ -8,7 +8,7 @@
 [`MR-006`](../../../harness/conventions.md#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs)
 (Spec-Straten verweisen nie abwärts), die bislang nur **zwischen** Klassen
 (`spec-straten → adr/slice`) maschinell war.
-**Schärft:** [`spec/spezifikation.md` §DC-FA-MTX-001.a](../../../spec/spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung)
+**Schärft:** [`spec/spezifikation.md` §DC-FA-MTX-001.a](../../../spec/specification.md#dc-fa-mtx-001a--klassen--und-status-auflösung)
 (neuer Schritt: klasseninterne Rang-/Richtungsprüfung) sowie Config-Schema
 (`matrix.classes[].order`/`.direction`) und Grund-Code (`matrix-downward`).
 

@@ -15,7 +15,7 @@ Quadranten) und Präzedenz [ADR-0024](0024-vcs-immutable-gate.md) (Modul `vcs` l
 Skript `adr-immutable-check.sh` ab); Verteilungs-Kern
 [`MR-007`](../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)
 („verteilen statt kopieren"); die immutable Skript-Referenz wird ein
-[`codepaths.ignore-refs`](../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code)-Tombstone
+[`codepaths.ignore-refs`](../../../spec/specification.md#dc-fa-code-001a--pfade-in-inline-code)-Tombstone
 ([ADR-0025](0025-codepaths-ignore-refs.md)).
 **Schärft:** keine neue Spec-Stelle — Prozess-/Mechanik-ADR; verbindlich für die
 Verdrahtung des Closure-Gates `make completeness-check` auf den in-Produkt-Flag

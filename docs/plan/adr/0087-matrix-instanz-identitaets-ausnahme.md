@@ -10,7 +10,7 @@
 [`DC-FA-MTX-001`](../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)
 (Präzedenzfall Supersede-Lineage-Ausnahme)
 
-**Schärft:** [`DC-FA-MTX-001.a`](../../../spec/spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung)
+**Schärft:** [`DC-FA-MTX-001.a`](../../../spec/specification.md#dc-fa-mtx-001a--klassen--und-status-auflösung)
 Schritt 7 (die Instanz-ID-Extraktion und der Korrelations-Vergleich — der
 eingehende CR und die begleitenden Messungen liegen in
 `docs/plan/cr/2026-09-18-cr-eingehend-pg-change-feed-matrix-instanz-identitaet.md` <!-- d-check:status-provenance -->)

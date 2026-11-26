@@ -7,14 +7,14 @@
 (opt-in Modul `diagrams`), Mechanik-Präzedenz der opt-in-Module
 [ADR-0010](0010-semgrep-hermetisches-gate.md) (distroless/netzlos als
 Härtungslinie).
-**Schärft:** [`spec/spezifikation.md` §DC-FA-LINK-001.a](../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+**Schärft:** [`spec/spezifikation.md` §DC-FA-LINK-001.a](../../../spec/specification.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
 (Fence-Opazität der Vorverarbeitung) und die neue Diagramm-Algorithmus-Sektion
 (`.a`) der Spezifikation.
 
 ## Kontext
 
 Die Markdown-Vorverarbeitung entfernt Fenced-Code-Blöcke für **alle** Module
-([`spec/spezifikation.md` §DC-FA-LINK-001.a](../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion))
+([`spec/spezifikation.md` §DC-FA-LINK-001.a](../../../spec/specification.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion))
 — eine bewusste, stark gelebte Invariante (selbst `hostpaths` exemptiert Fences,
 [`DC-FA-HOST-001`](../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in)).
 Dadurch entgehen Kennungen, die in Diagrammen leben (z. B. Architektur-IDs in

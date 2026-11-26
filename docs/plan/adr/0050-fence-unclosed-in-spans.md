@@ -12,8 +12,8 @@ betroffener Konsument der Lexik
 [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 (Closure-Note-Struktur, [ADR-0048](0048-closure-note-struktur-im-planning-modul.md)).
 **Schärft:** die Erweiterung von
-[`spec/spezifikation.md` §DC-FA-SPAN-001.a](../../../spec/spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung)
-um Schritt 3 und die Grund-Code-Festlegung [`SPEC-030`](../../../spec/spezifikation.md#4-grund--und-fehler-codes)
+[`spec/spezifikation.md` §DC-FA-SPAN-001.a](../../../spec/specification.md#dc-fa-span-001a--span-artefakt-erkennung)
+um Schritt 3 und die Grund-Code-Festlegung [`SPEC-030`](../../../spec/specification.md#4-grund--und-fehler-codes)
 (`fence-unclosed`).
 
 ## Kontext

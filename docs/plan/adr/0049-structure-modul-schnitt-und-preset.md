@@ -14,9 +14,9 @@ Vorläufer der Fähigkeit [ADR-0048](0048-closure-note-struktur-im-planning-modu
 [ADR-0012](0012-kern-paketschnitt-model-rules-app.md); Nullmengen-Logik
 [ADR-0037](0037-trace-tabellenquellen-nullmengen-guard.md).
 **Schärft:** die neue Algorithmus-Sektion
-[`spec/spezifikation.md` §DC-FA-STRUCT-001.a](../../../spec/spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
+[`spec/spezifikation.md` §DC-FA-STRUCT-001.a](../../../spec/specification.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
 und die Preset-Kopplung in
-[§DC-FA-PLAN-001.a](../../../spec/spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning).
+[§DC-FA-PLAN-001.a](../../../spec/specification.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning).
 
 ## Kontext
 

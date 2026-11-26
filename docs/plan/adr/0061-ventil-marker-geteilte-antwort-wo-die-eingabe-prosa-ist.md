@@ -3,8 +3,8 @@
 **Status:** Accepted
 **Datum:** 2026-08-27
 **Autor:** pt9912
-**Schärft:** [`DC-FA-CODE-001.a`](../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code)
-und [`DC-FA-ID-001.a`](../../../spec/spezifikation.md#dc-fa-id-001a--kennungs-prüfung)
+**Schärft:** [`DC-FA-CODE-001.a`](../../../spec/specification.md#dc-fa-code-001a--pfade-in-inline-code)
+und [`DC-FA-ID-001.a`](../../../spec/specification.md#dc-fa-id-001a--kennungs-prüfung)
 (je der Zeilen-Marker als Ventil)
 **Bezug:**
 [ADR-0054](0054-geteilte-lexik-bindet-ihre-konsumenten.md) (Entscheidung 1 und

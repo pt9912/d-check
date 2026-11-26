@@ -21,10 +21,10 @@ Force-Push), [`AGENTS.md`](../../../AGENTS.md) §3.3 (reiner Move-Commit) und §
 slice-291 <!-- d-check:status-provenance -->.
 
 **Schärft:**
-[`DC-FA-VCS-001.a`](../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
+[`DC-FA-VCS-001.a`](../../../spec/specification.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
 Schritt 2 (Commit-Menge, Basis kein Vorfahr, welche Bäume gelesen werden) und Schritt 4 (Gleichsetzen der
 Link-Ziele) sowie die Schema-Zeile des neuen Schlüssels in
-[`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml).
+[`SPEC-005`](../../../spec/specification.md#spec-005--d-checkyml).
 
 **Regeln:** Baseline-Regelwerk
 [`modul-04-adrs.md` §Ziel-Form: ADR (MADR)](../../../.harness/baseline/v6.18.1/regelwerk/modul-04-adrs.md).
@@ -67,7 +67,7 @@ Am Gegenstand gelesen, auf das die Entscheidung baut:
   wählt sie unter mehreren Kandidaten gleichen Blobs den mit dem ähnlichsten Namen und verlangt gleichen
   Modus. Beides weicht von Entscheidung 1 und 3 ab. Der Diff-Walker derselben Bibliothek ist die Stelle,
   die ein unlesbares Unterbaum-Objekt früher still als Ende las (Historie der Spezifikation zu
-  [`DC-FA-VCS-001.a`](../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2).
+  [`DC-FA-VCS-001.a`](../../../spec/specification.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2).
 
 ## Entscheidung
 

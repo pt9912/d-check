@@ -19,7 +19,7 @@ Emulation wählt).
 
 **Berührte Spec-Stellen:** [`DC-FA-DIST-001`](../../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image),
 [`DC-FA-DIST-002`](../../../../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel),
-[`SPEC-066`](../../../../../spec/spezifikation.md#6-externe-verträge) (Runtime-Basis-Zeile).
+[`SPEC-066`](../../../../../spec/specification.md#6-externe-verträge) (Runtime-Basis-Zeile).
 
 **Verantwortlich:** pt9912.
 
@@ -88,7 +88,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
       (Akzeptanzkriterien neu, Out-of-Scope „andere Plattform-Matrix"
       bleibt als Zusage der Inhalts-Gleichheit); Version und Historie.
       Neue ADR (Multi-Arch-Index, Spiegel per `imagetools create`, löst
-      ADR-0065 ab) samt Index; [`SPEC-066`](../../../../../spec/spezifikation.md#6-externe-verträge) nachgezogen. <!-- d-check:ignore (ADR-0065 ist abgelöst, ein Link wäre matrix-inactive) -->
+      ADR-0065 ab) samt Index; [`SPEC-066`](../../../../../spec/specification.md#6-externe-verträge) nachgezogen. <!-- d-check:ignore (ADR-0065 ist abgelöst, ein Link wäre matrix-inactive) -->
 - [x] `Dockerfile` cross-kompiliert; `tools/image-test.sh` prüft eine
       benannte Plattform (Binary aus dem Image der Plattform, Ausführung über
       binfmt/QEMU, wo sie nicht die des Hosts ist); ein `make`-Target baut und
@@ -110,7 +110,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | `spec/lastenheft.md` | update | DIST-001/002, Version, Historie |
-| `spec/spezifikation.md` | update | [`SPEC-066`](../../../../../spec/spezifikation.md#6-externe-verträge) (Plattformen; Altdrift `latest` mit) |
+| `spec/spezifikation.md` | update | [`SPEC-066`](../../../../../spec/specification.md#6-externe-verträge) (Plattformen; Altdrift `latest` mit) |
 | `docs/plan/adr/0102-…md` + `README.md` | neu / update | Entscheidung + Index |
 | `Dockerfile` | update | `--platform=$BUILDPLATFORM`, `TARGETOS`/`TARGETARCH` |
 | `tools/image-test.sh` | update | Plattform-Parameter; die amd64-Annahme im Kopf entfällt |

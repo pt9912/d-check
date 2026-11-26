@@ -16,7 +16,7 @@ Einzelmodul-Frage). Eingehender Change Request des Konsumenten
 `ai-harness-course` (2026-09-27, Priorität niedrig, additiv).
 
 **Berührte Spec-Stellen:**
-[`DC-FA-STRUCT-001.a`](../../../../spec/spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
+[`DC-FA-STRUCT-001.a`](../../../../spec/specification.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
 (Schritt der Prosa-Bedingungen).
 
 **Verantwortlich:** claude-sonnet-5.

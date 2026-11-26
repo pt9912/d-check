@@ -14,7 +14,7 @@
 Feldbefund, eine Erkennungsform, ein bisher grüner Lauf bleibt grün);
 slice-280 <!-- d-check:status-provenance -->.
 
-**Schärft:** [`DC-FA-HOST-001.a`](../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung)
+**Schärft:** [`DC-FA-HOST-001.a`](../../../spec/specification.md#dc-fa-host-001a--host-pfad-erkennung)
 Schritte 2 und 4 und die Schema-Zeilen `hostpaths.variables` und
 `hostpaths.exempt-targets`.
 

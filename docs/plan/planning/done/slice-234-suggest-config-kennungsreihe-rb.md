@@ -19,7 +19,7 @@ d-check trägt die Form als Konsument dieses CR, nicht als adoptierte
 Baseline-Regel.
 
 **Berührte Spec-Stellen:**
-[`DC-FA-CLI-006.a`](../../../../spec/spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag)
+[`DC-FA-CLI-006.a`](../../../../spec/specification.md#dc-fa-cli-006a--konfigurations-vorschlag)
 (reservierte Quellen: kanonisches Anforderungs-`ids`-Muster, Präfix-Ableitung).
 
 **Verantwortlich:** pt9912.

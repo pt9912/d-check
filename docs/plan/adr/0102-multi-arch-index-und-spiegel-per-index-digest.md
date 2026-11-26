@@ -19,7 +19,7 @@ slice-256 <!-- d-check:status-provenance -->.
 und [`DC-FA-DIST-002`](../../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)
 — **wie** der Index entsteht, wie jede Plattform vor dem Push geprüft wird und
 woran die Spiegel-Gleichheit gemessen wird; dazu die §6-Zeile
-[`SPEC-066`](../../../spec/spezifikation.md#6-externe-verträge).
+[`SPEC-066`](../../../spec/specification.md#6-externe-verträge).
 
 **Regeln:** Baseline-Regelwerk `modul-04-adrs.md`
 §Ziel-Form: ADR (MADR).

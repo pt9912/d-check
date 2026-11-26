@@ -5,7 +5,7 @@
 **Autor:** pt9912
 **Bezug:** [`DC-FA-CLI-006`](../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)
 (die geänderte Anforderung; Spezifikation
-[§`DC-FA-CLI-006.a`](../../../spec/spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag));
+[§`DC-FA-CLI-006.a`](../../../spec/specification.md#dc-fa-cli-006a--konfigurations-vorschlag));
 [ADR-0015](0015-suggest-config-id-prefix.md) (die andere Achse derselben
 Anforderung, Anforderungs-Präfix). Vor-Schärfungen: die reservierten Quellen kamen mit
 Lastenheft 0.18.0, die Kommentar-Klassifikation der situativen Module mit
@@ -33,7 +33,7 @@ Zwei Beobachtungen machen eine Angleichung fällig:
    ein Selbstwiderspruch zwischen gepredigter und gelebter Konvention.
 2. **Der normative Vertrag deckt die emittierte Ausgabe nicht 1:1.** Die
    kanonische Vorlage in
-   [§`DC-FA-CLI-006.a`](../../../spec/spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag)
+   [§`DC-FA-CLI-006.a`](../../../spec/specification.md#dc-fa-cli-006a--konfigurations-vorschlag)
    enthält weder die „Weitere opt-in-Module"-Kommentarzeile noch den
    `codepaths`-`exempt-paths`/`ignore-refs`-Block, die der Renderer tatsächlich
    ausgibt. Das „Warum nicht" der ausgeschlossenen Module lebt nur in der
@@ -95,7 +95,7 @@ gelten:
 ### 3. Die Norm deckt die Ausgabe 1:1
 
 Die kanonische Vorlage in
-[§`DC-FA-CLI-006.a`](../../../spec/spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag)
+[§`DC-FA-CLI-006.a`](../../../spec/specification.md#dc-fa-cli-006a--konfigurations-vorschlag)
 wird um die tatsächlich emittierten Teile ergänzt (die „Weitere opt-in-Module"-
 Kommentarzeile inkl. `--print-mk`-Verweis und der `codepaths`-Block), und der
 operative Body benennt das Eignungs-Kriterium (K1–K4) samt der **geschlossenen**

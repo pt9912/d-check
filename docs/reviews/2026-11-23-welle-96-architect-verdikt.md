@@ -141,7 +141,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
   dem ähnlichsten Namen und verlangt gleichen Modus (rename.go Z. 68–111). Das weicht von Entscheid 3
   (Mehrdeutigkeit ⇒ keine Umbenennung) und Entscheid 1 (nur der Blob) ab. Der Diff-Walker derselben
   Bibliothek las ein unlesbares Unterbaum-Objekt früher still als Ende (Historie
-  [spezifikation.md](../../spec/spezifikation.md) Z. 4269). slice-292 §3 („kein Diff-Walker“, Z. 103) liegt
+  [spezifikation.md](../../spec/specification.md) Z. 4269). slice-292 §3 („kein Diff-Walker“, Z. 103) liegt
   damit richtig.
 - Offen ist, was die Methode lesen **muss**: Entscheid 6 sagt „dieselbe Politik wie `AllPaths`“, aber
   `AllPaths` liest zwei ganze Bäume, die Methode viele Schritte.

@@ -3,7 +3,7 @@
 **Status:** Accepted (teil-superseded: ADR-0070)
 **Datum:** 2026-08-21
 **Autor:** pt9912
-**Schärft:** [`spec/spezifikation.md` §DC-FA-STRUCT-001.a](../../../spec/spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
+**Schärft:** [`spec/spezifikation.md` §DC-FA-STRUCT-001.a](../../../spec/specification.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
 **Bezug:** [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
 (Erweiterung); Modul-Schnitt [ADR-0049](0049-structure-modul-schnitt-und-preset.md)
 (**nicht** superseded — eine additive Bedingung, kein neuer Schnitt);
@@ -75,7 +75,7 @@ Benutzerhandbuch ist als einzige Bestandstabelle **aufsteigend** sortiert.
 
 4. **Rohe Abschnitts-Zeilen — die erste benannte Ausnahme von „alle
    Bedingungen arbeiten auf diesem Text".** Die Bereinigung aus
-   [§`DC-FA-STRUCT-001.a`](../../../spec/spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
+   [§`DC-FA-STRUCT-001.a`](../../../spec/specification.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
    Schritt 5 leert Inline-Code; damit wäre die
    `version.md`-Schlüsselspalte leer und jede Zelle untypisierbar. Die
    Bedingung liest deshalb die rohen Zeilen des Abschnitts. Das ist die

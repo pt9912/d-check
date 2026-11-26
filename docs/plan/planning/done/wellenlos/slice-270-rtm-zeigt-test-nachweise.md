@@ -87,7 +87,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
   ändert.
 - **Entlastung** (Auftraggeber-Entscheid): `trace.coverage` macht eine
   Anforderung mit Test-Nachweis waisenfrei, auch ohne Slice
-  ([`DC-FA-COV-001.a`](../../../../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
+  ([`DC-FA-COV-001.a`](../../../../../spec/specification.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
   Schritt 5). Das lockert `make completeness-check` (`AGENTS.md` §3.6 ⇒ ADR)
   und weicht vom Baseline-Vorschlag ab, nach dem der Slice entlastet
   (Baseline-Regelwerk `grundlagen-traceability.md` §Die zweite Richtung ⇒

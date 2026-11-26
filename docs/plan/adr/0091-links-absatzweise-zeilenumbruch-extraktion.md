@@ -26,7 +26,7 @@ suchen die schließende Klammer eines Linkziels innerhalb **einer** Zeile
 (`Line.Text` bzw. ein einzelner `string`). Ein gültiger Markdown-Link, dessen
 Zieladresse hinter `](` einen Zeilenumbruch trägt, wird deshalb nicht
 gefunden — dokumentierte Grenze in
-[`DC-FA-LINK-001.a`](../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+[`DC-FA-LINK-001.a`](../../../spec/specification.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
 Schritt 3 („zeilenbasiert … normative Grenze für alle Module"). Ein
 Konsument bittet um Erkennung dieser Form; der Auftraggeber hat vorab
 entschieden, dass die Erkennung **gemeinsam** (nicht nur im Modul `links`)
@@ -56,7 +56,7 @@ Schnittstelle zu ändern.
 `ExtractLinks` gruppiert die übergebenen `Line`s zu Absätzen (Leerzeile bzw.
 Fenced-Block-Lücke trennt — dieselbe Grenzziehung, die `proseParagraphs`
 bereits für die absatzweise Inline-Code-Erkennung nutzt,
-[`DC-FA-LINK-001.a`](../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+[`DC-FA-LINK-001.a`](../../../spec/specification.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
 Schritt 2), fügt die Zeilen eines Absatzes mit `\n` zusammen und ruft
 `forEachLink` **einmal auf dem zusammengefügten Text** auf, statt einmal je
 Zeile. Ein gefundener Link/ein Bild wird der Zeile zugeordnet, auf der seine
@@ -73,7 +73,7 @@ Zeile bekommt. Im Einzelnen:
   der Ausnahme unerfasst — der seltene Fall einer Kennung *im Linktext*
   eines Links, dessen *Adresse* umbricht, bleibt wie bisher zeilenbasiert
   behandelt. Kein Vertragsbruch:
-  [`DC-FA-ID-001.a`](../../../spec/spezifikation.md#dc-fa-id-001a--kennungs-prüfung)
+  [`DC-FA-ID-001.a`](../../../spec/specification.md#dc-fa-id-001a--kennungs-prüfung)
   verspricht die Ausnahme
   nie über den bereinigten Text einer Zeile hinaus.
 - **`pins`:** Der `dpin`-Marker bindet weiterhin an einen Link **derselben

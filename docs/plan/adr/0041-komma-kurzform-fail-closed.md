@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Datum:** 2026-07-17
 **Autor:** pt9912
-**Schärft:** [`DC-FA-COV-001.a`](../../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
+**Schärft:** [`DC-FA-COV-001.a`](../../../spec/specification.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
 **Bezug:** [`DC-FA-COV-001`](../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in), [`DC-FA-XREF-001`](../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in), [ADR-0035](0035-trace-coverage-quellen.md), [ADR-0039](0039-link-transparente-range-fortsetzung.md), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus).
 
 ## Kontext

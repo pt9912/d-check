@@ -4,15 +4,15 @@
 **Datum:** 2026-08-22
 **Autor:** pt9912
 **Schärft:**
-[`spec/spezifikation.md` §DC-FA-VER-001.a](../../../spec/spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions)
+[`spec/spezifikation.md` §DC-FA-VER-001.a](../../../spec/specification.md#dc-fa-ver-001a--versions-pin-konsistenz-versions)
 (Entscheidung 1),
-[`spec/spezifikation.md` §DC-FA-STRUCT-001.a](../../../spec/spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
+[`spec/spezifikation.md` §DC-FA-STRUCT-001.a](../../../spec/specification.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
 (Entscheidung 2),
-[`spec/spezifikation.md` §DC-FA-DIAG-001.a](../../../spec/spezifikation.md#dc-fa-diag-001a--kennungs-konsistenz-in-diagramm-fences-diagrams)
+[`spec/spezifikation.md` §DC-FA-DIAG-001.a](../../../spec/specification.md#dc-fa-diag-001a--kennungs-konsistenz-in-diagramm-fences-diagrams)
 (Entscheidung 3), die Konfigurations-Schema-Zeilen unter
-[`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml)
+[`SPEC-005`](../../../spec/specification.md#spec-005--d-checkyml)
 und die Grund-Code-Zeile
-[`SPEC-067`](../../../spec/spezifikation.md#4-grund--und-fehler-codes)
+[`SPEC-067`](../../../spec/specification.md#4-grund--und-fehler-codes)
 **Bezug:**
 [`DC-FA-VER-001`](../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in),
 [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in),
@@ -284,7 +284,7 @@ eigene Entscheidung mit eigener Messung.
   Code ist.
 - **Die Befund-Adresse um die Quelle erweitern**, damit zwei Paare zwei Befunde
   ergeben — verworfen für diese Version: das Feld läge in
-  [`SPEC-001`](../../../spec/spezifikation.md#spec-001--befund) und beträfe
+  [`SPEC-001`](../../../spec/specification.md#spec-001--befund) und beträfe
   jedes Modul und jede Ausgabe. Zwei Repo-Module umgehen dieselbe Enge heute
   über eigene Grund-Codes; ob das die richtige Antwort bleibt, ist eine
   querschnittliche Frage — siehe Re-Evaluierungs-Trigger.

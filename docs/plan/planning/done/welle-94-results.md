@@ -12,7 +12,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 - **slice-286** (Anforderung, Spezifikation und ADR):
   [`DC-FA-PSYNC-001`](../../../../spec/lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in)
   im Lastenheft, Verfahren
-  [`DC-FA-PSYNC-001.a`](../../../../spec/spezifikation.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync)
+  [`DC-FA-PSYNC-001.a`](../../../../spec/specification.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync)
   und [ADR-0113](../../adr/0113-pinsync-modul.md) Accepted. Die Entscheide des Auftraggebers vor dem
   Code festgelegt: kein Schalter `strip-prefix`, nur Gleichheit, kein Netz; dazu die Leseweise
   (zeilenweise, RE2, erste Passung mit nicht leerer Gruppe), Pin ab zwei Quellen, ein Symlink als

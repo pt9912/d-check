@@ -27,7 +27,7 @@ Schwester-Repos binden ihre Test-Nachweise über `trace.coverage` ein; die RTM
 zeigt sie dann als Spalte.
 
 `trace.coverage` macht eine Anforderung zugleich waisenfrei
-([`DC-FA-COV-001.a`](../../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
+([`DC-FA-COV-001.a`](../../../spec/specification.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
 Schritt 5): Waise ist nur noch, was weder einen Slice noch einen
 Coverage-Eintrag hat. Für `make completeness-check`
 ([ADR-0026](0026-completeness-in-product-gate.md)) heißt das: eine

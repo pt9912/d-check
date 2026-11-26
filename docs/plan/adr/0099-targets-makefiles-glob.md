@@ -15,9 +15,9 @@ Konfigurations-Weitung wie [ADR-0058](0058-konfigurations-flaechen-additiv-weite
 slice-250 <!-- d-check:status-provenance -->.
 
 **Schärft:**
-[`spec/spezifikation.md` §DC-FA-TGT-001.a](../../../spec/spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
+[`spec/spezifikation.md` §DC-FA-TGT-001.a](../../../spec/specification.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
 (Schritt 1a) und die Schema-Zeile `targets.makefiles` unter
-[`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml).
+[`SPEC-005`](../../../spec/specification.md#spec-005--d-checkyml).
 
 **Regeln:** Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR (MADR).
 

@@ -7,7 +7,7 @@
 (opt-in Modul `versions`), Mechanik-Präzedenz der opt-in-Module
 [ADR-0018](0018-diagram-fence-ausnahme.md) (Fence-Öffnung für `diagrams`) und
 [ADR-0010](0010-semgrep-hermetisches-gate.md) (distroless/netzlos).
-**Schärft:** [`spec/spezifikation.md` §DC-FA-LINK-001.a](../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+**Schärft:** [`spec/spezifikation.md` §DC-FA-LINK-001.a](../../../spec/specification.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
 (Fence-Opazität der Vorverarbeitung) und die neue `versions`-Algorithmus-Sektion
 (`.a`) der Spezifikation.
 
@@ -18,7 +18,7 @@ Versionsnummern werden über die Doku hart gepinnt — vor allem als
 Benutzerhandbuch + README). Beim Release veralten sie still: ein vergessener Pin
 bleibt unbemerkt. Strukturell fängt `d-check` das heute nicht — die
 Markdown-Vorverarbeitung entfernt Fenced-Code für **alle** Module
-([`spec/spezifikation.md` §DC-FA-LINK-001.a](../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)),
+([`spec/spezifikation.md` §DC-FA-LINK-001.a](../../../spec/specification.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)),
 und die Pins leben genau dort.
 
 Zwei naheliegende Wege wurden verworfen. Ein kopiertes Meta-Gate (ein

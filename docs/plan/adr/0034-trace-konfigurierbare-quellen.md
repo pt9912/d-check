@@ -5,7 +5,7 @@
 **Autor:** pt9912
 **Bezug:** [`DC-FA-CLI-009`](../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
 (die geänderte Anforderung; Spezifikation
-[§`DC-FA-CLI-009.a`](../../../spec/spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix));
+[§`DC-FA-CLI-009.a`](../../../spec/specification.md#dc-fa-cli-009a--requirements-traceability-matrix));
 [`DC-FA-CLI-011`](../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)
 (erbt die konfigurierten Quellen — gleicher RTM-Lauf);
 [ADR-0026](0026-completeness-in-product-gate.md) (das `completeness-check`-Gate

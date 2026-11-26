@@ -9,7 +9,7 @@
 (git-basiertes `adr-check`); Hermetik-Grenze [ADR-0008](0008-reparatur-ableitbarkeit.md)
 (git-Historie außerhalb des read-only-Baums).
 **Schärft:** die neue `immutable`-Algorithmus-Sektion
-[`spec/spezifikation.md` §DC-FA-IMM-001.a](../../../spec/spezifikation.md#dc-fa-imm-001a--immutabilitäts-pin-gegen-core-drift-immutable)
+[`spec/spezifikation.md` §DC-FA-IMM-001.a](../../../spec/specification.md#dc-fa-imm-001a--immutabilitäts-pin-gegen-core-drift-immutable)
 (Core-Definition, Normalisierung, Grund-Code `core-drift`).
 
 ## Kontext

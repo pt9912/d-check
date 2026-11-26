@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Datum:** 2026-07-17
 **Autor:** pt9912
-**Schärft:** [`DC-FA-REQ-001.a`](../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) (Trennzeile), [`DC-FA-LINK-001.a`](../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) (Fence)
+**Schärft:** [`DC-FA-REQ-001.a`](../../../spec/specification.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) (Trennzeile), [`DC-FA-LINK-001.a`](../../../spec/specification.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) (Fence)
 **Bezug:** [`DC-FA-REQ-001`](../../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen), [`DC-FA-LINK-001`](../../../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links), [`DC-FA-XREF-001`](../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in), [ADR-0037](0037-trace-tabellenquellen-nullmengen-guard.md), [ADR-0040](0040-kommentar-suffix-in-tabellenzeilen.md), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus).
 
 ## Kontext
@@ -21,7 +21,7 @@ Abweichungen — alle in dieselbe Richtung: goldmark sieht Tabellen, die d-check
 nicht sieht.** Zwei Ursachen-Familien:
 
 **A · Die Trennzelle verlangt drei Bindestriche, GFM verlangt einen.**
-`^:?-{3,}:?$` ([`DC-FA-REQ-001.a`](../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
+`^:?-{3,}:?$` ([`DC-FA-REQ-001.a`](../../../spec/specification.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
 Schritt 3). Jede reale Tabelle mit `| -- |` oder `| - |` in der Trennzeile ist
 für d-check **keine Tabelle**. Sechs der acht Abweichungen; darunter zwei
 Tabellen mit dem Header `| ID | Lastenheft-Anforderung | Substanz-Pfad |
@@ -29,7 +29,7 @@ Test-Pfad | Status |` — Anforderungs-Gestalt. Das ist **kein Code-Bug**: die
 Spezifikation schreibt `-{3,}` vor. Die **Spec** weicht von GFM ab.
 
 **B · Der Fence-Automat kennt die Infozeilen-Regel nicht.**
-[`DC-FA-LINK-001.a`](../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+[`DC-FA-LINK-001.a`](../../../spec/specification.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
 Schritt 1: „Zeilen, deren erste Nicht-Leerzeichen-Folge mit ` ``` ` oder `~~~`
 beginnt, schalten den Fence-Zustand um". CommonMark verlangt zusätzlich: **die
 Infozeile einer Backtick-Fence darf keine Backticks enthalten** — sonst ist die

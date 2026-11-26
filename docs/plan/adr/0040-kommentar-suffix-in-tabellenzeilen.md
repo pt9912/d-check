@@ -13,7 +13,7 @@ ist damit ein **sicherer Aufsatz** — ihre eigene, falsifizierte Grenzen-Logik
 Verlauf in `## Geschichte`.
 **Datum:** 2026-07-17
 **Autor:** pt9912
-**Schärft:** [`DC-FA-REQ-001.a`](../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
+**Schärft:** [`DC-FA-REQ-001.a`](../../../spec/specification.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
 **Bezug:** [`DC-FA-REQ-001`](../../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen), [`DC-FA-XREF-001`](../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in), [ADR-0037](0037-trace-tabellenquellen-nullmengen-guard.md), [ADR-0038](0038-trace-cross-consistency.md), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus).
 
 ## Kontext

@@ -126,7 +126,7 @@ Alle im Wegwerf-Klon des Stands `c55bae02`, Image aus `make build` desselben Sta
 ### F-5 — LOW — `SPEC-095` sagt „jeden Volltext", die Grenze derselben Spezifikation nicht
 
 - **kategorie:** LOW
-- **quelle:** Spezifikation [`DC-FA-PLAN-001.a`](../../spec/spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
+- **quelle:** Spezifikation [`DC-FA-PLAN-001.a`](../../spec/specification.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
   Schritt C2, „Zwei Grenzen"; `AGENTS.md` §5 Regel 13
 - **pfad:** `spec/spezifikation.md` · „Der ausgelöste Lauf prüft jeden Volltext unter `done/` samt Unterverzeichnissen"
 - **befund:** C2 benennt, dass ein Volltext, der den Marker zitiert, und ein Slice hinter
@@ -139,7 +139,7 @@ Alle im Wegwerf-Klon des Stands `c55bae02`, Image aus `make build` desselben Sta
 ### F-6 — LOW — Das Stub-Muster ist weiter als die Stub-Form, die es treffen soll
 
 - **kategorie:** LOW
-- **quelle:** Spezifikation [`DC-FA-PLAN-001.a`](../../spec/spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
+- **quelle:** Spezifikation [`DC-FA-PLAN-001.a`](../../spec/specification.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
   Schritt C2 · „das Muster gehört deshalb so eng gefasst, dass es nur die Form des Stubs trifft"
 - **pfad:** `.d-check.closure.yml` · `skip-pattern: '(?m)^> \*\*ARCHIVIERT'`
 - **befund:** Alle 254 Stub-Marker im Baum lauten `> **ARCHIVIERT** — Volltext:`; das

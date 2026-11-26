@@ -5,7 +5,7 @@
 - **Range:** `7753f4d0..HEAD` (8 Commits, Spitze `cd2a4d86`)
 - **Eingang:** Commits, Reports R1–R3 unter `docs/reviews/`;
   [`DC-FA-COV-001`](../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)
-  und [§`DC-FA-COV-001.a`](../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 4/5;
+  und [§`DC-FA-COV-001.a`](../../spec/specification.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 4/5;
   [ADR-0104](../plan/adr/0104-test-nachweise-entlasten-in-der-rtm.md) (Proposed);
   [`MR-078`](../../harness/conventions.md#mr-078)
 - **Datum:** 2026-10-09

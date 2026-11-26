@@ -17,7 +17,7 @@ nicht hinaus — kein repo-weiter Beleg, den dieser Slice allein nicht liefert
 Umsetzung).
 
 **Berührte Spec-Stellen:** [`DC-FA-MTX-003`](../../../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix) ·
-[`DC-FA-MTX-001.a`](../../../../spec/spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung)
+[`DC-FA-MTX-001.a`](../../../../spec/specification.md#dc-fa-mtx-001a--klassen--und-status-auflösung)
 Schritt 7 (bereits geschrieben, siehe §1-Ausschluss).
 
 **Verantwortlich:** claude-sonnet-5.

@@ -5,7 +5,7 @@
 **Autor:** pt9912
 **Bezug:** [`DC-FA-COV-001`](../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)
 (die neue Anforderung; Spezifikation
-[§`DC-FA-COV-001.a`](../../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage));
+[§`DC-FA-COV-001.a`](../../../spec/specification.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage));
 [`DC-FA-CLI-009`](../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
 (RTM-Struktur — Coverage-Spalte) und
 [`DC-FA-CLI-011`](../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)

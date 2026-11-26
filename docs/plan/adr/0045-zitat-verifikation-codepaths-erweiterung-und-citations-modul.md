@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Datum:** 2026-07-18
 **Autor:** pt9912
-**Schärft:** [`DC-FA-CITE-001.a`](../../../spec/spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations)
+**Schärft:** [`DC-FA-CITE-001.a`](../../../spec/specification.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations)
 **Bezug:** [`DC-FA-CITE-001`](../../../spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in), [`DC-FA-CODE-001`](../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in), [ADR-0040](0040-kommentar-suffix-in-tabellenzeilen.md), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit).
 
 ## Kontext
@@ -21,7 +21,7 @@ Zwei Befunde erden den Zuschnitt:
 - **Die Zitate stehen in Inline-Code** (gemessen: 33 von 33 `datei:zeile`-Zitate im
   Adopter-Repo backticked, null in nackter Prosa). Das Modul `codepaths` erkennt die
   `datei:zeile`-Konvention **bereits** und **verwirft** die Zeilennummer bewusst
-  ([`DC-FA-CODE-001.a`](../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code)
+  ([`DC-FA-CODE-001.a`](../../../spec/specification.md#dc-fa-code-001a--pfade-in-inline-code)
   Schritt 3). Die Stufen 1/2 sind damit **das Weglassen eines `trim`** plus
   Zeilenzahl-Prüfung — keine neue Detektion.
 - Der Adopter hat seinen **eigenen** Sensor-Slice deshalb selbst blockiert (Prämisse

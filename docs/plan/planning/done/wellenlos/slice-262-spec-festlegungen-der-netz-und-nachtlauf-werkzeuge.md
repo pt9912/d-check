@@ -85,7 +85,7 @@ wellenlos hier geprüft.
 ## 7. Closure-Notiz
 
 - **Was hat funktioniert:** §7 der Spezifikation führt die Netz- und
-  Nachtlauf-Werkzeuge in sieben Einträgen ([`SPEC-097`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) bis [`SPEC-103`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)), am Code
+  Nachtlauf-Werkzeuge in sieben Einträgen ([`SPEC-097`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge) bis [`SPEC-103`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)), am Code
   nachgelesen; die Verifikation fuhr je Eintrag mindestens eine Aussage
   ausführend nach und brach vier Stellen mit der passenden Meldung. Die
   Sensor-Dateien verlinken die Kennung und führen keine Exit-Tabelle mehr.
@@ -153,7 +153,7 @@ Abweichungen, die die Messung fand.
   Code unterscheidet nicht, er gibt einen festen Hinweis aus.
 - `history-range-guard` und `selbstpruefung` treffen eigene Festlegungen und
   bekommen einen §7-Eintrag; `baseline-probe` ist der Selbsttest der
-  Alias-Frage aus [`SPEC-092`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) und bekommt keinen.
+  Alias-Frage aus [`SPEC-092`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge) und bekommt keinen.
 
 **Vorgelagert — Nachtlauf-Stand lesen** ([`MR-053`](../../../../../harness/conventions.md#mr-053)):
 `upstream-drift` grün (2026-10-09T07:17Z). `image-scan` rot (2026-10-09T10:37Z)

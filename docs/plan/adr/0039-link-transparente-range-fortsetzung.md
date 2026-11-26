@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Datum:** 2026-07-17
 **Autor:** pt9912
-**Schärft:** [`DC-FA-COV-001.a`](../../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage), [`DC-FA-XREF-001.a`](../../../spec/spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency)
+**Schärft:** [`DC-FA-COV-001.a`](../../../spec/specification.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage), [`DC-FA-XREF-001.a`](../../../spec/specification.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency)
 **Bezug:** [`DC-FA-COV-001`](../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in), [`DC-FA-XREF-001`](../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in), [`DC-FA-ID-001`](../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids), [ADR-0035](0035-trace-coverage-quellen.md), [ADR-0038](0038-trace-cross-consistency.md), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus).
 
 ## Kontext
@@ -11,7 +11,7 @@
 Das Lastenheft verspricht die Range-Expansion **unqualifiziert**:
 [`DC-FA-COV-001`](../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)
 sagt „`<FAM>-AAA..BBB` deckt alle …". Die Verengung steht allein in der
-Spezifikation ([§`DC-FA-COV-001.a`](../../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
+Spezifikation ([§`DC-FA-COV-001.a`](../../../spec/specification.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
 Schritt 3): expandiert wird nur, wenn `..<Ziffern>` der Fundstelle **unmittelbar**
 folgt. Der Code hält sich exakt daran — die Lücke ist im Vertrag, nicht in der
 Implementierung.
@@ -60,8 +60,8 @@ Vorkommen ohne Code-Span, null mit einem Zeichen zwischen `)` und der Fortsetzun
 4. **Ein Fix, zwei Konsumenten.** Der Parser ist geteilt
    ([ADR-0038](0038-trace-cross-consistency.md): Reader-Reuse statt zweitem
    Parser), daher wirkt der Entscheid zugleich auf
-   [`DC-FA-COV-001.a`](../../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
-   und [`DC-FA-XREF-001.a`](../../../spec/spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency).
+   [`DC-FA-COV-001.a`](../../../spec/specification.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
+   und [`DC-FA-XREF-001.a`](../../../spec/specification.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency).
    Das ist der Nutzen der geteilten Mechanik — und zugleich ihr Preis: derselbe
    Defekt saß in beiden.
 

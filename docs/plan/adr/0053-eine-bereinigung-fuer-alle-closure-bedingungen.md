@@ -4,7 +4,7 @@
 **Datum:** 2026-08-10
 **Autor:** pt9912
 **Bezug:** [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
-(Substanz und Floskel), [§`DC-FA-PLAN-001.a`](../../../spec/spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
+(Substanz und Floskel), [§`DC-FA-PLAN-001.a`](../../../spec/specification.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
 Schritt C4. **Verfeinert** [ADR-0048](0048-closure-note-struktur-im-planning-modul.md).
 **ADR-pflichtig** nach [`AGENTS.md` §3.6](../../../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden):
 eine Prüfregel wird gelockert.

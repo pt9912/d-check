@@ -12,7 +12,7 @@
 (die Diagnose und der Fix-Kandidat, gegen den abzugrenzen ist),
 [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
 (das Modul, das den neuen Schlüssel bekommt),
-[`SPEC-001`](../../../spec/spezifikation.md#spec-001--befund) (das Feld, das es
+[`SPEC-001`](../../../spec/specification.md#spec-001--befund) (das Feld, das es
 längst gibt),
 [ADR-0070](0070-tabellen-klammer-und-spaltenliste.md) (dieselbe Bewegung: eine
 Frage, ein Ort — statt zweier paralleler Slots)
@@ -42,7 +42,7 @@ denselben Satz, obwohl die eine einen erfundenen Risiko-Ausgang hütet und die
 andere einen offenen DoD-Haken.
 
 **Beim Bau gemessen, und es hat den Entwurf verschoben.**
-[`SPEC-001`](../../../spec/spezifikation.md#spec-001--befund) führt seit jeher
+[`SPEC-001`](../../../spec/specification.md#spec-001--befund) führt seit jeher
 `message` als *„menschenlesbare Erläuterung (nicht stabilitätsgarantiert)"*.
 **22 von 31** Regel-Dateien unter `internal/hexagon/core/rules/` setzen es —
 und gerendert wurde es für Menschen **nirgends**: weder in der Befund-Zeile
@@ -119,7 +119,7 @@ Gemessen: ein grüner Lauf ist unverändert (keine Befund-Zeile), ein Befund ohn
 `links` `target-missing` etwa trägt ab jetzt *„Linkziel existiert nicht"*.
 
 **Der Text altert wie ein Kommentar.** Ob ein `hint` noch stimmt, prüft kein
-Gate; [`SPEC-001`](../../../spec/spezifikation.md#spec-001--befund) sagt für
+Gate; [`SPEC-001`](../../../spec/specification.md#spec-001--befund) sagt für
 `message` ohnehin **keine Stabilität** zu. Das ist
 die Klasse, die dieses Repo als
 [`BEO-013`](../planning/observations.md) führt — hier ohne Wächter, mit Absicht:

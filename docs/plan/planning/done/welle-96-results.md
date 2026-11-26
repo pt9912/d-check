@@ -22,7 +22,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   von 0.113.2 auf 0.114.3 — neuer Absatz „Umbenennung folgen (opt-in)“, eine Liste benannter
   Grenzen, 30 Akzeptanzkriterien (25 neue), geschärfter Out-of-Scope-Satz; Verfahren in der
   Spezifikation (Schritt 2 und 4 von
-  [`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
+  [`DC-FA-VCS-001.a`](../../../../spec/specification.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
   und die Schema-Zeile `vcs.follow-renames`); [ADR-0115](../../adr/0115-vcs-folgt-umbenennung.md)
   mit 14 Entscheidungen. Entscheidungen 1–8 bestätigte der Auftraggeber am 2026-11-23, die
   Folge-Entscheidungen 9–14 und die neue Fassung von 9 und 10 am selben Tag, Entscheidung 9

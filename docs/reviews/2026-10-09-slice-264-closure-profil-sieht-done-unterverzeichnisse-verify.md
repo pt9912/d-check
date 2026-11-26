@@ -4,7 +4,7 @@
 - **Gegenstand:** `docs/plan/planning/in-progress/slice-264-closure-profil-sieht-done-unterverzeichnisse.md`, DoD-Punkte 1–3 und die Plan-Änderungen in §3
 - **Range:** `fe54da7e~1..HEAD` (11 Commits, Spitze `37bdb24e`)
 - **Eingang:** die Commits; die Reports R1–R3 unter `docs/reviews/`;
-  [`SPEC-095`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge);
+  [`SPEC-095`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge);
   [`DC-FA-PLAN-001`](../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
   [`DC-FA-RVW-001`](../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in);
   [ADR-0048](../plan/adr/0048-closure-note-struktur-im-planning-modul.md),
@@ -84,7 +84,7 @@ Verweis auf M6 an.
 
 **DoD 3 — Zurücknahme der „nur `done/` direkt"-Aussagen.** **Erfüllt.**
 
-- [`SPEC-095`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge): Der Satz zum ausgelösten Lauf sagt jetzt „prüft jeden Volltext unter `done/` samt Unterverzeichnissen …". Er nennt die beiden stillen Ausfälle (Marker-Zitat, Verzeichnis-Symlink) mit Verweis auf C2. Zwei Historie-Zeilen sind ergänzt.
+- [`SPEC-095`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge): Der Satz zum ausgelösten Lauf sagt jetzt „prüft jeden Volltext unter `done/` samt Unterverzeichnissen …". Er nennt die beiden stillen Ausfälle (Marker-Zitat, Verzeichnis-Symlink) mit Verweis auf C2. Zwei Historie-Zeilen sind ergänzt.
 - `harness/sensors/hooks.md`: Der Vertrag schließt die Unterverzeichnisse ein. Grenze 4 ist ersetzt; sie benennt jetzt nur noch, dass ein Stub zwar auslöst, aber nicht geprüft wird.
 - `harness/sensors/verify-closure-notes.md`: Der Vertrag sagt „im Volltext in `done/` oder einem seiner Unterverzeichnisse". Grenze 8 ist ersetzt und trägt Marker-Zitat, Symlink und Wellen-Ergebnisnotizen nur flach; die letzte Grenze habe ich gegen den Bestand geprüft (M5). Der Bindungs-Satz „liest nur `done/`" ist gestrichen.
 - `.githooks/pre-commit`: Der GRENZE-Kommentar ist durch eine Aussage über den Stub ersetzt.

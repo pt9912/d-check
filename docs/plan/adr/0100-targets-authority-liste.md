@@ -15,11 +15,11 @@ Vorgängerin am selben Modul [ADR-0099](0099-targets-makefiles-glob.md)
 slice-251 <!-- d-check:status-provenance -->.
 
 **Schärft:**
-[`spec/spezifikation.md` §DC-FA-TGT-001.a](../../../spec/spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
+[`spec/spezifikation.md` §DC-FA-TGT-001.a](../../../spec/specification.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
 (Schritt 5), die Schema-Zeile `targets.authority` unter
-[`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml) und die
+[`SPEC-005`](../../../spec/specification.md#spec-005--d-checkyml) und die
 Grund-Code-Zeile
-[`SPEC-061`](../../../spec/spezifikation.md#4-grund--und-fehler-codes).
+[`SPEC-061`](../../../spec/specification.md#4-grund--und-fehler-codes).
 
 **Regeln:** Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR (MADR).
 

@@ -175,7 +175,7 @@ für den Entscheid.
 **`matrix` kennt bereits eine Instanz-Korrelation — für einen anderen
 Zweck.** Die Supersede-Lineage-Ausnahme
 (`matrix.status.allow-supersede-lineage`/`supersede-fields`,
-[`spec/spezifikation.md` §DC-FA-MTX-001.a Schritt 4](../../../spec/spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung),
+[`spec/spezifikation.md` §DC-FA-MTX-001.a Schritt 4](../../../spec/specification.md#dc-fa-mtx-001a--klassen--und-status-auflösung),
 Implementierung `lineageValues`/`supersedeFieldValues`/`supersedeFieldValue`
 in `matrix.go` Zeile 126–166) nimmt eine sonst als `matrix-inactive` gemeldete Kante aus, **wenn**
 ein deklariertes Feld der Quelldatei (`**Supersedes:** ADR-0007`) <!-- d-check:ignore (Beispielwert aus der Spec, keine Fundstellen-Referenz) --> den

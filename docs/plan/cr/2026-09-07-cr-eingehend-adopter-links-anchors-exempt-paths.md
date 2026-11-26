@@ -119,7 +119,7 @@ CR berührt. **Sie entscheidet nichts** — der Entscheid ist ein eigener Vorgan
 
 **Die sechs Module stimmen.** Nachgezählt über
 [`spec/lastenheft.md`](../../../spec/lastenheft.md) und
-[`spec/spezifikation.md`](../../../spec/spezifikation.md): `codepaths`,
+[`spec/spezifikation.md`](../../../spec/specification.md): `codepaths`,
 `diagrams`, `matrix`, `reviews`, `versions`, `workflows`. Auch dass `links` und
 `anchors` **keine** modul-lokale Options-Sektion für Ausnahmen führen, trifft
 zu.

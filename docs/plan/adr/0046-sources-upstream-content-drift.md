@@ -4,7 +4,7 @@
 **Datum:** 2026-07-19
 **Autor:** pt9912
 **Bezug:** [`DC-FA-SRC-001`](../../../spec/lastenheft.md#dc-fa-src-001--upstream-content-drift-externer-quellen-modul-sources-opt-in-netz) (opt-in Modul `sources`); Modul-/Paket-Fundament [ADR-0005](0005-modul-layout-hexagon-ordner.md), [ADR-0012](0012-kern-paketschnitt-model-rules-app.md); Vorläufer als Harness-Tooling [`MR-022`](../../../harness/conventions.md#mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019) (`fetch-baseline-cache.sh --check-latest`).
-**Schärft:** die neue Algorithmus-Sektion [`spec/spezifikation.md` §DC-FA-SRC-001.a](../../../spec/spezifikation.md#dc-fa-src-001a--upstream-content-drift-externer-quellen-sources) und die Erweiterung von [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) um eine zweite Netz-Tür.
+**Schärft:** die neue Algorithmus-Sektion [`spec/spezifikation.md` §DC-FA-SRC-001.a](../../../spec/specification.md#dc-fa-src-001a--upstream-content-drift-externer-quellen-sources) und die Erweiterung von [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) um eine zweite Netz-Tür.
 
 ## Kontext
 

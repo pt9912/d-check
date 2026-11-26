@@ -13,7 +13,7 @@ PR-/Push-CI und ihr Traceability-Gate),
 [ADR-0027](../../../adr/0027-commits-traceability-modul.md) (`trace-check` über
 eine Commit-Range),
 [`DC-FA-COMMITS-001`](../../../../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in),
-[`SPEC-102`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-102`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 (`history-range-guard`: eine nicht auflösbare Range ist Exit 2).
 Anlass: Befund beim Merge des Dependabot-PR #9 — jeder Force-Push eines
 Branches (Dependabot `rebase`/`recreate`) macht den Push-Lauf rot, weil
@@ -46,7 +46,7 @@ keine auflösbare Basis hat.
   Wirkung dieses Slice; er ist ein eigener Vorgang über den hebenden Kanal
   ([ADR-0067](../../../adr/0067-dependabot-als-hebender-kanal.md)).
 - **Eine Lockerung von `history-range-guard`.** Der Wächter hält die
-  nicht auflösbare Range laut fest ([`SPEC-102`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)) und bleibt unverändert; der Slice
+  nicht auflösbare Range laut fest ([`SPEC-102`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)) und bleibt unverändert; der Slice
   ändert, **welche** Range die CI ihm gibt, nicht was er mit einer
   nicht auflösbaren tut.
 - **Die Pflicht-Check-Konfiguration auf GitHub** (Ruleset, Branch Protection).

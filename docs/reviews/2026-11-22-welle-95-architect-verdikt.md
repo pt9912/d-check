@@ -39,7 +39,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
 - Die Präzedenz „fail-closed wie `structure`/`file`“ trägt nicht: beide sind **nicht** scannende Module mit
   eigenen Globs (`DC-FA-CONF-002` Z. 4049–4054, `DC-FA-FILE-001` Z. 4143–4145), und ihre Nullmenge ist ein
   **Befund** mit Exit 1, kein Exit 2 (`file-no-match`, [lastenheft.md](../../spec/lastenheft.md) Z. 4163–4167;
-  [spezifikation.md](../../spec/spezifikation.md) Z. 3348–3351, `SPEC-084`). Ihre Härte folgt daraus, dass eine
+  [spezifikation.md](../../spec/specification.md) Z. 3348–3351, `SPEC-084`). Ihre Härte folgt daraus, dass eine
   Regel mit Glob **behauptet**, Dateien zu treffen; `linelength` behauptet nichts über seine Dateien, es erbt
   die Scan-Menge wie `links`, `ids` und `anchors`, und die laufen über einer leeren Menge ohne Fehler (die
   Default-Wurzeln sind optional, `DC-FA-SCAN-001`).
@@ -57,7 +57,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
 
 - Der Marker ist eine **benannte Liste** honorierender Module (`codepaths`, `ids`, `versions`, `diagrams`;
   [codepaths.go](../../internal/hexagon/core/rules/codepaths.go) Z. 15–18, Historie
-  [spezifikation.md](../../spec/spezifikation.md) Z. 4184), kein ableitbares Kriterium. Das Lastenheft setzt die
+  [spezifikation.md](../../spec/specification.md) Z. 4184), kein ableitbares Kriterium. Das Lastenheft setzt die
   Regel für alle übrigen: „deterministische Befunde werden behoben oder strukturell ausgenommen …, nicht
   zeilenweise stummgeschaltet“ ([lastenheft.md](../../spec/lastenheft.md) Z. 1392–1396, `DC-FA-MTX-001`).
   Die Form des Markers folgt der Kommentar-Lexik der Eingabe
@@ -87,7 +87,7 @@ Am Gegenstand ([markdown.go](../../internal/hexagon/core/rules/markdown.go)):
   2. Ein eingerückter Code-Block (vier Leerzeichen, ohne Zaun) ist kein Fenced-Code und wird gemessen; ein
      Zaun in einem Zitat (```` > ``` ````) schaltet nicht um.
   3. Ein nie geschlossener Zaun nimmt den Rest der Datei aus. Diesen stillen Ausfall meldet bereits
-     `spans` mit `fence-unclosed` (`SPEC-030`, [spezifikation.md](../../spec/spezifikation.md) Z. 3990: „mindestens
+     `spans` mit `fence-unclosed` (`SPEC-030`, [spezifikation.md](../../spec/specification.md) Z. 3990: „mindestens
      eine der beiden Fence-Lesarten endet offen“). Ein zweiter Wächter in `linelength` wäre eine zweite Antwort.
 - **Verdikt:** Die Lexik gilt; der Plan lässt ihre Grenzen aus. Kein neuer Mechanismus.
 - **Plan-Änderung:** slice-289 DoD-Punkt 1/2: die Anforderung nennt die drei Grenzen und verweist für den
@@ -137,7 +137,7 @@ Am Gegenstand ([markdown.go](../../internal/hexagon/core/rules/markdown.go)):
 
 - slice-289 Z. 114–116: `structure` „meldet auf der Überschriftszeile“. Die zeilen-gebundenen Bedingungen von
   `structure` melden auf der Zeile, an der repariert wird (`cell-max-chars` ⇒ `section-cell-oversized` an
-  **ihrer** Zeile, [spezifikation.md](../../spec/spezifikation.md) Z. 2724–2728 und Historie Z. 4178).
+  **ihrer** Zeile, [spezifikation.md](../../spec/specification.md) Z. 2724–2728 und Historie Z. 4178).
 - Die Gründe, die tragen: `structure` wählt seine Dateien über eigene Globs und kennt kein `scope`
   (`DC-FA-CONF-002` Z. 4052–4054), jede Regel braucht einen Abschnitts-Selektor, und es misst den
   **bereinigten** Text ([ADR-0088](../plan/adr/0088-file-modul-groessengrenzen.md) (a),
@@ -158,7 +158,7 @@ Am Gegenstand ([markdown.go](../../internal/hexagon/core/rules/markdown.go)):
 - **Verdikt:** Folge-Entscheid. Empfehlung: Zeilen zählen wie bei `file` (Zeilenumbrüche plus eine
   unvollständige Schlusszeile); „geprüft“ ist die Menge nach `scope`, `exempt-paths`, (a) und (b); die über (c)
   ausgenommenen Zeilen stehen als eigene Zahl daneben. Form wie bei `mentions`/`pinsync`: stderr und
-  `summary.notes` ([spezifikation.md](../../spec/spezifikation.md) Z. 3312–3318, 3549–3552).
+  `summary.notes` ([spezifikation.md](../../spec/specification.md) Z. 3312–3318, 3549–3552).
 - **Plan-Änderung:** slice-290 DoD-Punkt 2 und §3: Test für die Zahl bei einer Datei mit und ohne
   abschließendes `\n` und für die (c)-Zahl.
 
@@ -211,7 +211,7 @@ Am Gegenstand ([markdown.go](../../internal/hexagon/core/rules/markdown.go)):
   ([`BEO-ALL/max-lines-namenskollision-structure-file`](../plan/planning/observations/BEO-ALL/max-lines-namenskollision-structure-file/observation.md)).
   Der Name liegt nahe an `cell-max-chars`, meint aber dieselbe Einheit — kein Befund.
 - **Entscheid 6.** Länge und Grenze in `message` folgen der Präzedenz von `file-lines-exceeded`; `message` ist
-  nicht stabilitätsgarantiert (`SPEC-001`, [spezifikation.md](../../spec/spezifikation.md) Z. 3580–3589). Was
+  nicht stabilitätsgarantiert (`SPEC-001`, [spezifikation.md](../../spec/specification.md) Z. 3580–3589). Was
   `target` trägt, ist Spezifikations-Sache in slice-289 und braucht keine Entscheidung hier.
 - **Rohe Messung gegen ADR-0054 Entscheidung 2.** Die Länge einer Zeile ist eine **andere Frage** als „ist das
   Prosa“ — wie bei `file`; die Fragen „ist das Fenced-Code“ und „ist das eine Tabellenzeile“ bekommen die

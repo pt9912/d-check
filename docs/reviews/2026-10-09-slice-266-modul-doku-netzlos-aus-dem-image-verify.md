@@ -7,7 +7,7 @@
 **Eingangs-Kontext:** Slice-Plan §1–§3, §6, §8;
 [eingehender CR von `sf-connector`](../plan/cr/2026-10-09-cr-eingehend-sf-connector-reviews-zusage.md), Punkt 4;
 [`DC-FA-CLI-013`](../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen)
-samt [`DC-FA-CLI-013.a`](../../spec/spezifikation.md#dc-fa-cli-013a--handbuch-und-spezifikation-ausgeben---manual);
+samt [`DC-FA-CLI-013.a`](../../spec/specification.md#dc-fa-cli-013a--handbuch-und-spezifikation-ausgeben---manual);
 [ADR-0107](../plan/adr/0107-mitgelieferte-dokumente-im-modul-root.md);
 Reviews R1/R2 zu slice-266 (nur als Hinweis, nicht als Beleg übernommen).
 

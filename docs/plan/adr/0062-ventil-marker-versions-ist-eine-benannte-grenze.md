@@ -8,8 +8,8 @@
 **Grenzen** waren falsch bzw. unvollständig. Der Kern einer `Accepted`-ADR wird
 nicht überschrieben (AGENTS.md §3.5), deshalb dieser Nachfolger.
 **Autor:** pt9912
-**Schärft:** [`DC-FA-CODE-001.a`](../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code)
-Schritt 1 und [`DC-FA-ID-001.a`](../../../spec/spezifikation.md#dc-fa-id-001a--kennungs-prüfung)
+**Schärft:** [`DC-FA-CODE-001.a`](../../../spec/specification.md#dc-fa-code-001a--pfade-in-inline-code)
+Schritt 1 und [`DC-FA-ID-001.a`](../../../spec/specification.md#dc-fa-id-001a--kennungs-prüfung)
 Bedingung 4 (je die Erkennung des Zeilen-Markers)
 **Bezug:**
 [ADR-0054](0054-geteilte-lexik-bindet-ihre-konsumenten.md) (Entscheidung 1 und

@@ -9,10 +9,10 @@ Trennungs-Begründung für Grund-Codes [ADR-0049](0049-structure-modul-schnitt-u
 geteilte Lexik [ADR-0054](0054-geteilte-lexik-bindet-ihre-konsumenten.md);
 Tabellenzeilen-Lexik [`DC-FA-TGT-001`](../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
 **Schärft:** die Wellen-Schritte W1–W5 in
-[`spec/spezifikation.md` §DC-FA-PLAN-001.a](../../../spec/spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
-die vier Grund-Code-Festlegungen [`SPEC-045`](../../../spec/spezifikation.md#4-grund--und-fehler-codes), [`SPEC-046`](../../../spec/spezifikation.md#4-grund--und-fehler-codes),
-[`SPEC-047`](../../../spec/spezifikation.md#4-grund--und-fehler-codes) und [`SPEC-048`](../../../spec/spezifikation.md#4-grund--und-fehler-codes) sowie das Konfigurations-Schema
-[`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml) (die `planning.waves.*`-Schlüssel samt
+[`spec/spezifikation.md` §DC-FA-PLAN-001.a](../../../spec/specification.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
+die vier Grund-Code-Festlegungen [`SPEC-045`](../../../spec/specification.md#4-grund--und-fehler-codes), [`SPEC-046`](../../../spec/specification.md#4-grund--und-fehler-codes),
+[`SPEC-047`](../../../spec/specification.md#4-grund--und-fehler-codes) und [`SPEC-048`](../../../spec/specification.md#4-grund--und-fehler-codes) sowie das Konfigurations-Schema
+[`SPEC-005`](../../../spec/specification.md#spec-005--d-checkyml) (die `planning.waves.*`-Schlüssel samt
 ihrer fail-closed-Ränder).
 
 ## Kontext

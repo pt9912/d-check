@@ -3,7 +3,7 @@
 **Status:** Accepted
 **Datum:** 2026-07-18
 **Autor:** pt9912
-**Schärft:** [`DC-FA-REF-001.a`](../../../spec/spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs)
+**Schärft:** [`DC-FA-REF-001.a`](../../../spec/specification.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs)
 **Bezug:** [`DC-FA-REF-001`](../../../spec/lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus), [`DC-FA-CODE-001`](../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in), [`DC-FA-LINK-001`](../../../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links), [`DC-FA-ANCH-001`](../../../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors), [`DC-FA-SCAN-001`](../../../spec/lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln), [ADR-0030](0030-tracked-referenz-ziele.md), [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit).
 
 ## Kontext

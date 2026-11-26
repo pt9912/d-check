@@ -17,7 +17,7 @@ netzloser Lauf); Pin-Politik [ADR-0011](0011-digest-pins-build-gate-images.md)
 (`@sha256:`-Digest für extern bezogene Build-/Gate-Images); Verteilungs-Kern
 [`MR-007`](../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)
 („verteilen statt kopieren"); die immutablen Skript-Referenzen werden ein
-[`codepaths.ignore-refs`](../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code)-Tombstone
+[`codepaths.ignore-refs`](../../../spec/specification.md#dc-fa-code-001a--pfade-in-inline-code)-Tombstone
 ([ADR-0025](0025-codepaths-ignore-refs.md)); keine Gate-Lockerung im Sinne von
 [`AGENTS.md` §3.6](../../../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden)
 — genau deshalb diese ADR.
@@ -102,7 +102,7 @@ Richtungs-Allowlist, `tech` für die **vollständige** Kapsel-Liste des Skripts 
   die immutablen Inline-Referenzen
   ([ADR-0005](0005-modul-layout-hexagon-ordner.md) §Fitness Function,
   [ADR-0012](0012-kern-paketschnitt-model-rules-app.md)) werden der fünfte
-  [`codepaths.ignore-refs`](../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code)-Tombstone
+  [`codepaths.ignore-refs`](../../../spec/specification.md#dc-fa-code-001a--pfade-in-inline-code)-Tombstone
   ([ADR-0025](0025-codepaths-ignore-refs.md)).
 - **Pin-Pflege wie semgrep.** Der a-check-Digest-Pin erscheint in
   `make versions`; eine Pin-Hebung ist ein bewusster Commit

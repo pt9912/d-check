@@ -108,7 +108,7 @@ aus, aber `make verify-closure-notes` liest keine Unterverzeichnisse von
 `done/` (R1 F-1, gemessen). Das zu beheben braucht eine Produkt-Änderung und
 eine Stub-Unterscheidung — es übernimmt slice-263 (Auftraggeber-Entscheid
 2026-10-09). Hier werden die Aussagen ehrlich: Hook-Kommentar,
-[`SPEC-095`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge),
+[`SPEC-095`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge),
 `hooks.md` und `verify-closure-notes.md` sagen, dass der Lauf auslöst, aber
 nur `done/` selbst prüft. Dazu: die Erkennung liest die ganze Diff-Ausgabe,
 statt bei `grep -q` per SIGPIPE abzubrechen (F-2); `make -i gates` schreibt
@@ -117,7 +117,7 @@ keinen Nachweis — Erkennung und Schreiben stehen in einer Rezeptzeile, weil
 `-ik`, `--ignore-errors`, `-j2 -i`, `-k`, `-s`, `-w` und eine Variable mit
 `i` gefahren); scheitert im Stop-Hook der Hash, blockt er mit Grund statt
 ohne Antwort zu enden (F-5); die Grenzen von
-[`SPEC-093`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-093`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 nennen die gemessenen Durchlass-Klassen (F-4, F-8); `PROBE_FORMS` leer heißt
 Default (F-6); Pointer- und Abschnitts-Korrekturen F-7, F-9, F-10, F-11.)*
 
@@ -130,7 +130,7 @@ Zustand ist dann so wenig gelesen wie bei einem gescheiterten Hash (R2-F-2,
 Entscheidung: nachziehen statt benennen, wie bei F-5). Die §8-Zeile der
 Spezifikation vom 2026-10-08 wird wiederhergestellt, der Nachzug steht in
 einer neuen Zeile (R2-F-3). slice-263 nennt in §3 die vier Aussagen, die er
-mit der Behebung zurücknimmt (R2-F-4). [`SPEC-093`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) fasst den Extraktor-Fall
+mit der Behebung zurücknimmt (R2-F-4). [`SPEC-093`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge) fasst den Extraktor-Fall
 enger (R2-F-5).)*
 
 *(Plan-Änderung nach der Verifikation, vor dem Code:
@@ -138,7 +138,7 @@ enger (R2-F-5).)*
 Stop-Hooks auf — Geltungsbereich und Adaption —, sonst stünde sie ohne
 Eintrag (V-1). Die Durchlass-Klasse „Flag hinter einem Präfix" kommt in
 Grenze 1 von `guard-probe.md` und in den GRENZE-Kommentar des Wächters (V-2).
-[`SPEC-094`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-094`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 nennt die absichtliche Umgehung `MAKEFLAGS=` (V-3). [`MR-074`](../../../../../harness/conventions.md#mr-074) und slice-262
 nennen die drei Werkzeuge, die noch keinem Slice zugeordnet sind (V-5).)*
 
@@ -164,8 +164,8 @@ wellenlos hier geprüft.
 ## 7. Closure-Notiz
 
 - **Was hat funktioniert:** Vier Festlegungen stehen in §7 der Spezifikation
-  ([`SPEC-093`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
-  bis [`SPEC-096`](../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)),
+  ([`SPEC-093`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
+  bis [`SPEC-096`](../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)),
   die Sensor-Dateien verlinken sie. Das Nachlesen am Code hat das Wichtigste
   dieses Slice geliefert: Der Closure-Übergangs-Wächter hatte seit 2026-09-29
   bei keiner der 20 Closures ausgelöst, der Gate-Nachweis entstand unter

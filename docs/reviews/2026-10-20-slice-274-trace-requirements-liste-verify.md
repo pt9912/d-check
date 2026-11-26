@@ -6,7 +6,7 @@
 - **Eingang:**
   [`DC-FA-REQ-001`](../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)
   (Absatz „Mehrere Anforderungsquellen“, Akzeptanzkriterien Liste);
-  [§`DC-FA-REQ-001.a`](../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) Schritt 8;
+  [§`DC-FA-REQ-001.a`](../../spec/specification.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) Schritt 8;
   [ADR-0108](../plan/adr/0108-trace-requirements-als-liste-von-quellen.md) (Proposed);
   Reviews Runde 1 und 2 nur als Kontext
 - **Datum:** 2026-10-20

@@ -83,7 +83,7 @@ Wer später etwas mitnimmt, das hier ausgeschlossen war, hat den Plan
 | `internal/adapter/driving/cli/print_mk.go` | update | Target im Template, Kopfkommentar „vierzehn" |
 | `internal/adapter/driving/cli/cli_acceptance_test.go` | update | `TestCLI281_PrintMK_ManualTarget` neben dem `doc-usage`-Test |
 | `spec/lastenheft.md` | update | [`DC-FA-CLI-010`](../../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben), 0.109.0, Historie |
-| `spec/spezifikation.md` | update | [`DC-FA-CLI-010.a`](../../../../../spec/spezifikation.md#dc-fa-cli-010a--makefile-fragment) Punkt 5, neuer Punkt, Zählung, Historie |
+| `spec/spezifikation.md` | update | [`DC-FA-CLI-010.a`](../../../../../spec/specification.md#dc-fa-cli-010a--makefile-fragment) Punkt 5, neuer Punkt, Zählung, Historie |
 | `docs/user/benutzerhandbuch.md` | Release-Prep | §4.16 (Zahl, Aufzählung, Beispiel, Hinweis-Absatz) und Kopf/§11 — siehe Plan-Änderung |
 | `docs/user/operations.md` | Release-Prep | Zeile `--print-mk` — siehe Plan-Änderung |
 | `docs/user/abdeckung-tests.md` | regenerieren | `make abdeckung` nach dem neuen Test |

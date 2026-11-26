@@ -20,15 +20,15 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 - **slice-289** (Anforderung, Spezifikation, ADR):
   [`DC-FA-LLEN-001`](../../../../spec/lastenheft.md#dc-fa-llen-001--zeilenlänge-in-markdown-dateien-modul-linelength-opt-in)
   im Lastenheft, Verfahren
-  [`DC-FA-LLEN-001.a`](../../../../spec/spezifikation.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength)
-  mit Schema `linelength.*` unter [`SPEC-005`](../../../../spec/spezifikation.md#spec-005--d-checkyml),
+  [`DC-FA-LLEN-001.a`](../../../../spec/specification.md#dc-fa-llen-001a--zeilenlänge-in-markdown-dateien-linelength)
+  mit Schema `linelength.*` unter [`SPEC-005`](../../../../spec/specification.md#spec-005--d-checkyml),
   [ADR-0114](../../adr/0114-linelength-modul.md). Neun Entscheide des Auftraggebers stehen vor dem
   Code fest: Codepunkte der rohen Zeile, drei schaltbare Ausnahmen (Fenced-Code, Zeile mit `|`,
   ein Wort über der Grenze — Variante H), eine leere Menge ist kein Fehler, kein Zeilen-Marker.
   Lastenheft §5 nimmt die Zeilenlänge ausdrücklich vom globalen Lint-Ausschluss aus.
 - **slice-290** (Modulkern): Konfigurations-Rand (nur YAML-Ganzzahl, nur `true`/`false`, ein
   eigener Schlüssel ohne Wert ist Exit 2), Messung über die geteilte Lexik ohne eigene Erkennung,
-  Grund-Code `line-chars-exceeded` ([`SPEC-112`](../../../../spec/spezifikation.md#4-grund--und-fehler-codes)), Bezugsmenge mit Zahl der Ausnahmen, Registrierung
+  Grund-Code `line-chars-exceeded` ([`SPEC-112`](../../../../spec/specification.md#4-grund--und-fehler-codes)), Bezugsmenge mit Zahl der Ausnahmen, Registrierung
   in allen Modul-Aufzählungen, Handbuch-Abschnitt 4.28; die Zeilen-Zerlegung von `pinsync` und
   `linelength` ist jetzt eine geteilte Funktion. [ADR-0114](../../adr/0114-linelength-modul.md) ist `Accepted`.
 - **Außerhalb der Slices, in dieser Welle:** Phase (9) in `make image-test` — Grenze, Zähleinheit

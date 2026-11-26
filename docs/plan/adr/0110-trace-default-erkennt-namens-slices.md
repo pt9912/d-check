@@ -15,7 +15,7 @@
 [ADR-0108](0108-trace-requirements-als-liste-von-quellen.md) (dieselbe Trace-Konfiguration);
 slice-279 <!-- d-check:status-provenance -->.
 
-**Schärft:** [`DC-FA-CLI-009.a`](../../../spec/spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix)
+**Schärft:** [`DC-FA-CLI-009.a`](../../../spec/specification.md#dc-fa-cli-009a--requirements-traceability-matrix)
 Schritt 2 und die Schema-Zeile `trace.slices.file-pattern`.
 
 **Regeln:** Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR (MADR).

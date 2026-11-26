@@ -7,7 +7,7 @@
 - **Datum:** 2026-10-09
 - **Eingangs-Kontext:** Slice-Plan slice-261 (§1 Ziel und Abgrenzung, §3 Plan);
   [`DC-FA-CLI-006`](../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten),
-  [`DC-FA-CLI-006.a`](../../spec/spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag);
+  [`DC-FA-CLI-006.a`](../../spec/specification.md#dc-fa-cli-006a--konfigurations-vorschlag);
   [`MR-025`](../../harness/conventions.md#mr-025) (Spiegel), [`MR-075`](../../harness/conventions.md#mr-075)
   (Historie-Ausnahme folgt der Umnummerierung); `AGENTS.md` §3.4, §3.7, §5 Regel 17;
   Vorbefund F-6 aus dem Review von slice-259 (Anlass dieses Slice);

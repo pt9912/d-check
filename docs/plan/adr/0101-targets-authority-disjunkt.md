@@ -15,10 +15,10 @@ Schnitt-Kriterium aus [ADR-0044](0044-geteiltes-referenz-ventil-quell-skopus.md)
 slice-252 <!-- d-check:status-provenance -->.
 
 **Schärft:**
-[`spec/spezifikation.md` §DC-FA-TGT-001.a](../../../spec/spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
+[`spec/spezifikation.md` §DC-FA-TGT-001.a](../../../spec/specification.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)
 (Schritt 5a), die Schema-Zeile `targets.authority-disjoint` unter
-[`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml) und die
-Grund-Code-Zeile [`SPEC-088`](../../../spec/spezifikation.md#4-grund--und-fehler-codes).
+[`SPEC-005`](../../../spec/specification.md#spec-005--d-checkyml) und die
+Grund-Code-Zeile [`SPEC-088`](../../../spec/specification.md#4-grund--und-fehler-codes).
 
 **Regeln:** Baseline-Regelwerk `modul-04-adrs.md` §Ziel-Form: ADR (MADR).
 

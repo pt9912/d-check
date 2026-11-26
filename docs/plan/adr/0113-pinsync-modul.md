@@ -12,11 +12,11 @@
 [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus),
 [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit),
 [ADR-0031](0031-targets-deklarations-konsistenz-modul.md) (das hermetische Muster, das `pinsync`
-fortsetzt), [ADR-0112](0112-metrics-modul.md) (Pfad-Prüfung; dessen Verfahren [`DC-FA-MET-001.a`](../../../spec/spezifikation.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics) weist einen Plan als Symlink ab),
+fortsetzt), [ADR-0112](0112-metrics-modul.md) (Pfad-Prüfung; dessen Verfahren [`DC-FA-MET-001.a`](../../../spec/specification.md#dc-fa-met-001a--kennzahl-eines-planungsdokuments-gegen-messung-aus-git-metrics) weist einen Plan als Symlink ab),
 slice-286 <!-- d-check:status-provenance -->.
 
 **Schärft:**
-[`DC-FA-PSYNC-001.a`](../../../spec/spezifikation.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync)
+[`DC-FA-PSYNC-001.a`](../../../spec/specification.md#dc-fa-psync-001a--gleichheit-eines-wertes-an-mehreren-stellen-pinsync)
 (neues Modul-Verfahren).
 
 **Regeln:** Baseline-Regelwerk
