@@ -97,7 +97,7 @@ Spec-Datei, die `Accepted`-ADRs verlinken). Kehrt er wieder (zweite Umbenennung)
   aus slice-298 — eine Vorwärts-Abhängigkeit zu einem späteren Slice; sie entfällt, der Kommentar genügt.
 - **Alter Baum (7 Dateien, fünf ADRs, slice-274, ein Architect-Verdikt):** **Ventil**, sieben datei-skopierte
   `links.ignore-refs`-Einträge in der Form von MR-069. Hier wäre ein Nachzug **falsch**: die Links zitieren den Stand ihrer Zeit,
-  und ein Anker kann im neuen Baum fehlen (eine Überschrift in `modul-14` entfällt). Der Bump-Eintrag nennt die sieben
+  ~~und ein Anker kann im neuen Baum fehlen (eine Überschrift in `modul-14` entfällt)~~ **[Prämisse falsch, berichtigt und der Ausgang für slice-274 und das Verdikt zu welle-93 geändert: Nachtrag V1 am Ende dieser Datei]**. Der Bump-Eintrag nennt die sieben
   Einträge als Wachstum des Ventils (MR-069, Trigger „drei Hebungen ohne neuen Eintrag“ beginnt neu).
 - **Größere Antwort:** `links.ignore-refs` je Klasse auch für die Spezifikation (3–4 Einträge statt 80 Zeilen Nachzug):
   spart den Eingriff in die Belege, lässt aber nach dem Rename tote Links in ihnen stehen. Nicht gewählt; kein Mehraufwand
@@ -169,3 +169,71 @@ Verdikt erfüllt.
 ## Nicht entschieden, weil nicht nötig
 
 Die Übernahme einer der übrigen Neuerungen (Entscheid 2 des Auftraggebers) — Gegenstand von slice-296.
+
+## Nachtrag 2026-11-26 — Frage 5, alter Baum (Verdikt **V1**, Rolleninhaber: pt9912)
+
+**Anlass:** Reviewer-Befund F-1 (MEDIUM) zu slice-295
+([Report](2026-11-26-slice-295-baseline-v700-bump-r1.md)): die Begründung des Ventils trifft die Dateien nicht.
+
+**Berichtigung der Prämisse (V1 — die Entscheidung gilt für fünf Dateien, ich habe für zwei falsch behauptet).** Der Satz
+„ein Anker kann im neuen Baum fehlen (eine Überschrift in `modul-14` entfällt)" in Frage 5 war nicht gemessen und trifft
+keine der sieben Dateien: keine verlinkt `modul-14`. **Gemessen** (Wegwerf-Klon im Scratchpad, in den sieben Dateien nur
+`baseline/v6.18.1/` → `baseline/v7.0.0/` getauscht, die sieben Ventil-Einträge entfernt): `make doc-check` meldet
+`1318 Datei(en) geprüft, 0 Befund(e)` — **alle sieben Ziele samt Anker lösen auf**. Damit hängt die Antwort nicht an der Auflösung,
+sondern daran, ob die **zitierte Stelle wortgleich** ist (gemessen je Abschnitt, `awk` über die Überschrift bis zur nächsten):
+
+| Datei(en) | Ziel in `v7.0.0` | zitierte Stelle gegenüber `v6.18.1` | Antwort |
+|---|---|---|---|
+| ADRs 0112–0116 | `modul-04` §Ziel-Form: ADR (MADR) | **nicht wortgleich** — der Abschnitt nennt die Vorlage jetzt `NNNN-title.template.md` statt `NNNN-titel.template.md` | **Ventil bleibt** |
+| `slice-274` (Rot-Beleg) | `modul-11` §Bewusstes Brechen | wortgleich (Abschnitts-Prüfsumme identisch) | **Retarget**, Ventil-Eintrag entfällt |
+| Verdikt zu welle-93 | `modul-05` §Ziel-Form: Slice | wortgleich (57 Zeilen, `diff` leer; „Schnitt nach Lieferwert" vorhanden) | **Retarget**, Ventil-Eintrag entfällt |
+
+**Warum `slice-274` und das Verdikt jetzt doch retargetet werden (anders als in Frage 5 gesagt).** Es ist der Vorgänger
+([MR-080](../../harness/conventions/done/MR-080-baseline-v6181.md), dort die Ausnahme von der Frozen-Regel für `slice-274`) mit
+seiner eigenen Bedingung: ein Link-Ziel-Tausch ist nur dann kein verfälschtes Zitat, wenn die zitierte Stelle gelesen
+wortgleich ist — bei beiden Dateien gemessen. Damit sinkt die Gate-Senkung ([MR-069](../../harness/conventions/MR-069-ignore-refs-ist-eine-deklarierte-gate-senkung.md))
+um zwei Dateien, in denen künftige Links auf den alten Tag still würden; der Preis sind zwei Zeilen in zwei eingefrorenen
+Dateien, derselbe Preis wie bei `slice-277` (reiner Link-Ziel-Wechsel auf eine lebende Datei). Der Trigger von MR-069 startet
+**so oder so neu** (die fünf ADRs bleiben hinter dem Ventil); die Ersparnis ist die der zwei Dateien, nicht der Zähler.
+
+**Warum die fünf `Accepted`-ADRs im Ventil bleiben, obwohl ein Pfad-Nachzug erlaubt wäre.** Gemessen: erlaubt ist er —
+im selben Klon, die fünf Links auf `v7.0.0`, danach `make adr-check RANGE=738d2bca..HEAD`: `1312 Datei(en) geprüft, 0 Befund(e)`
+([ADR-0103](../plan/adr/0103-adr-gate-laesst-pfad-nachzug-durch.md)). **Kleiner ist er nicht**, aus drei Gründen: (1) der
+zitierte Abschnitt ist nicht wortgleich (Tabelle), der Link würde einen Stand behaupten, dem die ADR nicht folgte —
+`AGENTS.md` §3.5 schützt gerade das; (2) der Nachzug verschöbe nur die Wand: beim nächsten Bump stünden dieselben fünf
+Links wieder vor derselben Wahl (MR-069 Grenze 3: die ADR-Klasse hat keinen Träger für Kennung statt Adresse), das Ventil
+wird je Tag **einmal** bezahlt; (3) der Trigger von MR-069 braucht den Träger **und** drei Hebungen ohne Wachstum, der
+Nachzug ließe ihn trotzdem nicht feuern. **Größere Antwort, nur benannt:** für die ADR-Klasse einen Träger für die
+Kennung-statt-Adresse-Form schaffen (ADR-Vorlagen-Nutzung, MR-069 Grenze 3); dann entfielen künftige Ventil-Einträge. Nicht
+Gegenstand von slice-295.
+
+**Plan-Auftrag an den Implementer (slice-295; die Änderungen unten ändern nichts außer den benannten Stellen).**
+
+1. **Retarget, je eine Zeile, nur das Link-Ziel** (`baseline/v6.18.1/` → `baseline/v7.0.0/`, Anker unverändert):
+   `docs/plan/planning/done/wellenlos/slice-274-trace-requirements-als-liste-von-quellen.md` Z. 185 und
+   `docs/reviews/2026-10-30-welle-93-architect-verdikt.md` Z. 114. Eigener Commit (Pfad-Nachzug), Kennung `slice-295, MR-081`.
+2. **`.d-check.yml` Z. 409–412:** die zwei Einträge (je `- in:` und `refs:`) für diese zwei Dateien entfernen (die fünf ADR-Einträge bleiben);
+   der Kommentar (Z. 392–399) lautet danach: *„Tombstone der Baseline-Hebung auf v7.0.0 (MR-081). Datei-skopiert, wie beim
+   v6.9.0-Block: fünf `Accepted`-ADRs (0112 bis 0116) tragen je einen Markdown-Link auf den entfernten v6.18.1-Baum in ihrer
+   Regeln-Zeile (modul-04 §Ziel-Form: ADR). Sie zitieren den Stand ihrer Zeit — der Abschnitt nennt die Vorlage in v7.0.0
+   anders (NNNN-title.template.md), ein Nachziehen verfälschte das Zitat (MR-069, AGENTS.md §3.5); der alte Baum liegt in der
+   git-Historie (MR-052). GRENZE: in diesen fünf Dateien wird jeder künftige Link auf .harness/baseline/v6.18.1/ still."*
+3. **`harness/conventions/MR-081-baseline-v700.md`**, Absatz *`ignore-refs` wächst* (Z. 199–216) und die Verweise darauf
+   (Z. 193 „die sieben Ventil-Einträge", Z. 159–162 „Frozen hinter dem Ventil (5 / 5)" und „byte-stabil (17 Dateien, 51 …)"):
+   sieben → **fünf** Einträge, Bestand **35** statt 37 über unverändert **13** Tags (Kommando wie bisher, danach neu gemessen),
+   Auflösungs-Trigger von MR-069 „beginnt neu" bleibt (die ADRs). Den Grund durch den Wortlaut oben ersetzen (Stand ihrer Zeit,
+   **nicht wortgleich**; „ein Anker kann fehlen" und die Nennung von `modul-14` streichen). Den Satz zu `slice-274`
+   (Z. 212–215, „diesmal bleibt die Datei unberührt …") ersetzen durch: *„`slice-274` und das Verdikt zu welle-93 sind wie bei
+   MR-080 auf den neuen Baum retargetet: die zitierte Stelle ist gelesen wortgleich (modul-11 §Bewusstes Brechen, modul-05
+   §Ziel-Form: Slice), und der Tausch hält die Gate-Senkung um zwei Dateien kleiner."* Der Absatz *Eine Ausnahme von der
+   Frozen-Regel, nicht im Ventil* (Z. 217 ff.) nennt dann **drei** Ausnahmen (`slice-277`-Verifikation, `slice-274`, Verdikt
+   `welle-93`; je 1 Datei, 1 Zeile, nur Link-Ziel); die Frozen-Zählung der Spiegel-Klassen (Z. 159–162) nennt zwei der 17
+   byte-stabilen Dateien als Ausnahme (15 bleiben, je Klasse neu zählen, Kommando nennen). Die Treffermenge (10 Dateien)
+   ändert sich nicht, nur ihr Klammertext „(die sieben Ventil-Einträge)" → fünf.
+4. **Nebenspuren:** `slice-295` §3 Z. 69–72 und 140 („je eingefrorener Datei … gemessen 7") als Plan-Änderung nachtragen
+   (fünf; zwei Retargets nach Verdikt-Nachtrag); `welle-98` §3 Z. 213 und §5 Z. 324–325 („sieben datei-skopierte Einträge")
+   auf fünf. Das Verdikt bleibt Beleg und wird nicht umgeschrieben.
+5. **Prüfen vor Handoff:** `make doc-check` Exit 0; `make adr-check RANGE=738d2bca..HEAD` Exit 0 (die ADRs bleiben
+   byte-stabil); `git grep -c 'refs: \[\?"\?\.harness/baseline/v' .d-check.yml` = 35; Review-Report F-1 an den Reviewer zurück.
+
+**Nicht entschieden, weil nicht nötig:** F-2 und F-3 des Reports (LOW, Sache des Implementers, kein Konflikt).
