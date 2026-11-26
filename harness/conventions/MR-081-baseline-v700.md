@@ -136,10 +136,11 @@
   (gemessen: **9** Zeilen in **4** Dateien — `.claude/commands/close-welle.md` 4,
   `.claude/commands/plan-welle.md` 2, `harness/conventions.md` 1,
   `tools/archive-wave/stub.go` 2 Kommentarzeilen, Kopplung an die Vorlagen-Namen):
-  Befund `git grep -n "welle\.template\|welle-results\.template\|archiv-stub-\(slice\|welle\)\.template\|titel\.template" -- . ':!.harness/baseline' ':!docs/plan/planning' ':!docs/reviews' ':!harness/conventions/done'`
-  war vor dem Nachzug 9 Zeilen, danach 0. Die Treffer in den Plänen dieser
-  Welle, in `docs/reviews/` und in `conventions/done/` nennen die Namen als
-  Vergangenheits-Aussage und bleiben.
+  Befund `git grep -n "welle\.template\|welle-results\.template\|archiv-stub-\(slice\|welle\)\.template\|titel\.template" -- . ':!.harness/baseline' ':!docs/plan/planning' ':!docs/reviews' ':!harness/conventions/done' ':!harness/conventions/MR-081-baseline-v700.md'`
+  war vor dem Nachzug 9 Zeilen, danach 0 (dieser Eintrag nennt die Namen selbst und ist
+  deshalb ausgenommen; ohne die Ausnahme zeigt das Kommando 7 Zeilen, alle hier). Die
+  Treffer in den Plänen dieser Welle, in `docs/reviews/` und in `conventions/done/` nennen die
+  Namen als Vergangenheits-Aussage und bleiben.
 
   **Die sieben Dateien, die nur ihren Stempel ändern:** `regelwerk/modul-00-einfuehrung.md`,
   `modul-01-entwicklungszyklus.md`, `modul-11-verification.md`, `modul-15-observability.md`,
