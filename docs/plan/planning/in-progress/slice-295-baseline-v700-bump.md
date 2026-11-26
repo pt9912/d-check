@@ -87,27 +87,27 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] **Vendoring:** `.harness/baseline/v7.0.0/` steht über `tools/harness/fetch-baseline-cache.sh v7.0.0`
+- [x] **Vendoring:** `.harness/baseline/v7.0.0/` steht über `tools/harness/fetch-baseline-cache.sh v7.0.0`
       (56 Dateien, 55 im Manifest), `make baseline-verify` Exit 0, der Baum `v6.18.1` (55 Dateien) ist entfernt;
       der Pin steht in `harness/conventions.md` §Baseline und §Adoptierte Konventions-Quellen.
-- [ ] **Spiegel:** Jeder lebende pin-gebundene Verweis nennt `v7.0.0` (die Klassen und ihre Zahlen in §3), die
+- [x] **Spiegel:** Jeder lebende pin-gebundene Verweis nennt `v7.0.0` (die Klassen und ihre Zahlen in §3), die
       7 Symlinks unter `.claude/rules/` lösen auf den neuen Baum auf, jede `d-check:cite`-Spanne steht gegen den
       **Wortlaut** des neuen Baums (die 7 verschobenen gelesen, nicht nur verschoben), die Vorlagen-Namen in den
       Verweisen sind die neuen, und `make doc-check` meldet 0 Befunde.
-- [ ] **Einträge:** Der Bump-Eintrag steht unter `harness/conventions/` (Delta **vollständig nach Datei**,
+- [x] **Einträge:** Der Bump-Eintrag steht unter `harness/conventions/` (Delta **vollständig nach Datei**,
       Frozen-Klassen am echten Vorzustand gemessen, Zitat-Delta nach
       [`MR-039`](../../../../harness/conventions.md#mr-039), jede Bewegung als *nicht übernommen* markiert);
       [`MR-080`](../../../../harness/conventions.md#mr-080) liegt per reinem `git mv` in `conventions/done/`; der
       Bump-Eintrag steht im Index.
-- [ ] `make gates` grün; `make archive-wave-test` grün (der Kommentar-Nachzug in
+- [x] `make gates` grün; `make archive-wave-test` grün (der Kommentar-Nachzug in
       `tools/archive-wave/stub.go` ist bestätigt, Verdikt Frage 12).
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
 ## 3. Plan (vor Code)
 
@@ -231,25 +231,27 @@ dasteht.
 - **Ein lebender Verweis zeigt auf einen Anker oder eine Datei, die der neue Baum nicht mehr trägt.** Gemessen vor
   dem Start: eine Überschrift entfällt (`modul-14`, „Zwei Formen des Reproduzierbarkeits-Ankers“; kein Verweis
   darauf außerhalb des Baums, `git grep -n 'zwei-formen-des-reproduzierbarkeits' -- . ':!.harness/baseline'` ist
-  leer), sieben Vorlagen tragen einen neuen Namen. — **Ausgang:** *entfallen*, wenn `make doc-check` nach dem
-  Entfernen des alten Baums außer den in §3 benannten Folgen (Pfad-Links, Zitat-Spannen, die fünf Frozen-Links hinter dem Ventil und die zwei Retargets)
-  nichts meldet; sonst *eingetreten* mit einer Evidenz-Datei zu
-  [`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md).
+  leer), sieben Vorlagen tragen einen neuen Namen. — **Ausgang:** *entfallen.* `make doc-check` meldet nach dem
+  Entfernen des alten Baums außer den in §3 benannten Folgen nichts (Verifikation M4: 1319 Dateien, 0 Befunde);
+  die Probe ohne die fünf Ventil-Einträge liefert genau fünf `target-missing` auf `modul-04-adrs.md`, sonst nichts.
 - **Eine Mischzeile wird pauschal ersetzt und fälscht eine Vergangenheits-Aussage**
   ([`BEO-ALL/mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md),
-  5×). — **Ausgang:** *entfallen*, wenn jede geänderte Zeile ohne Pfad- oder URL-Form im Bump-Eintrag einzeln
-  genannt ist und `git diff --stat <Vor-Bump>..HEAD -- docs/plan/planning/done docs/reviews CHANGELOG.md harness/conventions/done`
-  leer ist (bis auf die Ausnahme, die die Antwort auf Frage 5 festlegt); sonst *eingetreten*.
+  5×). — **Ausgang:** *entfallen.* Jede geänderte Zeile ohne Pfad- oder URL-Form steht im Bump-Eintrag einzeln; der
+  Verifier fuhr die Schleife des Eintrags nach (14 Dateien, 40 Vorkommen byte-stabil). Die Frozen-Verzeichnisse
+  tragen nur die Ausnahme der Antwort auf Frage 5: je eine Zeile, nur das Link-Ziel, in `slice-274`, im Verdikt zu
+  welle-93 und im Verifikations-Report von `slice-277`.
 - **Eine verschobene Zitat-Spanne wird nur verschoben, nicht gelesen**
   ([`BEO-ALL/citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md),
-  20×). — **Ausgang:** *entfallen*, wenn der Bump-Eintrag je verschobener Spanne alte und neue Zeile und den
-  Befund „Wortlaut gleich“ oder „Wortlaut geändert, Spanne angepasst“ nennt; sonst *eingetreten* mit einer
-  Evidenz-Datei.
+  20×). — **Ausgang:** *entfallen.* Der Bump-Eintrag nennt je verschobener Spanne alte und neue Zeile und den Befund
+  „Wortlaut gleich“; der Verifier las die sieben Spannen und die zwei Plan-Bereiche Zeile für Zeile alt gegen neu und
+  fand sie wortgleich. Die Mutation einer Spanne (`115-115` → `114-114`) wird als `citation-mismatch` rot.
 - **Eine Zahl im Bump-Eintrag stimmt nicht** — Zählung am Proxy statt am Gegenstand
   ([`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md),
-  10×; in [`MR-080`](../../../../harness/conventions.md#mr-080) waren es drei). — **Ausgang:** *entfallen*, wenn
-  Reviewer und Verifier jede Zahl mit dem im Eintrag genannten Kommando nachzählen und keine abweicht; sonst
-  *eingetreten* mit einer Evidenz-Datei.
+  10×; in [`MR-080`](../../../../harness/conventions.md#mr-080) waren es drei). — **Ausgang:** *eingetreten.* Der
+  Reviewer zählte das Zitat-Delta nach (31 / 30 statt „51 / 50“, ohne Kommando, Review R1 F-2); der Verifier fand
+  bei der Nachzählung, dass das Kommando zur Treffermenge der Vorlagen-Namen („danach 0“) den Eintrag selbst
+  durchsucht und wörtlich sieben Zeilen zeigt (Verifikation V-1). Beide sind behoben (Verfahren im Eintrag; Ausnahme
+  im Kommando); Evidenz-Datei `evidence/slice-295.md` unter dem genannten Eintrag, jetzt 11×.
 - **Die kopierte Welle-Vorlage trägt nach dem Bump `wave-<Kennung>-results.md`** in ihrer `Lifecycle:`-Note, und
   `plan-welle.md` verlangt, diese Note zu behalten — dieses Repo führt aber bis
   [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) `welle-NN-results.md`. Das ist eine **bekannte
@@ -271,7 +273,77 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-*(Wird bei der Closure gefüllt.)*
+- **Was hat funktioniert:** Der Zuschnitt „mechanisch, ohne eine Neuerung“ hielt: Der Diff von
+  `738d2bca..HEAD` berührt außerhalb von Baum, Plänen, Reviews, `harness/`, `.claude/` und den Skills nur die
+  Pin-Zeilen der beiden Spec-Köpfe, zwei Kommentarzeilen in `stub.go` und die [`.d-check.yml`](../../../../.d-check.yml)
+  (Verifikation, Abschnitt Abgrenzung). Den Bytebestand des Baums lud der Verifier unabhängig vom Upstream-Asset und
+  verglich ihn mit `diff -rq`: einziger Unterschied `SHA256SUMS`. Die Wirkung der Gates brach er am Klon, je aus dem
+  richtigen Grund rot: eine verschobene Zitat-Spanne (`citation-mismatch`), ein Ziel im alten Baum
+  (`citation-out-of-range`), die fünf Ventil-Einträge entfernt (genau fünf `target-missing`), ein Symlink auf den
+  alten Baum (`baseline-verify` Exit 2, `doc-check` bleibt grün). Eine Review-Runde (1 MEDIUM, 2 LOW, 3 INFO) und
+  eine Fixrunde.
+- **Was ging anders als geplant:** **(1) Das Ventil trägt fünf Einträge statt sieben** (Review R1 F-1 MEDIUM,
+  Nachtrag V1 im [Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md)): Das Zitat von
+  `modul-04` §Ziel-Form: ADR ist in `v7.0.0` für die fünf `Accepted`-ADRs nicht wortgleich; für `slice-274` und das
+  Verdikt zu welle-93 ist es gelesen wortgleich, deshalb Retarget statt Ventil. **(2) Ein Pfad-Nachzug in einem
+  eingefrorenen Report** (`slice-277`-Verifikation, Link auf den verschobenen [`MR-080`](../../../../harness/conventions.md#mr-080)),
+  beide Änderungen als Plan-Änderung vor dem Code in §3. **(3) Zwei Zwischenstände sind einzeln rot** (V-4, unten).
+  **(4) Die Fixrunde bekam keine zweite Review-Runde**, obwohl sie Gate-Konfiguration änderte.
+- **Vorbehalt zum DoD-Punkt „Review durchgeführt“ (V-2, wörtlich aus der Verifikation):** „Die Fixrunde war **nicht
+  rein dokumentarisch** (V-2) und hat keine zweite Review-Runde.“ Der Verifier hat das Delta statt dessen selbst gemessen
+  (`make doc-check` 0 Befunde; ohne die fünf Einträge fünf `target-missing`; beide Retargets je eine Zeile, die
+  zitierten Abschnitte wortgleich) und schließt: „Kein Befund am Inhalt — nur die Lücke im Verfahren ist zu benennen.“
+  Der Haken steht mit diesem Vorbehalt.
+- **Steering-Loop-Eintrag:** mit diesem Slice ist keine Regel, kein Sensor und keine benannte Spec-Lücke verkörpert;
+  zwei Beobachtungen sind belegt (nächster Punkt). **Lernsignal 1, mit Ursache:** Die Treffermenge „danach 0“ stimmte
+  am Gegenstand und nicht im Kommando, **weil** der Eintrag die alten Vorlagen-Namen selbst nennt (Z. 128–133 und 216
+  von [`MR-081`](../../../../harness/conventions.md#mr-081)) und im Suchraum seines eigenen Kommandos liegt, dessen
+  Ausschlussliste ihn nicht nannte; wörtlich gefahren zeigte es sieben Zeilen. Gefunden hat es der Verifier, der das
+  Kommando fuhr, statt die Zahl zu lesen — der Eintrag trägt jetzt die Ausnahme im Kommando (Commit `e584680e`).
+  **Lernsignal 2, mit Ursache:** `make doc-check` blieb über acht mehrzeilig geöffneten Inline-Code-Spans des Eintrags
+  grün, **weil** `codepaths` zeilenlokal urteilt: derselbe erfundene Pfad meldet einzeilig `codepath-missing`,
+  mehrzeilig nichts (Verifikation V-3, Klon-Probe) — eine Prüflücke, die weder die Anforderung
+  [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
+  noch die Spezifikation benennt. Ob daraus eine Spec-Lücke wird, ist eine Lastenheft-Frage des Auftraggebers
+  (`AGENTS.md` §5 Regel 3) und hier nicht entschieden.
+- **Beobachtungs-Register (`../observations/`):** neu angelegt
+  [`BEO-ALL/codepaths-prueft-zeilenlokal-mehrzeilige-spanne-ungeprueft`](../observations/BEO-ALL/codepaths-prueft-zeilenlokal-mehrzeilige-spanne-ungeprueft/observation.md)
+  mit `evidence/slice-295.md` (1×, `offen`); `evidence/slice-295.md` in
+  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
+  (11×, `verkörpert`; Risiko 4: „51 / 50“ ohne Kommando, R1 F-2, und das Kommando mit der Selbsttreffer-Menge, V-1).
+  Benannt, nicht gezählt: V-2 (die Fixrunde änderte `.d-check.yml` ohne zweite Review-Runde; verwandt mit
+  [`BEO-ALL/fix-commit-ausserhalb-review-range`](../observations/BEO-ALL/fix-commit-ausserhalb-review-range/observation.md),
+  dessen Regel „ein Fix, der mehr schreibt als seine Befunde“ hier nicht eindeutig zutrifft — der Fix schrieb, was F-1
+  verlangte —, weshalb kein Beleg angelegt ist); V-5 (das Zitat-Delta nennt den Bezug der 25 Zeichen nicht, mit dem
+  Inneren in Zeichen reproduziert es sich exakt); V-6 beziehungsweise Review F-4 (Bewegung 1, 5, 6 des Eintrags ohne
+  eigenes „nicht übernommen“, DoD in der Sammelform erfüllt), F-5 (Baum-Zuwachs als eigener Commit statt „ein
+  Hauptcommit“, `79a14c01` einzeln grün) und F-6 (Inline-Code-Nennungen des alten Pfads von [`MR-080`](../../../../harness/conventions.md#mr-080) in drei
+  eingefrorenen Reports, `codepaths` nimmt `docs/reviews/**` aus). Keine davon ist umgesetzt.
+- **Architektur-Beobachtung:** Der Spiegel eines Pin-Bumps hängt an drei Wächtern mit verschiedenen Gegenständen, und
+  keiner ersetzt einen anderen: **Zitat-Fäule** hält `citations` (die Spanne gegen den Wortlaut), **Link-Bruch**
+  `links` mit dem Ventil in der [`.d-check.yml`](../../../../.d-check.yml), den **Symlink als Träger** allein
+  `baseline-verify` ([`MR-055`](../../../../harness/conventions.md#mr-055)) — `doc-check` liest den Inhalt eines
+  Symlinks nicht und blieb in der Mutation grün. Die Prosa-Pins in `roadmap.md` Z. 13 und `observations/README.md`
+  Z. 18 hält gar kein Gate; sie sind von Hand gegen den neuen Baum gelesen
+  ([`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md), ohne neuen
+  Beleg: nichts war falsch, nur ungeschützt).
+- **Push-Pflicht:** Die Commits `04dca313` (Pin-Hebung, `conventions.md:186` zeigt auf `conventions/done/` vor dem Move:
+  `target-missing`) und `d67b6221` (der reine Move von [`MR-080`](../../../../harness/conventions.md#mr-080), seine
+  relativen Anker auf den Konventions-Index lösen nicht mehr auf) sind **einzeln rot** — der Zwischenstand, den `AGENTS.md` §3.3 für
+  den Lifecycle-Move zulässt, solange er nicht die Spitze eines Push wird. Der Verifier maß je Commit im Klon:
+  `79a14c01` grün, `04dca313` ein Befund, `d67b6221` rot, `3d8f3555` und alles danach grün. **Alle Commits bis
+  mindestens `0985933f` gehören in einen Push**; `main` steht vor `origin/main`, nichts ist gepusht. Nach dem Push
+  `make ci` beziehungsweise die CI lesen, nicht aus dem lokalen Stand schließen.
+- **Folge-Slices:** keine neuen. [`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md),
+  [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) und
+  [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) bestehen schon in `open/`; Risiko 5 geht an
+  `slice-298`. Für die Prüflücke von `codepaths` (Lernsignal 2) ist **kein** Slice geschnitten — erst die
+  Antwort des Auftraggebers auf die Spec-Lücken-Frage entscheidet, ob einer entsteht.
+- **Risiken aus §6:** Risiko 1 *entfallen*, 2 *entfallen*, 3 *entfallen*, 4 *eingetreten* (Beleg: die Evidenz-Datei
+  oben), 5 *weiter offen* → `slice-298` — Begründung je Risiko in §6.
+- **Die drei Paarungen**, hier vorab geprüft (getragen von der Closure von welle-98): (a) Anker — kein
+  Steering-Loop-Eintrag mit `liegt in`-Feld, keine Paarung auszulösen; (b) Folge-Slice — `slice-298` besteht als Datei
+  in `open/`; (c) Register — beide genannten Verzeichnisse existieren und tragen nicht leere `evidence/`.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
