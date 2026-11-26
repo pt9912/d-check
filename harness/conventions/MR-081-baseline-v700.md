@@ -30,7 +30,7 @@
   **Inhaltliche Bewegungen — vollständig nach Datei, keine davon übernommen**
   (Abgrenzung, slice-295; die Namensregel führen
   [`slice-297`](../../docs/plan/planning/done/slice-297-spezifikation-heisst-specification.md)
-  und [`slice-298`](../../docs/plan/planning/in-progress/slice-298-neue-namen-wave-archive-anker.md),
+  und [`slice-298`](../../docs/plan/planning/done/slice-298-neue-namen-wave-archive-anker.md),
   die Klassifikation mit Empfehlung zu allen übrigen
   [`slice-296`](../../docs/plan/planning/open/slice-296-baseline-v700-neuerungen-sichtung.md);
   die Zahl hinter dem Pfad sind die Diff-Zeilen):
@@ -69,7 +69,7 @@
      2026-11-25, „ab jetzt für Neues, der Bestand bleibt"): die Spezifikation
      [`slice-297`](../../docs/plan/planning/done/slice-297-spezifikation-heisst-specification.md),
      Wellen, Archive und Anker
-     [`slice-298`](../../docs/plan/planning/in-progress/slice-298-neue-namen-wave-archive-anker.md).
+     [`slice-298`](../../docs/plan/planning/done/slice-298-neue-namen-wave-archive-anker.md).
      **In diesem Slice nur die Namen der sieben Vorlagen-Dateien in den Verweisen** — ein
      Verweis auf eine Datei, die es nicht mehr gibt, ist ein toter Verweis.
   2. **Bedrohung, Grenze, Ausgang** (Vertrauensgrenzen in der Sicht, drei

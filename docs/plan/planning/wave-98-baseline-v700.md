@@ -155,7 +155,7 @@ Namensregel nach sich zieht, **gemessen** statt geschätzt:
 2. **Die Namensregel hat zwei Hälften mit zwei Slices.** Die **Spezifikation** umzubenennen ist ein Rename mit
    gemessener Reichweite und eigenem Commit-Zwang ([`slice-297`](done/slice-297-spezifikation-heisst-specification.md));
    die **neuen Namen** der Wellen, Archive und Anker sind ein Werkzeug-/Sensor-/Command-Thema
-   ([`slice-298`](in-progress/slice-298-neue-namen-wave-archive-anker.md)). Beide in einem Slice wären vier Liefer-Punkte.
+   ([`slice-298`](done/slice-298-neue-namen-wave-archive-anker.md)). Beide in einem Slice wären vier Liefer-Punkte.
 3. **Eingebettete Dokumente und `--manual`.** Das Produkt bettet `spec/spezifikation.md` und das Handbuch ein
    ([`ADR-0107`](../adr/0107-mitgelieferte-dokumente-im-modul-root.md), `manual.go`); die Kopfzeile der Ausgabe
    trägt den Pfad (`==> <pfad>:<zeile>`). **Vertrag:** [`DC-FA-CLI-013`](../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen)
@@ -281,7 +281,7 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 |---|---|---|
 | [`slice-295`](done/slice-295-baseline-v700-bump.md) | **Bump:** Baseline-Pin auf `v7.0.0` — Re-Vendor, Spiegel, `d-check:cite`-Spannen, Vorlagen-Namen in den Verweisen, Bump-Eintrag (Delta vollständig nach Datei, keine Neuerung übernommen) | [`MR-011`](../../../harness/conventions.md#mr-011) (Pin-Kette), [`MR-021`](../../../harness/conventions.md#mr-021) |
 | [`slice-297`](done/slice-297-spezifikation-heisst-specification.md) | **Namensregel, Hälfte 1:** `spec/spezifikation.md` → `specification.md` (unter `spec/`) — reiner Rename samt Link-Nachzug, Inhalt, `manual.go` und die zwei Tests, Ventil für die eingefrorenen Nennungen | [`DC-FA-CLI-013`](../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen) (Vertrag bleibt), [`ADR-0103`](../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md), [`ADR-0115`](../adr/0115-vcs-folgt-umbenennung.md) |
-| [`slice-298`](in-progress/slice-298-neue-namen-wave-archive-anker.md) | **Namensregel, Hälfte 2:** neue Wellen `wave-<NN>`, Archive `archive.zip`, Anker `seit wave-<NN>` — `tools/archive-wave`, die Sensoren der `.d-check.yml` und des Closure-Profils, die Command-Dateien; der Adaptions-Eintrag zur Koexistenz | [`MR-011`](../../../harness/conventions.md#mr-011) |
+| [`slice-298`](done/slice-298-neue-namen-wave-archive-anker.md) | **Namensregel, Hälfte 2:** neue Wellen `wave-<NN>`, Archive `archive.zip`, Anker `seit wave-<NN>` — `tools/archive-wave`, die Sensoren der `.d-check.yml` und des Closure-Profils, die Command-Dateien; der Adaptions-Eintrag zur Koexistenz | [`MR-011`](../../../harness/conventions.md#mr-011) |
 | [`slice-296`](open/slice-296-baseline-v700-neuerungen-sichtung.md) | **Sichtung:** je Bewegung der übrigen Dateien eine Klassifikation (bereits befolgt · neu und anwendbar · nicht anwendbar) mit Empfehlung, dazu die Frage zu `environment-check` und zur „Umgebungs-Zusage“ gegen die vorhandenen Gates — **eine** Entscheidungsvorlage, keine Übernahme | [`MR-011`](../../../harness/conventions.md#mr-011) |
 
 **Die Reihenfolge ist bindend: 295 → 297 → 298 → 296** — und die Nummern folgen ihr **nicht**. Eine Slice-Nummer ist
@@ -311,7 +311,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   [`slice-295`](done/slice-295-baseline-v700-bump.md) (der neue Baum steht; die Vorlagen heißen jetzt `wave.template.md`
   und so weiter), dann [`slice-297`](done/slice-297-spezifikation-heisst-specification.md) (der Rename berührt die Zeile der Spezifikation,
   die der Bump ändert, und die `d-check:cite`-Spannen, die der Bump neu ankert) und
-  [`slice-298`](in-progress/slice-298-neue-namen-wave-archive-anker.md) (die Commands nennen die neuen Vorlagen-Namen), zuletzt
+  [`slice-298`](done/slice-298-neue-namen-wave-archive-anker.md) (die Commands nennen die neuen Vorlagen-Namen), zuletzt
   [`slice-296`](open/slice-296-baseline-v700-neuerungen-sichtung.md): Die Sichtung liest den **vendorten** Baum von
   `v7.0.0` und das Repo **nach** der Namensregel, nicht das Scratchpad, und den alten Baum aus `git archive <Vor-Bump>`;
   ein Audit gegen zwei Stände, von denen einer nirgends im Repo liegt, ist kein Audit (dieselbe Begründung wie in
@@ -321,7 +321,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 - **Die zwölf Fragen an den Architect — beantwortet** im
   [Architect-Verdikt vom 2026-11-26](../../reviews/2026-11-26-welle-98-architect-verdikt.md) (dort je Frage Begründung, kleinste
   Antwort und die größere Antwort mit ihrem Mehraufwand). Die Nummern sind die der Fragen, wie sie hier standen; die Antworten:
-  1. *Koexistenz-Adaption:* **ein eigener Eintrag**, geschrieben im Lauf von [`slice-298`](in-progress/slice-298-neue-namen-wave-archive-anker.md),
+  1. *Koexistenz-Adaption:* **ein eigener Eintrag**, geschrieben im Lauf von [`slice-298`](done/slice-298-neue-namen-wave-archive-anker.md),
      Auflösungs-Trigger **der Bestand ist weg** (Kommando im Verdikt), nicht *permanent*; die Senkung steht in
      [`ADR-0117`](../adr/0117-wellen-namen-ueber-die-konfiguration.md), der Eintrag zeigt dorthin.
   2. *`wave-98`:* **ja, aber erst in `slice-298`**, zusammen mit der Konfiguration (Auftraggeber, 2026-11-26): reiner Move, dann der

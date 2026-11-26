@@ -27,7 +27,7 @@
   englisch, Prosa deutsch, **ab jetzt für Neues, der Bestand bleibt**
   ([`wave-98`](../../docs/plan/planning/wave-98-baseline-v700.md) §1, Entscheid 1). Der
   Bestand ist Beleg, nicht Gestaltungsmasse; gemessen am Arbeitsbaum von
-  [`slice-298`](../../docs/plan/planning/in-progress/slice-298-neue-namen-wave-archive-anker.md):
+  [`slice-298`](../../docs/plan/planning/done/slice-298-neue-namen-wave-archive-anker.md):
   `git ls-files | grep -c 'welle-[0-9]'` ergibt 345,
   `git ls-files | grep -c 'archiv\.zip$'` ergibt 188 und
   `grep -c '^| welle-' docs/plan/planning/in-progress/roadmap.md` ergibt 38.

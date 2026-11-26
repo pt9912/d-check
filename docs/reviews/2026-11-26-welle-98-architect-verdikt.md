@@ -5,7 +5,7 @@
 ([slice-295](../plan/planning/done/slice-295-baseline-v700-bump.md),
 [slice-296](../plan/planning/open/slice-296-baseline-v700-neuerungen-sichtung.md),
 [slice-297](../plan/planning/done/slice-297-spezifikation-heisst-specification.md),
-[slice-298](../plan/planning/in-progress/slice-298-neue-namen-wave-archive-anker.md)), Stand `e0b06112`.
+[slice-298](../plan/planning/done/slice-298-neue-namen-wave-archive-anker.md)), Stand `e0b06112`.
 **Datum:** 2026-11-26.
 **Bindend, vom Auftraggeber am 2026-11-26 vorgegeben und hier nicht neu aufgerollt:** Dateinamen englisch, Prosa
 deutsch, „ab jetzt, Bestand bleibt“ · Neuerungen nur sichten, keine ohne Einzelentscheid · Reihenfolge
