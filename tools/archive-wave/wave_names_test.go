@@ -11,9 +11,12 @@ import (
 
 // Die Tests dieser Datei halten die Koexistenz der beiden Schreibweisen
 // (MR-082): `wave-<NN>` und `archive.zip` fuer Neues, `welle-<NN>` und
-// `archiv.zip` fuer den Bestand. Jeder Test nennt die Aenderung, die ihn rot
-// faerbt.
+// `archiv.zip` fuer den Bestand. Ein Kommentar "Rot, wenn" nennt die Aenderung,
+// die den Test faerbt; ein Test ohne ihn ist als Gegenprobe oder Regressions-
+// waechter benannt und bleibt dabei gruen.
 
+// Rot, wenn ArchiveName fuer wave- `archiv.zip` oder fuer welle- `archive.zip`
+// liefert.
 func TestArchiveName(t *testing.T) {
 	cases := map[string]string{
 		"wave-98":  "archive.zip",
@@ -284,8 +287,10 @@ func TestRun_DryRun_NoWrites_Wave(t *testing.T) {
 	}
 }
 
-// Rot, wenn runWelle `wave-` nicht als Kennung findet (Fail-Closed
-// "weder Welle-Plan noch Slices") oder `archiv.zip` schreibt.
+// Regressionswaechter, gruen auch ohne Praefix-Erkennung in collect.go (der
+// Plan wird ueber das Praefix gefunden, der Fail-Closed-Zweig "weder
+// Welle-Plan noch Slices" nicht erreicht). Rot, wenn runWelle fuer wave-
+// `archiv.zip` schreibt.
 func TestRun_PlanOhneEigeneSlices_Wave(t *testing.T) {
 	root := t.TempDir()
 	writeFile(t, filepath.Join(root, "docs/plan/planning/done/wave-73-x.md"), "# Welle wave-73: X\n")
