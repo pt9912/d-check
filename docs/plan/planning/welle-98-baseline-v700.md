@@ -210,7 +210,7 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     `citations` für die **15** lebenden `d-check:cite`-Spannen auf den Baum (davon verschieben sich **7**, am
     Vergleich derselben Zeilenbereiche beider Bäume gemessen) und die Spannen der Pläne dieser Welle, **und** `links`
     und `codepaths` nach dem Umbenennen der Spezifikation; `ignore-refs` in der
-    [`.d-check.yml`](../../../.d-check.yml) wächst nur um die sieben Einträge des Bump-Eintrags
+    [`.d-check.yml`](../../../.d-check.yml) wächst nur um die fünf Einträge des Bump-Eintrags
     ([`MR-069`](../../../harness/conventions.md#mr-069)) und den einen `codepaths`-Eintrag der Spezifikation
     ([`ADR-0025`](../adr/0025-codepaths-ignore-refs.md)). `make adr-check RANGE=<Vor-Bump>..HEAD` — die
     Spanne, die die CI fährt — endet mit Exit 0. *Rot ohne die Welle:* nach dem Entfernen des alten Baums
@@ -321,8 +321,8 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   4. *Commit-Zerlegung:* **ein Commit** für Rename und Link-Nachzüge, die Spezifikation selbst im zweiten; **zulässig ohne
      Ausnahme** — [`AGENTS.md`](../../../AGENTS.md) §3.3 schützt die bewegte Datei, sie bleibt `R100`; beide Commits in **einen** Push.
   5. *Eingefrorene Link-Ziele:* Spezifikation → **Nachzug** der Link-Ziele (64 ADRs, 39 Dateien), dazu **ein**
-     `codepaths.ignore-refs`-Eintrag ([`ADR-0025`](../adr/0025-codepaths-ignore-refs.md)); alter Baum (7 Dateien) → **Ventil**
-     (sieben datei-skopierte `links.ignore-refs`-Einträge, [`MR-069`](../../../harness/conventions.md#mr-069)).
+     `codepaths.ignore-refs`-Eintrag ([`ADR-0025`](../adr/0025-codepaths-ignore-refs.md)); alter Baum (7 Dateien; Nachtrag V1 des Verdikts: fünf `Accepted`-ADRs → **Ventil**, `slice-274` und das Verdikt zu welle-93 → Retarget)
+     (fünf datei-skopierte `links.ignore-refs`-Einträge, [`MR-069`](../../../harness/conventions.md#mr-069)).
   6. *Lastenheft Z. 4762:* **nachziehen** (Auftraggeber, 2026-11-26) — Version, eine Historie-Zeile
      ([`MR-032`](../../../harness/conventions.md#mr-032)); Plan-Auftrag in [`slice-297`](open/slice-297-spezifikation-heisst-specification.md).
   7. *Kommentarzeilen:* **nur was funktioniert**; die 94 Kommentarzeilen bleiben als benanntes Negativ

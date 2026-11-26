@@ -69,7 +69,7 @@ Verweisen des Repos beim neuen Namen nennen — und die Hebung als Eintrag in `h
 - **Frozen-Dateien bleiben byte-stabil** — `done/`-Slices und -Wellen, `docs/reviews/`, `CHANGELOG.md`,
   `conventions/done/`, eingehende CRs und der Kern der `Accepted`-ADRs nennen den alten Pin als
   Vergangenheits-Aussage (Bestand bewusst). Die Ausnahme ist allein die Antwort auf Frage 5 in
-  [welle-98 §5](../welle-98-baseline-v700.md): sieben eingefrorene Dateien **verlinken** den alten Baum.
+  [welle-98 §5](../welle-98-baseline-v700.md): sieben eingefrorene Dateien **verlinken** den alten Baum; nach dem Nachtrag V1 des Verdikts sind es fünf hinter dem Ventil, die zwei übrigen werden retargetet (Plan-Änderung in §3).
 - **`tools/harness/selbstpruefung.sh`** — sein Stand-Vermerk nennt die Version des Schwester-Werkzeugs
   `ai-harness-init`, nicht den Baseline-Pin (anderer Gegenstand; dieselbe Abgrenzung wie in
   [`slice-277`](../done/wellenlos/slice-277-baseline-v6181-bump.md)).
@@ -137,7 +137,7 @@ Datei**, die die Zeichenkette `v6.18.1` trägt (`git grep -l`), nicht der Verwei
 | 15 lebende `d-check:cite`-Spannen | neu ankern | `.harness/skills/reviewer.md` 3, `closure-note-reviewer.md` 3, [`MR-031`](../../../../harness/conventions.md#mr-031) 3, [`MR-049`](../../../../harness/conventions.md#mr-049) 2, [`MR-005`](../../../../harness/conventions.md#mr-005) 1, [`MR-035`](../../../../harness/conventions.md#mr-035) 1, [`MR-039`](../../../../harness/conventions.md#mr-039) 1, [`MR-043`](../../../../harness/conventions.md#mr-043) 1. **7 verschieben sich** (gemessen am Vergleich derselben Zeilenbereiche beider Bäume): `grundlagen-begriffe` 50, `grundlagen-harness-dateien` 196, `modul-05` 170 und 180–181, `modul-10` 99, `reviewer.template` 87–88 und 99–100. Die 8 übrigen stehen auf unverschobenen Zeilen. **Plus 8** in den vier Plänen dieser Welle (je Slice zwei, `modul-05` 373–374 und 379; sie verschieben sich ebenfalls). Zwei weitere Spannen unter `conventions/done/` ([`MR-057`](../../../../harness/conventions.md#mr-057), [`MR-058`](../../../../harness/conventions.md#mr-058)) zielen auf `v5.18.0` und liegen außerhalb des Scopes von `citations` |
 | `.claude/commands/plan-welle.md` (2 Zeilen), `close-welle.md` (4 Zeilen) | update | die vier umbenannten Vorlagen: `welle.template.md`→`wave.template.md`, `welle-results.template.md`→`wave-results.template.md`, `archiv-stub-slice`/`-welle`→`archive-stub-slice`/`-wave`; **9 Zeilen in 4 Dateien** mit `stub.go` und `conventions.md` Z. 59 (`git grep -n "welle\.template\|welle-results\.template\|archiv-stub-\(slice\|welle\)\.template\|titel\.template" -- . ':!.harness/baseline' ':!docs/plan/planning' ':!docs/reviews' ':!harness/conventions/done'`; die Treffer in `conventions/done/` und in den Plänen nennen die Namen als Vergangenheits-Aussage und bleiben) |
 | `tools/archive-wave/stub.go` | update (Kommentar) | zwei Kommentarzeilen nennen `archiv-stub-slice.template.md`/`-welle.template.md`; Nachzug im Bump bestätigt ([Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md), Frage 12); kein Verhalten |
-| [`.d-check.yml`](../../../../.d-check.yml) | update | nur, was die Antwort auf Frage 5 verlangt: je eingefrorener Datei mit Link auf den alten Baum **ein** `ignore-refs`-Eintrag (gemessen **7**); heute 30 Einträge über 12 Tags |
+| [`.d-check.yml`](../../../../.d-check.yml) | update | nur, was die Antwort auf Frage 5 verlangt: je eingefrorener Datei mit Link auf den alten Baum **ein** `ignore-refs`-Eintrag (gemessen 7; nach dem Nachtrag V1 des Verdikts **5**, Plan-Änderung in §3); heute 30 Einträge über 12 Tags |
 | dieser Plan und die Pläne [`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md), [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md), [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) | update | die je zwei `d-check:cite`-Spannen in §8 auf den neuen Baum (zusammen 8) |
 
 **Plan-Änderung (Implementer, vor dem Code):** Zusätzlich zur Tabelle trägt dieser Slice **eine** Datei aus dem
@@ -153,6 +153,20 @@ eine Gate-Senkung ([`MR-069`](../../../../harness/conventions.md#mr-069)) für e
 reist im Link-Tiefen-Commit (Schritt 4), der Move bleibt rein; der Bump-Eintrag führt ihn als Ausnahme von der Frozen-Regel.
 **Folge für Risiko 2 (§6):** `git diff --stat <Vor-Bump>..HEAD -- docs/plan/planning/done docs/reviews CHANGELOG.md harness/conventions/done`
 ist nicht leer, sondern nennt genau diese eine Review-Datei und die zugezogene Eintrags-Datei von [`MR-080`](../../../../harness/conventions.md#mr-080) unter `conventions/done/`.
+
+**Plan-Änderung (Implementer, Fixrunde nach Review r1, gedeckt durch den Nachtrag V1 im
+[Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md) zu Frage 5):** (1) Das Ventil in der
+[`.d-check.yml`](../../../../.d-check.yml) trägt **fünf** Einträge (die `Accepted`-ADRs 0112 bis 0116), nicht sieben: ihr
+Zitat (`modul-04` §Ziel-Form: ADR) ist in `v7.0.0` nicht wortgleich. (2) Zwei Dateien kommen zur Tabelle, je **eine Zeile,
+nur das Link-Ziel** (`v6.18.1` → `v7.0.0`, Anker unverändert; die zitierte Stelle ist gelesen wortgleich):
+`docs/plan/planning/done/wellenlos/slice-274-trace-requirements-als-liste-von-quellen.md` und
+`docs/reviews/2026-10-30-welle-93-architect-verdikt.md`; ihr Ventil-Eintrag entfällt. (3) Eine Datei kommt zur Tabelle auf
+Befund F-3 des Reviews: `harness/sensors/baseline-verify.md` Z. 17 nennt die Ausgabe des Laufs mit der Dateizahl des alten
+Baums (`54 Dateien`); sie wird auf `55 Dateien` gesetzt — die Zahl, die `make baseline-verify` jetzt meldet. **Folge für
+Risiko 2 (§6):** `git diff --stat <Vor-Bump>..HEAD -- docs/plan/planning/done docs/reviews CHANGELOG.md harness/conventions/done`
+nennt damit drei eingefrorene Dateien mit einer geänderten Zeile (`slice-274`, das Verdikt zu welle-93 und den Verifikations-Report
+von `slice-277`) neben der zugezogenen Eintrags-Datei von [`MR-080`](../../../../harness/conventions.md#mr-080) und den Dateien,
+die diese Welle selbst anlegt.
 
 **Reihenfolge und Commit-Zerlegung** ([`AGENTS.md`](../../../../AGENTS.md) §3.3, [`BEO-ALL/path-scoped-commit-carries-staged-rest`](../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/observation.md)):
 
@@ -218,7 +232,7 @@ dasteht.
   dem Start: eine Überschrift entfällt (`modul-14`, „Zwei Formen des Reproduzierbarkeits-Ankers“; kein Verweis
   darauf außerhalb des Baums, `git grep -n 'zwei-formen-des-reproduzierbarkeits' -- . ':!.harness/baseline'` ist
   leer), sieben Vorlagen tragen einen neuen Namen. — **Ausgang:** *entfallen*, wenn `make doc-check` nach dem
-  Entfernen des alten Baums außer den in §3 benannten Folgen (Pfad-Links, Zitat-Spannen, die sieben Frozen-Links)
+  Entfernen des alten Baums außer den in §3 benannten Folgen (Pfad-Links, Zitat-Spannen, die fünf Frozen-Links hinter dem Ventil und die zwei Retargets)
   nichts meldet; sonst *eingetreten* mit einer Evidenz-Datei zu
   [`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md).
 - **Eine Mischzeile wird pauschal ersetzt und fälscht eine Vergangenheits-Aussage**
