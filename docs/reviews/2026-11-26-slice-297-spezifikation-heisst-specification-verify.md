@@ -86,7 +86,7 @@ Genau die beiden vom Plan vorab benannten Stände sind einzeln rot; die Plan-Än
 
 ## Abgrenzung (nichts aus slice-296/298)
 
-Keine Datei zu `slice-296`/`slice-298`, `archive`, `stub`, `wave-` oder einer neuen ADR im Diff (`git diff --name-only f44c6e65..HEAD` gefiltert: leer; `slice-296` und `wave-98` nur als Link-Ziel-Nachzug bzw. die dokumentierte Plan-Änderung am Wellen-Plan). `CHANGELOG.md`, READMEs außer den zwei Link-Zielen, Handbuch-Kopf, `Dockerfile`, `Makefile`, `config_template.go`, `suggest.go`, Pin-Zeile der Spezifikation, `go.mod` unberührt. Die Messungen der Welle (`make blackbox-probe REF=738d2bca`, Vergleich von `--manual` je Begriff, `fullbuild`) sind **nicht** gefahren und gehören der Welle-Closure.
+Keine Datei zu `slice-296`/`slice-298`, `archive`, `stub`, `wave-` oder einer neuen ADR im Diff (`git diff --name-only f44c6e65..HEAD` gefiltert: leer; `slice-296` und `welle-98` nur als Link-Ziel-Nachzug bzw. die dokumentierte Plan-Änderung am Wellen-Plan). `CHANGELOG.md`, READMEs außer den zwei Link-Zielen, Handbuch-Kopf, `Dockerfile`, `Makefile`, `config_template.go`, `suggest.go`, Pin-Zeile der Spezifikation, `go.mod` unberührt. Die Messungen der Welle (`make blackbox-probe REF=738d2bca`, Vergleich von `--manual` je Begriff, `fullbuild`) sind **nicht** gefahren und gehören der Welle-Closure.
 
 ## Befunde
 
