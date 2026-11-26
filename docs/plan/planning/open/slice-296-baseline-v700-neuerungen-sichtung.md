@@ -161,6 +161,24 @@ Empfehlung · *Entscheidung des Auftraggebers* (leer). Die laufende Nummer in Sp
 6. **Die Vorlage schreiben** und dem Reviewer übergeben. Die Spalte *Entscheidung des Auftraggebers* bleibt leer;
    der Slice schließt, wenn sie dem Auftraggeber **vorliegt**, nicht wenn er geantwortet hat.
 
+**Plan-Änderung (Planner, vor dem Übergang `open` → `next`; Stand `2831e071`).** Drei Stellen des Plans stimmen nach
+[`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) und
+[`slice-298`](../done/slice-298-neue-namen-wave-archive-anker.md) nicht mehr; diese Zeilen überschreiben sie.
+
+1. **Frage (B) (ii) nennt drei der vier Spiegel-Stellen.** Das Konsumenten-Beispiel mit dem alten deutschen Dateinamen der
+   Spezifikation steht auch in `spec/specification.md` Z. 233–234, und `--manual` zeigt es Konsumenten. Es sind **acht
+   Zeilen an vier Stellen** (Spezifikation, Handbuch, `config_template.go`, `suggest.go`):
+   [Review zu slice-297](../../../reviews/2026-11-26-slice-297-spezifikation-heisst-specification-r1.md), Befund F-6.
+   F-6 gehört in die Frage (B), samt seiner zweiten Hälfte: `--suggest-config` schlägt einem Repo mit
+   Spezifikations-Verzeichnis den deutschen Namen vor, den dieses Repo nicht mehr führt. Für den Preis gilt
+   [`MR-025`](../../../../harness/conventions.md#mr-025) (die Spiegel ändern sich an allen Stellen oder an keiner).
+2. **Frage (B) (iii), die Erwartung aus wave-98 §1 Punkt 6 ist überholt.** Seit
+   [`slice-298`](../done/slice-298-neue-namen-wave-archive-anker.md) liest `tools/archive-wave` `wave-<NN>` und schreibt
+   `archive.zip`; das Werkzeug ist zudem kein Bestandteil des Images und am Image nicht zu messen. Am Image neu zu messen ist
+   allein Punkt 5 (das Modul `planning` mit den Defaults).
+3. **§1 nennt 41 Adaptionen**; es sind 42 aktive (`ls harness/conventions/*.md | wc -l`; am Stand `590dde3d` 41). Die
+   Abgrenzung bleibt: kein Durchgang je Eintrag.
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
@@ -295,5 +313,13 @@ Der Zähler folgt aus den Dateien der Closure.
 **rot** (jüngster Lauf 2026-11-25T09:26:13Z), der Log war über `gh run view` nicht abrufbar; gelesen ist
 `make baseline-freshness` (Exit 3, neuer Release `v7.0.0`) — der Gegenstand der Welle, **planmäßig gelesen**. Zum
 Zeitpunkt dieses Slice sind [`slice-295`](../done/slice-295-baseline-v700-bump.md), [`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../done/slice-298-neue-namen-wave-archive-anker.md) `done/`; der Stand wird beim Start neu gelesen.
+
+**Beim Start neu gelesen** (Planner, 2026-11-26). **Register:** seit dem Stand oben ist
+[`BEO-ALL/praefix-umstellung-schaltet-waechter-der-anderen-schreibweise-ab`](../observations/BEO-ALL/praefix-umstellung-schaltet-waechter-der-anderen-schreibweise-ab/observation.md)
+dazugekommen (offen, 1×); er trifft Frage (B): ein Konsument mit beiden Schreibweisen kann nur eine bewachen.
+**Nachtlauf-Stand:** `make nightly-state`: `image-scan` grün (jüngster Lauf 2026-11-25T12:59:28Z), `upstream-drift` rot
+(jüngster Lauf 2026-11-26T09:05:03Z) — gelesen: der Lauf fuhr `origin/main` (`76cf7d51`, Pin vor der Hebung) und meldet
+in `make baseline-freshness` den neuen Release (`gh run view --log-failed`); lokal endet dasselbe Target mit Exit 0
+(Pin `v7.0.0` ist der neueste, Inhalt unverändert). **Planmäßig**, bis die Hebung gepusht ist.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
