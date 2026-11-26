@@ -135,6 +135,41 @@ Lauf-Bericht ist — nicht, was in `done/` liegt), nicht nach dem Verzeichnis. S
 | Kommentare: 90 Zeilen in 33 Go-Dateien, `Dockerfile` 1, `Makefile` 1, `tools/*.sh` 2 | **unverändert** (Frage 7) | `git grep -n 'spezifikation\.md' -- '*.go' Dockerfile Makefile tools`; benanntes Negativ im Verdikt: ohne Wirkung auf Verhalten, §3.7 für 94 Zeilen |
 | `config_template.go` (2), `suggest.go` (2), `benutzerhandbuch.md` Z. 372–373 | **unverändert** | Konsumenten-Beispiele (§1) |
 
+**Plan-Änderung (Implementer, vor dem Code; Stand `f44c6e65`, die Zählung ist wiederholt).** Die Wiederholung nennt dieselben
+Zahlen wie die Tabelle (64 ADRs mit 119 Zeilen, 39 eingefrorene Dateien mit 80 Zeilen, 161 Selbst-Verweise, 49 geänderte lebende
+Zeilen) und dazu **sechs Dateien mit je einem Link-Ziel, die keine Zeile der Tabelle trägt**. Ohne ihren Nachzug meldet `links`
+`target-missing`; ihre Antwort ist der Nachzug, nicht das Ventil:
+
+| Dateien | Zeilen | Eigenschaft | Kommando |
+|---|---|---|---|
+| vier Dateien unter `docs/plan/planning/observations/` (`BEO-ALL/schwelle-mit-mehreren-traegern-ohne-gleichhalter/evidence/slice-259.md`, `BEO-ALL/spezifikation-und-code-weichen-am-rand-ab/evidence/slice-289.md`, `BEO-ALL/grenze-der-scan-menge-nur-bei-einem-modul-benannt/evidence/slice-289.md`, `BEO-HARN/commit-msg-hook-sperrt-junges-repo/observation.md`) | 4 | Register-Belege und eine Beobachtung: der Link zeigte immer auf die **lebende** Datei (Frage 5, dieselbe Begründung wie bei den 39) | `git grep -c '\](\([^)]*/\)\?spezifikation\.md' -- docs/plan/planning/observations` |
+| dieser Plan (Z. 27 und 58) und die Welle `welle-98-baseline-v700.md` (Z. 151) | 3 | lebende Pläne mit Link auf den Abschnitt der Spezifikation zu [`DC-FA-CLI-013`](../../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen); ihre Inline-Code-Nennungen des alten Namens beschreiben den Gegenstand und bleiben (Ventil) | `git grep -c '\](\([^)]*/\)\?spezifikation\.md' -- docs/plan/planning/in-progress docs/plan/planning/open docs/plan/planning/welle-98-baseline-v700.md` |
+
+Alle sieben Zeilen: **nur** das Link-Ziel, nach der Wortgrenze (`](`, optional ein Pfad bis `/`, dann `spezifikation.md`). Sie reisen im
+**zweiten** Commit, nicht im Move-Commit — dessen Menge (64 + 39 = 103 `M`) bleibt wie in §3. Die Summe aller Link-Ziele geht auf:
+119 + 80 + 4 + 3 + 42 (lebende Markdown-Dateien) + 158 (Selbst-Verweise) = 406
+(`git grep -h '\](\([^)]*/\)\?spezifikation\.md' | wc -l`).
+
+**Weitere Berichtigungen der Tabelle, ohne Folge für den Umfang:**
+
+- **Zeilennummern der Konfiguration** haben sich mit [`slice-295`](../done/slice-295-baseline-v700-bump.md) verschoben: die Pfad-Zeilen der
+  [`.d-check.yml`](../../../../.d-check.yml) stehen bei 446, 517, 521, 757 und 845, der Kommentar bei 988, die Liste
+  `codepaths.ignore-refs` bei 675 (`git grep -n 'spezifikation\.md' -- .d-check.yml`). Es bleiben **6** Zeilen und **ein** Eintrag.
+- **Kommentarzeilen:** 90 Zeilen in 33 Dateien zählen die Quelldateien ohne Tests (so die Tabelle); mit den Testdateien sind es
+  **95 in 38 Dateien** (`git grep -n 'spezifikation\.md' -- '*.go' | grep -v 'go:embed' | grep -c '^[^:]*:[0-9]*:[[:space:]]*//'`).
+  Die fünf Zeilen in Testdateien bleiben aus demselben Grund wie die übrigen
+  ([Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md) Frage 7): Rang-Zeiger ohne Wirkung. Dazu tragen 6 Zeilen in
+  zwei Testdateien (`cli_acceptance_test.go`, `matrix_test.go`) den Namen als **Fixture-Inhalt** eines erfundenen Repos — sie prüfen
+  Module, nicht diese Datei, und bleiben.
+- **Zerlegung feiner als in §3:** Commit 2 der Reihenfolge teilt sich nach Klasse in drei — (2) lebende Dateien, Konfiguration, Ventil,
+  `manual.go`, Tests, `tools/image-test.sh` und die sechs Dateien oben; (3) die Selbst-Verweise der Spezifikation (Inhalt der bewegten
+  Datei, [`AGENTS.md`](../../../../AGENTS.md) §3.3 Fall 1); (4) das Lastenheft (Rang 1, Auftrag). Die Zwischenstände (1) und (2) sind einzeln rot
+  (Build beziehungsweise Selbst-Links), die Spitze des Push ist (4); alle Commits gehören in **einen** Push.
+- **Messungen des Closure-Triggers (d) der Welle**, damit klar ist, wer sie trägt: **diesen Slice** tragen `make test` (die zwei Tests,
+  je mit Mutation) und `make image-test` (die Kopfzeile, `tools/image-test.sh` Z. 163). **Die Welle** trägt am Endstand
+  `make blackbox-probe REF=738d2bca` (der Commit vor dem ersten Bump-Commit) und den Vergleich von `--manual` je Begriff mit den vier
+  Abweichungsklassen; sie sind dem Slice nicht aufgetragen (§3, Gates).
+
 **Reihenfolge und Commit-Zerlegung** ([`AGENTS.md`](../../../../AGENTS.md) §3.3, [`BEO-ALL/path-scoped-commit-carries-staged-rest`](../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/observation.md)):
 
 1. **Vorbedingung, kein Commit dieses Slice:** das Architect-Verdikt zu den Fragen der Welle liegt vor,
