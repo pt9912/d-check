@@ -46,7 +46,7 @@ zusammen mit der Begründungs-Pflicht je Punkt.
 pin-gebundenen Verweise samt der `d-check:cite`-Spannen nachziehen, die sieben umbenannten Vorlagen in den
 Verweisen des Repos beim neuen Namen nennen — und die Hebung als Eintrag in `harness/conventions/` führen
 (Delta vollständig nach Datei, **keine Neuerung übernommen** — die Namensregel führt nicht dieser Slice, sondern
-[`slice-297`](../in-progress/slice-297-spezifikation-heisst-specification.md) und
+[`slice-297`](slice-297-spezifikation-heisst-specification.md) und
 [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md); Entscheid 1 der [Welle](../welle-98-baseline-v700.md)).
 
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
@@ -60,7 +60,7 @@ Verweisen des Repos beim neuen Namen nennen — und die Hebung als Eintrag in `h
   [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md); dieser Slice zieht nur die **Namen der
   Vorlagen-Dateien** nach, weil ein Verweis auf eine Datei, die es nicht mehr gibt, ein toter Verweis ist.
 - **Keine Umbenennung von `spec/spezifikation.md`.** Sie ist entschieden (Entscheid 1) und ein eigener Slice,
-  [`slice-297`](../in-progress/slice-297-spezifikation-heisst-specification.md), mit eigenem Commit-Zwang. Der Bump nennt die
+  [`slice-297`](slice-297-spezifikation-heisst-specification.md), mit eigenem Commit-Zwang. Der Bump nennt die
   Pin-Zeile der Spezifikation (Zeile 8) beim **heutigen** Namen; Pfade in `manual.go` und der
   [`.d-check.yml`](../../../../.d-check.yml) bleiben.
 - **Keine Änderung am Produkt.** Die eine Berührung ist die Pin-Nennung in `spec/spezifikation.md` (Zeile 8), die
@@ -138,7 +138,7 @@ Datei**, die die Zeichenkette `v6.18.1` trägt (`git grep -l`), nicht der Verwei
 | `.claude/commands/plan-welle.md` (2 Zeilen), `close-welle.md` (4 Zeilen) | update | die vier umbenannten Vorlagen: `welle.template.md`→`wave.template.md`, `welle-results.template.md`→`wave-results.template.md`, `archiv-stub-slice`/`-welle`→`archive-stub-slice`/`-wave`; **9 Zeilen in 4 Dateien** mit `stub.go` und `conventions.md` Z. 59 (`git grep -n "welle\.template\|welle-results\.template\|archiv-stub-\(slice\|welle\)\.template\|titel\.template" -- . ':!.harness/baseline' ':!docs/plan/planning' ':!docs/reviews' ':!harness/conventions/done'`; die Treffer in `conventions/done/` und in den Plänen nennen die Namen als Vergangenheits-Aussage und bleiben) |
 | `tools/archive-wave/stub.go` | update (Kommentar) | zwei Kommentarzeilen nennen `archiv-stub-slice.template.md`/`-welle.template.md`; Nachzug im Bump bestätigt ([Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md), Frage 12); kein Verhalten |
 | [`.d-check.yml`](../../../../.d-check.yml) | update | nur, was die Antwort auf Frage 5 verlangt: je eingefrorener Datei mit Link auf den alten Baum **ein** `ignore-refs`-Eintrag (gemessen 7; nach dem Nachtrag V1 des Verdikts **5**, Plan-Änderung in §3); heute 30 Einträge über 12 Tags |
-| dieser Plan und die Pläne [`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md), [`slice-297`](../in-progress/slice-297-spezifikation-heisst-specification.md), [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) | update | die je zwei `d-check:cite`-Spannen in §8 auf den neuen Baum (zusammen 8) |
+| dieser Plan und die Pläne [`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md), [`slice-297`](slice-297-spezifikation-heisst-specification.md), [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) | update | die je zwei `d-check:cite`-Spannen in §8 auf den neuen Baum (zusammen 8) |
 
 **Plan-Änderung (Implementer, vor dem Code):** Zusätzlich zur Tabelle trägt dieser Slice **eine** Datei aus dem
 Frozen-Bestand, die die Spiegel-Messung nicht sah, weil sie nicht den Pin, sondern den **Pfad** der Eintrags-Datei
@@ -335,7 +335,7 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   mindestens `0985933f` gehören in einen Push**; `main` steht vor `origin/main`, nichts ist gepusht. Nach dem Push
   `make ci` beziehungsweise die CI lesen, nicht aus dem lokalen Stand schließen.
 - **Folge-Slices:** keine neuen. [`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md),
-  [`slice-297`](../in-progress/slice-297-spezifikation-heisst-specification.md) und
+  [`slice-297`](slice-297-spezifikation-heisst-specification.md) und
   [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) bestehen schon in `open/`; Risiko 5 geht an
   `slice-298`. Für die Prüflücke von `codepaths` (Lernsignal 2) ist **kein** Slice geschnitten — erst die
   Antwort des Auftraggebers auf die Spec-Lücken-Frage entscheidet, ob einer entsteht.

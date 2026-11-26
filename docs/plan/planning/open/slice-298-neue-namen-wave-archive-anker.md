@@ -19,7 +19,7 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 [`MR-050`](../../../../harness/conventions.md#mr-050) (der Herkunfts-Anker `seit <welle>`),
 [`MR-053`](../../../../harness/conventions.md#mr-053) und
 [`MR-054`](../../../../harness/conventions.md#mr-054) (Vorprüfungen in den Slice-Plänen),
-[`slice-297`](../in-progress/slice-297-spezifikation-heisst-specification.md) (die andere Hälfte der Namensregel).
+[`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) (die andere Hälfte der Namensregel).
 Anlass: Entscheid 1 der [Welle](../welle-98-baseline-v700.md) — Baseline-Regelwerk `grundlagen-harness-dateien.md`
 §Verzeichniskonvention, Absatz *Dateinamen sind englisch*, seit `v7.0.0`.
 
@@ -130,7 +130,7 @@ Implementer **wiederholt** die Zählung vor der ersten Änderung.
 
 1. **Vorbedingung, kein Commit dieses Slice:** das Architect-Verdikt zu den Fragen der Welle liegt vor,
    [`slice-295`](../done/slice-295-baseline-v700-bump.md) (die Vorlagen heißen jetzt `wave.template.md`, …) und
-   [`slice-297`](../in-progress/slice-297-spezifikation-heisst-specification.md) sind `done/`.
+   [`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) sind `done/`.
 2. **Commit 1: das Werkzeug** samt Tests (`make archive-wave-test`), unabhängig von der Konfiguration — es liest beide Formen,
    solange nichts umgestellt ist.
 3. **Commit 2: der Name der Welle, die Konfiguration und die Sensoren** — **erst jetzt**, weil die Umstellung von `planning.waves` die
@@ -138,7 +138,7 @@ Implementer **wiederholt** die Zählung vor der ersten Änderung.
    heißt ab hier `wave-98`; **keine Lücke**, weil Move, Roadmap-Zeiger und Konfiguration im selben Arbeitsbaum stehen und der Hook ihn prüft.
    Zuerst der **reine** `git mv` der Welle-Datei (R100, [`AGENTS.md`](../../../../AGENTS.md) §3.3), dann der Nachzug **aller** Verweise
    auf den alten Namen (`git grep -c 'welle-98' -- . ':!.harness/baseline'` neu zählen: Roadmap-Zeiger, `**Welle:**`-Felder, Closure-Notizen und
-   Reports von [`slice-295`](../done/slice-295-baseline-v700-bump.md) und [`slice-297`](../in-progress/slice-297-spezifikation-heisst-specification.md), der Plan selbst; darin
+   Reports von [`slice-295`](../done/slice-295-baseline-v700-bump.md) und [`slice-297`](../done/slice-297-spezifikation-heisst-specification.md), der Plan selbst; darin
    `welle-98-results.md` → `wave-98-results.md`) und die Umstellung der Konfiguration. Pfad-begrenzt committen (`BEO-ALL/path-scoped-commit-carries-staged-rest`).
 4. **Commit 3: Commands, Briefing, Sensor-Dateien und der Koexistenz-Eintrag.**
 5. Review (höchstens zwei Runden), Verifikation, Closure. `git commit -F <datei> -- <Pfade>`, vorher `git diff --cached --stat`.
@@ -152,7 +152,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
 **Start** (`next` → `in-progress`): [`slice-295`](../done/slice-295-baseline-v700-bump.md) und
-[`slice-297`](../in-progress/slice-297-spezifikation-heisst-specification.md) liegen in `done/`; `in-progress/` trägt keinen Slice
+[`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) liegen in `done/`; `in-progress/` trägt keinen Slice
 (nur die Roadmap); das **Architect-Verdikt** zu den zwölf Fragen in [welle-98 §5](../welle-98-baseline-v700.md) (für diesen
 Slice tragend: 1, 2, 3, 8) liegt vor: [Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md); Priorisierung gesetzt, `Verantwortlich:` beim Übergang
 `open` → `next` gesetzt.
@@ -279,6 +279,6 @@ Schreibweisen derselben Kennung. Der Zähler folgt aus den Dateien der Closure.
 **rot** (jüngster Lauf 2026-11-25T09:26:13Z), der Log war über `gh run view` nicht abrufbar; gelesen ist
 `make baseline-freshness` (Exit 3, neuer Release `v7.0.0`) — der Gegenstand der Welle, **planmäßig gelesen**. Zum
 Zeitpunkt dieses Slice sind [`slice-295`](../done/slice-295-baseline-v700-bump.md) und
-[`slice-297`](../in-progress/slice-297-spezifikation-heisst-specification.md) `done/`; der Stand wird beim Start neu gelesen.
+[`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) `done/`; der Stand wird beim Start neu gelesen.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
