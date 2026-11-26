@@ -237,3 +237,42 @@ Gegenstand von slice-295.
    byte-stabil); `git grep -c 'refs: \[\?"\?\.harness/baseline/v' .d-check.yml` = 35; Review-Report F-1 an den Reviewer zurück.
 
 **Nicht entschieden, weil nicht nötig:** F-2 und F-3 des Reports (LOW, Sache des Implementers, kein Konflikt).
+
+## Nachtrag 2026-11-26 (V2) — Beispiel-Kennung `wave-99` in ADR-0117 (Rolleninhaber: pt9912)
+
+**Anlass.** Der Planner hat vor Commit 2 von slice-298 gemeldet: [ADR-0117](../plan/adr/0117-wellen-namen-ueber-die-konfiguration.md)
+trägt in Z. 34 und 77 die Beispiel-Kennung `wave-99`. Mit der neuen `matrix`-Klasse `wave` (Token `wave-\d{2,}`) und dem Verbot
+`adr → wave` wären das zwei `matrix-forbidden` — das Plan-Risiko 5 („0 Befunde nach der Konfigurationsumstellung") trägt dann nicht.
+
+**Gemessen** (Wegwerf-Klon im Scratchpad, Stand `7de32a36`; Klasse `wave` mit `paths: docs/plan/planning/**/wave-*.md`, `token: 'wave-\d{2,}'`
+und den drei Verboten `spec-straten`/`sicht`/`adr → wave` eingefügt):
+
+| Zustand der ADR | `make doc-check` |
+|---|---|
+| unverändert (`wave-99`, Z. 34 und 77) | `1328 Datei(en) geprüft, 2 Befund(e)`, beide `matrix-forbidden` (Z. 34, 77), Exit 2 |
+| Beispiel als Platzhalter `wave-<NN>` | `1328 Datei(en) geprüft, 0 Befund(e)`, Exit 0 |
+
+Außer ADR-0117 trägt keine Datei unter `spec/` oder `docs/plan/adr/` eine `wave-<Ziffern>`-Kennung (`git grep -n -E 'wave-[0-9]{2,}' -- spec docs/plan/adr`
+= die zwei Zeilen). Die übrigen Treffer des Plans (Welle, Verdikt, Plan, Test) liegen außerhalb der drei Quell-Klassen und sind kein Gegenstand der Regel.
+
+**Verdikt: (a), die Entscheidung gilt und die Nennung wird umgeschrieben.** Die ADR ist `Proposed`; `AGENTS.md` §3.5 schützt erst ab `Accepted`.
+Die Kennung `99` war eine Illustration, keine Aussage der Entscheidung: gemeint ist „eine neue Welle in der neuen Schreibweise" — `wave-<NN>` sagt dasselbe
+und ist als Platzhalter keine Kennung des Token-Ziels. Der Inhalt der Entscheidung, die Senkung (V3) und die Fitness Function bleiben unverändert;
+geändert sind genau die zwei Beispiel-Schreibweisen in der Tabelle und im Kontext-Absatz.
+
+**Warum nicht (b) und (c).** (b) der Provenance-Marker (`<!-- d-check:status-provenance -->`, den die Meldung selbst anbietet) würde die Nennung als
+Herkunfts-Zeiger deklarieren — sie ist aber ein Beispiel, kein Zeiger; die Deklaration wäre falsch, und der Marker nimmt je Zeile die ganze Klasse aus
+(Grenze: eine echte Nennung neben dem Beispiel würde ebenfalls still). (c) ein engeres Verbot wäre eine Prüfregel-Senkung (`AGENTS.md` §3.6) und damit ADR-pflichtig —
+für ein Beispiel, das sich ohne Verlust umschreiben lässt, die größere Antwort. **Größere Antwort, nur benannt:** ein Pfad-/Platzhalter-Träger in der
+ADR-Klasse für Kennungs-Beispiele; ein einmaliger Fall, kein Gegenstand.
+
+**Akzeptiertes Negativ.** Die Platzhalter-Form `wave-<NN>` ist von der Token-Erkennung nicht erfasst (kein `\d`). Wer künftig in einer ADR wieder eine konkrete
+Kennung als Beispiel schreibt, bekommt den Befund — das ist das gewünschte Verhalten, nicht eine Lücke.
+
+**Plan-Auftrag an den Planner (Plan-Datei von slice-298, nicht durch den Architect geändert).**
+
+1. Risiko 5 und die Vorbedingung vor Commit 2: *„Vorbedingung erfüllt — ADR-0117 trägt seit dem Umschreiben (Nachtrag V2) in Z. 34 und 77 `wave-<NN>` statt `wave-99`;
+   gemessen: `make doc-check` mit Klasse `wave` und Verbot `adr → wave` meldet 0 Befunde (1328 Dateien)."* Der Treffer `ADR-0117` in der Treffermenge
+   (`git grep -l -E 'wave-[0-9]{2,}'`) entfällt dort damit: vier statt fünf Dateien.
+2. Commit 2 verlangt von der ADR nichts mehr; die Prüfung „`make doc-check` 0 Befunde nach der Umstellung" bleibt DoD-Punkt des Implementers.
+3. ADR-0117 bleibt `Proposed`; der Übergang nach `Accepted` bleibt bei der Closure von slice-298 (Plan §Ergebnis, ADR-Zeile der Änderungstabelle).

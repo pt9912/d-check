@@ -31,7 +31,7 @@ Das Modul `planning` liest **ein** literales Präfix: `planning.waves.glob` und 
 Präfix, und das Modul leitet die Kennung daraus ab (`wavePrefix` in `planning_waves.go`; die Prüfung der
 Konfiguration verlangt Gleichheit). Gemessen in einem Wegwerf-Klon, Stand `590dde3d`:
 
-- Mit `welle-*` (heute) ist eine neue `wave-99-….md` **unsichtbar**: `make planning-check` Exit 0, 0 Befunde,
+- Mit `welle-*` (heute) ist eine neue `wave-<NN>-….md` **unsichtbar**: `make planning-check` Exit 0, 0 Befunde,
   auch ohne Zeiger in der Roadmap.
 - Mit `wave-*` meldet es `wave-drift` für die Datei ohne Zeiger; die **38** Abschluss-Register-Zeilen
   `welle-<NN>` und ihre **38** Ergebnisnotizen sind dann **ungewächtert** — kein Befund, auch wo einer stünde.
@@ -74,7 +74,7 @@ Konfiguration verlangt Gleichheit). Gemessen in einem Wegwerf-Klon, Stand `590dd
 
 | Tooling | Regel | Make-Target |
 |---|---|---|
-| Probe in einer Wegwerf-Kopie des Repos | flache `wave-99-probe.md` ohne Zeiger ⇒ `wave-drift`, mit Zeiger Exit 0 | `make planning-check` |
+| Probe in einer Wegwerf-Kopie des Repos | flache `wave-<NN>-probe.md` ohne Zeiger ⇒ `wave-drift`, mit Zeiger Exit 0 | `make planning-check` |
 
 ## Re-Evaluierungs-Trigger
 
