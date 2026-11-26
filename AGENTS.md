@@ -227,7 +227,7 @@ Keine Review-Historie und keine Review-Befund-Marker, keine Deliberation
 über Verworfenes, keine Herkunfts-Prosa, keine Slice-Nummern und keine
 Mess-Labels; Herkunft nur als **ein** auflösbares Feld nach dem
 Baseline-Schema (`DC-*` — die Baseline-Form `LH-*` —, `ADR-*`, `MR-*`,
-`seit welle-<NN>`). Der Reviewer-Skill trägt den HIGH-Anker dazu.
+`seit wave-<NN>`, im Bestand `seit welle-<NN>`, [`MR-082`](harness/conventions.md#mr-082)). Der Reviewer-Skill trägt den HIGH-Anker dazu.
 
 **Zustandsfelder** (Roadmap-/Register-/Meilenstein-Zellen, das
 `**Status:**`-Feld einer ADR) tragen **nicht** die fünf Klassen, sondern

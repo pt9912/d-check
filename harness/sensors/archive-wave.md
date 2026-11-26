@@ -11,9 +11,9 @@ den Repo-Zustand *verändert*, statt über ihn zu urteilen.
 
 | Modus | Was er einsammelt | Wohin |
 | --- | --- | --- |
-| `WELLE=<id>` | die Slices einer geschlossenen Welle (über ihr `**Welle:**`-Feld) und deren Review-Reports | `done/<welle-id>/archiv.zip` |
-| `SLICE=<id>` | einen einzelnen **wellenlosen** `done/`-Slice | `docs/plan/planning/done/wellenlos/` |
-| `REVIEW=<dateiname>` | einen **eigenständigen** Review-Report ohne Slice-Partner | `docs/reviews/archiv/` <!-- d-check:ignore (existiert erst nach mindestens einer Anwendung, seit slice-199) --> |
+| `WELLE=<id>` | die Slices einer geschlossenen Welle (über ihr `**Welle:**`-Feld) und deren Review-Reports | `done/<wave-id>/archive.zip` (Bestand: `archiv.zip`) |
+| `SLICE=<id>` | einen einzelnen **wellenlosen** `done/`-Slice | `docs/plan/planning/done/wellenlos/`, Archiv `<slice-id>-archive.zip` |
+| `REVIEW=<dateiname>` | einen **eigenständigen** Review-Report ohne Slice-Partner | `docs/reviews/archiv/`, Archiv `<basisname>-archive.zip` <!-- d-check:ignore (existiert erst nach mindestens einer Anwendung, seit slice-199) --> |
 
 **Was in allen Modi passiert:** Der Volltext wird durch einen **Stub** ersetzt,
 und repo-weite Verweise werden nachgezogen.
@@ -54,6 +54,14 @@ Testsuite ist deshalb `make archive-wave-test` und **nicht** Teil von
    ist die benannte Grenze des Kanons (Regelwerk `modul-06`, Schritt 4) und
    der Grund, warum die Operation in einem Werkzeug steckt und nicht in
    Handarbeit.
+4. **Beide Schreibweisen werden gelesen, nur die neue wird geschrieben**
+   ([`MR-082`](../conventions.md#mr-082)). Das Werkzeug sammelt
+   Slices über `welle-<NN>` **und** `wave-<NN>` im `**Welle:**`-Feld; jede andere
+   Form ist keine Zugehörigkeit. Das Archiv einer Welle folgt dem Präfix ihrer
+   Kennung (`wave-<NN>` → `archive.zip`, `welle-<NN>` → `archiv.zip`); der `SLICE`-
+   und der `REVIEW`-Modus kennen kein Präfix und schreiben immer `-archive.zip`.
+   Bestehende Archive (`archiv.zip`, `<slice-id>-archiv.zip`) bleiben unter ihrem
+   Namen, und ein Stub, der auf sie zeigt, wird nicht umgeschrieben.
 
 ## Bindung
 

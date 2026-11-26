@@ -5,7 +5,7 @@ Argument: $ARGUMENTS
 Dieser Command führt die **Planner**-Rolle für *eine* Welle (Modul 6 — Roadmap Engineering). Eine
 Welle ist ein **Bündel von Slices**, das gemeinsam geplant und geschlossen wird. Der Welle-Status ist
 die **Verzeichnis-Position**, **kein `Status:`-Feld**: eine **offene** Welle liegt **flach** in
-`docs/plan/planning/<welle-id>.md`, bei Closure wandert sie per `git mv` nach `done/` (das schließt
+`docs/plan/planning/<wave-id>.md`, bei Closure wandert sie per `git mv` nach `done/` (das schließt
 `/close-welle`). Der Roadmap-Abschnitt *Offene Wellen* ist derivativ — ein Zeiger je flacher
 Welle-Datei; woran gerade gearbeitet wird, sagt das `Welle:`-Feld der Slices in `in-progress/`.
 
@@ -16,13 +16,18 @@ Modul 5 (Planning-Lifecycle), Modul 7 (Carveouts). Bei Konflikt gilt der Kurs.
 
 Lies den MR-Block in `harness/conventions.md`; die planungs-relevanten:
 
+- **Namen der Welle ([`MR-082`](../../harness/conventions.md#mr-082)).** Neue Wellen heißen `wave-<NN>`,
+  ihre Ergebnisnotiz `wave-<NN>-results.md`, ihr Archiv `archive.zip`, ihr Herkunfts-Anker `seit wave-<NN>`.
+  Der Bestand (`welle-<NN>`, `archiv.zip`, `seit welle-<NN>`) bleibt und wird nicht umbenannt.
+  **Grenze:** das Modul `planning` bewacht nur `wave-*` — die Wellen-Invariante und die Register-Deckung der
+  Bestands-Wellen laufen nicht mehr ([`ADR-0117`](../../docs/plan/adr/0117-wellen-namen-ueber-die-konfiguration.md)).
 - **Neue Artefakte per `cp` aus den vendored Templates** (`.harness/baseline/<tag>/templates/…`),
   dann **in-place** ausfüllen — **keine handgeschriebenen Kopien und kein Modellieren auf ein
   bestehendes Artefakt.** Das gilt für den Welle-Plan (`wave.template.md`) **und** jeden neuen
   Slice (`slice.template.md`).
 - **Strenges Doc-Gate (d-check).** Jede `DC-`/`ADR-`/`MR-`/`slice-`-Kennung in einer gescannten
   `.md` muss ein klickbarer Anker-Link sein (link-policy: always) — ein bares Kennungs-Token bricht
-  `doc-check`. Der Welle-Plan wird gescannt. **`welle-NN` ist keine Traceability-Klasse** — der
+  `doc-check`. Der Welle-Plan wird gescannt. **`wave-NN` (im Bestand `welle-NN`) ist keine Traceability-Klasse** — der
   commit-msg-Hook verlangt zusätzlich eine slice-/MR-/ADR-/DC-ID in der Botschaft.
 - **Commit via Message-Datei** (`git commit -F <datei>`); `make gates` endet mit `record-gates`,
   jede Inhaltsänderung nach einem Gate-Lauf macht den Stempel ungültig.
@@ -70,7 +75,7 @@ die Antwort und wird notiert.
 ## Welle-Plan per cp anlegen und füllen (der Kern-Schritt)
 
 7. **`cp` aus `.harness/baseline/<tag>/templates/docs/plan/planning/wave.template.md` nach
-   `docs/plan/planning/<welle-id>.md`** — flach in `planning/`, kein Lifecycle-Ordner. Provenienz mit
+   `docs/plan/planning/<wave-id>.md`** — flach in `planning/`, kein Lifecycle-Ordner. Provenienz mit
    `diff -q <template> <ziel>` belegen (byte-identisch, dann füllen).
 8. **In-place füllen** (Edits, **kein** Voll-Überschreiben): den `> **Template-Hinweis.**`-Block
    strippen, alle Platzhalter ersetzen, die `<!-- -->`-Guidance-Kommentare entfernen. Die

@@ -177,7 +177,7 @@ ist eine Lifecycle-Rücksprungkante (11).
     (indikativ, auflösbar), oder trägt er eine Slice-Nummer als Begründung, ein „(… , entschieden)"
     ohne Anker-Form, oder einen Konjunktiv über eine verworfene Alternative bzw. eine noch nicht
     existierende künftige Änderung (**„sobald Slice X das tut …"**)? Herkunft steht nur als **ein**
-    auflösbares Feld in den dort genannten Formen (`DC-*`, `ADR-*`, `MR-*`, `· seit welle-<Kennung>`, wellenlos
+    auflösbares Feld in den dort genannten Formen (`DC-*`, `ADR-*`, `MR-*`, `· seit wave-<Kennung>` (im Bestand `welle-<Kennung>`), wellenlos
     `· seit slice-<Kennung>`) — alles andere ist Zustand, keine Chronik, und wird vor der Übergabe
     umformuliert statt mitgeschleift.
 
@@ -237,6 +237,6 @@ Hier endet die Implementation. Die übrigen Rollen laufen in **getrennten Kontex
     ist keine Antwort. Erreicht ein Eintrag **mit diesem Slice** 3× (die Zahl seiner
     Evidence-Dateien), wandert er in die Steering-Loop-Einträge der laufenden Welle-Closure
     (`/close-welle`); läuft keine Welle, löst die Slice-Closure den Lese-Schritt selbst aus, und der
-    Herkunfts-Anker lautet dann `seit slice-<Kennung>` statt `seit welle-<Kennung>`.
+    Herkunfts-Anker lautet dann `seit slice-<Kennung>` statt `seit wave-<Kennung>`.
 
 Gates nicht überspringen. Keine Erfolgsmeldung ohne Command-Ausgabe.

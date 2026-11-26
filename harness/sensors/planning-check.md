@@ -21,6 +21,15 @@ atomar hält — ein byte-reiner Lifecycle-Move ist deshalb gate-rot.
    für die andere hält, hält einen halben Wächter für einen ganzen.
 2. **Hermetisch — kein git.** Der Zustand ist das Verzeichnis im Arbeitsbaum,
    nicht der gemergte Stand.
+3. **Er liest EIN Wellen-Präfix: `wave-`.** `planning.waves.glob` und
+   `results-glob` stehen auf `wave-*`
+   ([`MR-082`](../conventions.md#mr-082)). Die Bestands-Wellen `welle-<NN>` sind
+   für `wave-drift` und `wave-results-missing` **ungewächtert** — ihre
+   Register-Zeilen (`grep -c '^| welle-' docs/plan/planning/in-progress/roadmap.md`)
+   und ihre Ergebnisnotizen (`git ls-files | grep -c 'done/welle-[0-9]*-results.md$'`)
+   melden keinen Befund, auch wo einer stünde. Ob das Modul mehrere Präfixe liest,
+   ist ein Produkt-Merkmal und gehört dem Auftraggeber; die Senkung trägt
+   [`ADR-0117`](../../docs/plan/adr/0117-wellen-namen-ueber-die-konfiguration.md).
 ## Bindung
 
 Bestandteil von `make gates`.

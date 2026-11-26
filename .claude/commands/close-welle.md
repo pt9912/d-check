@@ -9,18 +9,23 @@ sechs Belege vorliegen, ist die Welle *auditierbar* geschlossen.
 
 **Die Welle-Plan-Datei wandert bei Closure per `git mv` nach `done/`** (neben ihre Results-Notiz) —
 der Zustand ist die **Verzeichnis-Position, kein `Status:`-Feld** (wie beim Slice). Die Closure
-erzeugt **zusätzlich** eine *separate* Results-Notiz (`done/<welle-id>-results.md`).
+erzeugt **zusätzlich** eine *separate* Results-Notiz (`done/<wave-id>-results.md`).
 
 Kanonische Quellen (vendored Regelwerk, `.harness/baseline/<tag>/regelwerk/`): Modul 6 (Roadmap /
 Wellen-Closure), Modul 7 (Carveouts), Modul 5 (Lifecycle). Bei Konflikt gilt der Kurs.
 
 ## Repo-lokale Adaptionen (d-check)
 
+- **Namen der Welle ([`MR-082`](../../harness/conventions.md#mr-082)).** Neue Wellen heißen `wave-<NN>`,
+  ihre Ergebnisnotiz `wave-<NN>-results.md`, ihr Archiv `archive.zip`, ihr Herkunfts-Anker `seit wave-<NN>`.
+  Der Bestand (`welle-<NN>`, `archiv.zip`, `seit welle-<NN>`) bleibt und wird nicht umbenannt.
+  **Grenze:** das Modul `planning` bewacht nur `wave-*` — die Wellen-Invariante und die Register-Deckung der
+  Bestands-Wellen laufen nicht mehr ([`ADR-0117`](../../docs/plan/adr/0117-wellen-namen-ueber-die-konfiguration.md)).
 - **Docker-only + Gate-Nachweis/Stop-Hook.** Nur `make`-Targets; `make gates` endet mit
   `record-gates`. Jede Inhaltsänderung nach einem Gate-Lauf (inkl. Commit) macht den Stempel
   ungültig → nach dem Self-Close-Commit `make gates` grün bestätigen.
 - **Strenges Doc-Gate.** `DC-`/`ADR-`/`MR-`/`slice-`-Kennungen in gescannten `.md` als klickbare
-  Anker-Links — die Results-Notiz und die Roadmap werden gescannt. **`welle-NN` ist keine
+  Anker-Links — die Results-Notiz und die Roadmap werden gescannt. **`wave-NN` (im Bestand `welle-NN`) ist keine
   Traceability-Klasse** — Welle-Commits tragen zusätzlich eine slice-/MR-ID.
 - **Neue Artefakte per `cp` aus den vendored Templates** — die Results-Notiz entsteht per `cp` aus
   `.harness/baseline/<tag>/templates/docs/plan/planning/wave-results.template.md` und wird danach
@@ -31,7 +36,7 @@ Wellen-Closure), Modul 7 (Carveouts), Modul 5 (Lifecycle). Bei Konflikt gilt der
 ## Vorbedingung: Kontext lesen
 
 1. `CLAUDE.md` (falls vorhanden), `harness/README.md`, `AGENTS.md`, `harness/conventions.md`,
-   **Modul 6** on-demand und die Welle-Plan-Datei (`docs/plan/planning/<welle-id>.md`, v. a. §3
+   **Modul 6** on-demand und die Welle-Plan-Datei (`docs/plan/planning/<wave-id>.md`, v. a. §3
    Closure-Kriterien) lesen.
 
 ## Die sechs Schritte (Modul 6 — jeder mit Beleg, keiner mit Datum)
@@ -49,7 +54,7 @@ Wellen-Closure), Modul 7 (Carveouts), Modul 5 (Lifecycle). Bei Konflikt gilt der
    Auflösungs-Trigger eingetreten → Zeile aus `AGENTS.md` entfernen. Keine fälligen Trigger → je
    Klasse eine belegte „0 offen"-Feststellung, kein Auslassen. **Ein Trigger ohne Wächter ist eine
    Absichtserklärung mit Verfallsdatum.**
-4. **Schritt 3 — Closure-Notiz `done/<welle-id>-results.md` schreiben** (per `cp` aus dem vendored
+4. **Schritt 3 — Closure-Notiz `done/<wave-id>-results.md` schreiben** (per `cp` aus dem vendored
    `wave-results.template.md`, dann füllen). Hält fest, *was gelernt wurde*: geliefert · was
    funktionierte · was anders lief · **Steering-Loop-Einträge** (geschärfte Regel / neuer Sensor /
    benannte Spec-Lücke) · Zeiger aufs Beobachtungs-Register · Folge-Slices · Verifikation (die Belege
@@ -57,7 +62,7 @@ Wellen-Closure), Modul 7 (Carveouts), Modul 5 (Lifecycle). Bei Konflikt gilt der
    **Der Lese-Schritt des Beobachtungs-Registers gehört hierher** (`docs/plan/planning/observations/README.md`,
    Modul 6): jeder Eintrag, dessen `evidence/` **≥ 3** Dateien führt, wandert in die
    Steering-Loop-Einträge und wird zur **verkörperten Regel** mit Herkunfts-Anker
-   (`seit welle-<NN>`). Der Ausgang steht danach in seiner `state.md`, das Verzeichnis bleibt liegen;
+   (`seit wave-<NN>`; im Bestand `seit welle-<NN>`). Der Ausgang steht danach in seiner `state.md`, das Verzeichnis bleibt liegen;
    *gestrichen* trägt dieselbe `state.md`, mit Begründung — still löschen macht die Beobachtung
    ununterscheidbar von einer, die es nie gab.
    Erreicht kein Eintrag 3×, ist *„kein Eintrag über der Schwelle"* die Feststellung, die in die
@@ -69,20 +74,20 @@ Wellen-Closure), Modul 7 (Carveouts), Modul 5 (Lifecycle). Bei Konflikt gilt der
    (jetzt eine Ebene tiefer) → im selben Zug reconcilen, bis `doc-check` grün ist.
    **Zum Schluss die drei Paarungen prüfen** — erst jetzt, weil sie die gerade entstandenen Einträge
    prüfen: (a) *Anker* — wo ein Steering-Loop-Eintrag das Feld `liegt in <Zielort>` trägt, existiert
-   der Zielort und trägt `seit welle-<NN>` bzw. `seit slice-<NNN>`; (b) *Folge-Slice* — jeder genannte
+   der Zielort und trägt `seit wave-<NN>` (im Bestand `seit welle-<NN>`) bzw. `seit slice-<NNN>`; (b) *Folge-Slice* — jeder genannte
    Folge-Slice existiert als Datei irgendwo im Planning-Lifecycle, nicht nur in `open/`;
    (c) *Register* — jede genannte Kennung `BEO-<KUERZEL>/<slug>` existiert als Verzeichnis im
    Register, und jedes Verzeichnis trägt ein nicht leeres `evidence/`. Rot heißt in allen drei
    Fällen: etwas wurde versprochen und nicht angelegt.
 5. **Schritt 4 — Zeitdokumente der Welle archivieren.** Ihre Slice-Dateien, ihr Plan und die
-   Review-Reports dieser Slices wandern nach `done/<welle-id>/archiv.zip`; an ihrer Stelle bleiben
+   Review-Reports dieser Slices wandern nach `done/<wave-id>/archive.zip` (im Bestand `archiv.zip`); an ihrer Stelle bleiben
    gekürzte Stubs — per `cp` aus den vendored Vorlagen `archive-stub-slice.template.md` bzw.
    `archive-stub-wave.template.md`; ein Stub trägt keine Abschnittsüberschriften, Review-Reports
    bekommen keinen. Die **Ergebnisnotiz bleibt vollständig und flach**. Eingesammelt wird nach der
    Welle, nicht nach dem Verzeichnis: die Slices, deren `Welle:` diese Welle nennt, **und** die
    wellenlosen seit der letzten Closure; Slices einer noch offenen Welle bleiben liegen.
    **Die Operation gehört in ein Werkzeug, nicht in Handarbeit** — d-check führt das Werkzeug:
-   `make archive-wave WELLE=<welle-id>`. Vor der ersten Archivierung den Geltungsbereich der
+   `make archive-wave WELLE=<wave-id>`. Vor der ersten Archivierung den Geltungsbereich der
    Sensoren prüfen: was auf `done/*.md` prüft, sieht die Stubs eine Ebene tiefer nicht mehr —
    prüfen, ob die Link-/ID-Pflichten im Stub gelten (er trägt Kennungen).
 6. **Schritt 5 — Self-Close-Commit + Move.** Der **Self-Close-Commit** (Inhalt) trägt: die
