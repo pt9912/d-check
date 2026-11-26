@@ -170,6 +170,25 @@ Alle sieben Zeilen: **nur** das Link-Ziel, nach der Wortgrenze (`](`, optional e
   `make blackbox-probe REF=738d2bca` (der Commit vor dem ersten Bump-Commit) und den Vergleich von `--manual` je Begriff mit den vier
   Abweichungsklassen; sie sind dem Slice nicht aufgetragen (§3, Gates).
 
+**Zweite Plan-Änderung (Implementer, vor dem Code):** drei Festlegungen, die die Tabelle offen ließ, und die Folge für die Welle.
+
+- **Zwei Zeilen der Spezifikation bleiben: die Konsumenten-Beispiele.** Die Spezifikation trägt in ihrem Konfigurations-Beispiel
+  (`matrix.classes`, Z. 233 und 234) dieselben zwei Zeilen wie `benutzerhandbuch.md` Z. 372–373, `config_template.go` und `suggest.go` —
+  ein Konsument nennt seine Spec-Straten, nicht diese Datei (§1, „Keine Konsumenten-Beispiele“). Ein Beispiel, das an vier Stellen
+  gespiegelt steht ([`MR-025`](../../../../harness/conventions.md#mr-025)), ändert sich an allen vier oder an keiner; die Sichtung entscheidet es
+  ([`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md), Frage B). Damit trägt die Spezifikation **159** geänderte Zeilen
+  (158 Link-Ziele und die Prosa-Zeile 920, die ihren eigenen Pfad nennt), nicht 161; die Zahl 161 zählt die Zeichenkette
+  (`grep -c 'spezifikation\.md' <die Spezifikation>`) und nicht den Gegenstand. Danach nennt die Datei den alten Namen **2**-mal.
+- **Das Ventil deckt 119 Befunde, nicht 104.** Gemessen am Arbeitsbaum ohne den `ignore-refs`-Eintrag: 119 Befunde `codepath-missing`, mit dem
+  Eintrag 0 (`make doc-check`). Davon 109 in eingefrorenen Dateien (`done/` 51, ADRs 44, Register-Belege 5, `conventions/done` 6, `CHANGELOG.md` 2,
+  `docs/plan/cr` 1) und 10 in zwei lebenden Klassen, die den alten Namen als **Gegenstand** nennen: die Pläne dieser Welle (9) und der Eintrag
+  [`MR-081`](../../../../harness/conventions.md#mr-081) (1, Vergangenheits-Aussage über die Pin-Zeilen). Das Ventil ist deshalb auch für sie repo-weit wirksam; der
+  Kommentar am Eintrag nennt es.
+- **Folge für (d3) der Welle.** Die Zeile 920 der Spezifikation (der Pfad in der Prosa zu `--manual`) steht in der Ausgabe von `--manual` zu den Begriffen
+  `manual` und `Spezifikation` (am Vorher-Image gemessen: je 1 Treffer von `spec/spezifikation.md`) und wechselt mit. Sie ist **keine** der vier
+  Klassen von (d3) (Kopfzeile · Link-Ziel · Pin · Handbuch-Zeile) und wäre dort ein Befund; die Welle führt sie als fünfte Klasse
+  (*ein Pfad in der Prosa der Spezifikation, Z. 920*), die Messung bleibt bei ihr. Der Slice ändert die Zeile, weil sie sonst eine Datei nennt, die es nicht gibt.
+
 **Reihenfolge und Commit-Zerlegung** ([`AGENTS.md`](../../../../AGENTS.md) §3.3, [`BEO-ALL/path-scoped-commit-carries-staged-rest`](../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/observation.md)):
 
 1. **Vorbedingung, kein Commit dieses Slice:** das Architect-Verdikt zu den Fragen der Welle liegt vor,
