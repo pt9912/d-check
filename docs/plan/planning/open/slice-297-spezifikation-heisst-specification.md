@@ -30,7 +30,7 @@ Schritt 5 (die Kopfzeile `==> <pfad>:<zeile>` — der Wortlaut bleibt, die Ausga
 [Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md) Frage 6). Der Verweis zeigt **aufwärts**: Die
 Spec nennt diesen Slice nie.
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912
 
 **Autor:** pt9912. **Datum:** 2026-11-25.
 
