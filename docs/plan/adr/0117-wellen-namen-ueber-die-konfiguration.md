@@ -57,8 +57,10 @@ Konfiguration verlangt Gleichheit). Gemessen in einem Wegwerf-Klon, Stand `590dd
   `wavePrefix`, der Konfigurations-Prüfung und rund 100 Test-Zeilen, dazu Lastenheft, Spezifikation, ADR,
   Handbuch und ein Release. Verworfen für jetzt: der Anlass (neue Namen) trägt es nicht, die Entscheidung liegt
   beim Auftraggeber.
-- **B. Den Bestand umbenennen.** Dann gäbe es keine Koexistenz. Verworfen: 344 Pfade mit `welle-<NN>`, 188
-  `archiv.zip`, 24 Anker und 38 Register-Zeilen sind Belege; der Auftraggeber hat „Bestand bleibt“ entschieden.
+- **B. Den Bestand umbenennen.** Dann gäbe es keine Koexistenz. Verworfen: 345 Pfade mit `welle-<NN>`, 188
+  `archiv.zip`, 19 Anker und 38 Register-Zeilen sind Belege (Kommandos und Zahlen:
+  [`MR-082`](../../../harness/conventions/MR-082-wave-welle-koexistenz.md) §Begründung und §Auflösungs-Trigger);
+  der Auftraggeber hat „Bestand bleibt“ entschieden.
 - **C. Die Konfiguration bleibt auf `welle-*`.** Keine Senkung, aber eine neue Welle ist für das Gate
   unsichtbar — ein grünes `planning-check` über einer Menge, die es nicht sieht. Verworfen: das ist die
   schlechtere Senkung, und sie wäre unbenannt.
