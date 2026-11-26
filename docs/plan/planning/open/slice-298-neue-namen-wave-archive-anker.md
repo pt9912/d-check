@@ -126,6 +126,24 @@ Implementer **wiederholt** die Zählung vor der ersten Änderung.
 | [`ADR-0117`](../../adr/0117-wellen-namen-ueber-die-konfiguration.md) und `docs/plan/adr/README.md` | update (Status) | `**Status:**` `Proposed` → `Accepted` bei der Closure, Geschichte-Zeile, Index-Zeile; der Status-Übergang ist dem ADR-Gate erlaubt |
 | `docs/plan/planning/README.md` | prüfen | nennt „flache Welle-Dateien“ — prüfen, ob es einen Namen trägt (Prosa bleibt) |
 
+**Plan-Änderung (Planner, vor dem Übergang `open` → `next`; Stand `439a49ff`, die Zählungen der Tabelle sind wiederholt):**
+Die Wiederholung nennt dieselben Zahlen wie die Tabelle bis auf drei Stellen, die nachweislich nicht stimmen; die Tabelle bleibt
+als Plan-Stand stehen, diese Zeilen überschreiben sie ausdrücklich.
+
+| Stelle | Tabelle sagt | gemessen | Kommando |
+|---|---|---|---|
+| `archiv.zip` im Werkzeug | **14** Stellen (`archive.go` 7, `stub.go` 6, `main.go` 1) | **12** (`archive.go` 7, `stub.go` **4**, `main.go` 1); dieselbe Zahl schon am Stand `590dde3d` | `git grep -c 'archiv\.zip' -- tools/archive-wave/archive.go tools/archive-wave/stub.go tools/archive-wave/main.go` |
+| Zeilen in der [`.d-check.yml`](../../../../.d-check.yml) | Z. 915ff. (`glob`, `results-glob` als „update“), 518–530, 580/589/594, 410/418 | Klasse `welle` Z. 536–548, Verbote 598/607/612, `exempt-paths` 428/436 (je **+18**); der Block `waves:` (Z. 936) führt **weder `glob` noch `results-glob`**, nur `dir` und `mode` — die beiden Zeilen sind **neu**, die Defaults (`welle-*.md`) gelten heute; es bleiben 10 Zeilen, davon **8 geändert und 2 neu** | `git grep -n 'welle' -- .d-check.yml` und `awk '/^  waves:/,/mode: many/' .d-check.yml` |
+| Risiko 5, die Treffermenge „nennt nur `planning_test.go`“ | ein Treffer | **fünf**: `planning_test.go`, [`ADR-0117`](../../adr/0117-wellen-namen-ueber-die-konfiguration.md) (Z. 34 und 77 tragen `wave-99`), die Welle, das Architect-Verdikt und dieser Plan; die Aussage galt am Stand `590dde3d`, vor dem Verdikt | `git grep -l -E 'wave-[0-9]{2,}' -- . ':!.harness/baseline'` |
+
+**Folge für Risiko 5 und Commit 2:** In einer Wegwerf-Kopie (Klasse `wave`, Token `wave-\d{2,}`, Verbot `adr → wave`) meldet `doc-check`
+**2** `matrix-forbidden`, beide in [`ADR-0117`](../../adr/0117-wellen-namen-ueber-die-konfiguration.md) (Z. 34, 77), sonst 0. Der Ausgang
+„*entfallen*, wenn `make doc-check` 0 Befunde meldet“ trägt damit nur, wenn die ADR vorher kein `wave-<Ziffern>`-Beispiel mehr führt oder die
+Nennung als Provenance deklariert ist. Beides ist eine **Entscheidung des Architect**, nicht des Implementers: Die ADR ist `Proposed` und
+damit noch änderbar ([`AGENTS.md`](../../../../AGENTS.md) §3.5, nur `Accepted` ist immutabel), und sie trägt die Senkung, die dieser
+Slice konfiguriert. Sie ist **Vorbedingung vor Commit 2** (die Konfiguration), nicht vor Commit 1 (das Werkzeug); liegt sie dort nicht vor, gilt
+die Rückführung `in-progress` → `open` aus §4.
+
 **Reihenfolge und Commit-Zerlegung** ([`AGENTS.md`](../../../../AGENTS.md) §3.3):
 
 1. **Vorbedingung, kein Commit dieses Slice:** das Architect-Verdikt zu den Fragen der Welle liegt vor,
