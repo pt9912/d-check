@@ -34,8 +34,6 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 
 - [`welle-98-baseline-v700`](../welle-98-baseline-v700.md)
 
-Nichts in Arbeit.
-
 ## Nächste Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`

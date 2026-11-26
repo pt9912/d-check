@@ -140,7 +140,7 @@ Namensregel nach sich zieht, **gemessen** statt geschätzt:
 1. **Die sieben Vorlagen-Umbenennungen treffen das Repo mechanisch.** `plan-welle.md` und
    `close-welle.md` nennen die alten Namen (`git grep -n "welle\.template\|welle-results\.template\|archiv-stub"
    -- .claude`), ebenso `harness/conventions.md` (`MR-<NNN>-titel.template.md`) und zwei Kommentarzeilen in
-   `tools/archive-wave/stub.go`. Das gehört zum Bump ([`slice-295`](next/slice-295-baseline-v700-bump.md)).
+   `tools/archive-wave/stub.go`. Das gehört zum Bump ([`slice-295`](in-progress/slice-295-baseline-v700-bump.md)).
 2. **Die Namensregel hat zwei Hälften mit zwei Slices.** Die **Spezifikation** umzubenennen ist ein Rename mit
    gemessener Reichweite und eigenem Commit-Zwang ([`slice-297`](open/slice-297-spezifikation-heisst-specification.md));
    die **neuen Namen** der Wellen, Archive und Anker sind ein Werkzeug-/Sensor-/Command-Thema
@@ -191,7 +191,7 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
 - **Das Mehr gegenüber den Slice-DoDs.** (d) bis (g) sind Aussagen über das Repo als Ganzes, die kein
   einzelner Slice abhaken kann — sie stehen deshalb **nicht** in einer Slice-DoD
   ([`AGENTS.md`](../../../AGENTS.md) §5 Regel 10). (a) bis (c) liefern
-  [`slice-295`](next/slice-295-baseline-v700-bump.md) und [`slice-297`](open/slice-297-spezifikation-heisst-specification.md);
+  [`slice-295`](in-progress/slice-295-baseline-v700-bump.md) und [`slice-297`](open/slice-297-spezifikation-heisst-specification.md);
   die Welle **misst sie am Endstand gegen**, nachdem alle Slices geschrieben haben — ein Nachzug
   dort darf kein Rot erzeugen. Zu jeder Aussage das Rot **ohne** die Arbeit der Welle:
   - **(a) Pin und Bestand gehören zusammen.** `make baseline-verify` Exit 0 **und** `make baseline-freshness`
@@ -268,7 +268,7 @@ Lifecycle-Verzeichnis und wird hier **nicht** gespiegelt.
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [`slice-295`](next/slice-295-baseline-v700-bump.md) | **Bump:** Baseline-Pin auf `v7.0.0` — Re-Vendor, Spiegel, `d-check:cite`-Spannen, Vorlagen-Namen in den Verweisen, Bump-Eintrag (Delta vollständig nach Datei, keine Neuerung übernommen) | [`MR-011`](../../../harness/conventions.md#mr-011) (Pin-Kette), [`MR-021`](../../../harness/conventions.md#mr-021) |
+| [`slice-295`](in-progress/slice-295-baseline-v700-bump.md) | **Bump:** Baseline-Pin auf `v7.0.0` — Re-Vendor, Spiegel, `d-check:cite`-Spannen, Vorlagen-Namen in den Verweisen, Bump-Eintrag (Delta vollständig nach Datei, keine Neuerung übernommen) | [`MR-011`](../../../harness/conventions.md#mr-011) (Pin-Kette), [`MR-021`](../../../harness/conventions.md#mr-021) |
 | [`slice-297`](open/slice-297-spezifikation-heisst-specification.md) | **Namensregel, Hälfte 1:** `spec/spezifikation.md` → `specification.md` (unter `spec/`) — reiner Rename samt Link-Nachzug, Inhalt, `manual.go` und die zwei Tests, Ventil für die eingefrorenen Nennungen | [`DC-FA-CLI-013`](../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen) (Vertrag bleibt), [`ADR-0103`](../adr/0103-adr-gate-laesst-pfad-nachzug-durch.md), [`ADR-0115`](../adr/0115-vcs-folgt-umbenennung.md) |
 | [`slice-298`](open/slice-298-neue-namen-wave-archive-anker.md) | **Namensregel, Hälfte 2:** neue Wellen `wave-<NN>`, Archive `archive.zip`, Anker `seit wave-<NN>` — `tools/archive-wave`, die Sensoren der `.d-check.yml` und des Closure-Profils, die Command-Dateien; der Adaptions-Eintrag zur Koexistenz | [`MR-011`](../../../harness/conventions.md#mr-011) |
 | [`slice-296`](open/slice-296-baseline-v700-neuerungen-sichtung.md) | **Sichtung:** je Bewegung der übrigen Dateien eine Klassifikation (bereits befolgt · neu und anwendbar · nicht anwendbar) mit Empfehlung, dazu die Frage zu `environment-check` und zur „Umgebungs-Zusage“ gegen die vorhandenen Gates — **eine** Entscheidungsvorlage, keine Übernahme | [`MR-011`](../../../harness/conventions.md#mr-011) |
@@ -297,7 +297,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
   Auftraggebers auf die Vorlage (§6) und hängt an dieser Welle nicht.
 - Wird blockiert von: keiner.
 - **Die Reihenfolge ist fachlich bindend: erst pinnen, dann dem Kanon folgen.** Erst
-  [`slice-295`](next/slice-295-baseline-v700-bump.md) (der neue Baum steht; die Vorlagen heißen jetzt `wave.template.md`
+  [`slice-295`](in-progress/slice-295-baseline-v700-bump.md) (der neue Baum steht; die Vorlagen heißen jetzt `wave.template.md`
   und so weiter), dann [`slice-297`](open/slice-297-spezifikation-heisst-specification.md) (der Rename berührt die Zeile der Spezifikation,
   die der Bump ändert, und die `d-check:cite`-Spannen, die der Bump neu ankert) und
   [`slice-298`](open/slice-298-neue-namen-wave-archive-anker.md) (die Commands nennen die neuen Vorlagen-Namen), zuletzt
@@ -332,7 +332,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
      schon, der Bump-Eintrag zeigt dorthin und nennt den Vor-Bump-Commit.
   10. *Freshness-Audit der Adaptionen:* **nein**; die Obergrenze von 17 Treffern bleibt Messung.
   11. *Ort der Entscheidungsvorlage:* **`baseline-v700-neuerungen.md`** unter `docs/plan/planning/`, flach; kein Eintrag für die Klasse.
-  12. *`stub.go`, zwei Kommentarzeilen:* **im Bump nachziehen**, in [`slice-295`](next/slice-295-baseline-v700-bump.md).
+  12. *`stub.go`, zwei Kommentarzeilen:* **im Bump nachziehen**, in [`slice-295`](in-progress/slice-295-baseline-v700-bump.md).
 - **Review-Vorgabe der Welle** (Lehre aus welle-96 und welle-97): je Slice **höchstens zwei Runden**,
   eingearbeitet werden nur HIGH und MEDIUM; LOW und INFO bleiben im Report. Jede Nachbesserung zitiert die
   Stelle, die sie trägt, statt sie nachzuerzählen

@@ -2,7 +2,7 @@
 
 **Rolle:** Architect (Modul 8), frischer Kontext, **vor** Code. Rolleninhaber: pt9912.
 **Gegenstand:** [welle-98](../plan/planning/welle-98-baseline-v700.md) §5 (zwölf Fragen) und ihre vier Slice-Pläne
-([slice-295](../plan/planning/next/slice-295-baseline-v700-bump.md),
+([slice-295](../plan/planning/in-progress/slice-295-baseline-v700-bump.md),
 [slice-296](../plan/planning/open/slice-296-baseline-v700-neuerungen-sichtung.md),
 [slice-297](../plan/planning/open/slice-297-spezifikation-heisst-specification.md),
 [slice-298](../plan/planning/open/slice-298-neue-namen-wave-archive-anker.md)), Stand `e0b06112`.

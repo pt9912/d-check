@@ -65,7 +65,7 @@ stehen unter einem benannten Ventil — `make doc-check` ohne Befund, `make adr-
 - **Keine Kommentarzeilen** (Verdikt Frage 7: entschieden, sie bleiben): 90 Zeilen in 33 Go-Dateien, dazu je eine in `Dockerfile`
   und `Makefile`, zwei in `tools/` sind Rang-Zeiger ohne Wirkung; der Nachzug ist die größere Antwort und ein eigener Akt.
 - **Das Lastenheft, außer Zeile 4762** (Auftrag des Auftraggebers, Verdikt Frage 6). Jede weitere Änderung dort ist nicht Teil des Slice.
-- **Der Pin-Text der Spezifikation (Zeile 8)** gehört dem Bump ([`slice-295`](../next/slice-295-baseline-v700-bump.md)).
+- **Der Pin-Text der Spezifikation (Zeile 8)** gehört dem Bump ([`slice-295`](../in-progress/slice-295-baseline-v700-bump.md)).
 - **CHANGELOG, READMEs, Handbuch-Kopf, Release** — Release-Prep ([`AGENTS.md`](../../../../AGENTS.md) §5 Zeile 17); der
   Hinweis auf die geänderte Kopfzeile von `--manual` steht in der Closure-Notiz, nicht im Feature-Commit. **Ausnahme,
   weil sie Links sind:** die zwei Links der READMEs und die drei von `operations.md` müssen im selben Zug fallen, sonst
@@ -138,7 +138,7 @@ Lauf-Bericht ist — nicht, was in `done/` liegt), nicht nach dem Verzeichnis. S
 **Reihenfolge und Commit-Zerlegung** ([`AGENTS.md`](../../../../AGENTS.md) §3.3, [`BEO-ALL/path-scoped-commit-carries-staged-rest`](../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/observation.md)):
 
 1. **Vorbedingung, kein Commit dieses Slice:** das Architect-Verdikt zu den Fragen der Welle liegt vor,
-   [`slice-295`](../next/slice-295-baseline-v700-bump.md) ist `done/`.
+   [`slice-295`](../in-progress/slice-295-baseline-v700-bump.md) ist `done/`.
 2. **Zählung wiederholen** (die Form oben), Frozen-Klassen **vorher** listen, bevor ein Tausch fällt.
 3. **Arbeitsbaum vollständig vorbereiten, dann stufenweise stagen:** Alle Änderungen liegen im Arbeitsbaum, weil der
    `pre-commit`-Hook den **Arbeitsbaum** prüft und `make doc-check` und der Image-Build (`go:embed`) sonst am
@@ -160,7 +160,7 @@ Closure-Trigger der Welle (§3 (d)).
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
-**Start** (`next` → `in-progress`): [`slice-295`](../next/slice-295-baseline-v700-bump.md) liegt in `done/`;
+**Start** (`next` → `in-progress`): [`slice-295`](../in-progress/slice-295-baseline-v700-bump.md) liegt in `done/`;
 `in-progress/` trägt keinen Slice (nur die Roadmap); das **Architect-Verdikt** zu den zwölf Fragen in
 [welle-98 §5](../welle-98-baseline-v700.md) (für diesen Slice tragend: 4, 5, 6, 7) liegt vor: [Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md);
 Priorisierung gesetzt, `Verantwortlich:` beim Übergang `open` → `next` gesetzt.
@@ -287,6 +287,6 @@ umbenannten Spec-Stratum. Der Zähler folgt aus den Dateien der Closure.
 `make nightly-state` am 2026-11-25: `image-scan` **grün** (jüngster Lauf 2026-11-25T12:59:28Z). `upstream-drift`
 **rot** (jüngster Lauf 2026-11-25T09:26:13Z), der Log war über `gh run view` nicht abrufbar; gelesen ist
 `make baseline-freshness` (Exit 3, neuer Release `v7.0.0`) — der Gegenstand der Welle, **planmäßig gelesen**. Zum
-Zeitpunkt dieses Slice ist [`slice-295`](../next/slice-295-baseline-v700-bump.md) `done/`; der Stand wird beim Start neu gelesen.
+Zeitpunkt dieses Slice ist [`slice-295`](../in-progress/slice-295-baseline-v700-bump.md) `done/`; der Stand wird beim Start neu gelesen.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
