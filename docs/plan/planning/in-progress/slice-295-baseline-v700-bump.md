@@ -140,6 +140,20 @@ Datei**, die die Zeichenkette `v6.18.1` trägt (`git grep -l`), nicht der Verwei
 | [`.d-check.yml`](../../../../.d-check.yml) | update | nur, was die Antwort auf Frage 5 verlangt: je eingefrorener Datei mit Link auf den alten Baum **ein** `ignore-refs`-Eintrag (gemessen **7**); heute 30 Einträge über 12 Tags |
 | dieser Plan und die Pläne [`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md), [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md), [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) | update | die je zwei `d-check:cite`-Spannen in §8 auf den neuen Baum (zusammen 8) |
 
+**Plan-Änderung (Implementer, vor dem Code):** Zusätzlich zur Tabelle trägt dieser Slice **eine** Datei aus dem
+Frozen-Bestand, die die Spiegel-Messung nicht sah, weil sie nicht den Pin, sondern den **Pfad** der Eintrags-Datei
+von [`MR-080`](../../../../harness/conventions.md#mr-080) nennt: `docs/reviews/2026-10-20-slice-277-baseline-v6181-verify.md`
+Z. 4 verlinkt die Eintrags-Datei `conventions/…-baseline-v6181.md` (`git grep -n 'conventions/MR-0[8]0-baseline-v6181' -- . ':!docs/plan/planning/done'
+':!.harness/baseline'` nennt außer der Index-Zeile in `harness/conventions.md` nur Inline-Code in drei Reviews, die `codepaths`
+ausnimmt, und diesen einen Link). Nach dem Move nach `conventions/done/` meldet `make doc-check` ihn als `target-missing`.
+**Antwort:** der Link wird auf `conventions/done/` nachgezogen — ein reiner Pfad-Nachzug, das Ziel lebt, nur sein Ort wechselt
+(dieselbe Begründung wie in Frage 5 für die Spezifikation; Vorgang und Zähler wie bei `slice-274` in
+[`MR-080`](../../../../harness/conventions.md#mr-080): 1 Datei, 1 Zeile). Die Alternative, ein achter `ignore-refs`-Eintrag, wäre
+eine Gate-Senkung ([`MR-069`](../../../../harness/conventions.md#mr-069)) für einen Link, der weiter auflösen kann. Der Nachzug
+reist im Link-Tiefen-Commit (Schritt 4), der Move bleibt rein; der Bump-Eintrag führt ihn als Ausnahme von der Frozen-Regel.
+**Folge für Risiko 2 (§6):** `git diff --stat <Vor-Bump>..HEAD -- docs/plan/planning/done docs/reviews CHANGELOG.md harness/conventions/done`
+ist nicht leer, sondern nennt genau diese eine Review-Datei und die zugezogene Eintrags-Datei von [`MR-080`](../../../../harness/conventions.md#mr-080) unter `conventions/done/`.
+
 **Reihenfolge und Commit-Zerlegung** ([`AGENTS.md`](../../../../AGENTS.md) §3.3, [`BEO-ALL/path-scoped-commit-carries-staged-rest`](../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/observation.md)):
 
 1. **Vorbedingung, kein Commit dieses Slice:** das Architect-Verdikt zu den Fragen der Welle liegt vor.
