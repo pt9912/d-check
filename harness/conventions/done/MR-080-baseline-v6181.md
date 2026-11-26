@@ -39,11 +39,11 @@
      **vollen** Slice-Kennung, Folgeläufe mit Suffix `-r2`). **Dieses Repo ist
      betroffen, und die Bewegung geht auf eigene Befunde zurück:** sie ist die
      Fassung der Change Requests dieses Repos zum Modul `reviews`. Der
-     `reviews`-Block der [`.d-check.yml`](../../.d-check.yml) trägt von den Schlüsseln der
+     `reviews`-Block der [`.d-check.yml`](../../../.d-check.yml) trägt von den Schlüsseln der
      Vorlage nur `recursive` und `skip-pattern`; `require-promises`, `match` und
      `skip-allows-empty` fehlen. `make review-coverage` meldet 0 Befunde; **nicht
      gemessen** ist, ob der Lauf eine nichtleere Menge von Zusagen sieht (der
-     Leerlauf-Fall, den die Vorlage benennt). Folge-Slice: [`slice-278`](../../docs/plan/planning/done/wellenlos/slice-278-reviews-block-auf-vorlage-pruefen.md).
+     Leerlauf-Fall, den die Vorlage benennt). Folge-Slice: [`slice-278`](../../../docs/plan/planning/done/wellenlos/slice-278-reviews-block-auf-vorlage-pruefen.md).
   2. **Vorlagen-Pfade nennen die vendorte Baseline** — `templates/.harness/skills/
      reviewer.template.md`, `closure-note-reviewer.template.md`,
      `templates/harness/conventions.template.md` und
@@ -68,7 +68,7 @@
   `spec/architecture.md` und `spec/spezifikation.md` (Rolle-Zeile). **Zeilenweise
   geprüft:** `observations/README.md` und `harness/conventions.md` — jede Nennung
   dort war eine Pin-Aussage und ist retargetet, keine Vergangenheitszeile blieb;
-  [`MR-075`](../conventions.md#mr-075) („Seit `v6.17.0` trägt die Spezifikation einen
+  [`MR-075`](../../conventions.md#mr-075) („Seit `v6.17.0` trägt die Spezifikation einen
   Abschnitt …") bleibt stehen — die Aussage ist eine Tatsache über die Fassung, in der
   die Umnummerierung kam, nicht ein Pin; ebenso der Beleg
   `evidence/slice-261.md` im Register (unveränderlich ab Merge) und dieser
@@ -77,7 +77,7 @@
   Tag geschlossen) trägt einen Markdown-Link auf den `v6.17.0`-Baum
   (`modul-11` §Bewusstes Brechen); er ist auf `v6.18.1` retargetet, weil ein toter
   Link in einer eingefrorenen Datei sonst `ignore-refs` wachsen ließe
-  ([`MR-069`](../conventions.md#mr-069)). Der Text des Slice ist unberührt.
+  ([`MR-069`](../../conventions.md#mr-069)). Der Text des Slice ist unberührt.
 
   **`ignore-refs` wächst nicht** — gemessen: nach dem Entfernen des alten Baums
   meldet `doc-check` außer dem eben genannten Link und den Folgen des Moves von
@@ -91,7 +91,7 @@
   Reviewer-Skill `modul-10-review-harness.md` 87→99. Die übrigen 14 zeigen auf
   Dateien ohne inhaltliches Delta oder auf unverschobene Zeilen.
 
-  **Zitat-Delta** ([`MR-039`](../conventions.md#mr-039)): wörtliche Zitate ohne
+  **Zitat-Delta** ([`MR-039`](../../conventions.md#mr-039)): wörtliche Zitate ohne
   Direktive in Markdown stammen aus `modul-13` (`AGENTS.md`, „Halluzinierte Gates
   …") und `modul-05` (`MR-056`, §Lifecycle) — beide Dateien tragen kein inhaltliches
   Delta, die Zitate stehen im `v6.18.1`-Wortlaut unverändert. Aus den acht
@@ -104,5 +104,5 @@
   `fetch-baseline-cache.sh` an einem String-Vergleich der Dateizahl unter macOS (BSD-`wc`
   füllt auf); die Zahl stimmte (54 = 54), der Vergleich ist numerisch.
 - **Auflösungs-Trigger:** die nächste Pin-Hebung.
-- **Löst auf:** [`MR-074`](../conventions.md#mr-074)
+- **Löst auf:** [`MR-074`](../../conventions.md#mr-074)
 - **Ausgelöst durch Baseline-Stand:** `v6.18.1`

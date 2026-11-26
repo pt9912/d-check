@@ -1,7 +1,7 @@
 # Verifikation — slice-277: Baseline-Pin auf v6.18.1, mechanisch
 
 - **Rolle:** Verifier (Modul 11) — DoD, Plan und MR gegen den Stand
-- **Gegenstand:** `docs/plan/planning/done/wellenlos/slice-277-baseline-v6181-bump.md` §1, §2, §3 (samt den Plan-Änderungen), §4, §6; [MR-080](../../harness/conventions/MR-080-baseline-v6181.md)
+- **Gegenstand:** `docs/plan/planning/done/wellenlos/slice-277-baseline-v6181-bump.md` §1, §2, §3 (samt den Plan-Änderungen), §4, §6; [MR-080](../../harness/conventions/done/MR-080-baseline-v6181.md)
 - **Range:** `b9211511..HEAD` (Spitze `6dc40149`); der Review-Report `2026-10-20-slice-277-baseline-v6181.md` nur als Kontext
 - **Datum:** 2026-10-20
 
