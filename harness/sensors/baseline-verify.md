@@ -14,7 +14,7 @@ Die drei Fragen, die alle nötig sind, legt
    `SHA256SUMS`, **das mit ihm kam**. Wer eine Datei ändert **und** das Manifest
    nachzieht, bekommt einen grünen Lauf. Gemessen: dieselbe Änderung meldet ohne
    nachgezogenes Manifest `GESCHEITERT` (Exit 1), mit nachgezogenem Manifest
-   `verify ok (54 Dateien, vollständig)` (Exit 0).
+   `verify ok (55 Dateien, vollständig)` (Exit 0).
    **Das ist kein Mangel des Gates, sondern die Grenze eines netzlosen
    Vergleichs:** Ohne Netz gibt es nichts, wogegen die Echtheit zu prüfen wäre.
    Sie hält [`make baseline-freshness`](baseline-freshness.md) mit
