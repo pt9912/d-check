@@ -61,7 +61,7 @@ stehen unter einem benannten Ventil — `make doc-check` ohne Befund, `make adr-
 - **Keine Konsumenten-Beispiele.** `config_template.go` Z. 56–57, `suggest.go` Z. 379–380 und
   `benutzerhandbuch.md` Z. 372–373 zeigen, wie **ein Konsument** seine Spec-Straten nennt, nicht diese Datei; sie
   bleiben in jedem Fall (die Vorlage des Regelwerks nennt dort künftig `specification.md` — das ist Sache der
-  [Sichtung](../open/slice-296-baseline-v700-neuerungen-sichtung.md), Frage B).
+  [Sichtung](../next/slice-296-baseline-v700-neuerungen-sichtung.md), Frage B).
 - **Keine Kommentarzeilen** (Verdikt Frage 7: entschieden, sie bleiben): 90 Zeilen in 33 Go-Dateien, dazu je eine in `Dockerfile`
   und `Makefile`, zwei in `tools/` sind Rang-Zeiger ohne Wirkung; der Nachzug ist die größere Antwort und ein eigener Akt.
 - **Das Lastenheft, außer Zeile 4762** (Auftrag des Auftraggebers, Verdikt Frage 6). Jede weitere Änderung dort ist nicht Teil des Slice.
@@ -176,7 +176,7 @@ Alle sieben Zeilen: **nur** das Link-Ziel, nach der Wortgrenze (`](`, optional e
   (`matrix.classes`, Z. 233 und 234) dieselben zwei Zeilen wie `benutzerhandbuch.md` Z. 372–373, `config_template.go` und `suggest.go` —
   ein Konsument nennt seine Spec-Straten, nicht diese Datei (§1, „Keine Konsumenten-Beispiele“). Ein Beispiel, das an vier Stellen
   gespiegelt steht ([`MR-025`](../../../../harness/conventions.md#mr-025)), ändert sich an allen vier oder an keiner; die Sichtung entscheidet es
-  ([`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md), Frage B). Damit trägt die Spezifikation **159** geänderte Zeilen
+  ([`slice-296`](../next/slice-296-baseline-v700-neuerungen-sichtung.md), Frage B). Damit trägt die Spezifikation **159** geänderte Zeilen
   (158 Link-Ziele und die Prosa-Zeile 920, die ihren eigenen Pfad nennt), nicht 161; die Zahl 161 zählt die Zeichenkette
   (`grep -c 'spezifikation\.md' <die Spezifikation>`) und nicht den Gegenstand. Danach nennt die Datei den alten Namen **2**-mal.
 - **Das Ventil deckt 119 Befunde, nicht 104.** Gemessen am Arbeitsbaum ohne den `ignore-refs`-Eintrag: 119 Befunde `codepath-missing`, mit dem
@@ -356,7 +356,7 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   Dateien den Zeilen-Marker führt; gemessen ohne Wirkung, der Eintrag ist wegen der 109 eingefrorenen ohnehin repo-weit);
   F-5 (die Historie der Spezifikation führt keine Zeile zum Namenswechsel, das Lastenheft schon; keine Regel verlangt sie);
   F-6 (das Konsumenten-Beispiel nennt weiter den alten Namen, und `--suggest-config` schlägt ihn vor — Träger ist die
-  Sichtung, [`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md) Frage B); V-1 (die zwei einzeln roten
+  Sichtung, [`slice-296`](../next/slice-296-baseline-v700-neuerungen-sichtung.md) Frage B); V-1 (die zwei einzeln roten
   Zwischenstände, in der Push-Pflicht). Keine davon ist umgesetzt.
 - **Architektur-Beobachtung:** Ein Rename trägt drei Gegenstände, und drei Wächter urteilen je über einen: die **Link-Ziele**
   (`links`, `anchors`, dazu der ADR-Gate: ein Commit meldet 0 `core-drift-vcs`, zwei Commits meldeten 60, gemessen im Plan —
@@ -380,7 +380,7 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   Klassen und `make fullbuild` sind hier **nicht** gefahren; die Verifikation zeigte nur, dass Kopfzeile und Zeile 920 den neuen
   Pfad tragen (`docker run … d-check:latest --manual manual`). Sie gehören dem Closure-Trigger von
   [`wave-98`](../wave-98-baseline-v700.md).
-- **Folge-Slices:** keine neuen. [`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md) (Frage B, das
+- **Folge-Slices:** keine neuen. [`slice-296`](../next/slice-296-baseline-v700-neuerungen-sichtung.md) (Frage B, das
   Konsumenten-Beispiel) und [`slice-298`](slice-298-neue-namen-wave-archive-anker.md) (der Umzug von `welle-98`, der die
   Verweise dieses Slice mitzieht) bestehen schon in `open/`. Für die Kommentarzeilen mit altem Namen ist **kein** Slice
   geschnitten: das Verdikt (Frage 7) hat sie entschieden, der Nachzug ist die größere Antwort und ein eigener Akt.
