@@ -19,7 +19,7 @@ vendorten Baum und den Vor-Bump-Commit, aus dem der alte Baum gelesen wird),
 
 **Berührte Spec-Stellen:** — (der Slice liest und schreibt eine Vorlage; er berührt keine Spec-Stelle).
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912
 
 **Autor:** pt9912. **Datum:** 2026-11-25.
 
