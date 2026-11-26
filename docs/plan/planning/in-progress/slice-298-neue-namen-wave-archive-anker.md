@@ -74,30 +74,33 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] **Werkzeug:** `tools/archive-wave` liest `wave-<NN>` im `**Welle:**`-Feld der Slices und `-welle=wave-<NN>`
+- [x] **Werkzeug:** `tools/archive-wave` liest `wave-<NN>` im `**Welle:**`-Feld der Slices und `-welle=wave-<NN>`
       **neben** `welle-<NN>` und schreibt für eine neue Welle `done/<wave-id>/archive.zip`; der Slice- und der Review-Modus schreiben
       `-archive.zip` (Verdikt Frage 8); ein Bestands-Lauf (`make archive-wave WELLE=welle-97`, Dry-Run) ist vorher und nachher
       **byte-gleich**; jeder neue Test läuft ohne die Änderung **aus dem richtigen Grund** rot (die Meldung ist gelesen, §3);
       `make archive-wave-test` grün.
-- [ ] **Sensoren:** `planning.waves.glob` und `results-glob` stehen auf `wave-*`, die `matrix`-Klasse `wave` mit ihren drei
+      **Vorbehalt zum Haken:** Die Klausel „jeder neue Test läuft ohne die Änderung rot“ ist **wörtlich nicht
+      erfüllt**: unter der Gesamt-Rücknahme sind 9 der 14 neuen Tests rot und 5 grün; jeder der 14 ist gegen eine
+      benannte andere Änderung rot gefahren (Verifikation V-2, §7). Der Rest des Punkts ist bestätigt.
+- [x] **Sensoren:** `planning.waves.glob` und `results-glob` stehen auf `wave-*`, die `matrix`-Klasse `wave` mit ihren drei
       Verboten steht **neben** `welle`, beide `exempt-paths` und das Closure-Profil tragen die neue Form; an der Umstellung
       steht die **Grenze** im Kommentar (der Bestand ist ungewächtert), und die Probe aus
       [wave-98 §3 (g)](../wave-98-baseline-v700.md) läuft in einer Wegwerf-Kopie grün — `wave-drift` ohne Zeiger,
       Exit 0 mit Zeiger. `make doc-check` und `make planning-check` melden 0 Befunde.
-- [ ] **Commands, Briefing, Eintrag:** `plan-welle.md`, `close-welle.md`, `implement-slice.md` und `tools/archive-wave/README.md`
+- [x] **Commands, Briefing, Eintrag:** `plan-welle.md`, `close-welle.md`, `implement-slice.md` und `tools/archive-wave/README.md`
       nennen für Neues `wave-<NN>`, `wave-<NN>-results.md`, `archive.zip`, `seit wave-<NN>` (und für den Bestand weiter die
       alten Formen); `AGENTS.md` §3.7 nennt beide Anker-Formen; die Sensor-Dateien `harness/sensors/planning-check.md` und
       `harness/sensors/archive-wave.md` tragen die Grenze; der **Koexistenz-Eintrag** steht unter `harness/conventions/` in der
       Form, die das Architect-Verdikt festlegt (Frage 1), im Index; die Senkung von `planning` trägt
       [`ADR-0117`](../../adr/0117-wellen-namen-ueber-die-konfiguration.md), der Eintrag zeigt auf sie; sie geht mit der Closure nach `Accepted`.
-- [ ] `make gates` grün; `make archive-wave-test` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün; `make archive-wave-test` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
 ## 3. Plan (vor Code)
 
@@ -259,22 +262,41 @@ dasteht.
   1×). — **Ausgang:** *entfallen*, wenn die Closure-Notiz je Sensor **beide** Seiten nennt (neue Form gesehen, Bestand nach der
   Umstellung ausdrücklich ungewächtert) und die Probe sie in einer Wegwerf-Kopie umdreht; sonst *eingetreten* mit einer
   Evidenz-Datei.
+  — **Ausgang:** *entfallen.* §7 nennt je Sensor beide Seiten, und Review und Verifikation haben sie in Wegwerf-Klonen
+  gefahren; die einzige einseitige Stelle ist die gewollte Senkung von `planning` (Risiko 4).
 - **Ein Test läuft grün, ohne die Regel zu fahren**
   ([`BEO-ALL/testfall-faehrt-seine-regel-nicht`](../observations/BEO-ALL/testfall-faehrt-seine-regel-nicht/observation.md),
   2×). — **Ausgang:** *entfallen*, wenn die Closure-Notiz je neuem Test die Mutation (die Änderung zurücknehmen) und die
   gelesene Meldung nennt und jeder rot war; sonst *eingetreten* (dann 3×).
+  — **Ausgang:** *eingetreten.* Nicht jeder neue Test war unter der Rücknahme rot (9 von 14, §7), und
+  `TestRun_PlanOhneEigeneSlices_Wave` nannte eine Rot-Bedingung, die er nicht fuhr (Review F-3; Kommentar behoben in
+  `256a84b3`). Dazu ein bestehender Test, der mit abgeschalteter Regel grün bleibt (F-9, nicht behoben). Evidenz-Datei
+  `evidence/slice-298.md`, damit 3×. Folge-Kennung: die Closure von [`wave-98`](../wave-98-baseline-v700.md), deren
+  Lese-Schritt dem Eintrag seinen Ausgang gibt; ein Folge-Slice ist nicht geschnitten.
 - **Das Werkzeug ändert den Bestands-Lauf** — `make archive-wave WELLE=welle-97` liefert danach etwas anderes. — **Ausgang:**
   *entfallen*, wenn der Dry-Run vorher und nachher mit `diff` **byte-gleich** ist (stdout, stderr, Exit); sonst *eingetreten*,
   und die Änderung geht zurück.
+  — **Ausgang:** *entfallen.* Werkzeug von `db329ff2` gegen den Stand nach der Änderung, derselbe Baum, `welle-97`,
+  `welle-96` und `welle-95` im Dry-Run: stdout mit `cmp` gleich, Exit gleich (0), keine Fehlerausgabe des Werkzeugs
+  (Review und Verifikation, unabhängig). **Grenze:** stderr als Ganzes ist nicht byte-gleich, es trägt das
+  Docker-Build-Log; verglichen ist die Ausgabe des Werkzeugs.
 - **Die Umstellung von `planning.waves` schaltet die Wächter des Bestands ab** (38 Register-Zeilen, 38 Ergebnisnotizen; gemessen
   im Probelauf) — das ist die **gewollte** Folge der kleinsten Antwort, keine Panne. — **Ausgang:** *weiter offen* → Register
   (neue Beobachtung mit Beleg `evidence/slice-298.md`: „eine Umstellung des Präfixes schaltet die Wächter der anderen
   Schreibweise ab“); die Senkung selbst und ihre Wiedervorlage „das Modul liest mehrere Präfixe“ trägt
   [`ADR-0117`](../../adr/0117-wellen-namen-ueber-die-konfiguration.md) ([wave-98 §5](../wave-98-baseline-v700.md) Frage 3, größere Antwort).
+  — **Ausgang:** *weiter offen.* Register:
+  [`BEO-ALL/praefix-umstellung-schaltet-waechter-der-anderen-schreibweise-ab`](../observations/BEO-ALL/praefix-umstellung-schaltet-waechter-der-anderen-schreibweise-ab/observation.md),
+  neu angelegt, 1×; die Senkung steht in der angenommenen
+  [`ADR-0117`](../../adr/0117-wellen-namen-ueber-die-konfiguration.md).
 - **Ein `wave-<NN>`-Token trifft einen falschen Treffer** in Spec, Sicht oder ADR (die Klasse `wave` braucht Ziffern:
   `wave-drift` ist kein Treffer). — **Ausgang:** *entfallen*, wenn `make doc-check` nach dem Anlegen der Klasse 0 Befunde
   meldet — am Stand `590dde3d` trägt kein Dokument außerhalb dieser Pläne ein `wave-<NN>`-Token (`git grep -l -E
   'wave-[0-9]{2,}' -- . ':!.harness/baseline'` nennt nur `planning_test.go`); sonst *eingetreten*.
+  — **Ausgang:** *entfallen.* `make doc-check` meldet mit der Klasse 0 Befunde, und
+  `git grep -n -E 'wave-[0-9]{2,}' -- spec docs/plan/adr` ist leer. Der falsche Treffer war angelegt (zwei
+  Beispiel-Kennungen in der damals vorgeschlagenen ADR) und ist **vor** der Konfiguration beseitigt worden (Plan-Änderung
+  und Verdikt-Nachtrag V2, `db329ff2`).
 
 ## 7. Closure-Notiz
 
@@ -290,7 +312,93 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-*(Wird bei der Closure gefüllt.)*
+- **Was hat funktioniert:** Der Zuschnitt „Konfiguration statt Produkt, Bestand bleibt“ hielt: `internal/`, `spec/` und die
+  Defaults sind ohne Diff, die einzige umbenannte Datei ist die Welle (`9d295355`, genau eine `R100`-Zeile). Je Sensor sind
+  **beide** Seiten in Wegwerf-Klonen gefahren (Verifikation, Probe (g); Review): `planning` meldet eine flache `wave-99`-Datei
+  ohne Zeiger als `wave-drift` (Exit 2, mit Zeiger Exit 0) und schweigt zu einer `welle-77`-Datei ohne Zeiger; `matrix` meldet
+  `wave-98` in Spezifikation, Lastenheft, Sicht und ADR und weiter `welle-97` in der Sicht; das Closure-Profil meldet eine
+  `wave-99-results.md` und eine `welle-97-results.md` ohne den Abschnitt je mit `section-missing`; die `ids`-Ausnahme trägt
+  beide Verzeichnisformen (Kontrolle `done/xwave-99/`: zwei `id-unlinked`); `tools/archive-wave` liest beide und schreibt das
+  Archiv nach dem Präfix. Review und Verifikation ohne HIGH und MEDIUM.
+- **Die Mutation je neuem Test (Risiko 2), im Wegwerf-Klon, Meldung gelesen (Verifikation):** `wave_names_test.go` führt
+  **14** neue Tests. Unter der Gesamt-Rücknahme (`collect.go` auf `db329ff2`, `ArchiveName` immer `archiv.zip`, Suffix
+  `-archiv.zip`) sind **9** rot und **5** grün, dazu 2 bestehende rot. Je Einzel-Mutation: `collect.go` zurück („wave-98
+  sammelt []“), Vergleich nur über die Ziffern („welle-98 sammelt [slice-701-a.md slice-702-b.md …]“), `ArchiveName` je
+  Richtung („ArchiveName(\"wave-98\") = \"archiv.zip\", erwartet \"archive.zip\"“ und umgekehrt), Suffix („erwartet genau
+  slice-601-archive.zip, got [slice-601-archiv.zip]“). Die fünf grünen sind drei Regressionswächter an präfix-generischem
+  Code (`TestExtractTitle_Wave`, `TestFindWellePlan_Wave`, `TestRun_DryRun_NoWrites_Wave`: rot, wenn `FindWellePlan` oder
+  `h1RE` `wave-` ablehnt oder der Dry-Run schreibt) und zwei Gegenproben, die unter der Rücknahme grün bleiben **müssen**
+  (`TestFixture_Bestand_SchreibtWeiterArchiv`: rot bei `ArchiveName` immer `archive.zip`;
+  `TestRunSlice_AcceptsContextualWaveMention`: rot, wenn die Zugehörigkeit aus dem ganzen Feld gelesen wird). Damit ist
+  Review F-7 berichtigt: es nennt 13 neue und 7 neue rote, gemessen sind 14, 9 und 5 (V-5).
+- **Was ging anders als geplant:** **(1) Das Closure-Profil bekam keine zweite Regel**, sondern die eine liest jetzt
+  `done/*-results.md`: eine Regel ohne Kandidaten meldet `section-missing`, und eine `wave-<NN>-results.md` gibt es erst bei
+  der Closure der Welle (Plan-Änderung `21d6f711`). Grenze, am Eintrag kommentiert: das Muster liest jede `*-results.md`
+  unter `done/`, nicht nur Wellen-Notizen. **(2) Zahlen des Plans** stimmten nicht und sind in den Plan-Änderungen
+  überschrieben; die dort „17 Platzhalter-Form `seit welle-<NN>`“ ist zu eng beschrieben (V-3: von den 17 Treffern ohne
+  Ziffern sind 10 `<NN>`, 2 `<Kennung>`, 5 Prosa oder Zählkommando; 36 und 19 reproduzieren sich). **(3) `wave-98` in zwei
+  ADR-Beispielen** hätte die neue Klasse getroffen; vor der Konfiguration vom Architect auf den Platzhalter geschrieben
+  (`db329ff2`). **(4) Review F-1/F-2** (Kommentar am Closure-Profil: „heute“-Zahl und verworfene Alternative, `062e0c2a`),
+  **F-3** (Test-Kommentare, `256a84b3`), **F-5** (der Nachzug machte einen Mess-Satz im Report zu `slice-297`
+  selbstwidersprüchlich, `12fbc567`), **F-6 und Verifikation V-1** (Bestandszahlen der ADR und das Anker-Kommando in
+  [`MR-082`](../../../../harness/conventions.md#mr-082), das Zitate mitzählte: 19 → 14, `f30cb082` und `208de9c6`). Bei der
+  Closure erneut gemessen: 14 Anker und 435 Pfade nach den Kommandos des Eintrags.
+- **Vorbehalt zum DoD-Punkt „Review durchgeführt“:** Eine Review-Runde. Die Fixrunde (`f30cb082`, `062e0c2a`, `256a84b3`,
+  `12fbc567`) bekam keine zweite; die Verifikation hat sie nachgesehen. `062e0c2a` ändert in der Gate-Konfiguration nur
+  einen Kommentar. `208de9c6` (V-1) entstand **nach** der Verifikation und ist von keiner der beiden Rollen gesehen; der
+  Planner hat das Diff gelesen und die zwei Zahlen reproduziert.
+- **Befunde ohne Umsetzung (INFO):** **F-8** die Wortgrenze der Kennungs-Regex trägt keinen Test (ohne `\b` bleiben alle
+  Tests grün; die Regex-Probe verhält sich richtig). **F-9** `TestRunSlice_RejectsWelleSlice` bleibt mit abgeschalteter
+  Zugehörigkeits-Prüfung grün: dem Fixture fehlt `docs/reviews`, der Lauf endet an anderer Stelle mit einem Fehler, und der
+  Test verlangt nur irgendeinen. **F-10** die Kommentare zum Verzeichnis von `make slice-mv` nennen nur `welle-<NN>`; das
+  Target reicht den Wert durch, das Verhalten stimmt. **V-4** zwei Zwischenstände sind einzeln rot, der Plan nannte einen
+  (Review F-4): `9d295355` (28 `target-missing`, ein `wave-drift`) und `21d6f711` (18 `target-missing`, ein `wave-drift`).
+- **Die Senkung ist benannt und angenommen:** [`ADR-0117`](../../adr/0117-wellen-namen-ueber-die-konfiguration.md)
+  (`Accepted` mit dieser Closure). `planning` bewacht die Bestands-Wellen nicht mehr (`wave-drift`,
+  `wave-results-missing`: 38 Register-Zeilen, 38 Ergebnisnotizen); `matrix`, Closure-Profil und Werkzeug lesen beide Formen.
+  Zwei Angaben der ADR sind enger zu lesen, als sie dastehen, und tragen die Entscheidung nicht: „verlangt Gleichheit“ — die
+  Konfigurations-Prüfung verlangt, dass das Präfix von `results-glob` mit dem von `glob` **beginnt**
+  ([`DC-FA-PLAN-001.a`](../../../../spec/specification.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning), Schritt W1); „acht
+  Stellen von `wavePrefix`“ ist mit `git grep -c wavePrefix -- internal` (5 Zeilen) nicht zu reproduzieren.
+- **Steering-Loop-Eintrag:** mit diesem Slice ist keine Regel und kein Sensor verkörpert. **Benannte Spec-Lücke:**
+  [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) —
+  `planning.waves` kennt **ein** Kennungs-Präfix; ein Repo, in dem zwei Schreibweisen nebeneinander stehen, kann nur eine
+  bewachen. Nicht in die Spezifikation geschrieben; Träger sind der Re-Evaluierungs-Trigger der
+  [`ADR-0117`](../../adr/0117-wellen-namen-ueber-die-konfiguration.md), [wave-98 §5](../wave-98-baseline-v700.md) Frage 3
+  (Entscheidung des Auftraggebers) und der neue Registereintrag. **Lernsignal 1, mit Ursache:** Die DoD verlangte „jeder neue
+  Test läuft ohne die Änderung rot“ und war damit für Gegenproben und Regressionswächter unerfüllbar, **weil** die Klausel
+  eine Mutation für alle Tests setzt statt je Test die Änderung zu verlangen, die ihn färbt. **Lernsignal 2, mit Ursache:**
+  Ein Kommando, das eine Zeichenkette zählt, zählt den Plan mit, der sie zitiert, **weil** der Ausschluss nach
+  Verzeichnissen (`done/`) formuliert war und der Plan beim Zählen noch nicht dort lag (V-1).
+- **Beobachtungs-Register (`../observations/`):** neu
+  [`BEO-ALL/praefix-umstellung-schaltet-waechter-der-anderen-schreibweise-ab`](../observations/BEO-ALL/praefix-umstellung-schaltet-waechter-der-anderen-schreibweise-ab/observation.md)
+  (1×, `offen`; Risiko 4). Je eine `evidence/slice-298.md` in
+  [`BEO-ALL/testfall-faehrt-seine-regel-nicht`](../observations/BEO-ALL/testfall-faehrt-seine-regel-nicht/observation.md)
+  (**3×, `offen`: Schwelle erstmals erreicht**; Risiko 2, F-3 und F-9),
+  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
+  (13×, `verkörpert`; V-1, F-6, V-5) und
+  [`BEO-ALL/mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md)
+  (7×, `verkörpert`; F-5).
+- **Architektur-Beobachtung:** Eine Kennungs-Form hat in diesem Repo vier Leser, und jeder antwortet anders auf zwei
+  Schreibweisen: der reguläre Ausdruck des Werkzeugs liest beide, `matrix` führt zwei Klassen, `structure` ein weiteres
+  Glob, und `planning` **muss** wählen, weil es aus dem Glob-Präfix nicht nur die Zugehörigkeit, sondern die **Identität**
+  (die Kennung) ableitet. Die Senkung folgt aus dieser Kopplung, nicht aus der Konfiguration.
+- **Push-Pflicht:** Alle Commits dieses Slice ab `73f52639` bis zum Move nach `done/` gehören in **einen** Push, zusammen mit
+  den ungepushten davor (`git log --oneline origin/main..HEAD`); `9d295355` und `21d6f711` sind einzeln rot und dürfen nicht
+  Spitze eines Push werden. Nach dem Push die CI an der **Spitze** lesen.
+- **Aufgaben für die Closure von [`wave-98`](../wave-98-baseline-v700.md):** (1) **Lese-Schritt**
+  `testfall-faehrt-seine-regel-nicht` (3×): Ausgang zuweisen (`verkörpert`, `geplant` oder `gestrichen`); der Eintrag darf
+  die Welle-Closure nicht als `offen` überstehen. (2) Die Messungen ihres Closure-Triggers, darunter (g) am Endstand,
+  `make fullbuild` und `make blackbox-probe` — hier **nicht** gefahren. (3) Push und CI. (4) Ihre eigenen Artefakte tragen
+  die neuen Namen (`wave-98-results.md`, `done/wave-98/archive.zip`, `seit wave-98`).
+- **Release:** keiner; kein Bestandteil des Images ändert sich, keine `CHANGELOG`-Notiz.
+- **Folge-Slices:** keine neuen. [`slice-296`](../open/slice-296-baseline-v700-neuerungen-sichtung.md) (Frage B: ob die
+  Defaults auf `wave-*` wechseln) besteht schon in `open/`. F-8, F-9 und F-10 sind benannt, nicht geschnitten.
+- **Risiken aus §6:** 1 *entfallen*, 2 *eingetreten*, 3 *entfallen*, 4 *weiter offen*, 5 *entfallen* — Begründung je Risiko
+  in §6.
+- **Die drei Paarungen**, hier vorab geprüft (getragen von der Closure von wave-98): (a) Anker — kein Eintrag mit
+  `liegt in`-Feld, keine Paarung auszulösen; (b) Folge-Slice — `slice-296` besteht als Datei in `open/`; (c) Register —
+  die vier genannten Verzeichnisse bestehen und tragen nicht leere `evidence/`.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
