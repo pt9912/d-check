@@ -156,10 +156,18 @@
   `.harness/baseline/`, **nicht** ohne `.harness/` — die Skills liegen dort;
   `git grep -l` und `git grep -o 'v6\.18\.1'`, gezählt wird die Datei und das
   Vorkommen, nicht der Verweis auf den Baum): **77** Dateien außerhalb des
-  vendorten Baums nannten `v6.18.1` — **190** Vorkommen (175 Zeilen). **Frozen,
-  byte-stabil (17 Dateien, 51 Vorkommen):** die `done/`-Slices und -Wellen (8 / 29),
-  die Review-Reports (8 / 21) und die CHANGELOG-Historie (1 / 1); `conventions/done/`
-  und eingehende CRs nannten den Tag nicht. **Frozen hinter dem Ventil (5 / 5):**
+  vendorten Baums nannten `v6.18.1` — **190** Vorkommen (175 Zeilen). **Frozen
+  (17 Dateien, 51 Vorkommen):** die `done/`-Slices und -Wellen (8 / 29), die
+  Review-Reports (8 / 21) und die CHANGELOG-Historie (1 / 1). **Davon bleiben 14
+  Dateien, 40 Vorkommen byte-stabil** (7 / 28, 6 / 11, 1 / 1); die **drei**
+  übrigen tragen je eine geänderte Zeile, nicht im Ventil (unten). Gemessen mit
+  `for f in $(git grep -l 'v6\.18\.1' 738d2bca -- docs/plan/planning/done
+  docs/reviews CHANGELOG.md | sed 's/^738d2bca://'); do git diff --quiet 738d2bca
+  HEAD -- "$f" && git grep -o 'v6\.18\.1' 738d2bca -- "$f" | wc -l; done`
+  (eine Zahl je byte-stabiler Datei: 14 Zeilen, Summe 40; mit nur
+  `docs/plan/planning/done` bzw. nur `docs/reviews` als Pfad 7 und 6 Dateien).
+  `conventions/done/` und eingehende CRs nannten den Tag nicht.
+  **Frozen hinter dem Ventil (5 / 5):**
   die `Accepted`-ADRs 0112 bis 0116, je mit einem Link in der Regeln-Zeile — **nicht**
   retargetet ([`AGENTS.md`](../../AGENTS.md#35-adrs-sind-nach-accepted-immutable) §3.5,
   siehe unten). **Pläne dieser Welle (5 / 25):** die Welle und die vier Slices nennen den
@@ -190,37 +198,49 @@
   **Was nach dem Bump den alten Pin noch nennt** (`git grep -l 'v6\.18\.1' -- .
   ':!docs/plan/planning/done' ':!docs/reviews' ':!CHANGELOG.md'
   ':!harness/conventions/done' ':!.harness/baseline'`, Stand des Bump-Commits):
-  **10** Dateien — dieser Eintrag, die `.d-check.yml` (die sieben Ventil-Einträge),
+  **10** Dateien — dieser Eintrag, die `.d-check.yml` (die fünf Ventil-Einträge),
   die fünf `Accepted`-ADRs hinter dem Ventil und drei Pläne dieser Welle, die den
   alten Pin als Vorzustand und als Gegenstand nennen (`slice-295`, `slice-296`,
   die Welle selbst; ein Vergangenheits-Beleg, der mit ihrem Umzug nach `done/`
   aus der Menge fällt).
 
-  **`ignore-refs` wächst, um sieben Einträge** — gemessen: nach dem Entfernen des
-  alten Baums meldet `make doc-check` genau die sieben eingefrorenen Dateien mit einem
-  Markdown-Link auf `.harness/baseline/v6.18.1/`: die `Accepted`-ADRs 0112, 0113,
-  0114, 0115 und 0116 (je in der Regeln-Zeile), `slice-274` (der Rot-Beleg) und den
-  Architect-Verdikt zu welle-93. Die Form ist die von [`MR-069`](../conventions.md#mr-069):
-  datei-skopiert, je ein Eintrag; der Grund — ein Nachziehen verfälschte den Stand
-  ihrer Zeit, und ein Anker kann im neuen Baum fehlen (die Überschrift in `modul-14`).
-  Bestand: **37** statt 30 Einträge auf entfernte Bäume, über **13** statt 12 Tags
+  **`ignore-refs` wächst, um fünf Einträge** — gemessen: nach dem Entfernen des
+  alten Baums meldet `make doc-check` sieben eingefrorene Dateien mit einem
+  Markdown-Link auf `.harness/baseline/v6.18.1/`; fünf davon, die `Accepted`-ADRs
+  0112, 0113, 0114, 0115 und 0116 (je in der Regeln-Zeile), bleiben hinter dem
+  Ventil, die zwei übrigen sind retargetet (unten). Die Form ist die von
+  [`MR-069`](../conventions.md#mr-069): datei-skopiert, je ein Eintrag. Der Grund:
+  die ADRs zitieren den Stand ihrer Zeit, und der zitierte Abschnitt (`modul-04`
+  §Ziel-Form: ADR) ist in `v7.0.0` **nicht wortgleich** — er nennt die Vorlage
+  `NNNN-title.template.md` statt `NNNN-titel.template.md` (je Abschnitt von der
+  Überschrift bis zur nächsten Überschrift gelesen, alt gegen neu: eine
+  abweichende Zeile, der Dateiname der Vorlage); ein Nachziehen verfälschte das Zitat
+  ([`MR-069`](../conventions.md#mr-069),
+  [`AGENTS.md`](../../AGENTS.md#35-adrs-sind-nach-accepted-immutable) §3.5), und der
+  Nachzug verschöbe nur die Wand auf die nächste Hebung
+  ([Nachtrag V1](../../docs/reviews/2026-11-26-welle-98-architect-verdikt.md)).
+  Bestand: **35** statt 30 Einträge auf entfernte Bäume, über **13** statt 12 Tags
   (`grep -c 'refs: \[\?"\?\.harness/baseline/v' .d-check.yml`; Tags:
-  `grep -o 'baseline/v[0-9.]*/\*\*' .d-check.yml | sort -u | wc -l`). Der
+  `grep -o 'baseline/v[0-9.]*/\*\*' .d-check.yml | sort -u | wc -l`; Vorzustand
+  mit `git show 738d2bca:.d-check.yml | …`). Der
   Auflösungs-Trigger von [`MR-069`](../conventions.md#mr-069) („kein neuer Eintrag über drei
   aufeinanderfolgende Pin-Hebungen") beginnt neu: die beiden vorigen Hebungen
   ([`MR-074`](../conventions.md#mr-074), [`MR-080`](../conventions.md#mr-080)) waren ohne
-  Wachstum, diese ist es nicht. [`slice-274`](../../docs/plan/planning/done/wellenlos/slice-274-trace-requirements-als-liste-von-quellen.md)
-  war mit [`MR-080`](../conventions.md#mr-080) von `v6.17.0` auf `v6.18.1` retargetet worden
-  (dort die Ausnahme von der Frozen-Regel); diesmal bleibt die Datei unberührt, das Ventil
-  trägt ihren Link wie den der anderen sechs.
+  Wachstum, diese ist es nicht (die fünf ADRs). [`slice-274`](../../docs/plan/planning/done/wellenlos/slice-274-trace-requirements-als-liste-von-quellen.md)
+  und das [Verdikt zu welle-93](../../docs/reviews/2026-10-30-welle-93-architect-verdikt.md)
+  sind wie bei [`MR-080`](../conventions.md#mr-080) auf den neuen Baum retargetet: die
+  zitierte Stelle ist gelesen wortgleich (`modul-11` §Bewusstes Brechen, `modul-05`
+  §Ziel-Form: Slice; `diff` je Abschnitt leer, 18 bzw. 58 Zeilen), und der Tausch hält
+  die Gate-Senkung um zwei Dateien kleiner.
 
-  **Eine Ausnahme von der Frozen-Regel, nicht im Ventil:** der Verifikations-Report
+  **Drei Ausnahmen von der Frozen-Regel, nicht im Ventil** — je **1 Datei, 1 Zeile**,
+  nur Link-Ziel: (1) der Verifikations-Report
   `docs/reviews/2026-10-20-slice-277-baseline-v6181-verify.md` verlinkt die
-  Eintrags-Datei von [`MR-080`](../conventions.md#mr-080) am alten Pfad (Z. 4). Mit
-  dem Move nach `conventions/done/` wäre der Link tot; er ist auf den neuen Pfad
-  nachgezogen — **1 Datei, 1 Zeile**, reiner Pfad-Nachzug, das Ziel lebt weiter. Die
-  Alternative, ein achter Ventil-Eintrag, wäre eine Gate-Senkung für einen Link, der
-  auflösen kann (Plan-Änderung in
+  Eintrags-Datei von [`MR-080`](../conventions.md#mr-080) am alten Pfad (Z. 4); mit
+  dem Move nach `conventions/done/` wäre der Link tot, er ist auf den neuen Pfad
+  nachgezogen, das Ziel lebt weiter. (2) `slice-274` und (3) das Verdikt zu welle-93
+  (oben) tragen das Link-Ziel auf den neuen Baum. Die Alternative, je ein weiterer
+  Ventil-Eintrag, wäre eine Gate-Senkung für einen Link, der auflösen kann (Plan-Änderung in
   [`slice-295`](../../docs/plan/planning/in-progress/slice-295-baseline-v700-bump.md) §3).
 
   **`d-check:cite`-Neu-Ankern** — gemessen **15** lebende Direktiven auf den
@@ -241,12 +261,18 @@
   373–374 → 416–417 (4×) und 379 → 422 (4×), wortgleich.
 
   **Zitat-Delta** ([`MR-039`](../conventions.md#mr-039)): wörtliche Zitate in
-  `„…"`-Form (ab 25 Zeichen) aus den lebenden Markdown- und YAML-Dateien (ohne
-  `done/`, Reviews, CHANGELOG, `conventions/done/`, ADRs und CRs), über Zeilenumbrüche
-  normalisiert in beiden Bäumen gesucht: 51 Fundstellen, **50** im Wortlaut beider
-  Bäume gleich, **1** nur im alten — die Überschrift *Zwei Formen des
-  Reproduzierbarkeits-Ankers* im Plan dieses Slice, der ihren Wegfall nennt.
-  Die Zitate ohne Anführungszeichen-Form (Paraphrase) sind damit nicht gemessen.
+  `„…"`-Form (ab 25 Zeichen) aus den lebenden Markdown- und YAML-Dateien
+  (`git ls-files -- '*.md' '*.yml' ':!docs/plan/planning/done' ':!docs/reviews'
+  ':!CHANGELOG.md' ':!harness/conventions/done' ':!docs/plan/adr' ':!docs/plan/cr'
+  ':!.harness/baseline'`, Symlinks ausgenommen). Je Datei über Zeilenumbrüche
+  normalisiert (`tr '\n\t' '  ' | tr -s ' '`) und mit
+  `grep -o '„[^„"“]*["“]'` gezogen; jedes Zitat wird in beiden Bäumen gesucht
+  (alle `*.md` je Baum, gleich normalisiert, `grep -qF`). Gemessen: **36**
+  Fundstellen stehen in mindestens einem der beiden Bäume, **35** im Wortlaut
+  beider Bäume gleich, **1** nur im alten — die Überschrift *Zwei Formen des
+  Reproduzierbarkeits-Ankers* im Plan dieses Slice, der ihren Wegfall nennt. Weitere
+  **381** Zitate stehen in keinem der beiden Bäume (andere Quellen) und gehören nicht
+  zur Menge. Die Zitate ohne Anführungszeichen-Form (Paraphrase) sind damit nicht gemessen.
 - **Begründung:** Der Nachtlauf `upstream-drift` meldete den neuen Release
   (`make baseline-freshness`); das Release `v7.0.0` lag vor. Die Hebung ist eine
   reine Fortschreibung; die inhaltlichen Bewegungen (oben) warten auf
