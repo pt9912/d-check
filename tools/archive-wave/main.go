@@ -1,6 +1,6 @@
 // archive-wave setzt Modul 6, Schritt 4 des Planning-Harness-Regelwerks um
 // ("Zeitdokumente der Welle archivieren"): sammelt die Slices und
-// Review-Reports einer geschlossenen Welle, baut ein archiv.zip, ersetzt die
+// Review-Reports einer geschlossenen Welle, baut ihr Archiv, ersetzt die
 // Volltexte durch gekuerzte Stubs und zieht repo-weite Verweise nach.
 //
 // Portabel gehalten: kein Import aus einem d-check-internen Paket. Jedes
@@ -20,7 +20,7 @@ import (
 )
 
 func main() {
-	welle := flag.String("welle", "", "Wellen-Kennung, z. B. welle-87 (mutually exclusive mit -slice/-review)")
+	welle := flag.String("welle", "", "Wellen-Kennung, z. B. welle-87 oder wave-98 (mutually exclusive mit -slice/-review)")
 	sliceID := flag.String("slice", "", "Slice-Kennung eines wellenlosen Slice, z. B. slice-137 (mutually exclusive mit -welle/-review)")
 	reviewFile := flag.String("review", "", "Dateiname eines eigenstaendigen Reviews unter docs/reviews/, z. B. 2026-06-11-cr-dc-fa-code-001.md (mutually exclusive mit -welle/-slice)")
 	root := flag.String("root", ".", "Repo-Wurzel")

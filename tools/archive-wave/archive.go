@@ -1,4 +1,4 @@
-// Fuehrt die Archivierung aus: baut archiv.zip, schreibt beide Stub-Arten,
+// Fuehrt die Archivierung aus: baut das Archiv (ArchiveName), schreibt beide Stub-Arten,
 // entfernt die alten Volltexte. Liefert die vorgenommenen Moves, damit der
 // Aufrufer anschliessend RewriteRepo darauf anwenden kann.
 package main
@@ -21,6 +21,23 @@ type Plan struct {
 	Reviews   []string
 }
 
+// ArchiveName ist der Dateiname des Archivs einer Welle. Die Schreibweise folgt
+// dem Praefix der Kennung (MR-082): `wave-<NN>` schreibt `archive.zip`
+// (Baseline v7.0.0), jede andere Kennung -- der Bestand `welle-<NN>` -- weiter
+// `archiv.zip`. Ein Schalter fuer die Schreibweise gibt es nicht.
+func ArchiveName(welleID string) string {
+	if strings.HasPrefix(welleID, "wave-") {
+		return "archive.zip"
+	}
+	return "archiv.zip"
+}
+
+// SliceArchiveSuffix ist das Namensende der Archive des Slice- und des
+// Review-Modus (MR-082). Beide Modi haben kein Praefix, das sie unterscheidet;
+// jedes Archiv, das sie schreiben, ist neu und traegt die Form der
+// Baseline v7.0.0 (`slice-<Kennung>-archive.zip`).
+const SliceArchiveSuffix = "-archive.zip"
+
 // RelPath macht einen absoluten Pfad Repo-relativ, Forward-Slash-normalisiert
 // -- die Form, in der Markdown-Links Ziele schreiben.
 func RelPath(root, abs string) string {
@@ -32,7 +49,7 @@ func RelPath(root, abs string) string {
 }
 
 // Apply fuehrt die Archivierung aus: legt docs/plan/planning/done/<welleID>/
-// an, baut archiv.zip, schreibt beide Stub-Arten, loescht die alten
+// an, baut das Archiv (ArchiveName), schreibt beide Stub-Arten, loescht die alten
 // Volltexte (Review-Reports bekommen keinen Stub -- Kanon-Vorgabe). Liefert
 // die Liste der Pfad-Aenderungen fuer den anschliessenden Verweis-Nachzug.
 //
@@ -51,7 +68,7 @@ func Apply(root string, p Plan) ([]Move, error) {
 	}
 	all = append(all, p.Slices...)
 	all = append(all, p.Reviews...)
-	if err := buildZip(root, filepath.Join(archiveDir, "archiv.zip"), all); err != nil {
+	if err := buildZip(root, filepath.Join(archiveDir, ArchiveName(p.WelleID)), all); err != nil {
 		return nil, err
 	}
 
@@ -142,7 +159,7 @@ const WellenlosArchiveDir = "docs/plan/planning/done/wellenlos"
 // `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht, Zeile
 // "Zeitdokumente archivieren ... Ohne Wellen tut es die Slice-Closure
 // selbst"). Die Slice-Datei wandert nach `WellenlosArchiveDir` (Stub, alter
-// Dateiname bleibt), ihr Archiv liegt als `<sliceID>-archiv.zip` daneben.
+// Dateiname bleibt), ihr Archiv liegt als `<sliceID>-archive.zip` daneben.
 // Liefert den Move fuer den anschliessenden repo-weiten Verweis-Nachzug --
 // Review-Reports bekommen wie im Wellen-Modus keinen Stub und verschwinden
 // ersatzlos, ohne eigenen Move-Eintrag.
@@ -152,7 +169,7 @@ func ApplySlice(root, sliceID, slicePath string, reviews []string) ([]Move, erro
 		return nil, fmt.Errorf("%s anlegen: %w", archiveDir, err)
 	}
 
-	zipPath := filepath.Join(archiveDir, sliceID+"-archiv.zip")
+	zipPath := filepath.Join(archiveDir, sliceID+SliceArchiveSuffix)
 	all := append([]string{slicePath}, reviews...)
 	if err := buildZip(root, zipPath, all); err != nil {
 		return nil, err
@@ -200,7 +217,7 @@ const ReviewArchiveDir = "docs/reviews/archiv"
 // ihre Identitaet vom Slice/von der Welle kommt). Anders als bei jenen IST
 // der Review hier selbst der abgeschlossene Vorgang und bekommt deshalb,
 // wie ein Slice, einen eigenen Stub -- er wandert nach ReviewArchiveDir,
-// sein Archiv liegt als "<basisname>-archiv.zip" daneben. Liefert den Move
+// sein Archiv liegt als "<basisname>-archive.zip" daneben. Liefert den Move
 // fuer den anschliessenden repo-weiten Verweis-Nachzug.
 func ApplyReview(root, reviewPath string) ([]Move, error) {
 	archiveDir := filepath.Join(root, ReviewArchiveDir)
@@ -210,7 +227,7 @@ func ApplyReview(root, reviewPath string) ([]Move, error) {
 
 	base := filepath.Base(reviewPath)
 	basename := strings.TrimSuffix(base, filepath.Ext(base))
-	zipPath := filepath.Join(archiveDir, basename+"-archiv.zip")
+	zipPath := filepath.Join(archiveDir, basename+SliceArchiveSuffix)
 	if err := buildZip(root, zipPath, []string{reviewPath}); err != nil {
 		return nil, err
 	}

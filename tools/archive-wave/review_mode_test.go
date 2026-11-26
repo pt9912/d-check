@@ -58,21 +58,21 @@ func TestRunReview_Apply(t *testing.T) {
 	if strings.Contains(stub, "Inhalt des Reviews") {
 		t.Fatalf("Stub traegt noch den Volltext: %q", stub)
 	}
-	if !strings.Contains(stub, "unzip -p docs/reviews/archiv/2026-06-11-cr-dc-fa-code-001-archiv.zip") {
+	if !strings.Contains(stub, "unzip -p docs/reviews/archiv/2026-06-11-cr-dc-fa-code-001-archive.zip") {
 		t.Fatalf("Stub nennt nicht den Archiv-Pfad: %q", stub)
 	}
 	if !strings.Contains(stub, "DC-FA-CODE-001") || !strings.Contains(stub, "ADR-0001") {
 		t.Fatalf("Stub uebernimmt die Hervorgegangen-Kennungen nicht: %q", stub)
 	}
 
-	zipPath := filepath.Join(root, "docs/reviews/archiv/2026-06-11-cr-dc-fa-code-001-archiv.zip")
+	zipPath := filepath.Join(root, "docs/reviews/archiv/2026-06-11-cr-dc-fa-code-001-archive.zip")
 	zr, err := zip.OpenReader(zipPath)
 	if err != nil {
-		t.Fatalf("archiv.zip fehlt oder unlesbar: %v", err)
+		t.Fatalf("archive.zip fehlt oder unlesbar: %v", err)
 	}
 	defer zr.Close()
 	if len(zr.File) != 1 || zr.File[0].Name != "docs/reviews/2026-06-11-cr-dc-fa-code-001.md" {
-		t.Fatalf("archiv.zip hat unerwarteten Inhalt: %+v", zr.File)
+		t.Fatalf("archive.zip hat unerwarteten Inhalt: %+v", zr.File)
 	}
 
 	if _, err := os.Stat(filepath.Join(root, "docs/reviews/2026-08-25-slice-137-toolchain-freshness-review.md")); err != nil {

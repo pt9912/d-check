@@ -15,7 +15,8 @@ var h1RE = regexp.MustCompile(`(?m)^#\s+(?:Slice\s+|Welle\s+)?[\w-]+:?\s*(.*)$`)
 var fullH1RE = regexp.MustCompile(`(?m)^#\s+(.*)$`)
 
 // ExtractTitle liest den Titel aus der ersten Ueberschrift eines Slice- oder
-// Welle-Plans ("# Slice slice-190: Titel" bzw. "# Welle welle-87: Titel").
+// Welle-Plans ("# Slice slice-190: Titel" bzw. "# Welle welle-87: Titel" und
+// "# Welle wave-98: Titel").
 // Liefert einen leeren String, wenn keine passende Ueberschrift gefunden
 // wird -- der Aufrufer entscheidet, ob das ein Fehler ist.
 func ExtractTitle(content string) string {
@@ -119,7 +120,7 @@ func FormatHervorgegangen(ids []string) string {
 const placeholder = "<manuell auszufuellen>"
 
 // SliceStub erzeugt den Slice-Stub-Text. welleField ist der Wert des
-// urspruenglichen **Welle:**-Feldes (z. B. "welle-87" oder "ohne Welle") --
+// urspruenglichen **Welle:**-Feldes (z. B. "welle-87", "wave-98" oder "ohne Welle") --
 // er bleibt unveraendert, waehrend "Archiviert mit" die einsammelnde Welle
 // nennt (fuer wellenlose Slices sind das zwei verschiedene Tatsachen).
 // hervorgegangen ist das fertig formatierte Feld (FormatHervorgegangen).
@@ -127,11 +128,11 @@ func SliceStub(id, title, welleField, welleID, hervorgegangen string) string {
 	return fmt.Sprintf(
 		"# %s — %s\n\n"+
 			"> **ARCHIVIERT** — Volltext:\n"+
-			"> `unzip -p done/%s/archiv.zip <pfad-im-archiv>`\n\n"+
+			"> `unzip -p done/%s/%s <pfad-im-archiv>`\n\n"+
 			"**Welle:** %s\n"+
 			"**Archiviert mit:** %s · **Geschlossen:** %s\n"+
 			"**Hervorgegangen:** %s\n",
-		id, title, welleID, welleField, welleID, placeholder, hervorgegangen,
+		id, title, welleID, ArchiveName(welleID), welleField, welleID, placeholder, hervorgegangen,
 	)
 }
 
@@ -150,7 +151,7 @@ func SliceStubStandalone(id, title, welleField, hervorgegangen string) string {
 	return fmt.Sprintf(
 		"# %s — %s\n\n"+
 			"> **ARCHIVIERT** — Volltext:\n"+
-			"> `unzip -p done/wellenlos/%s-archiv.zip <pfad-im-archiv>`\n\n"+
+			"> `unzip -p done/wellenlos/%s-archive.zip <pfad-im-archiv>`\n\n"+
 			"**Welle:** %s\n"+
 			"**Archiviert:** %s (eigene Closure)\n"+
 			"**Hervorgegangen:** %s <!-- d-check:ignore (Kennungen aus dem archivierten Volltext, absichtlich unverlinkt) -->\n",
@@ -170,7 +171,7 @@ func ReviewStub(basename, title, hervorgegangen string) string {
 	return fmt.Sprintf(
 		"# %s\n\n"+
 			"> **ARCHIVIERT** — Volltext:\n"+
-			"> `unzip -p docs/reviews/archiv/%s-archiv.zip <pfad-im-archiv>`\n\n"+
+			"> `unzip -p docs/reviews/archiv/%s-archive.zip <pfad-im-archiv>`\n\n"+
 			"**Archiviert:** %s (eigene Closure)\n"+
 			"**Hervorgegangen:** %s <!-- d-check:ignore (Kennungen aus dem archivierten Volltext, absichtlich unverlinkt) -->\n",
 		title, basename, placeholder, hervorgegangen,
@@ -184,9 +185,9 @@ func WelleStub(id, title, resultsFile string, nSlices, nReviews int) string {
 	return fmt.Sprintf(
 		"# %s — %s\n\n"+
 			"> **ARCHIVIERT** — Volltext:\n"+
-			"> `unzip -p done/%s/archiv.zip <pfad-im-archiv>`\n\n"+
+			"> `unzip -p done/%s/%s <pfad-im-archiv>`\n\n"+
 			"**Geschlossen:** %s · **Ergebnisnotiz:** %s\n"+
 			"**Archivierte Vorgänge:** %d Slices, %d Reviews\n",
-		id, title, id, placeholder, resultsFile, nSlices, nReviews,
+		id, title, id, ArchiveName(id), placeholder, resultsFile, nSlices, nReviews,
 	)
 }

@@ -10,17 +10,22 @@ demselben `docs/plan/planning/`-Layout kopiert werden.
 
 ## Was es tut
 
-Für eine übergebene Wellen-ID (`-welle=welle-NN`):
+Für eine übergebene Wellen-ID (`-welle=welle-NN` oder `-welle=wave-NN`):
 
 1. Sammelt alle `docs/plan/planning/done/slice-*.md`, deren `**Welle:**`-Feld
    exakt diese ID nennt.
 2. Ordnet `docs/reviews/*.md` per Dateiname (`slice-<NNN>` im Namen) zu, 1:N.
-3. Baut `docs/plan/planning/done/<welle-id>/archiv.zip` mit dem Welle-Plan,
+3. Baut `docs/plan/planning/done/<welle-id>/archive.zip` (für `wave-NN`) bzw. `archiv.zip` (für `welle-NN`) mit dem Welle-Plan,
    allen gesammelten Slice-Volltexten und allen zugeordneten Review-Reports.
 4. Ersetzt Welle-Plan und Slices durch Stubs am neuen Ort
    `docs/plan/planning/done/<welle-id>/` (Review-Reports bekommen keinen
    Stub — sie haben keine Identität jenseits ihres Slice).
 5. Zieht repo-weite Markdown-Verweise auf die verschobenen Dateien nach.
+
+Die Schreibweise des Archivs folgt dem Präfix der Kennung: `wave-NN` schreibt
+`archive.zip`, `welle-NN` weiter `archiv.zip`. Der Slice-Modus (`-slice=slice-NNN`)
+und der Review-Modus (`-review=<datei>.md`) schreiben `<slice-id>-archive.zip`
+bzw. `<basisname>-archive.zip`; sie haben kein Präfix, das sie unterscheidet.
 
 ## Nutzung
 
@@ -34,6 +39,7 @@ make test                                    # Testsuite
 make run WELLE=welle-42                      # Dry-Run gegen den Repo-Zweig eine Ebene über tools/
 make run WELLE=welle-42 APPLY=1              # schreibt
 make run WELLE=welle-42 ROOT=/pfad/zum/repo  # gegen ein anderes Repo
+make run WELLE=wave-98                       # neue Schreibweise der Kennung
 ```
 
 `ROOT` ist optional (Default: die zwei Verzeichnisebenen über diesem
@@ -44,7 +50,7 @@ Read-only-Form wie d-checks eigenes Image, nicht ein durchgehend
 beschreibbarer Voll-Mount. `-u` bindet den Dateieigner an den aufrufenden
 Bediener statt an eine feste Image-UID.
 
-In d-check selbst delegiert `make archive-wave WELLE=welle-42 [APPLY=1]`
+In d-check selbst delegiert `make archive-wave WELLE=welle-42|wave-98 [APPLY=1]`
 (bzw. `make archive-wave-test`) an genau dieses lokale Makefile — eine
 Quelle für den Docker-Aufruf, kein Duplikat (siehe `harness/README.md` §Sensors).
 

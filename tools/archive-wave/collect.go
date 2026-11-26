@@ -13,7 +13,11 @@ import (
 
 var welleFieldRE = regexp.MustCompile(`(?m)^\*\*Welle:\*\*\s*(.*)$`)
 var welleFieldStartRE = regexp.MustCompile(`(?m)^\*\*Welle:\*\*[ \t]*`)
-var welleIDInFieldRE = regexp.MustCompile(`\bwelle-(\d+)\b`)
+
+// Beide Schreibweisen der Wellen-Kennung (MR-082): `welle-<NN>` (Bestand) und
+// `wave-<NN>` (neue Wellen, Baseline v7.0.0). Gruppe 1 ist das Praefix, Gruppe 2
+// die Ziffernfolge.
+var welleIDInFieldRE = regexp.MustCompile(`\b(welle|wave)-(\d+)\b`)
 var sliceIDInNameRE = regexp.MustCompile(`slice-(\d+)`)
 
 // ReadWelleField liest den rohen Wert des **Welle:**-Feldes einer
@@ -93,9 +97,10 @@ func FindWellePlan(root, welleID string) (string, error) {
 
 // CollectSlices findet alle Slice-Dateien in <root>/docs/plan/planning/done/,
 // deren **Welle:**-Feld die Kennung welleID nennt -- als eigenstaendige
-// welle-<N>-Ziffernfolge im Feldwert, unabhaengig von Link- oder Freitextform.
+// welle-<N>- oder wave-<N>-Ziffernfolge im Feldwert, unabhaengig von Link- oder
+// Freitextform.
 // Gelesen wird flach und eine Ebene darunter: das done/ dieses Repos traegt
-// Lifecycle-Unterordner (welle-<NN>, wellenlos), deren Slices sonst unsichtbar
+// Lifecycle-Unterordner (welle-<NN>, wave-<NN>, wellenlos), deren Slices sonst unsichtbar
 // blieben; tiefer wird nicht gegriffen.
 func CollectSlices(root, welleID string) ([]string, error) {
 	dir := filepath.Join(root, "docs/plan/planning/done")
@@ -121,7 +126,7 @@ func CollectSlices(root, welleID string) ([]string, error) {
 		if m == nil {
 			return nil
 		}
-		if "welle-"+m[1] == welleID {
+		if m[1]+"-"+m[2] == welleID {
 			out = append(out, path)
 		}
 		return nil

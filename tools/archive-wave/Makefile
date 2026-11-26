@@ -28,13 +28,13 @@ build: ## Binary-Image bauen
 	docker build $(PROGRESS_FLAG) --build-arg GO_VERSION=$(GO_VERSION) \
 	    -f Dockerfile -t $(IMAGE):latest .
 
-run: build ## Welle, wellenlosen Slice oder eigenstaendigen Review archivieren: make run WELLE=welle-NN|SLICE=slice-NNN|REVIEW=datei.md [ROOT=/pfad] [APPLY=1].
+run: build ## Welle, wellenlosen Slice oder eigenstaendigen Review archivieren: make run WELLE=welle-NN|wave-NN|SLICE=slice-NNN|REVIEW=datei.md [ROOT=/pfad] [APPLY=1].
 	@n=0; \
 	for v in "$(WELLE)" "$(SLICE)" "$(REVIEW)"; do \
 	    [ -n "$$v" ] && n=$$((n+1)); \
 	done; \
 	if [ "$$n" -ne 1 ]; then \
-	    echo "run: genau eines von WELLE=welle-NN, SLICE=slice-NNN oder REVIEW=datei.md ist Pflicht" >&2; exit 2; \
+	    echo "run: genau eines von WELLE=welle-NN|wave-NN, SLICE=slice-NNN oder REVIEW=datei.md ist Pflicht" >&2; exit 2; \
 	fi
 	docker run --rm -u "$$(id -u):$$(id -g)" \
 	    -v "$(ROOT)":/repo$(if $(APPLY),,:ro) \

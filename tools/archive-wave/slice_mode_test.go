@@ -70,7 +70,7 @@ func TestRunSlice_Apply(t *testing.T) {
 	if strings.Contains(stub, "Inhalt.") {
 		t.Fatalf("Stub traegt noch den Volltext: %q", stub)
 	}
-	if !strings.Contains(stub, "unzip -p done/wellenlos/slice-601-archiv.zip") {
+	if !strings.Contains(stub, "unzip -p done/wellenlos/slice-601-archive.zip") {
 		t.Fatalf("Stub nennt nicht den Archiv-Pfad im Wellenlos-Verzeichnis: %q", stub)
 	}
 	if !strings.Contains(stub, "**Welle:** — wellenlos.") {
@@ -81,10 +81,10 @@ func TestRunSlice_Apply(t *testing.T) {
 	}
 
 	// Archiv liegt neben dem Stub im selben Verzeichnis.
-	zipPath := filepath.Join(root, "docs/plan/planning/done/wellenlos/slice-601-archiv.zip")
+	zipPath := filepath.Join(root, "docs/plan/planning/done/wellenlos/slice-601-archive.zip")
 	zr, err := zip.OpenReader(zipPath)
 	if err != nil {
-		t.Fatalf("archiv.zip fehlt oder unlesbar: %v", err)
+		t.Fatalf("archive.zip fehlt oder unlesbar: %v", err)
 	}
 	defer zr.Close()
 	names := map[string]bool{}
@@ -98,7 +98,7 @@ func TestRunSlice_Apply(t *testing.T) {
 	}
 	for _, w := range want {
 		if !names[w] {
-			t.Errorf("archiv.zip fehlt Eintrag %s (hat: %v)", w, names)
+			t.Errorf("archive.zip fehlt Eintrag %s (hat: %v)", w, names)
 		}
 	}
 
