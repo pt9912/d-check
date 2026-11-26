@@ -180,7 +180,7 @@
   `harness/rules/`-Dateien, 35 aktive `MR-*`, `.claude/agents/reviewer.md`, die beiden
   Skills unter `.harness/skills/`, `roadmap.md`, `planning/README.md`,
   `observations/README.md`, `spec/architecture.md` und `spec/spezifikation.md`
-  (Rolle-Zeile; eingebettet, siehe [`slice-295`](../../docs/plan/planning/in-progress/slice-295-baseline-v700-bump.md)
+  (Rolle-Zeile; eingebettet, siehe [`slice-295`](../../docs/plan/planning/done/slice-295-baseline-v700-bump.md)
   §1). **Zeilenweise gelesen, nicht pauschal ersetzt:** `harness/conventions.md`
   (die Zeilen zum Pin retargetet; die Index-Zeile des Vorgängers wandert nach
   *Aufgelöste Adaptionen*), `observations/README.md` Z. 18, `roadmap.md` Z. 13,
@@ -242,7 +242,7 @@
   nachgezogen, das Ziel lebt weiter. (2) `slice-274` und (3) das Verdikt zu welle-93
   (oben) tragen das Link-Ziel auf den neuen Baum. Die Alternative, je ein weiterer
   Ventil-Eintrag, wäre eine Gate-Senkung für einen Link, der auflösen kann (Plan-Änderung in
-  [`slice-295`](../../docs/plan/planning/in-progress/slice-295-baseline-v700-bump.md) §3).
+  [`slice-295`](../../docs/plan/planning/done/slice-295-baseline-v700-bump.md) §3).
 
   **`d-check:cite`-Neu-Ankern** — gemessen **15** lebende Direktiven auf den
   Baum (0 tag-only; ohne `conventions/done/`, `done/`-Slices und Reviews, die der

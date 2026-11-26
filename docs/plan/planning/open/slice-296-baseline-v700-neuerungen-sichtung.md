@@ -13,7 +13,7 @@ Kennung oder Grund, die Liefer-Punkte der DoD bleiben leer
 
 **Bezug:** [`MR-011`](../../../../harness/conventions.md#mr-011) (die Pin-Kette),
 [`MR-080`](../../../../harness/conventions.md#mr-080) (die vorige Hebung; ihr Delta stand „vollständig nach Datei,
-keine davon übernommen“ — dieselbe Abgrenzung), [`slice-295`](../in-progress/slice-295-baseline-v700-bump.md) (liefert den
+keine davon übernommen“ — dieselbe Abgrenzung), [`slice-295`](../done/slice-295-baseline-v700-bump.md) (liefert den
 vendorten Baum und den Vor-Bump-Commit, aus dem der alte Baum gelesen wird),
 [`ADR-0113`](../../adr/0113-pinsync-modul.md) (der Gegenstand, an dem die Frage zur Umgebungs-Zusage sich misst).
 
@@ -166,7 +166,7 @@ Empfehlung · *Entscheidung des Auftraggebers* (leer). Die laufende Nummer in Sp
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
-**Start** (`next` → `in-progress`): [`slice-295`](../in-progress/slice-295-baseline-v700-bump.md), [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) liegen in `done/` (der Baum von
+**Start** (`next` → `in-progress`): [`slice-295`](../done/slice-295-baseline-v700-bump.md), [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) liegen in `done/` (der Baum von
 `v7.0.0` ist vendort, `ls .harness/baseline` nennt nur ihn, und der Bump-Eintrag nennt den Vor-Bump-Commit);
 `in-progress/` trägt keinen Slice; die Antwort auf Frage 11 (Ort der Vorlage) liegt im Architect-Verdikt vor;
 `Verantwortlich:` beim Übergang `open` → `next` gesetzt.
@@ -294,6 +294,6 @@ Der Zähler folgt aus den Dateien der Closure.
 `make nightly-state` am 2026-11-25: `image-scan` **grün** (jüngster Lauf 2026-11-25T12:59:28Z). `upstream-drift`
 **rot** (jüngster Lauf 2026-11-25T09:26:13Z), der Log war über `gh run view` nicht abrufbar; gelesen ist
 `make baseline-freshness` (Exit 3, neuer Release `v7.0.0`) — der Gegenstand der Welle, **planmäßig gelesen**. Zum
-Zeitpunkt dieses Slice sind [`slice-295`](../in-progress/slice-295-baseline-v700-bump.md), [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) `done/`; der Stand wird beim Start neu gelesen.
+Zeitpunkt dieses Slice sind [`slice-295`](../done/slice-295-baseline-v700-bump.md), [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) und [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) `done/`; der Stand wird beim Start neu gelesen.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.

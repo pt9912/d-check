@@ -119,7 +119,7 @@ Implementer **wiederholt** die Zählung vor der ersten Änderung.
 | `tools/archive-wave/README.md`, `Makefile` (Werkzeug), `Makefile` (Wurzel, Target `archive-wave`) | update | **11** Zeilen (Wurzel-`Makefile` 1, `tools/archive-wave/Makefile` 3, `README.md` 7; gezählt mit `git grep -c 'welle-NN\|<welle-id>\|archiv\.zip\|welle-42\|-welle='`): Aufruf-Beispiele (`WELLE=welle-NN`), `<welle-id>/archiv.zip`; die Hilfetexte nennen beide Formen |
 | [`.d-check.yml`](../../../../.d-check.yml) | update | **10** Zeilen und **3** Kommentarzeilen: `planning.waves` (Z. 915ff.: `glob`, `results-glob`, **2**), `matrix`-Klasse `wave` neben `welle` (Z. 518–530: **3**: `name`, `paths`, `token`), drei Verbote `from: spec-straten / sicht / adr → to: wave` (Z. 580, 589, 594: **3**), `exempt-paths` `done/wave-*/*.md` (Z. 410, 418: **2**), dazu **3** Kommentarzeilen mit der **Grenze** an der Umstellung. Im Probelauf: mit `wave-*` meldet `planning-check` `wave-drift` für die unregistrierte Datei; mit `welle-*` (heute) ist sie unsichtbar |
 | [`.d-check.closure.yml`](../../../../.d-check.closure.yml) | update | **3** Zeilen: eine `structure`-Regel `files: "docs/plan/planning/done/wave-*-results.md"` mit `section-pattern: '^## Was wurde geliefert'` und `non-empty: true` neben der Regel für `welle-*-results.md` (Z. 268) |
-| `.claude/commands/plan-welle.md`, `close-welle.md`, `implement-slice.md` | update | **13** Muster-Zeilen (`welle-<…>`, `<welle-id>`, `welle-NN`, `archiv.zip`, `seit welle-<…>`; gezählt mit `git grep -n 'welle-<\|welle-NN\|<welle-id>\|welle-\*\|archiv\.zip' -- .claude/commands`); die Vorlagen-Namen zog [`slice-295`](../in-progress/slice-295-baseline-v700-bump.md) schon nach |
+| `.claude/commands/plan-welle.md`, `close-welle.md`, `implement-slice.md` | update | **13** Muster-Zeilen (`welle-<…>`, `<welle-id>`, `welle-NN`, `archiv.zip`, `seit welle-<…>`; gezählt mit `git grep -n 'welle-<\|welle-NN\|<welle-id>\|welle-\*\|archiv\.zip' -- .claude/commands`); die Vorlagen-Namen zog [`slice-295`](../done/slice-295-baseline-v700-bump.md) schon nach |
 | `AGENTS.md` | update | **1** Zeile (§3.7, Z. 230: Herkunft „nur als **ein** auflösbares Feld … `seit welle-<NN>`“) nennt beide Formen; die Instanzen (`seit welle-73`, `seit welle-80`) bleiben |
 | `harness/sensors/planning-check.md`, `harness/sensors/archive-wave.md` | update | die **Grenze** der Umstellung (der Bestand ist ungewächtert) — [`AGENTS.md`](../../../../AGENTS.md) §3.8: ein Modul verspricht nur über das, was es scannt |
 | neue Eintrags-Datei unter `harness/conventions/` (Koexistenz) | neu | aus `MR-<NNN>-title.template.md` des **vendorten** Baums (`cp`, `diff -q`); **Felder, Nummer und Trigger legt das [Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md) fest (Frage 1)**, der **Implementer** schreibt sie in diesem Slice mit den dann gemessenen Zahlen; Index in `harness/conventions.md` |
@@ -129,7 +129,7 @@ Implementer **wiederholt** die Zählung vor der ersten Änderung.
 **Reihenfolge und Commit-Zerlegung** ([`AGENTS.md`](../../../../AGENTS.md) §3.3):
 
 1. **Vorbedingung, kein Commit dieses Slice:** das Architect-Verdikt zu den Fragen der Welle liegt vor,
-   [`slice-295`](../in-progress/slice-295-baseline-v700-bump.md) (die Vorlagen heißen jetzt `wave.template.md`, …) und
+   [`slice-295`](../done/slice-295-baseline-v700-bump.md) (die Vorlagen heißen jetzt `wave.template.md`, …) und
    [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) sind `done/`.
 2. **Commit 1: das Werkzeug** samt Tests (`make archive-wave-test`), unabhängig von der Konfiguration — es liest beide Formen,
    solange nichts umgestellt ist.
@@ -138,7 +138,7 @@ Implementer **wiederholt** die Zählung vor der ersten Änderung.
    heißt ab hier `wave-98`; **keine Lücke**, weil Move, Roadmap-Zeiger und Konfiguration im selben Arbeitsbaum stehen und der Hook ihn prüft.
    Zuerst der **reine** `git mv` der Welle-Datei (R100, [`AGENTS.md`](../../../../AGENTS.md) §3.3), dann der Nachzug **aller** Verweise
    auf den alten Namen (`git grep -c 'welle-98' -- . ':!.harness/baseline'` neu zählen: Roadmap-Zeiger, `**Welle:**`-Felder, Closure-Notizen und
-   Reports von [`slice-295`](../in-progress/slice-295-baseline-v700-bump.md) und [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md), der Plan selbst; darin
+   Reports von [`slice-295`](../done/slice-295-baseline-v700-bump.md) und [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md), der Plan selbst; darin
    `welle-98-results.md` → `wave-98-results.md`) und die Umstellung der Konfiguration. Pfad-begrenzt committen (`BEO-ALL/path-scoped-commit-carries-staged-rest`).
 4. **Commit 3: Commands, Briefing, Sensor-Dateien und der Koexistenz-Eintrag.**
 5. Review (höchstens zwei Runden), Verifikation, Closure. `git commit -F <datei> -- <Pfade>`, vorher `git diff --cached --stat`.
@@ -151,7 +151,7 @@ Implementer **wiederholt** die Zählung vor der ersten Änderung.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Trigger je Lifecycle-Übergang und WIP-Limit.
 
-**Start** (`next` → `in-progress`): [`slice-295`](../in-progress/slice-295-baseline-v700-bump.md) und
+**Start** (`next` → `in-progress`): [`slice-295`](../done/slice-295-baseline-v700-bump.md) und
 [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) liegen in `done/`; `in-progress/` trägt keinen Slice
 (nur die Roadmap); das **Architect-Verdikt** zu den zwölf Fragen in [welle-98 §5](../welle-98-baseline-v700.md) (für diesen
 Slice tragend: 1, 2, 3, 8) liegt vor: [Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md); Priorisierung gesetzt, `Verantwortlich:` beim Übergang
@@ -278,7 +278,7 @@ Schreibweisen derselben Kennung. Der Zähler folgt aus den Dateien der Closure.
 `make nightly-state` am 2026-11-25: `image-scan` **grün** (jüngster Lauf 2026-11-25T12:59:28Z). `upstream-drift`
 **rot** (jüngster Lauf 2026-11-25T09:26:13Z), der Log war über `gh run view` nicht abrufbar; gelesen ist
 `make baseline-freshness` (Exit 3, neuer Release `v7.0.0`) — der Gegenstand der Welle, **planmäßig gelesen**. Zum
-Zeitpunkt dieses Slice sind [`slice-295`](../in-progress/slice-295-baseline-v700-bump.md) und
+Zeitpunkt dieses Slice sind [`slice-295`](../done/slice-295-baseline-v700-bump.md) und
 [`slice-297`](../open/slice-297-spezifikation-heisst-specification.md) `done/`; der Stand wird beim Start neu gelesen.
 
 **Modus-Begründungsblock:** GF — alle berührten Sub-Areas GF.
