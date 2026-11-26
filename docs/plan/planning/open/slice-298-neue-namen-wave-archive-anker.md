@@ -26,7 +26,7 @@ Anlass: Entscheid 1 der [Welle](../welle-98-baseline-v700.md) — Baseline-Regel
 **Berührte Spec-Stellen:** — (die Defaults von `planning.waves` in der Spezifikation und im Lastenheft bleiben; der Slice
 stellt die **Konfiguration dieses Repos** um, nicht das Produkt-Angebot).
 
-**Verantwortlich:** —
+**Verantwortlich:** pt9912
 
 **Autor:** pt9912. **Datum:** 2026-11-25.
 
