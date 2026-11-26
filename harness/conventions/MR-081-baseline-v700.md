@@ -187,6 +187,14 @@
   aus dem es adoptiert ist. **Die 7 Baseline-Symlinks unter `.claude/rules/`**
   lösen jetzt gegen `v7.0.0` (`for l in .claude/rules/*; do readlink "$l"; done |
   grep -c 'v6\.18\.1'` ergibt 0; `git grep` liest keinen Symlink-Inhalt).
+  **Was nach dem Bump den alten Pin noch nennt** (`git grep -l 'v6\.18\.1' -- .
+  ':!docs/plan/planning/done' ':!docs/reviews' ':!CHANGELOG.md'
+  ':!harness/conventions/done' ':!.harness/baseline'`, Stand des Bump-Commits):
+  **10** Dateien — dieser Eintrag, die `.d-check.yml` (die sieben Ventil-Einträge),
+  die fünf `Accepted`-ADRs hinter dem Ventil und drei Pläne dieser Welle, die den
+  alten Pin als Vorzustand und als Gegenstand nennen (`slice-295`, `slice-296`,
+  die Welle selbst; ein Vergangenheits-Beleg, der mit ihrem Umzug nach `done/`
+  aus der Menge fällt).
 
   **`ignore-refs` wächst, um sieben Einträge** — gemessen: nach dem Entfernen des
   alten Baums meldet `make doc-check` genau die sieben eingefrorenen Dateien mit einem
