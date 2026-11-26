@@ -266,11 +266,12 @@ structure:
 
   # Jede Wellen-Ergebnisnotiz beantwortet die erste Pflichtfrage -- in beiden
   # Schreibweisen, welle-<NN>-results.md und wave-<NN>-results.md (MR-082).
-  # Ein Glob je Schreibweise meldet section-missing, sobald einer keine Datei
-  # trifft (Nullmengen-Haerte, SPEC-049); ein Glob liest beide.
-  # GRENZE: das Muster liest jede *-results.md unter done/; heute sind es
-  # genau die welle-<NN>-Notizen (Kommando: git ls-files | grep -E
-  # 'done/[^/]*-results.md$' | grep -vc 'done/welle-' ergibt 0).
+  # KOPPLUNG: eine Regel ohne Kandidaten meldet section-missing
+  # (Nullmengen-Haerte, SPEC-049); das Glob liest deshalb beide Schreibweisen
+  # in einer Regel.
+  # GRENZE: das Muster liest jede *-results.md unter done/, nicht nur
+  # Wellen-Notizen; die Kandidaten zeigt das Kommando
+  # git ls-files | grep -E 'done/[^/]*-results.md$'
   - files: "docs/plan/planning/done/*-results.md"
     section-pattern: '^## Was wurde geliefert'
     non-empty: true
