@@ -13,7 +13,7 @@
   `exempt-paths`-Einträgen)
 - **Geltungsbereich:** `matrix.exclude-sections` — der heading-genau
   Abschnitt `7. Historie` in `spec/lastenheft.md` und
-  `spec/spezifikation.md`. Die ADR-Geschichte bleibt separat ausgenommen
+  `spec/specification.md`. Die ADR-Geschichte bleibt separat ausgenommen
   (`[Geschichte]`, [ADR-0047](../../docs/plan/adr/0047-matrix-spec-historie-nicht-provenance-exempt.md)-Form); die Referenz-Richtung des lebenden
   Dokumentkörpers ist von der Ausnahme nicht berührt.
 - **Adaption:** die `7. Historie` ist ein Zeitdokument — ihre Zeilen

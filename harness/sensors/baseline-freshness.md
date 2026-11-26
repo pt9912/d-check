@@ -60,7 +60,7 @@ verschiedene Fragen.
 ## Ausgabe und Ausgänge
 
 Die Exit-Codes beider Teile und ihren Vorrang legt
-[`SPEC-100`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-100`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 fest. Es sind Exit-Codes des **Skripts**; `make` normalisiert einen
 fehlgeschlagenen Recipe auf seinen eigenen Exit 2 — **welcher Teil** gemeldet
 hat, sagt die Ausgabe, nicht der Exit.
@@ -71,4 +71,4 @@ hat, sagt die Ausgabe, nicht der Exit.
 [`upstream-drift.yml`](../../.github/workflows/upstream-drift.yml), von
 `ci.yml` getrennt, damit ein Upstream-Ausfall nie die CI rot färbt.
 [`MR-011`](../conventions/done/MR-011-baseline-pin-release-tag.md)-Kette ·
-[`SPEC-100`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-100`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)

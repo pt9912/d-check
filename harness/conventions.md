@@ -81,7 +81,7 @@ Bleibt hier: keine Adaption, sondern die Adoptions-Erklärung — sie gilt für 
   **Vergabe** (Baseline
   §Vergabe): **dichte, repo-weite Nummern** je Präfix — ein schreibender
   Mensch, kein Bereichssegment; die nächste Nummer liest Verzeichnis **und**
-  offene Welle-Dateien. **Struktur-IDs** `SPEC-<NNN>` (`spec/spezifikation.md`)
+  offene Welle-Dateien. **Struktur-IDs** `SPEC-<NNN>` (`spec/specification.md`)
   und `ARC-<NNN>` (`spec/architecture.md`) werden nach Baseline-Default
   vergeben (Auftraggeber-Entscheid 2026-08-22, welle-80): **fortlaufend je
   Datei**, Lücken werden nicht nachbelegt, kein Bereichssegment; der Link

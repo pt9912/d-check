@@ -9,7 +9,7 @@ die der `releases/latest`-Redirect liefert; die Achse brauchte deshalb **keine**
 neue Quellen-Form, nur einen anderen Extraktor.
 
 Extraktor, Vergleich, fail-open und Exit legt
-[`SPEC-098`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-098`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 fest, gemeinsam mit den Toolchain-Achsen.
 
 **Sie ergänzt [`workflow-pins`](workflow-pins.md), das die Form hält:** Das
@@ -31,4 +31,4 @@ upstream eine Lücke behoben hat. Ein alter Action-Pin ist damit sehr wohl ein
 
 kein Gate, **nicht** in `gates`; Netz, gerufen vom Nachtlauf.
 [`AGENTS.md`](../../AGENTS.md) §3.9 ·
-[`SPEC-098`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-098`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)

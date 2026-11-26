@@ -16,7 +16,7 @@ Grün über leerem Prüfbereich (shallow-Klon) kommt so nicht zustande. Er läuf
 auch im Modus des `commit-msg`-Hooks, der keine Historie liest: In einem Repo
 mit nur einem Commit oder einem Klon der Tiefe 1 bricht der Hook deshalb jeden
 Commit ab
-([`SPEC-102`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)).
+([`SPEC-102`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)).
 
 ## Grenze — was das Grün nicht abdeckt
 

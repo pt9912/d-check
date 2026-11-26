@@ -148,7 +148,7 @@ Namensregel nach sich zieht, **gemessen** statt geschätzt:
 3. **Eingebettete Dokumente und `--manual`.** Das Produkt bettet `spec/spezifikation.md` und das Handbuch ein
    ([`ADR-0107`](../adr/0107-mitgelieferte-dokumente-im-modul-root.md), `manual.go`); die Kopfzeile der Ausgabe
    trägt den Pfad (`==> <pfad>:<zeile>`). **Vertrag:** [`DC-FA-CLI-013`](../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen)
-   verlangt eine Kopfzeile, „die Dokument und Zeile nennt“, die Spezifikation §[`DC-FA-CLI-013.a`](../../../spec/spezifikation.md#dc-fa-cli-013a--handbuch-und-spezifikation-ausgeben---manual) Schritt 5 `==> <pfad>:<zeile>`,
+   verlangt eine Kopfzeile, „die Dokument und Zeile nennt“, die Spezifikation §[`DC-FA-CLI-013.a`](../../../spec/specification.md#dc-fa-cli-013a--handbuch-und-spezifikation-ausgeben---manual) Schritt 5 `==> <pfad>:<zeile>`,
    Handbuch und `operations.md` `==> <datei>:<zeile>` — **keine** dieser Stellen nennt den Dateinamen wörtlich
    (`git grep -n '==> ' -- spec docs/user`). Der Wortlaut des Vertrags bleibt; **beobachtbar** ändern sich die Bytes
    der Ausgabe (Kopfzeile, die Link-Ziele der Spezifikation, die eine Handbuch-Zeile, der Pin), und ein Konsument, der

@@ -5,7 +5,7 @@
 - **Datum:** 2026-06-10
 - **Geltungsbereich:** `spec/*.md`, [`AGENTS.md` §3.4](../../AGENTS.md#34-architektur-sprach-meilensteinfrei-spec-straten-nie-abwärts)
 - **Adaption:** Das adoptierte Template-Set 2026-06 sah ADR-Verweise
-  in `spezifikation.md` (ADR-Spalte in Defaults/Historie) und
+  in `specification.md` (ADR-Spalte in Defaults/Historie) und
   `architecture.md` (ADR-Spalte, §ADR-Index) vor. Das ist als Fehler
   der Kurs-Vorlagen identifiziert; die Korrektur erfolgt in der
   Kurs-Quelle (Entscheidung User, 2026-06-10). d-check zieht vor:

@@ -2789,7 +2789,7 @@ und `require-levels` (welche Stufen `--require-complete` gaten, Default `[must]`
 Ein gesetztes `levels` **ersetzt** die Defaults vollständig (kein Merge): wer
 `levels` konfiguriert, muss **jede** gewünschte Stufe und **jedes** gewünschte
 Verb selbst auflisten (auch die gewünschten Built-ins) — die vollständige
-Default-Menge steht in `spec/spezifikation.md` (Abschnitt
+Default-Menge steht in `spec/specification.md` (Abschnitt
 `trace.requirements.modality`).
 Klassifiziert wird über den ersten (frühesten), bei Gleichstand **längsten**
 Keyword-Treffer. Im Heading-Format ist die Quelle der **normalisierte**

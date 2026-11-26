@@ -18,7 +18,7 @@
   denselben Inhalt belegt); Erkennung und Schreiben
   stehen in einer Rezeptzeile, weil `-i` auch den Abbruch einer eigenen
   Prüfzeile ignoriert. Die Festlegung des Handoff-Gates steht in
-  [`SPEC-094`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge).
+  [`SPEC-094`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge).
   **Stop-Hook:** Lässt sich der Inhalts-Hash nicht berechnen, der Nachweis
   nicht lesen oder `git status` nicht ausführen — außerhalb eines
   Repositorys, bei einem kaputten Index —, blockt der Hook mit Grund. Vorher

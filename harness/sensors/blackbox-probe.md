@@ -7,7 +7,7 @@ Vergleicht ein **Vorher**-Image aus einer Git-Referenz (`REF=<ref>`) mit dem
 stdout, stderr und Exit getrennt — zusammengeführte Streams verschränken sich
 und zeigen Abweichungen, die keine sind. Was verglichen wird, wann der
 Kanarienlauf den Vergleich trägt und in welchen Fällen der Lauf scheitert,
-legt [`SPEC-096`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+legt [`SPEC-096`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 fest. Die Fixtures sind je ein kleines Repository im Default-Zustand eines
 Moduls; eine gelöschte, noch getrackte Datei fällt aus der Kopie des Repos
 heraus. `PROBE_FORMS` übersteuert die Formen; leer heißt Default.
@@ -55,7 +55,7 @@ lassen, mit `REF` auf den Stand vor der Änderung.
 ## Ausgabe lesen
 
 Die Exit-Codes legt
-[`SPEC-096`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-096`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 fest; über `make` endet jedes Scheitern mit 2, und 1 und 2 trennt die
 **Ausgabe**. Eine Abweichung nennt je Fall die Ströme und einen Diff-Auszug.
 Scheitert der Kanarienlauf nur auf dem Nachher-Image, sagt die Meldung, dass

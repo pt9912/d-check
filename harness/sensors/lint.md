@@ -4,7 +4,7 @@
 
 Hält das SOLID-nahe Lint-Profil dieses Repos ([ADR-0006](../../docs/plan/adr/0006-lint-profil-solid.md)).
 Welche Linter mit welchen Schwellen laufen und welche Ausnahmen gelten, legt
-[`SPEC-090`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) fest; Inline-Suppressions verbietet [`AGENTS.md`](../../AGENTS.md) §3.2.
+[`SPEC-090`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge) fest; Inline-Suppressions verbietet [`AGENTS.md`](../../AGENTS.md) §3.2.
 
 ## Grenze — was das Grün nicht abdeckt
 
@@ -22,7 +22,7 @@ Welche Linter mit welchen Schwellen laufen und welche Ausnahmen gelten, legt
 3. **Die Ausschluss-Regeln verkleinern den Prüfbereich** — zentral in
    [`.golangci.yml`](../../.golangci.yml) deklariert, mit Begründung, wie
    `AGENTS.md` §3.2 es verlangt; welche es sind, zählt
-   [`SPEC-090`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+   [`SPEC-090`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
    auf. Ein grüner Lauf sagt „sauber außerhalb dieser Ausnahmen".
 
 ## Bindung

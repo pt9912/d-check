@@ -9,7 +9,7 @@ Commit und Slice-Übergang an grüne Prüfungen:
 jeden Commit, [`make verify-closure-notes`](verify-closure-notes.md) an jeden
 Übergang eines Slice nach `done/`. Welcher Hook welche Prüfung ruft und
 welcher Diff den Übergang erkennt, legt
-[`SPEC-095`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-095`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 fest — für jeden Slice, der im Volltext nach `done/` oder in eines seiner
 Unterverzeichnisse schließt, hängen die Vorbedingungen damit am **Übergang**
 selbst, nicht nur an einer gelegentlichen `fullbuild`-Prüfung.

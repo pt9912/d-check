@@ -14,9 +14,9 @@
   | Spiegel | Ort |
   |---|---|
   | Anforderung | `spec/lastenheft.md` (Beschreibung **und** Akzeptanzkriterien) |
-  | Algorithmus | `spec/spezifikation.md` (Schritt-Text) |
-  | Config-Schema | `spec/spezifikation.md` §2 |
-  | Grund-Code-Tabelle | `spec/spezifikation.md` §4 |
+  | Algorithmus | `spec/specification.md` (Schritt-Text) |
+  | Config-Schema | `spec/specification.md` §2 |
+  | Grund-Code-Tabelle | `spec/specification.md` §4 |
   | Klartexte | `AllReasons()` und `reasonTexts()` (`--doctor`) |
   | Emittierte Vorlage | `--print-config` / `--suggest-config` |
   | Nutzer-Doku | `docs/user/benutzerhandbuch.md` (Aufgabe · Modul-Tabelle · §5 · §11) |

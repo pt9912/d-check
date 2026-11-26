@@ -113,7 +113,7 @@ Fall vorliegt, sagt die **Ausgabe**, nicht der Exit.
 
 **Ein fehlendes oder unlesbares `planning.closure.dir` ist ein Befund, keine
 Sperre:** Es zählt fail-closed als `closure-note-missing`
-([`spec/spezifikation.md`](../../spec/spezifikation.md) §4, Grund-Codes) — der Lauf bricht nicht ab, er meldet. Eine Zusage über null
+([`spec/specification.md`](../../spec/specification.md) §4, Grund-Codes) — der Lauf bricht nicht ab, er meldet. Eine Zusage über null
 Dateien wäre sonst wahr, ohne etwas gesehen zu haben.
 
 **Hermetisch** (kein git, kein Netz) und diagnose-only: Der Lauf schreibt nichts ins Repo.
@@ -124,7 +124,7 @@ Dateien wäre sonst wahr, ohne etwas gesehen zu haben.
 aus, sobald ein Rename/Add eines `slice-*.md` irgendwo unter
 `docs/plan/planning/done/` gestagt ist, und dieselbe Bindung läuft in der
 PR-/Push-CI über die Commit-Range
-([`SPEC-095`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)).
+([`SPEC-095`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)).
 
 [ADR-0048](../../docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md) ·
 [ADR-0059](../../docs/plan/adr/0059-closure-waechter-weicht-structure-regel.md) ·

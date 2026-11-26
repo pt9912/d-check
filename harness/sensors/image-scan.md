@@ -55,7 +55,7 @@ laut, nicht still.
 
 Die Exit-Codes und ihren Vorrang — ein gescheiterter Ref oder eine
 gescheiterte Plattform geht vor Befunden — legt
-[`SPEC-097`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-097`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 fest. **Das sind die Codes des Skripts.** `make` normalisiert jeden
 fehlgeschlagenen Recipe auf seinen eigenen Exit 2 — über das Target sind 1 und
 2 damit nicht unterscheidbar; der Nachtlauf liest deshalb die **Ausgabe**,
@@ -66,4 +66,4 @@ nicht den Exit-Code.
 Netz, bewusst **nicht** in `gates`; gerufen vom Nachtlauf
 [`image-scan.yml`](../../.github/workflows/image-scan.yml). Kein Docker-Socket.
 [ADR-0066](../../docs/plan/adr/0066-cve-scan-gegen-das-publizierte-image.md) ·
-[`SPEC-097`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-097`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)

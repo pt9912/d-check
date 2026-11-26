@@ -70,7 +70,7 @@ func TestAllReasonsDeckungGegenSpezifikationGrundCodes(t *testing.T) {
 // damit auch die Vergabe an die Tabelle.
 func grundCodesAusSpezifikation(t *testing.T) map[string]bool {
 	t.Helper()
-	raw, err := os.ReadFile(filepath.Join("..", "..", "..", "..", "spec", "spezifikation.md"))
+	raw, err := os.ReadFile(filepath.Join("..", "..", "..", "..", "spec", "specification.md"))
 	if err != nil {
 		t.Fatalf("Spezifikation nicht lesbar (fail-closed): %v", err)
 	}

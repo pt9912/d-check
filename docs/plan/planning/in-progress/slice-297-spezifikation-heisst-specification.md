@@ -24,7 +24,7 @@ durch), [`ADR-0025`](../../adr/0025-codepaths-ignore-refs.md) (das Tombstone-Reg
 [Welle](../welle-98-baseline-v700.md) (Namensregel, „ab jetzt, Bestand bleibt“).
 
 **Berührte Spec-Stellen:** die Datei `spec/spezifikation.md` selbst (ihr Name und ihre 161 Selbst-Verweise) ·
-[`DC-FA-CLI-013.a`](../../../../spec/spezifikation.md#dc-fa-cli-013a--handbuch-und-spezifikation-ausgeben---manual)
+[`DC-FA-CLI-013.a`](../../../../spec/specification.md#dc-fa-cli-013a--handbuch-und-spezifikation-ausgeben---manual)
 Schritt 5 (die Kopfzeile `==> <pfad>:<zeile>` — der Wortlaut bleibt, die Ausgabe trägt den neuen Pfad) ·
 `spec/architecture.md` Z. 26 (der Link auf die Spezifikation) · `spec/lastenheft.md` Z. 4762 (Auftrag des Auftraggebers,
 [Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md) Frage 6). Der Verweis zeigt **aufwärts**: Die
@@ -55,7 +55,7 @@ stehen unter einem benannten Ventil — `make doc-check` ohne Befund, `make adr-
 - **Kein Bestand an anderen Namen.** `welle-<NN>`, `archiv.zip`, `seit welle-` bleiben; die **neuen** Namen der Wellen,
   Archive und Anker gehören in [`slice-298`](../open/slice-298-neue-namen-wave-archive-anker.md) — der Rename kommt ohne
   sie aus und sie ohne den Rename (zwei Hälften, zwei Slices; sonst vier Liefer-Punkte).
-- **Keine Änderung des Wortlauts von [`DC-FA-CLI-013`](../../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen)** und der Spezifikation §[`DC-FA-CLI-013.a`](../../../../spec/spezifikation.md#dc-fa-cli-013a--handbuch-und-spezifikation-ausgeben---manual), kein Standardwert, kein
+- **Keine Änderung des Wortlauts von [`DC-FA-CLI-013`](../../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen)** und der Spezifikation §[`DC-FA-CLI-013.a`](../../../../spec/specification.md#dc-fa-cli-013a--handbuch-und-spezifikation-ausgeben---manual), kein Standardwert, kein
   Grund-Code, keine Logik. Die Ausgabe von `--manual` ändert sich als **Folge** (Kopfzeile, Link-Ziele der Spezifikation,
   eine Handbuch-Zeile); die Klassen der Abweichung sind in der Welle (d3) benannt und werden dort gemessen.
 - **Keine Konsumenten-Beispiele.** `config_template.go` Z. 56–57, `suggest.go` Z. 379–380 und

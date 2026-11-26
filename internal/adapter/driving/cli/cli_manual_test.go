@@ -18,7 +18,7 @@ func TestManual_GibtAbschnitteAus(t *testing.T) {
 	if code != 0 || se.Len() != 0 {
 		t.Fatalf("Exit %d, stderr %q", code, se.String())
 	}
-	for _, want := range []string{"==> docs/user/benutzerhandbuch.md:", "==> spec/spezifikation.md:", "planning"} {
+	for _, want := range []string{"==> docs/user/benutzerhandbuch.md:", "==> spec/specification.md:", "planning"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("Ausgabe ohne %q", want)
 		}

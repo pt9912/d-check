@@ -23,7 +23,7 @@ Struktur-ID macht adressierbar; sie ist **keine** Anforderung und trägt keine
 Zusage — Zusagen leben im Lastenheft.
 
 **Bezug:** [`lastenheft.md`](lastenheft.md) und
-[`spezifikation.md`](spezifikation.md) — bei Konflikt gewinnen diese.
+[`specification.md`](specification.md) — bei Konflikt gewinnen diese.
 Der hexagonale Schnitt („Hexagon light") ist per ADR entschieden; die
 Begründung und die sprachkonkrete Übersetzung (Modul-Pfade,
 Import-Regeln) leben dort, und die ADRs deklarieren ihre Schärfung

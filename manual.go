@@ -9,7 +9,7 @@ import _ "embed"
 // HandbuchPfad und SpezifikationPfad nennen die Quelldateien im Repo.
 const (
 	HandbuchPfad      = "docs/user/benutzerhandbuch.md"
-	SpezifikationPfad = "spec/spezifikation.md"
+	SpezifikationPfad = "spec/specification.md"
 )
 
 // Handbuch ist das Benutzerhandbuch zum Build-Stand.
@@ -19,5 +19,5 @@ var Handbuch string
 
 // Spezifikation ist die Spezifikation zum Build-Stand.
 //
-//go:embed spec/spezifikation.md
+//go:embed spec/specification.md
 var Spezifikation string

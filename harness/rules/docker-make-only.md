@@ -26,7 +26,7 @@ braucht `curl` und `unzip`,
 `gates`; wer sie fährt, fährt sie mit dieser zusätzlichen Erwartung. **Die
 ersten drei sind fail-open, das vierte nicht** — mit einer Ausnahme: fehlt
 `curl`, endet `fetch-baseline-cache.sh --check-latest` mit Exit 1, nicht mit
-`SKIP` ([`SPEC-100`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)). Ein gescheiterter CVE-Scan
+`SKIP` ([`SPEC-100`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)). Ein gescheiterter CVE-Scan
 meldet Exit 2 und ausdrücklich keinen grünen Befundstand
 ([ADR-0066](../../docs/plan/adr/0066-cve-scan-gegen-das-publizierte-image.md)).
 
@@ -65,4 +65,4 @@ erreichen ein gelistetes Werkzeug, ohne dass er es als Kopf
 sieht. Die Regel gilt trotzdem — sie hängt nicht an ihm. Tabelle der ersten
 vier in
 [`MR-042`](../conventions.md#mr-042), die Festlegung samt aller Durchlass-Klassen in
-[`SPEC-093`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge).
+[`SPEC-093`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge).

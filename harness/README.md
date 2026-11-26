@@ -37,7 +37,7 @@ Baseline-Skelett am Ende — der Einstieg gehört an den Anfang:
 | Rang | Datei | Charakter |
 | --- | --- | --- |
 | 1 | [`spec/lastenheft.md`](../spec/lastenheft.md) | vertraglich abnahmebindend |
-| 2 | [`spec/spezifikation.md`](../spec/spezifikation.md) | technisch fortschreibbar |
+| 2 | [`spec/specification.md`](../spec/specification.md) | technisch fortschreibbar |
 | 3 | [`spec/architecture.md`](../spec/architecture.md) | Komponenten/Sequenzen, meilensteinfrei |
 | 4 | [`docs/plan/adr/`](../docs/plan/adr/) | Architekturentscheidungen |
 | 5 | [`docs/plan/planning/in-progress/roadmap.md`](../docs/plan/planning/in-progress/roadmap.md) | Wellen-Sequenzierung (offene Wellen derivativ) |
@@ -51,7 +51,7 @@ Baseline-Skelett am Ende — der Einstieg gehört an den Anfang:
 | Quelle | Inhalt |
 | --- | --- |
 | [`spec/lastenheft.md`](../spec/lastenheft.md) | Anforderungen (`DC-FA-*`, `DC-QA-*`), Akzeptanzkriterien |
-| [`spec/spezifikation.md`](../spec/spezifikation.md) | Algorithmen, Schemas (`--json`, `.d-check.yml`), Defaults, Grund-Codes |
+| [`spec/specification.md`](../spec/specification.md) | Algorithmen, Schemas (`--json`, `.d-check.yml`), Defaults, Grund-Codes |
 | [`spec/architecture.md`](../spec/architecture.md) | Hexagon-Schnitt (Rollen), Zugriffs-Constraints, Sequenzen |
 | [`docs/plan/adr/`](../docs/plan/adr/) | Architekturentscheidungen |
 | [`docs/plan/planning/`](../docs/plan/planning/) | Slice-Pläne und Roadmap |
@@ -72,7 +72,7 @@ liegt in CI bzw. lokal (`make gates`), nicht hier.
 | [`make test`](sensors/test.md) | fährt die Go-Testsuite des Hauptmoduls, inklusive dreier Zusagen des Repos über sich selbst | [`DC-QA-02`](../spec/lastenheft.md#dc-qa-02--determinismus)/[`DC-QA-03`](../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
 | [`make arch-check`](sensors/arch-check.md) · `make a-check` | hält die Import-Regeln des Hexagon-Schnitts über das Schwester-Tool a-check; `a-check` ist das Rezept aus dem Fragment `a-check.mk`, `arch-check` delegiert dorthin | [ADR-0005](../docs/plan/adr/0005-modul-layout-hexagon-ordner.md), [ADR-0012](../docs/plan/adr/0012-kern-paketschnitt-model-rules-app.md), [ADR-0029](../docs/plan/adr/0029-arch-check-via-a-check.md) (löst die Skript-/Stage-Mechanik ab); [`DC-QA-03`](../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) (DC-Bindung) |
 | [`make doc-check`](sensors/doc-check.md) | prüft die gesamte Repo-Doku mit d-check selbst (Dogfooding) | [`DC-FA-LINK-001`](../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)/[`DC-FA-ANCH-001`](../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors)/[`DC-FA-ID-001`](../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)/[`DC-FA-MTX-001`](../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)/[`DC-FA-CODE-001`](../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)/[`DC-FA-PSYNC-001`](../spec/lastenheft.md#dc-fa-psync-001--gleichheit-eines-wertes-an-mehreren-stellen-modul-pinsync-opt-in) ([ADR-0113](../docs/plan/adr/0113-pinsync-modul.md): die zwei Doppel-Pins von `Dockerfile` und `Makefile`)/[`DC-QA-03`](../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) (DC-Bindung); [`MR-006`](conventions.md#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs) (maschinell kodiert), [`MR-007`](conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding) |
-| `make coverage-gate` | Gesamt-Coverage über `internal/...` (`-coverpkg` über Paketgrenzen, Dockerfile-Stage + `tools/coverage-gate.sh`) | Schwellen-Bindung: [`SPEC-089`](../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) (Schwelle, Messbasis, Randformen; kalibriert 2026-06-11 nach Test-Ausbau); Verfehlung ⇒ Carveout-Pflicht ([Kurs-Modul 13](../.harness/baseline/v7.0.0/regelwerk/modul-13-quality-gates.md)); Senkung nur per ADR (`AGENTS.md` §3.6) |
+| `make coverage-gate` | Gesamt-Coverage über `internal/...` (`-coverpkg` über Paketgrenzen, Dockerfile-Stage + `tools/coverage-gate.sh`) | Schwellen-Bindung: [`SPEC-089`](../spec/specification.md#7-festlegungen-der-harness-werkzeuge) (Schwelle, Messbasis, Randformen; kalibriert 2026-06-11 nach Test-Ausbau); Verfehlung ⇒ Carveout-Pflicht ([Kurs-Modul 13](../.harness/baseline/v7.0.0/regelwerk/modul-13-quality-gates.md)); Senkung nur per ADR (`AGENTS.md` §3.6) |
 | [`make semgrep`](sensors/semgrep.md) | hermetisches Security-/Static-Analysis-Gate über den Go-Code | [ADR-0010](../docs/plan/adr/0010-semgrep-hermetisches-gate.md); [`DC-QA-02`](../spec/lastenheft.md#dc-qa-02--determinismus)/[`DC-QA-03`](../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) (DC-Bindung) |
 | [`make image-scan`](sensors/image-scan.md) | CVE-Scan gegen die publizierten Images, nicht gegen den Arbeitsbaum | [ADR-0066](../docs/plan/adr/0066-cve-scan-gegen-das-publizierte-image.md) |
 | [`make gate-consistency`](sensors/gate-consistency.md) | hält Doku und Makefile über die Gate-Targets in beiden Richtungen deckungsgleich | [`DC-FA-TGT-001`](../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)/[ADR-0031](../docs/plan/adr/0031-targets-deklarations-konsistenz-modul.md) (DC-Bindung) |
@@ -111,7 +111,7 @@ behaupten.
 
 | Target | Tut was | Bindung |
 | --- | --- | --- |
-| `make freshness-trivy` · `make trivy-digest` | Scanner-Pin auf beiden Achsen (Version, Digest). **Netz**, fail-open, **nicht** im Nachtlauf | kein Gate · [`SPEC-098`](../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge), [`SPEC-099`](../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) |
+| `make freshness-trivy` · `make trivy-digest` | Scanner-Pin auf beiden Achsen (Version, Digest). **Netz**, fail-open, **nicht** im Nachtlauf | kein Gate · [`SPEC-098`](../spec/specification.md#7-festlegungen-der-harness-werkzeuge), [`SPEC-099`](../spec/specification.md#7-festlegungen-der-harness-werkzeuge) |
 | `.github/dependabot.yml` | **kein Target** — der Kanal, der hebt, was `image-scan` meldet; `gomod` und `github-actions`, **nicht** `docker` | kein Gate · [ADR-0067](../docs/plan/adr/0067-dependabot-als-hebender-kanal.md) |
 | [`make freshness-go`](sensors/freshness-go.md) · `make freshness-golangci` · `make freshness-semgrep` · `make freshness-a-check` | meldet, ob upstream ein neuerer Release existiert als der gepinnte | kein Gate · Nutzer-Regel: Go-Bump zieht das `golangci`-Pendant nach |
 | [`make checkout-pin-freshness`](sensors/checkout-pin-freshness.md) · `make login-pin-freshness` · `make hubdesc-pin-freshness` | meldet, ob die drei Action-Pins der Workflows veraltet sind | kein Gate · [`AGENTS.md`](../AGENTS.md) §3.9, §4 |
@@ -120,7 +120,7 @@ behaupten.
 | [`make nightly-state`](sensors/nightly-state.md) | liest den Ausgang der beiden Nachtläufe und sagt, ob er gelesen werden muss | kein Gate · [`MR-053`](conventions.md#mr-053); [`AGENTS.md`](../AGENTS.md) §5 |
 | [`make guard-probe`](sensors/guard-probe.md) | fährt den Tool-Call-Wächter gegen seine Proben | kein Gate · [`MR-005`](conventions.md#mr-005), [`MR-040`](conventions.md#mr-040), [`MR-042`](conventions.md#mr-042), [`MR-044`](conventions.md#mr-044) |
 | `make ci-range-probe` | fährt die Range-Auflösung des CI-Push-Laufs gegen ein Wegwerf-Repo | kein Gate · [ADR-0109](../docs/plan/adr/0109-ci-push-range-faellt-bei-force-push-zurueck.md) |
-| `make record-gates` | Working-Tree-Hash-Nachweis für den Stop-Hook; `make gates` schreibt ihn als letzten Schritt | kein Gate · [`SPEC-094`](../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) |
+| `make record-gates` | Working-Tree-Hash-Nachweis für den Stop-Hook; `make gates` schreibt ihn als letzten Schritt | kein Gate · [`SPEC-094`](../spec/specification.md#7-festlegungen-der-harness-werkzeuge) |
 | [`make hooks`](sensors/hooks.md) | installiert die lokalen git-Hooks, die Commit und Übergang an grüne Gates binden | kein Gate · [ADR-0013](../docs/plan/adr/0013-pr-ci-und-traceability-gate.md), [ADR-0024](../docs/plan/adr/0024-vcs-immutable-gate.md) |
 | `make bench` | misst die Performance gegen ein generiertes Fixture (Median aus drei Läufen) | kein Gate, [`DC-QA-01`](../spec/lastenheft.md#dc-qa-01--performance) |
 | [`make blackbox-probe`](sensors/blackbox-probe.md) | vergleicht Vorher-Image (`REF=<ref>`) und Nachher-Image über Fixtures und Ausgabeformen, stdout/stderr/Exit getrennt | kein Gate · meldet, urteilt nicht über den Repo-Zustand |
@@ -128,8 +128,8 @@ behaupten.
 | `make trace` | gibt die Requirements-Traceability-Matrix auf stdout aus | kein Gate · [`DC-FA-CLI-009`](../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) |
 | [`make archive-wave`](sensors/archive-wave.md) | bewegt geschlossene Zeitdokumente ins Archiv und ersetzt sie durch Stubs; ohne `APPLY=1` wird nichts geschrieben | kein Gate |
 | `make slice-mv` | Lifecycle-Wechsel eines Slice: reiner Move-Commit + Verweis-Reparatur (eingehend/ausgehend) als eigener Commit — automatisiert die §3.3-Zweikommits | kein Gate · adoptiert aus ai-harness-init |
-| `make history-range-guard` | Vorlauf-Wächter für history-lesende Targets: angeforderte Range auflösbar und nicht leer (stilles Grün über leerem Prüfbereich, shallow-Clone) | kein Gate · adoptiert aus ai-harness-init · [`SPEC-102`](../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) |
-| `make selbstpruefung` | Negativ-Selbsttest des commit-msg-Hooks und des Stop-Hooks im Wegwerf-Klon: ohne Kennung fällt der Commit, mit Kennung geht er durch, `make gates` läuft im Klon, der Stop-Hook fährt seine Zweige | kein Gate · adoptiert aus ai-harness-init · [`SPEC-103`](../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) |
+| `make history-range-guard` | Vorlauf-Wächter für history-lesende Targets: angeforderte Range auflösbar und nicht leer (stilles Grün über leerem Prüfbereich, shallow-Clone) | kein Gate · adoptiert aus ai-harness-init · [`SPEC-102`](../spec/specification.md#7-festlegungen-der-harness-werkzeuge) |
+| `make selbstpruefung` | Negativ-Selbsttest des commit-msg-Hooks und des Stop-Hooks im Wegwerf-Klon: ohne Kennung fällt der Commit, mit Kennung geht er durch, `make gates` läuft im Klon, der Stop-Hook fährt seine Zweige | kein Gate · adoptiert aus ai-harness-init · [`SPEC-103`](../spec/specification.md#7-festlegungen-der-harness-werkzeuge) |
 | `make image-publish` | pusht den Index beider Plattformen ohne Tag, prüft ihn gegen die geprüften Bilder und taggt erst dann; **Netz**, Release-Pfad | kein Gate · [ADR-0102](../docs/plan/adr/0102-multi-arch-index-und-spiegel-per-index-digest.md) |
 | `make abdeckung` | schreibt die Abdeckungs-Dateien der RTM aus den Testquellen (`docs/user/abdeckung-*.md`); `make test` hält sie gegen ihre Ableitung | kein Gate · [ADR-0104](../docs/plan/adr/0104-test-nachweise-entlasten-in-der-rtm.md) |
 | `make tidy` | pflegt `go.mod`/`go.sum` in Docker — bewusster Akt am Dependency-Stand | kein Gate |

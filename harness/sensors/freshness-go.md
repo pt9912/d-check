@@ -12,7 +12,7 @@ derselben Mechanik beschreibt [`checkout-pin-freshness`](checkout-pin-freshness.
 
 Quellen, Präfix-Behandlung, Vergleich (Gleich/Ungleich, keine
 Versions-Ordnung), fail-open und Exit legt
-[`SPEC-098`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-098`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 fest; diese Datei führt sie nicht ein zweites Mal.
 
 ## Grenze — was das Grün nicht abdeckt
@@ -38,4 +38,4 @@ Einstieg wäre der Vergleich nur mit Netz zu prüfen und damit gar nicht.
 
 kein Gate, bewusst **nicht** in `gates`; Netz, gerufen vom Nachtlauf
 (außer `freshness-trivy`, Grenze 4).
-[`SPEC-098`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-098`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)

@@ -443,7 +443,7 @@ ids:
     # deshalb den Zeilen-Marker d-check:ignore. Der Link traegt den Abschnitt,
     # der Text die Kennung; Vorkommen in der Zieldatei selbst sind frei.
     - regex: '\bSPEC-\d{3}\b'
-      target: spec/spezifikation.md
+      target: spec/specification.md
       link-policy: always
       exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
     - regex: '\bARC-\d{3}\b'
@@ -514,11 +514,11 @@ matrix:
     - name: modul-pfad
       token: '\b(internal|cmd)/[a-z]'
     - name: spec-straten
-      paths: [spec/lastenheft.md, spec/spezifikation.md]
+      paths: [spec/lastenheft.md, spec/specification.md]
       # Klasseninterne Verweisrichtung (DC-FA-MTX-002): Rang = autoritativste
       # Schicht zuerst; ein Abwärtsverweis (z. B. lastenheft → architecture,
       # auch transitiv) ⇒ matrix-downward.
-      order: [spec/lastenheft.md, spec/spezifikation.md]
+      order: [spec/lastenheft.md, spec/specification.md]
       direction: no-downward
     - name: adr
       # BEWUSST OHNE `token`, und das begrenzt die Zusage: gefangen wird ein
@@ -672,7 +672,10 @@ codepaths:
   #   docs/user/releasing.md oder das Verzeichnis docs/user/maintainer in
   #   Inline-Code, bleibt das still (docs/user/maintainer/releasing.md meldet
   #   codepaths weiter); einen Link meldet links
-  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh", "tools/trace-check.sh", "tools/planning-consistency.sh", "tools/arch-check.sh", "tools/gate-consistency.sh", "tools/harness/closure-outcomes.sh", "docs/user/releasing.md", "docs/user/maintainer"]
+  # - spec/spezifikation.md: umbenannt nach spec/specification.md; Accepted-ADRs, geschlossene Slices, Reviews und Belege nennen den alten Pfad in Inline-Code, die Pläne der Welle und MR-081 als Gegenstand · seit welle-98
+  #   GRENZE: der Eintrag wirkt repo-weit -- nennt lebende Doku künftig
+  #   spec/spezifikation.md in Inline-Code, bleibt das still; einen Link meldet links
+  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh", "tools/trace-check.sh", "tools/planning-consistency.sh", "tools/arch-check.sh", "tools/gate-consistency.sh", "tools/harness/closure-outcomes.sh", "docs/user/releasing.md", "docs/user/maintainer", "spec/spezifikation.md"]
 
 # Versions-Pin-Konsistenz (DC-FA-VER-001, slice-048): jeder ghcr-Image-Pin in
 # den Live-Docs muss die aktuelle Version aus version.md#aktuell tragen — sonst
@@ -754,7 +757,7 @@ structure:
     section: "## 7. Historie"
     table:
       order: desc              # Spalte 1 = Version (0.61.0 …)
-  - files: spec/spezifikation.md
+  - files: spec/specification.md
     section: "## 8. Historie"
     table:
       order: desc              # Spalte 1 = Datum
@@ -842,7 +845,7 @@ structure:
   # Grenze 2: die Schluessel-Tabelle INNERHALB von SPEC-005 bleibt
   # kennungslos — ihre Zeilen sind ueber den Konfigurations-Schluessel
   # adressierbar, den sie definieren (fachlicher Schluessel statt Struktur-ID).
-  - files: spec/spezifikation.md
+  - files: spec/specification.md
     section: "## 2. Datenstrukturen und Schemas"
     headings-match: '^SPEC-[0-9]{3} '
 
@@ -985,7 +988,7 @@ targets:
 # NICHT in der modules-Liste oben. d-check dogfoodet ihn über `make trace` (advisory
 # RTM) und `make completeness-check`/`doc-complete` (--require-complete, DC-FA-CLI-011,
 # in fullbuild). Der Block setzt die vier RTM-Konventionen auf EXAKT ihre Defaults
-# (spezifikation.md §2) — die RTM bleibt byte-identisch (DC-QA-02). Einziger Verhaltens-
+# (specification.md §2) — die RTM bleibt byte-identisch (DC-QA-02). Einziger Verhaltens-
 # Effekt: `requirements.source` ist NICHTLEER explizit gesetzt und armiert damit den
 # fail-closed Nullmengen-Guard (DC-FA-REQ-001, ADR-0037, slice-070): verlöre
 # spec/lastenheft.md je die Heading-Konvention (0 erkannte Anforderungen), bräche

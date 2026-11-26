@@ -5,7 +5,7 @@
 Proben für den Wächter
 ([`pretooluse-command-guard.sh`](../../.claude/hooks/pretooluse-command-guard.sh)).
 Was er blockiert und wie er an seinen Randformen entscheidet, legt
-[`SPEC-093`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-093`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 fest. Die Proben fahren beide Richtungen: blockierte Aufrufe und
 **Gegenkontrollen** — legitime Aufrufe, die ein blockiertes Wort tragen und
 durchlaufen müssen —, dazu die Fail-closed-Fälle des Extraktors und des
@@ -23,7 +23,7 @@ er lehnt ab, aber ohne den Exit-Riegel des zweiten Kanals
    vier ersten trägt
    [`MR-042`](../conventions/MR-042-guard-in-eigener-klasse.md) als Tabelle, die
    fünfte (ein Flag hinter einem Präfix, `env -i`) nennt
-   [`SPEC-093`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+   [`SPEC-093`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
    mit dem Wächter-Kommentar.
    Der Wächter ist ein **Stolperdraht, keine Sandbox**.
 2. **Sein Gegenstand ist eine Werkzeug-Einstellung, keine Repo-Invariante** —

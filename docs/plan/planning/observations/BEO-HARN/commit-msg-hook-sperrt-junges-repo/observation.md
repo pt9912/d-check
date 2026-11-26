@@ -7,6 +7,6 @@
 In einem Repo ohne oder mit einem Commit und in einem Klon der Tiefe 1 ist die
 Range nicht auflösbar; der installierte Hook bricht dann jeden Commit ab,
 auch einen mit Kennung. Benannt in
-[`SPEC-102`](../../../../../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge);
+[`SPEC-102`](../../../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge);
 die Behebung — den Vorlauf im Botschafts-Modus auslassen — ist eine Änderung
 am Werkzeug.

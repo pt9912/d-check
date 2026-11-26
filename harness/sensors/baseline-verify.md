@@ -5,7 +5,7 @@
 Prüft den committeten vendorten Baseline-Bestand auf Unversehrtheit, über
 [`fetch-baseline-cache.sh --verify`](../../tools/harness/fetch-baseline-cache.sh).
 Die drei Fragen, die alle nötig sind, legt
-[`SPEC-092`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge) fest.
+[`SPEC-092`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge) fest.
 
 ## Grenze — was das Grün nicht abdeckt
 

@@ -2,7 +2,7 @@
 
 Kurzreferenz für den Betrieb; verbindliche Verträge stehen im
 [Lastenheft](../../spec/lastenheft.md) (Anforderungen) und in der
-[Spezifikation](../../spec/spezifikation.md) (Schemata, Defaults,
+[Spezifikation](../../spec/specification.md) (Schemata, Defaults,
 Grund-Codes) — diese Seite dupliziert sie nicht.
 
 ## Aufruf
@@ -31,7 +31,7 @@ CLI-Optionen werden als Container-Argumente angehängt.
 | Option | Wirkung |
 |---|---|
 | `--enable <modul>` / `--disable <modul>` | Regelmodule zu-/abschalten (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`, `reviews`, `mentions`, `file`, `metrics`, `pinsync`, `linelength`); CLI schlägt Konfiguration ([`DC-FA-CLI-002`](../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl)) |
-| `--json` | maschinenlesbare Gesamt-Ausgabe ([Schema](../../spec/spezifikation.md)) |
+| `--json` | maschinenlesbare Gesamt-Ausgabe ([Schema](../../spec/specification.md)) |
 | `--yaml` | wie `--json`, aber als YAML — gleiche Struktur (`findings`/`summary`/`exitCode`), nur Serialisierung; `--json` und `--yaml` schließen sich aus ([`DC-FA-CLI-004`](../../spec/lastenheft.md#dc-fa-cli-004--ausgabeformate)) |
 | `--doctor` | erklärende, nach Datei gruppierte Diagnose auf stdout statt der Befund-Zeilen, mit Fix-Kandidaten wo eindeutig (v1: `id-unlinked` → Definitions-Link) — **liest, schreibt nichts**; mit `--json` oder `--yaml` kombinierbar (maschinenlesbare Diagnose: `findings` zusätzlich mit `reasonText`/`fixCandidate`), nicht mit `--repair` ([`DC-FA-CLI-007`](../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)) |
 | `--repair` | **konservativer** Reparatur-Patch (unified diff) auf stdout, `git apply`-kompatibel — nur eindeutige Fixes (v1: `id-unlinked` auf nackte Prosa-Vorkommen). **Liest, schreibt nichts**; Anwenden via `d-check --repair > fix.patch && git apply fix.patch`. Nicht mit `--json`/`--yaml`/`--doctor` kombinierbar ([`DC-FA-CLI-008`](../../spec/lastenheft.md#dc-fa-cli-008--reparatur-patch)) |
@@ -60,7 +60,7 @@ oder Umgebungsfehler
 ## Konfiguration
 
 Optionale `.d-check.yml` in der Repo-Wurzel; Schema und Defaults in
-der [Spezifikation §`.d-check.yml`](../../spec/spezifikation.md#spec-005--d-checkyml),
+der [Spezifikation §`.d-check.yml`](../../spec/specification.md#spec-005--d-checkyml),
 Vollvalidierung gemäß
 [`DC-FA-CONF-001`](../../spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)
 (jeder Konfigurationsfehler → Exit 2). Ein Beispiel im Vollausbau ist

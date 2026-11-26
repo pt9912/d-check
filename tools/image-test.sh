@@ -160,7 +160,7 @@ cmp -s "$WORK/n.manual.out" "$WORK/c.manual.out" \
   || fail "--manual: stdout nativ vs. Container nicht byte-identisch (DC-QA-02)"
 grep -q '^==> docs/user/benutzerhandbuch.md:' "$WORK/c.manual.out" \
   || fail "--manual: kein Abschnitt aus dem Handbuch"
-grep -q '^==> spec/spezifikation.md:' "$WORK/c.manual.out" \
+grep -q '^==> spec/specification.md:' "$WORK/c.manual.out" \
   || fail "--manual: kein Abschnitt aus der Spezifikation"
 echo "image-test: (5) --manual — netzlos im Container, nativ == Container, Exit 0"
 

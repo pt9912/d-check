@@ -36,7 +36,7 @@ der Registries, nicht die Unmöglichkeit des Handbetriebs.
    selbst ruft.
 
 Quelle, Digest-Form, Vergleich, fail-open und Exit legt
-[`SPEC-099`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-099`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 fest; diese Datei führt sie nicht ein zweites Mal.
 
 ## Bindung
@@ -45,4 +45,4 @@ kein Gate — meldet, urteilt nicht über den Arbeitsbaum; die Hebung bleibt ein
 bewusster Akt. **Netz**, fail-open, **nicht** in `gates`; gerufen vom Nachtlauf
 (außer `trivy-digest`, Grenze 5).
 [ADR-0011](../../docs/plan/adr/0011-digest-pins-build-gate-images.md) ·
-[`SPEC-099`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-099`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)

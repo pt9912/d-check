@@ -65,7 +65,7 @@ das Bundle, über ihr die kanonischen Quellen (Source Precedence). Stand/Provena
 In dieser Reihenfolge:
 
 1. [`spec/lastenheft.md`](spec/lastenheft.md) — vertraglich abnahmebindend.
-2. [`spec/spezifikation.md`](spec/spezifikation.md) — technisch verbindlich, fortschreibbar.
+2. [`spec/specification.md`](spec/specification.md) — technisch verbindlich, fortschreibbar.
 3. [`spec/architecture.md`](spec/architecture.md) — Komponenten- und Sequenzsicht.
 4. [`docs/plan/adr/README.md`](docs/plan/adr/README.md) — ADR-Index.
 5. [`docs/plan/planning/in-progress/roadmap.md`](docs/plan/planning/in-progress/roadmap.md) — Wellen-Sequenzierung (offene Wellen derivativ).
@@ -163,7 +163,7 @@ vollständig aufgelöst
 
 [`spec/architecture.md`](spec/architecture.md) benennt Schichten und
 Rollen statt Technologie — keine Sprach-/Modul-Pfade. Kein
-Spec-Stratum (auch [`spec/spezifikation.md`](spec/spezifikation.md))
+Spec-Stratum (auch [`spec/specification.md`](spec/specification.md))
 referenziert ADRs, Wellen, Slices, Commit-Hashes oder Closure-Daten.
 Die sprachkonkrete Übersetzung (Modul-Pfade, Import-Regeln) und die
 Begründungen leben in den ADRs, deren `Schärft:`-Feld aufwärts zeigt;

@@ -42,7 +42,7 @@ Repo-Zusage — oder erzeugt eine neue Artefaktklasse.
 ## Ausgabe und Ausgänge
 
 **Immer Exit 0**, fail-open; die Urteile je Ausgang legt
-[`SPEC-101`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-101`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
 fest. Der Ausgang steht in der **Ausgabe**: Wer sie nicht liest, hat den
 Schritt nicht getan, und das soll kein Exit-Code verdecken. Netzlos prüfbar
 über `--parse <datei>` und `--selftest`.
@@ -51,4 +51,4 @@ Schritt nicht getan, und das soll kein Exit-Code verdecken. Netzlos prüfbar
 
 kein Gate — liest, urteilt nicht.
 [`MR-053`](../conventions/MR-053-dritte-vorpruefung-nachtlauf.md) ·
-[`SPEC-101`](../../spec/spezifikation.md#7-festlegungen-der-harness-werkzeuge)
+[`SPEC-101`](../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)
