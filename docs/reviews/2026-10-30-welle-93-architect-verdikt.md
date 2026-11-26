@@ -111,7 +111,7 @@ Verdikt-Kürzel (Modul 8, Konflikt-Pfad): **V1** = Entscheidung gilt, Plan hat f
 ### F-7 — Schnitt in drei Slices gegen die Hexagon-Schichten — **bestätigt, mit akzeptiertem Negativ**
 
 - Der Schnitt folgt dem Lieferwert (hermetische Formel/Grund vs. Messung aus git), nicht den Schichten — so verlangt es Baseline-Regelwerk
-  [modul-05](../../.harness/baseline/v6.18.1/regelwerk/modul-05-planning-harness.md) §Ziel-Form: Slice („Schnitt nach Lieferwert"). Ein Port-/Adapter-Vorab-Slice wäre ein
+  [modul-05](../../.harness/baseline/v7.0.0/regelwerk/modul-05-planning-harness.md) §Ziel-Form: Slice („Schnitt nach Lieferwert"). Ein Port-/Adapter-Vorab-Slice wäre ein
   Schicht-Zombie ohne Konsumenten. Reihenfolge 282 → 283 → 284 ist fachlich zwingend ([welle-93](../plan/planning/done/welle-93/welle-93-metrics-modul.md) §5).
 - Beide Modul-Slices berühren mehr als zwei Schichten (283: Kern, `configyaml`-Adapter, CLI-Gerüst; 284: Port, git-Adapter, Kern, CLI). Das ist bei jedem opt-in-Modul der Fall
   (Präzedenz ADR-0027/ADR-0030) und in beiden Plänen als Rückführungs-Trigger vorab benannt (283 §4 Z. 141–144 mit [`MR-066`](../../harness/conventions.md#mr-066)).
