@@ -55,7 +55,7 @@ Herkunfts-Anker `seit wave-<NN>` — das Werkzeug `tools/archive-wave`, die Sens
   gehört dem Auftraggeber. Dieser Slice stellt **die Konfiguration** um und benennt den Preis.
 - **Keine Änderung der Defaults** des Werkzeugs (`welle-*.md`, `welle-*-results.md`): Konsumenten verlassen sich auf sie;
   ob sie auf `wave-*` wechseln, ist eine Zeile der Sichtung
-  ([`slice-296`](../next/slice-296-baseline-v700-neuerungen-sichtung.md), Frage B).
+  ([`slice-296`](../in-progress/slice-296-baseline-v700-neuerungen-sichtung.md), Frage B).
 - **Die Prosa bleibt deutsch:** das Wort *Welle*, das Slice-Feld `**Welle:**`, die Roadmap-Überschriften (`## Offene Wellen`
   …), die Grund-Codes (`wave-drift` heißt schon so).
 - **`welle-98` zieht um** (neu und ungepusht; Verdikt Frage 2): die einzige Datei, deren Namen dieser Slice ändert.
@@ -392,7 +392,7 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   `make fullbuild` und `make blackbox-probe` — hier **nicht** gefahren. (3) Push und CI. (4) Ihre eigenen Artefakte tragen
   die neuen Namen (`wave-98-results.md`, `done/wave-98/archive.zip`, `seit wave-98`).
 - **Release:** keiner; kein Bestandteil des Images ändert sich, keine `CHANGELOG`-Notiz.
-- **Folge-Slices:** keine neuen. [`slice-296`](../next/slice-296-baseline-v700-neuerungen-sichtung.md) (Frage B: ob die
+- **Folge-Slices:** keine neuen. [`slice-296`](../in-progress/slice-296-baseline-v700-neuerungen-sichtung.md) (Frage B: ob die
   Defaults auf `wave-*` wechseln) besteht schon in `open/`. F-8, F-9 und F-10 sind benannt, nicht geschnitten.
 - **Risiken aus §6:** 1 *entfallen*, 2 *eingetreten*, 3 *entfallen*, 4 *weiter offen*, 5 *entfallen* — Begründung je Risiko
   in §6.

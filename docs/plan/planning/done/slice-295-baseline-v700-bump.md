@@ -54,7 +54,7 @@ Verweisen des Repos beim neuen Namen nennen — und die Hebung als Eintrag in `h
 - **Keine Übernahme einer Neuerung.** Jede ist eine Konventions- oder Produkt-Entscheidung mit eigener
   Begründung (Entscheid 2); der Bump ist ein anderer Vorgang. Der Bump-Eintrag nennt das Delta vollständig
   nach Datei und markiert jede Bewegung als *nicht übernommen*; die Klassifikation mit Empfehlung liefert
-  [`slice-296`](../next/slice-296-baseline-v700-neuerungen-sichtung.md), die Übernahme ein eigener Folge-Slice nach der
+  [`slice-296`](../in-progress/slice-296-baseline-v700-neuerungen-sichtung.md), die Übernahme ein eigener Folge-Slice nach der
   Antwort des Auftraggebers. Die **Bezeichner** `wave-`, `archive.zip`, `seit wave-` sind **keine** Neuerung dieser
   Art mehr — der Auftraggeber hat sie entschieden — und gehören in
   [`slice-298`](slice-298-neue-namen-wave-archive-anker.md); dieser Slice zieht nur die **Namen der
@@ -138,7 +138,7 @@ Datei**, die die Zeichenkette `v6.18.1` trägt (`git grep -l`), nicht der Verwei
 | `.claude/commands/plan-welle.md` (2 Zeilen), `close-welle.md` (4 Zeilen) | update | die vier umbenannten Vorlagen: `welle.template.md`→`wave.template.md`, `welle-results.template.md`→`wave-results.template.md`, `archiv-stub-slice`/`-welle`→`archive-stub-slice`/`-wave`; **9 Zeilen in 4 Dateien** mit `stub.go` und `conventions.md` Z. 59 (`git grep -n "welle\.template\|welle-results\.template\|archiv-stub-\(slice\|welle\)\.template\|titel\.template" -- . ':!.harness/baseline' ':!docs/plan/planning' ':!docs/reviews' ':!harness/conventions/done'`; die Treffer in `conventions/done/` und in den Plänen nennen die Namen als Vergangenheits-Aussage und bleiben) |
 | `tools/archive-wave/stub.go` | update (Kommentar) | zwei Kommentarzeilen nennen `archiv-stub-slice.template.md`/`-welle.template.md`; Nachzug im Bump bestätigt ([Verdikt](../../../reviews/2026-11-26-welle-98-architect-verdikt.md), Frage 12); kein Verhalten |
 | [`.d-check.yml`](../../../../.d-check.yml) | update | nur, was die Antwort auf Frage 5 verlangt: je eingefrorener Datei mit Link auf den alten Baum **ein** `ignore-refs`-Eintrag (gemessen 7; nach dem Nachtrag V1 des Verdikts **5**, Plan-Änderung in §3); heute 30 Einträge über 12 Tags |
-| dieser Plan und die Pläne [`slice-296`](../next/slice-296-baseline-v700-neuerungen-sichtung.md), [`slice-297`](slice-297-spezifikation-heisst-specification.md), [`slice-298`](slice-298-neue-namen-wave-archive-anker.md) | update | die je zwei `d-check:cite`-Spannen in §8 auf den neuen Baum (zusammen 8) |
+| dieser Plan und die Pläne [`slice-296`](../in-progress/slice-296-baseline-v700-neuerungen-sichtung.md), [`slice-297`](slice-297-spezifikation-heisst-specification.md), [`slice-298`](slice-298-neue-namen-wave-archive-anker.md) | update | die je zwei `d-check:cite`-Spannen in §8 auf den neuen Baum (zusammen 8) |
 
 **Plan-Änderung (Implementer, vor dem Code):** Zusätzlich zur Tabelle trägt dieser Slice **eine** Datei aus dem
 Frozen-Bestand, die die Spiegel-Messung nicht sah, weil sie nicht den Pin, sondern den **Pfad** der Eintrags-Datei
@@ -334,7 +334,7 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
   `79a14c01` grün, `04dca313` ein Befund, `d67b6221` rot, `3d8f3555` und alles danach grün. **Alle Commits bis
   mindestens `0985933f` gehören in einen Push**; `main` steht vor `origin/main`, nichts ist gepusht. Nach dem Push
   `make ci` beziehungsweise die CI lesen, nicht aus dem lokalen Stand schließen.
-- **Folge-Slices:** keine neuen. [`slice-296`](../next/slice-296-baseline-v700-neuerungen-sichtung.md),
+- **Folge-Slices:** keine neuen. [`slice-296`](../in-progress/slice-296-baseline-v700-neuerungen-sichtung.md),
   [`slice-297`](slice-297-spezifikation-heisst-specification.md) und
   [`slice-298`](slice-298-neue-namen-wave-archive-anker.md) bestehen schon in `open/`; Risiko 5 geht an
   `slice-298`. Für die Prüflücke von `codepaths` (Lernsignal 2) ist **kein** Slice geschnitten — erst die
