@@ -120,9 +120,20 @@ Namensregel nach sich zieht, **gemessen** statt geschätzt:
 4. **`make doc-check` ist erreichbar, mit einem Ventil.** Nach Rename, Link-Nachzug in allen Markdown-Dateien,
    `.d-check.yml` und `manual.go`: 123 Befunde `codepath-missing` (`spec/spezifikation.md` im Inline-Code) in 83
    Dateien — **104** davon in eingefrorenen Klassen (`done/` 47, ADRs 44, Register-Belege 5, `conventions/done` 5,
-   `CHANGELOG.md` 2, `docs/plan/cr` 1), **0** in lebenden Dokumenten nach deren Nachzug. Ein einziger Eintrag in
+   `CHANGELOG.md` 2, `docs/plan/cr` 1), **0** in lebenden Dokumenten nach deren Nachzug (Probelauf, Stand `590dde3d`;
+   überholt durch die Endstand-Messung im nächsten Absatz). Ein einziger Eintrag in
    `codepaths.ignore-refs` bringt `make doc-check` auf **0 Befunde**; er wirkt **repo-weit** (die Grenze steht an
    der Liste in der `.d-check.yml`, [`ADR-0025`](../adr/0025-codepaths-ignore-refs.md)).
+   **Endstand-Messung** (Planner, 2026-11-26, Stand `00d4f352` nach [`slice-297`](in-progress/slice-297-spezifikation-heisst-specification.md);
+   Wegwerf-Klon ohne den Ventil-Eintrag, `docker run --rm --network none -v <klon>:/repo:ro d-check:latest`): **120**
+   Befunde `codepath-missing` in 80 Dateien (`cut -f1 <ausgabe> | sed 's/:.*//' | sort -u | wc -l`), **109** davon in
+   eingefrorenen Klassen (`done/` 51, ADRs 44, Register-Belege 5, `conventions/done` 6, `CHANGELOG.md` 2,
+   `docs/plan/cr` 1), **11** in lebenden Dateien, die den alten Pfad als **Gegenstand** nennen (diese Welle 4,
+   `slice-297` 4, `slice-296` 2, [`MR-081`](../../../harness/conventions.md#mr-081) 1; je Klasse
+   `cut -f1 <ausgabe> | grep -c '^<pfad>'`). Die Zahl zählt ihre eigene Nennung mit: jede Zeile, die den Pfad in
+   Inline-Code trägt, ist ein Befund, und das Ventil deckt sie alle. Die Zahl 119 aus
+   [`slice-297`](in-progress/slice-297-spezifikation-heisst-specification.md) (Zweite Plan-Änderung) gilt für ihren
+   Messstand und stimmt am Endstand nicht mehr (120).
 5. **Das Modul `planning` liest genau ein Präfix** (`wavePrefix` in `planning_waves.go`, acht Stellen; `glob` und
    `results-glob` müssen dasselbe literale Präfix tragen, `configyaml.go` Z. 1567–1572). Folge, gemessen am Klon: mit der
    Konfiguration von heute (`welle-*.md`) ist eine neue `wave-99-….md` **unsichtbar** — `make planning-check` Exit 0, 0
@@ -216,7 +227,7 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     Spanne, die die CI fährt — endet mit Exit 0. *Rot ohne die Welle:* nach dem Entfernen des alten Baums
     melden die Pfad-Links und die Spannen Befunde (Pfad-Links `target-missing`, Spannen das Modul `citations`); nach
     dem bloßen Tag-Tausch bleiben die 7 verschobenen Spannen rot; nach dem bloßen Umbenennen der Spezifikation
-    melden `make doc-check` 123 Befunde und der Build bricht (Probelauf 1 und 4 in §1).
+    melden `make doc-check` Befunde (123 im Probelauf, Stand `590dde3d`) und der Build bricht (Probelauf 1 und 4 in §1).
   - **(d) Das Produkt ändert sich an genau den benannten Stellen.** (d1) **Quelltext:** `git diff --stat
     <Vor-Bump>..HEAD -- '*.go' ':!tools' Dockerfile go.mod` nennt **nur** `manual.go` (die Pfad-Konstante und das
     `go:embed`), `internal/adapter/driving/cli/cli_manual_test.go` und `internal/hexagon/core/app/diagnose_test.go`
@@ -230,15 +241,15 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     Handbuch), die nicht aus dieser Welle stammen. (d3) **`--manual`** — hier ist die Aussage **enger**, nicht
     gelockert: Für die Begriffe `planning`, `Spezifikation` und `manual` wird die Ausgabe von Vorher- und
     Nachher-Image verglichen (`docker run … --manual <begriff>`, `diff`). **Jede** abweichende Zeile ist eine von
-    vier Klassen: (i) die Kopfzeile `==> spec/spezifikation.md:<n>` → `==> spec/specification.md:<n>` (die Zeilennummer
+    fünf Klassen: (i) die Kopfzeile `==> spec/spezifikation.md:<n>` → `==> spec/specification.md:<n>` (die Zeilennummer
     bleibt, weil kein Zeilenumbruch entsteht); (ii) eine Zeile der Spezifikation, deren Link-Ziel
     `spezifikation.md#…` → `specification.md#…` wechselt (erwartet bis zu 158 Zeilen, nicht alle im Ausschnitt);
     (iii) die Pin-Nennung `v6.18.1` → `v7.0.0`; (iv) die eine Handbuch-Zeile, die die Spezifikation beim Pfad nennt
-    (`docs/user/benutzerhandbuch.md`, Abschnitt der Konfigurations-Defaults). Eine fünfte Klasse ist ein Befund.
+    (`docs/user/benutzerhandbuch.md`, Abschnitt der Konfigurations-Defaults). (v) die Prosa-Zeile 920 der Spezifikation, die den Pfad zu `--manual` nennt und in der Ausgabe zu `manual` und `Spezifikation` steht (Fundstelle: [`slice-297`](in-progress/slice-297-spezifikation-heisst-specification.md) §3, Zweite Plan-Änderung, dritter Punkt; die Messung bleibt bei dieser einen Zeile). Eine sechste Klasse ist ein Befund.
     (d4) Der Vertrag [`DC-FA-CLI-013`](../../../spec/lastenheft.md#dc-fa-cli-013--handbuch-und-spezifikation-aus-dem-werkzeug-lesen)
     bleibt im Wortlaut; die Closure-Notiz nennt den Hinweis für die Release-Prep (CHANGELOG-Eintrag zu (d3)). *Rot
     ohne die Welle:* (d) ist **nicht** rot, wenn nichts geschieht — es hält eine Zusage fest, die der Rename
-    verletzen könnte (ein mitgeänderter Quelltext, eine fünfte Abweichungsklasse in `--manual`).
+    verletzen könnte (ein mitgeänderter Quelltext, eine sechste Abweichungsklasse in `--manual`).
   - **(e) Das Trigger-Audit** (seit [`slice-241`](done/wellenlos/slice-241-trigger-audit-adoption.md)) ist über
     die Closure vollzogen und in `welle-98-results.md` belegt. Fällig ist mindestens der Auflösungs-Trigger von
     [`MR-080`](../../../harness/conventions.md#mr-080) („die nächste Pin-Hebung“); die übrigen Trigger-Klassen
