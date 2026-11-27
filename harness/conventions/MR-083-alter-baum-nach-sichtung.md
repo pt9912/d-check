@@ -70,7 +70,7 @@
   nicht: Zwei Bäume sind während der Sichtung der erlaubte Zustand, den er rot
   färbte; den Rest trägt die Bedingung *Abgeschlossen*. `make baseline-verify`
   prüft nur den gepinnten Tag; den alten Baum prüft von Hand
-  `tools/harness/fetch-baseline-cache.sh --verify <alt-tag>`. **Nicht gemessen:**
+  `bash tools/harness/fetch-baseline-cache.sh --verify <alt-tag>`. **Nicht gemessen:**
   der Vendoring-Lauf bei liegendem alten Baum (nach Lektüre leert
   [`fetch-baseline-cache.sh`](../../tools/harness/fetch-baseline-cache.sh) nur die
   Verzeichnisse des Ziel-Stands), die CI und der Zustand vor dem Nachzug der

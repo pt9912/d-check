@@ -36,7 +36,7 @@ Die drei Fragen, die alle nötig sind, legt
    `.harness/baseline/`, wie ihn eine Hebung bis zur Sichtung liegen lässt
    ([`MR-083`](../conventions/MR-083-alter-baum-nach-sichtung.md)), wird weder
    geprüft noch gemeldet, und ein Alias in ihn passiert. Von Hand:
-   `tools/harness/fetch-baseline-cache.sh --verify <alt-tag>`. Permanent.
+   `bash tools/harness/fetch-baseline-cache.sh --verify <alt-tag>`. Permanent.
 
 Ihre Proben fährt `make baseline-probe` (neun Fälle, netzlos) — **die
 Echtheits-Grenze (0) hat keine**, denn sie ist keine Eigenschaft der
