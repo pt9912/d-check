@@ -32,6 +32,11 @@ Die drei Fragen, die alle nötig sind, legt
 3. **Die dritte Frage läuft nach den beiden ersten und akkumuliert nicht.**
 4. **Ein Symlink überlebt nicht jedes Dateisystem** — `core.symlinks=false`
    macht Textdateien daraus.
+5. **Geprüft wird nur der Baum des gepinnten Tags** — ein zweiter Baum unter
+   `.harness/baseline/`, wie ihn eine Hebung bis zur Sichtung liegen lässt
+   ([`MR-083`](../conventions/MR-083-alter-baum-nach-sichtung.md)), wird weder
+   geprüft noch gemeldet, und ein Alias in ihn passiert. Von Hand:
+   `tools/harness/fetch-baseline-cache.sh --verify <alt-tag>`. Permanent.
 
 Ihre Proben fährt `make baseline-probe` (neun Fälle, netzlos) — **die
 Echtheits-Grenze (0) hat keine**, denn sie ist keine Eigenschaft der
@@ -46,4 +51,5 @@ Netzlos — der `--verify`-Pfad ruft kein Netz-Werkzeug —, **fail-closed**.
 Bestandteil von `make gates`.
 [`MR-011`](../conventions/done/MR-011-baseline-pin-release-tag.md)-Kette ·
 [`MR-021`](../conventions/MR-021-vendored-verweise-pin-gebunden.md) ·
-[`MR-055`](../conventions/MR-055-symlink-als-pin-traeger.md)
+[`MR-055`](../conventions/MR-055-symlink-als-pin-traeger.md) ·
+[`MR-083`](../conventions/MR-083-alter-baum-nach-sichtung.md)
