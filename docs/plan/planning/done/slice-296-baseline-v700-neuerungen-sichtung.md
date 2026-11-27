@@ -282,9 +282,11 @@ dasteht.
   `git diff --stat <Start>..HEAD` außer der Vorlage, den Plan-Dateien, `docs/reviews/` und dem Register nichts
   zeigt; sonst *eingetreten* und die Änderung geht zurück (Plan-Änderung vor dem Code,
   [`AGENTS.md`](../../../../AGENTS.md) §6 Schritt 4).
-  — **Ausgang:** *entfallen.* Gemessen mit `git diff --stat 5a14fe90..HEAD` bei der Closure: Vorlage, dieser Plan,
-  `docs/reviews/`, Register, Welle und Roadmap (die zwei letzten tragen die Plan-Änderung zu den Closure-Triggern, §7);
-  kein Code, keine Konfiguration, kein MR-Eintrag, kein neuer Slice.
+  — **Ausgang:** *entfallen.* Gemessen mit `git diff --stat 5a14fe90..3d2e129d` (bis vor den Move): Vorlage, dieser
+  Plan, `docs/reviews/`, Register, Welle und Roadmap (die zwei letzten tragen die Plan-Änderung zu den
+  Closure-Triggern, §7); kein Code, keine Konfiguration, kein MR-Eintrag, kein neuer Slice. Der Verweis-Nachzug nach
+  dem Move (`f77682a6`) ändert in weiteren Dateien, darunter
+  [`MR-081`](../../../../harness/conventions.md#mr-081), allein Link-Ziele.
 - **Ein Wortlaut wird gestreckt** — die Fundstelle trägt weniger, als die Zeile ihr zuschreibt
   ([`BEO-ALL/citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md),
   20×). — **Ausgang:** *entfallen*, wenn Reviewer und Verifier an jeder zitierten Stelle das Feld lesen, nicht den
