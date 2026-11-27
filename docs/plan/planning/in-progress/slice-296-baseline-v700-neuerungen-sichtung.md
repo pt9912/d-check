@@ -206,6 +206,12 @@ Empfehlung · *Entscheidung des Auftraggebers* (leer). Die laufende Nummer in Sp
 
 Die Zeilenzahl der Vorlage wächst um eine (2f).
 
+**Plan-Änderung (Implementer, Korrektur nach der Verifikation; Stand `582f10b3`).** Eingearbeitet wird allein V-1
+(MEDIUM): A1 führt „befolgt“, obwohl zwei Image-Bezüge nur per Tag benannt sind — das BuildKit-Frontend in den zwei
+`syntax`-Zeilen (`git grep -n '^# syntax='`) und das Go-Image in `make tidy` (`Makefile`, Target `tidy`; im Befund
+mitgenannt). Stellen der Vorlage, die die Aussage tragen: A1, A2, A5, die Kurzfassung zu Frage A, die
+Entscheidungs-Übersicht und der Abschnitt *Wortlaute*. Kein `Dockerfile` und kein `Makefile` ändert sich.
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
