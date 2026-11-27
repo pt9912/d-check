@@ -191,6 +191,21 @@ Empfehlung · *Entscheidung des Auftraggebers* (leer). Die laufende Nummer in Sp
    [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
    legt den Default nicht fest (die Schema-Tabelle der Spezifikation tut es). Gemessen steht es in der Vorlage.
 
+**Plan-Änderung (Implementer, Fixrunde nach Review Runde 1; Stand `433447b1`).** Eingearbeitet werden F-1 bis F-7
+(MEDIUM). Je Befund die Stellen der Vorlage, die seine Aussage tragen (Zeilen-Nummern der Vorlage):
+
+| Befund | Aussage | Stellen |
+|---|---|---|
+| F-1 | Preis der Arbeitsbaum-Ausschlüsse | 5b, 2a |
+| F-2 | Review-Regeln ohne Bedingung | 7a, 7b, 4b, 17c, Wortlaute 7a und 7b |
+| F-3 | Ausnahme ohne Gegenstand im Skill | 7b samt Empfehlung, Entscheidungs-Übersicht |
+| F-4 | Wellen-Kennung ohne Ziffern | neue Zeile 2f, 2d, B1 (Preis beider Seiten); B3 verweist auf B1 |
+| F-5 | Check „nicht anwendbar“ | 1b, 3, 18a, 18c, 28, A6, A9 bis A20, Kurzfassung zu Frage A, Begriff *wahlfrei* |
+| F-6 | Zitat als Bedingung ausgegeben | 1b, 3, 18c, 28, A10, A12, A13, A15; per Suche zusätzlich 4d und 18b |
+| F-7 | Docker-Träger „befolgt“ | A5, A2, Kurzfassung zu Frage A, Entscheidungs-Übersicht |
+
+Die Zeilenzahl der Vorlage wächst um eine (2f).
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
