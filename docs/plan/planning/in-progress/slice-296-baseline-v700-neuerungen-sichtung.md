@@ -179,6 +179,18 @@ Empfehlung · *Entscheidung des Auftraggebers* (leer). Die laufende Nummer in Sp
 3. **§1 nennt 41 Adaptionen**; es sind 42 aktive (`ls harness/conventions/*.md | wc -l`; am Stand `590dde3d` 41). Die
    Abgrenzung bleibt: kein Durchgang je Eintrag.
 
+**Plan-Änderung (Implementer, vor dem Commit der Vorlage; Stand `5a14fe90`).**
+
+1. **Wortlaute stehen nicht in der Fundstellen-Spalte.** Das Modul `citations` sucht das Zitat ab der Zeile **nach**
+   der Direktive (`citationQuote` in `internal/hexagon/core/rules/citations.go`); in einer Tabellenzelle ist das die
+   nächste Zeile der Tabelle. Die Zitate samt `d-check:cite` stehen deshalb in einem eigenen Abschnitt *Wortlaute*
+   der Vorlage, die Zeilen zeigen mit ihrer Nummer dorthin.
+2. **Zählkommando.** Die Unterzeilen tragen dieselbe Dateinummer mit Buchstaben; `grep -c '^| [0-9]'` zählt die
+   Zeilen, die Dateien samt Sammelzeile zählt `grep -o '^| [0-9][0-9]*' <Vorlage> | sort -u | wc -l`.
+3. **Zwei Erwartungen aus Schritt 5 treffen nicht:** Das Handbuch nennt die Default-Globs nicht, und
+   [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+   legt den Default nicht fest (die Schema-Tabelle der Spezifikation tut es). Gemessen steht es in der Vorlage.
+
 ## 4. Trigger
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
