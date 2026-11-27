@@ -271,6 +271,33 @@ einzelnen Slice-DoDs benennen; kann er das nicht, liegt keine Welle vor.
     `planning-check`, `archive-wave` bricht mit Exit 2.
 - Closure-Notiz in `wave-98-results.md`.
 
+**Plan-Änderung zu (b) und (f)** (Planner, 2026-11-27, bei der Closure von slice-296; Befunde V-2 und V-3 der
+[Verifikation](../../reviews/2026-11-27-slice-296-baseline-v700-neuerungen-sichtung-verify.md)). Der Wortlaut oben
+bleibt stehen; diese Zeilen ergänzen ihn.
+
+- **(b): die erlaubte Menge wächst um genau eine Datei**, die Entscheidungsvorlage
+  [`baseline-v700-neuerungen.md`](baseline-v700-neuerungen.md). Das ist eine **Erweiterung** des Kriteriums, keine
+  Auslegung: „genau die Menge, die der Bump-Eintrag führt“ ist mit ihr nicht erfüllbar.
+  [`MR-081`](../../../harness/conventions.md#mr-081) zählt am Stand des Bump-Commits; die Vorlage ist danach als
+  Liefergegenstand dieser Welle ((f)) entstanden und liegt nach dem Verdikt zu Frage 11 (§5) flach, fällt also mit
+  keinem Umzug aus der Menge. Ihr Gegenstand ist der Unterschied der beiden Stände, ihre Nennungen sind
+  Vergangenheits-Aussagen. **Die Ausnahme ist eng:** gezählt wird die Zeile mit der Zeichenkette,
+  `git grep -c 'v6\.18\.1' -- docs/plan/planning/baseline-v700-neuerungen.md` ergibt 3 (Kopf, der
+  `git archive`-Aufruf der Zählung, Zeile 7b), und
+  `grep -c '](\([^)]*\)v6\.18\.1' docs/plan/planning/baseline-v700-neuerungen.md` ergibt 0 (kein Link-Ziel). Jede
+  weitere Datei und jede vierte Zeile ist ein Befund; die Überschrift von (b) und die Symlink-Hälfte bleiben
+  unverändert. Erwartet sind damit, solange diese Datei flach liegt, **9** Dateien: der Bump-Eintrag, die
+  `.d-check.yml`, die fünf ADRs hinter dem Ventil, diese Welle und die Vorlage.
+  Verworfen: den Bump-Eintrag nachtragen (ein bestehender Adaptions-Eintrag, dessen Satz für den Bump-Commit wahr
+  bleibt), die Vorlage umschreiben (der Auftraggeber entscheidet auf ihr, und ein Delta nennt seinen Ausgangsstand),
+  die Vorlage verlegen (gegen das Verdikt).
+- **(f): das Zählkommando** ist
+  `grep -o '^| [0-9][0-9]*' docs/plan/planning/baseline-v700-neuerungen.md | sort -u | wc -l`, erwartet **40**
+  (39 Dateien und die Sammelzeile). Das zweite in
+  [`slice-296`](in-progress/slice-296-baseline-v700-neuerungen-sichtung.md) §3 genannte, `grep -c '^| [0-9]'`, zählt
+  die Unterzeilen mit und ist nicht gemeint. Die Zahl deckt das Inventar; Klassifikation und Empfehlung je Zeile
+  bleiben eine Lektüre.
+
 ## 4. Slices in dieser Welle
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
