@@ -1,0 +1,2 @@
+**Vorgang:** slice-296
+**Fund:** Wortlaute, die nur den Gegenstand beschreiben, standen als „Bedingung“ der Regel da; `make doc-check` bestätigte sie wortgleich (Review R1 F-6, behoben). Danach: der Satz aus [ADR-0011](../../../../../adr/0011-digest-pins-build-gate-images.md) §Entscheidung 1 ohne ihr `Schärft:`-Feld zitiert, das die Bindung auf `FROM`-Zeilen, Scanner-Image und Pin-Beleg begrenzt (Verifikation, Nachtrag N-1, nicht behoben). Der Verifier hatte denselben Satz in seinem Befund V-1 selbst ohne das Feld zitiert und es in der Nachprüfung berichtigt.

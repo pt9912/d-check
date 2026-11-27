@@ -1,0 +1,2 @@
+**Vorgang:** slice-296
+**Fund:** Dem Inventar der Vorlage fehlte die einzige Neuerung des Bundles, die eine Grenze des eigenen Produkts benennt — eine Wellen-Kennung ohne Ziffern liest `planning.waves` nicht (Review R1 F-4, behoben); die Datei hatte eine Zeile, die Aussage darin nicht. Dazu zwei nicht genannte Grenzen: `make tidy` mit Image nur per Tag (R1 F-8, mit Verifikation V-1 behoben) und die Versions-Zeilen von `tools/archive-wave/`, die der vorgeschlagene Pin nicht bewacht (R1 F-12, nicht behoben). Gefunden vom Reviewer, indem er den Bundle-Diff selbst las.

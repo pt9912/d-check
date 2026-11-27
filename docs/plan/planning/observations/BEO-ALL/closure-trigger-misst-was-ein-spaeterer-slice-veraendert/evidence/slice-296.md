@@ -1,0 +1,2 @@
+**Vorgang:** slice-296
+**Fund:** Closure-Trigger (b) der Welle verlangte „genau die Menge“, die der Bump-Eintrag am Stand des Bump-Commits führt; die später entstandene, flach bleibende Entscheidungsvorlage nennt den alten Pin als ihren Gegenstand und fiel aus der Menge (Verifikation V-2). Trigger (f) verwies auf „das Kommando aus slice-296 §3“, dort standen nach einer Plan-Änderung zwei (V-3). Beides als Plan-Änderung in der Welle aufgelöst, (b) dabei um eine Datei erweitert. Gefunden hat es der Verifier, weder Plan noch Review.

@@ -1,0 +1,2 @@
+**Vorgang:** slice-296
+**Fund:** Nach der Verkörperung (Regel 13) erneut: zwei Review-Regeln der Baseline ohne ihre Bedingung wiedergegeben — nur für Plan- und Design-Review, nur „als Sicherheits-Anti-Pattern“ (Review R1 F-2, behoben); ein Zitat aus `implement-slice.md` um „pro Implementer“ gekürzt (R1 F-9) und eine Aussage aus `modul-12` ohne ihren Nachsatz „nur sofern er im Image läuft“ (Verifikation V-5), beide nicht behoben und in der Closure-Notiz des Slice benannt.

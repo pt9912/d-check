@@ -1,0 +1,2 @@
+**Vorgang:** slice-296
+**Fund:** Der Basis-Digest in `tools/archive-wave/Dockerfile` wird weder von Dependabot noch von einem Nachtlauf-Target gelesen (`make go-base-digest` liest nur das `Dockerfile` der Wurzel) und ist bei der Go-Hebung stehen geblieben: Der Aufruf übergibt eine neuere Version, der Digest löst auf die ältere auf und gewinnt (`printenv GOLANG_VERSION` am Digest). Gefunden bei der Sichtung der Umgebungs-Zusage, nicht behoben; die Entscheidung liegt beim Auftraggeber (Vorlage Zeile A8).

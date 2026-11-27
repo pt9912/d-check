@@ -71,20 +71,23 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 gehört zurück zur Zerlegung. Gezählt wird nur, was mit dem Umfang wächst — die
 Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] **Inventar:** Jede der 39 Dateien mit Bewegung (31 inhaltlich verschieden, 7 umbenannt, 1 neu) hat eine Zeile
+- [x] **Inventar:** Jede der 39 Dateien mit Bewegung (31 inhaltlich verschieden, 7 umbenannt, 1 neu) hat eine Zeile
       in der Vorlage, **größte Bewegung zuerst**; die 7 Dateien, die nur ihren Stempel ändern, stehen in **einer**
       Sammelzeile mit dem Beleg „je 2 rohe Diff-Zeilen, die `<!-- Quelle:`-Zeile“. Eine Datei mit mehreren
       Neuerungen (erwartet: `modul-14`, `modul-04`, `modul-05`) trägt je Neuerung eine Unterzeile. Die Zählung ist am
       **vendorten** Baum von `v7.0.0` und am alten Baum aus `git archive <Vor-Bump>` wiederholt (§3); weicht sie von §1
       der Welle ab, steht die Abweichung in der Vorlage, nicht stillschweigend in der Zahl.
-- [ ] **Klasse und Empfehlung je Zeile:** *bereits befolgt* nennt den Beleg im Repo (Pfad oder Target — der
+- [x] **Klasse und Empfehlung je Zeile:** *bereits befolgt* nennt den Beleg im Repo (Pfad oder Target — der
       Reviewer öffnet jeden), *neu und anwendbar* nennt die **kleinste** Antwort mit Preis (Dateien, Zeilen, Gate) und,
       wo es eine gibt, die größere daneben, *nicht anwendbar* nennt den Grund **an der Bedingung der Regel**
       ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 13). Die Fundstelle ist ein Anker-Link in den vendorten Baum;
       ein Wortlaut, der die Klasse trägt, ist zitiert und mit `d-check:cite` gehalten, nicht nacherzählt
       ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 18). Jede Zeile hat eine leere Spalte *Entscheidung des
       Auftraggebers*.
-- [ ] **Die zwei benannten Fragen:** (A) Umgebungs-Zusage und `environment-check` — je Bestandteil des Kapitels
+      **Vorbehalt zum Haken:** Die Klausel „Die Fundstelle ist ein Anker-Link“ ist **wörtlich nicht erfüllt**: 40 Zeilen
+      verlinken eine Markdown-Datei des Baums ohne Anker (Verifikation V-4, nicht eingearbeitet). Der Rest des Punkts
+      ist bestätigt, die Einschränkung zu Zeile A1 mit `60b4ea1f` entfallen.
+- [x] **Die zwei benannten Fragen:** (A) Umgebungs-Zusage und `environment-check` — je Bestandteil des Kapitels
       gegen das, was das Repo hat (§3), mit einer Antwort *befolgt · Lücke · nicht anwendbar*; (B) die **Reste der
       Namensregel**, die in [`slice-297`](../done/slice-297-spezifikation-heisst-specification.md) und
       [`slice-298`](../done/slice-298-neue-namen-wave-archive-anker.md) nicht stehen — die Defaults des Werkzeugs
@@ -92,14 +95,14 @@ Gate-Läufe und die fünf Closure-Pflichten darunter zählen nicht mit.
       die Beispiel-Pfade, die das Werkzeug und das Handbuch **Konsumenten** zeigen (`spec/spezifikation.md` in
       `--print-config`, `--suggest-config` und im Handbuch) und das Verhalten für einen Konsumenten mit den
       neuen Namen — je Rest die **gezählte** Reichweite und Preis der Übernahme gegen Preis des Bleibens.
-- [ ] `make gates` grün.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make gates` grün.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues Verzeichnis `BEO-<KUERZEL>/<slug>/` oder eine weitere Datei in dessen `evidence/`; **kein Zaehler wird gesetzt**, er folgt aus den Dateien. Keine Beobachtung angefallen ist ebenfalls eine Antwort und wird in §7 notiert.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen / weiter offen).
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen — im Repo **ohne** Wellen-Betrieb hier geprüft, im Repo **mit** Wellen von der nächsten Welle-Closure (auch für Slices ohne Wellen-Zugehörigkeit).
 
 ## 3. Plan (vor Code)
 
@@ -258,23 +261,36 @@ dasteht.
   [`BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt`](../observations/BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt/observation.md),
   10×). — **Ausgang:** *entfallen*, wenn der Reviewer **jeden** genannten Beleg öffnet und jeder trägt; sonst
   *eingetreten* mit einer Evidenz-Datei.
+  — **Ausgang:** *eingetreten.* Zwei Zeilen hießen „befolgt“, ohne es zu sein: A5 (Review R1 F-7) und A1 (Verifikation
+  V-1); beide behoben. Evidenz-Datei in
+  [`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md).
 - **Die Empfehlung weitet die Anforderung über den Anlass hinaus** — eine Zeile bündelt mehrere Neuerungen oder nennt nur
   die große Antwort
   ([`BEO-ALL/empfehlung-weitet-anforderung-ueber-den-anlass`](../observations/BEO-ALL/empfehlung-weitet-anforderung-ueber-den-anlass/observation.md),
   1×, offen). — **Ausgang:** *entfallen*, wenn jede Empfehlung *übernehmen* die kleinste Antwort mit Preis nennt und
   keine Zeile mehr als eine Neuerung trägt; sonst *eingetreten* (dann 2×) mit einer Evidenz-Datei.
+  — **Ausgang:** *eingetreten.* Nach dem Wortlaut des Kriteriums: Die Zeilen 22, 31 und 32 tragen zwei Änderungen
+  (F-10), 7b stellt eine zweite Frage (R2-4). Eine **Weitung** über den Anlass wurde nicht gefunden. Evidenz-Datei
+  (2×), die diesen Unterschied nennt.
 - **Eine Grenze wird ohne ihre Bedingung wiedergegeben** („gilt nicht für …“ statt „gilt nicht, wenn …“)
   ([`BEO-ALL/grenz-aussage-ohne-ihre-bedingung`](../observations/BEO-ALL/grenz-aussage-ohne-ihre-bedingung/observation.md),
   verkörpert in Regel 13). — **Ausgang:** *entfallen*, wenn jede *nicht anwendbar*-Zeile die Bedingung des Kapitels
   wörtlich zitiert; sonst *eingetreten*.
+  — **Ausgang:** *eingetreten.* F-2 und F-6 (behoben), F-9 und V-5 (nicht eingearbeitet, §7). Evidenz-Datei in
+  derselben Beobachtung.
 - **Die Sichtung schleust eine Übernahme ein** — eine Änderung außerhalb der Vorlage. — **Ausgang:** *entfallen*, wenn
   `git diff --stat <Start>..HEAD` außer der Vorlage, den Plan-Dateien, `docs/reviews/` und dem Register nichts
   zeigt; sonst *eingetreten* und die Änderung geht zurück (Plan-Änderung vor dem Code,
   [`AGENTS.md`](../../../../AGENTS.md) §6 Schritt 4).
+  — **Ausgang:** *entfallen.* Gemessen mit `git diff --stat 5a14fe90..HEAD` bei der Closure: Vorlage, dieser Plan,
+  `docs/reviews/`, Register, Welle und Roadmap (die zwei letzten tragen die Plan-Änderung zu den Closure-Triggern, §7);
+  kein Code, keine Konfiguration, kein MR-Eintrag, kein neuer Slice.
 - **Ein Wortlaut wird gestreckt** — die Fundstelle trägt weniger, als die Zeile ihr zuschreibt
   ([`BEO-ALL/citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md),
   20×). — **Ausgang:** *entfallen*, wenn Reviewer und Verifier an jeder zitierten Stelle das Feld lesen, nicht den
   Titel ([`AGENTS.md`](../../../../AGENTS.md) §5 Regel 16), und keine abweicht; sonst *eingetreten*.
+  — **Ausgang:** *eingetreten.* F-6 (behoben), V-5 und N-1 (nicht eingearbeitet, §7). Evidenz-Datei in derselben
+  Beobachtung.
 
 ## 7. Closure-Notiz
 
@@ -290,7 +306,94 @@ aus §6 seinen Ausgang; die Liefer-Punkte der DoD bleiben leer
 (`modul-05-planning-harness.md` §Ein Slice, dessen Gegenstand ein anderer
 übernimmt).
 
-*(Wird bei der Closure gefüllt.)*
+- **Was liegt vor:** die [Entscheidungsvorlage](../baseline-v700-neuerungen.md) — 40 Dateinummern (39 Dateien und die
+  Sammelzeile), 68 Inventar-, 20 A- und 3 B-Zeilen, jede mit leerer Entscheidungs-Spalte. **Übernommen ist nichts**,
+  kein Folge-Slice ist angelegt, die Antworten des Auftraggebers stehen aus. Der Fund in Zeile A8
+  (`tools/archive-wave/` baut mit einem älteren Go, als der Aufruf sagt) ist **nicht behoben**.
+- **Was hat funktioniert:** Die Zählung hielt in beiden Nachmessungen (Review R1, Verifikation), ebenso die Abgrenzung
+  „keine Übernahme“. Die Preise, die an Wegwerf-Bäumen gemessen waren (B1, B2, 5b nach der Fixrunde), hat die
+  Verifikation nachgefahren, darunter `make gates` im Klon mit `git worktree`.
+- **Was ging anders als geplant:** **(1)** Zwei Review-Runden und eine Verifikation: sieben MEDIUM in Runde 1
+  ([R1](../../../reviews/2026-11-27-slice-296-baseline-v700-neuerungen-sichtung-r1.md), eingearbeitet in `582f10b3`), keine neuen MEDIUM in Runde 2
+  ([R2](../../../reviews/2026-11-27-slice-296-baseline-v700-neuerungen-sichtung-r2.md)), zwei in der
+  [Verifikation](../../../reviews/2026-11-27-slice-296-baseline-v700-neuerungen-sichtung-verify.md). **V-1** (Zeile A1)
+  ist mit `60b4ea1f` behoben; diesen Commit hat die Nachprüfung des Verifiers gesehen, kein Review. **(2) V-2** traf die
+  Welle, nicht die DoD: Die Vorlage nennt den alten Pin und fiel aus der Menge ihres Closure-Triggers (b). Aufgelöst
+  durch eine **Erweiterung** von (b) um genau diese Datei, als Plan-Änderung in der
+  [Welle](../wave-98-baseline-v700.md) §3 und im Drift-Log der Roadmap (`cd1c9d9e`);
+  [`MR-081`](../../../../harness/conventions.md#mr-081) und die Vorlage sind dafür nicht geändert. Dort auch V-3 (das
+  Zählkommando zu Trigger (f)). **(3)** Erwartungen des Plans trafen nicht; sie stehen in den Plan-Änderungen (§3)
+  und in der Vorlage, Abschnitt *Abweichungen*.
+- **Befunde ohne Umsetzung — vor der Entscheidung mitlesen** (LOW und INFO bleiben nach der Review-Vorgabe der Welle
+  im Report; F- aus R1, R2- aus R2, V- und N- aus der Verifikation). Die Vorlage selbst trägt diese Einschränkungen
+  **nicht**:
+
+  | Zeile der Vorlage | Befund | Was beim Entscheiden zu beachten ist |
+  |---|---|---|
+  | A1 | N-1 | Der zitierte Satz aus [`ADR-0011`](../../adr/0011-digest-pins-build-gate-images.md) bindet laut ihrem Feld `Schärft:` nur `FROM`-Zeilen, Scanner-Image und Pin-Beleg. Frontend und `make tidy` fallen **nicht** darunter; die Zeile ist kein Verstoß gegen diese ADR. Klasse und Empfehlung stehen auf dem Kapitel. |
+  | A1 | N-2, N-3 | Ein Digest an `make tidy` ist eine weitere, von nichts bewachte Stelle des Go-Digests (dieselbe Klasse wie A8). Für die Zeile spricht: Am Messtag zeigte der lokale Tag auf ein anderes Image als der Build. |
+  | A5 | R2-1 | Derselbe Spiegelstrich in [`ADR-0002`](../../adr/0002-distribution-ghcr-image.md), der die Datei nennt, kündigt auch ein CI-Gate auf digest-stabilen Bau an; das lösen die fünf Zeilen nicht ein. Wer die Datei nicht will, braucht neben der Folge-ADR einen Adaptions-Eintrag. |
+  | A8 | F-12 | Der vorgeschlagene Pin bewacht die Versions-Zeilen in `tools/archive-wave/` nicht. |
+  | A6, A9 bis A20 | R2-2 | „Lücke (wahlfrei)“ heißt: anwendbar, nicht verlangt. Die verlangten Lücken sind A1, A3, A5, A7, A8. |
+  | 4a bis 4d | V-6 | Der Abschnitt der Baseline deckt das Modell des Harness selbst (Prompt-Injection über Repo-Inhalte, Rechte des Agenten, Container) **nicht**. |
+  | 4a mit 7a | F-11 | Beide zusammen machen jede Bedrohung ohne Ausgang zum Befund; die als „größer“ geführte Durchsicht folgt dann. |
+  | 7b | R2-4 | Die „eigene Frage an Sie“ (HIGH-Anker im Reviewer-Skill) hat weder eigenes Feld noch eigene Empfehlung; „nichts tun“ gilt dem Kleinsten. |
+  | 28 | V-5 | Die Quelle setzt fort: für die Werkzeuge im Image gilt die Vorstufe nur, wenn der Check im Image läuft. |
+  | 5a | F-9, V-5 | `implement-slice.md` sagt „WIP-Limit = 1 pro Implementer“; ein zweiter Implementer-Lauf ist damit nicht ausgeschlossen. |
+  | 1a, 1d | N-4, V-7 | 1a folgt „A3, A7“ und nennt A1 nicht; 1d lässt eine umformulierte Stelle in `modul-14` aus (sachlich in 1b und A7). |
+  | 22, 31, 32 | F-10 | Je zwei Änderungen in einer Zeile; die zweite ist der entschiedene Namens-Nachzug. |
+  | 2f, A5 | R2-3 | Die zwei Wortlaute enden vor den Wörtern, auf die sich die Zeile beruft; die Quelle trägt sie. |
+  | 40 Zeilen | V-4 | Fundstelle ohne Anker: Die Datei ist verlinkt, der Abschnitt ist darin zu suchen. |
+  | ganze Vorlage | F-11 | Ein leeres Feld an einer Zeile mit „0 Dateien; wirkt über den Pin“ heißt: Die Regel gilt. „Closure-Profil“, „Break-Test“, „Waise“ und „Wellen-Präfix“ sind nicht erklärt. |
+
+  Nicht gemessen sind die geschätzten Zeilen- und Datei-Zahlen der Preise; zum Digest aus A1 fehlen ein Lauf mit
+  leerem Layer-Cache, der Multi-Plattform-Build und `make tidy` selbst (Nachprüfung).
+- **Steering-Loop-Eintrag:** mit diesem Slice ist keine Regel und kein Sensor verkörpert. **Benannte Spec-Lücke:** Die
+  Spec nennt einzelne gepinnte Images ([`SPEC-066`](../../../../spec/specification.md#6-externe-verträge), [`SPEC-091`](../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge), [`SPEC-099`](../../../../spec/specification.md#7-festlegungen-der-harness-werkzeuge)), aber keine Stelle sagt zu, welche Eingaben
+  der Lauf-Umgebung dieses Repos festgelegt sein müssen: Die vier Qualitäts-Anforderungen in
+  [`spec/lastenheft.md`](../../../../spec/lastenheft.md) sagen keine Umgebung zu, und das BuildKit-Frontend und
+  `make tidy` kommen in der Spec nicht vor (`git grep -i 'frontend\|syntax=\|make tidy' -- spec`: 0 Zeilen). Nicht in
+  die Spec geschrieben; ob die Lücke ins Lastenheft, in einen Adaptions-Eintrag oder nirgends hin gehört, sind die
+  Zeilen A1 und A3 der Vorlage. **Lernsignal 1, mit Ursache:** Zwei „befolgt“ waren falsch, **weil** von der Seite des
+  Bestands geprüft wurde — bei A1 gegen die Liste dessen, was das Repo pinnt, bei A5 mit einem verlangten Artefakt als
+  Beispiel gelesen — statt Punkt für Punkt gegen das, was das Kapitel verlangt. **Lernsignal 2, mit Ursache:** Das
+  Entfallen-Kriterium zu Risiko 3 („jede *nicht anwendbar*-Zeile zitiert die Bedingung“) war für die Zeilen
+  „entschieden“ und „kein Akt“ unerfüllbar, **weil** es eine Bedingung für jede Zeile unterstellt. **Lernsignal 3, mit
+  Ursache:** Ein Wellen-Trigger auf Mengen-Gleichheit mit einer Liste vom Stand eines Commits konnte die Vorlage nicht
+  enthalten, **weil** sie nach diesem Stand als Liefergegenstand derselben Welle entstand (V-2).
+- **Beobachtungs-Register (`../observations/`):** neu
+  [`BEO-ALL/closure-trigger-misst-was-ein-spaeterer-slice-veraendert`](../observations/BEO-ALL/closure-trigger-misst-was-ein-spaeterer-slice-veraendert/observation.md)
+  (1×, `offen`). Je eine `evidence/slice-296.md` in
+  [`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+  (19×),
+  [`BEO-ALL/empfehlung-weitet-anforderung-ueber-den-anlass`](../observations/BEO-ALL/empfehlung-weitet-anforderung-ueber-den-anlass/observation.md)
+  (2×, `offen`),
+  [`BEO-ALL/grenz-aussage-ohne-ihre-bedingung`](../observations/BEO-ALL/grenz-aussage-ohne-ihre-bedingung/observation.md)
+  (4×, `verkörpert`: erneut nach der Regel),
+  [`BEO-ALL/citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+  (21×, `verkörpert`),
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md)
+  (20×, `verkörpert`),
+  [`BEO-ALL/eingetreten-ohne-folge-kennung`](../observations/BEO-ALL/eingetreten-ohne-folge-kennung/observation.md)
+  (2×, `offen`) und
+  [`BEO-ALL/digest-pin-ohne-frische-achse`](../observations/BEO-ALL/digest-pin-ohne-frische-achse/observation.md)
+  (2×, `offen`; der Fund aus A8). Kein Eintrag erreicht mit diesem Slice **neu** die Schwelle.
+- **Aufgaben für die Closure von [`wave-98`](../wave-98-baseline-v700.md):** (1) **Lese-Schritt**
+  [`BEO-ALL/testfall-faehrt-seine-regel-nicht`](../observations/BEO-ALL/testfall-faehrt-seine-regel-nicht/observation.md)
+  (3×, `offen`, seit slice-298). (2) Die Messungen ihres Closure-Triggers (a) bis (g) am Endstand samt
+  `make fullbuild` — hier **nicht** gefahren; (b) und (f) mit der Plan-Änderung. (3) Das Trigger-Audit (e), auch für
+  diesen Slice. (4) Die drei Paarungen. (5) Die Vorlage dem Auftraggeber vorlegen, mit der Tabelle oben; die
+  Ergebnisnotiz nennt beide, denn dieser Plan wandert später ins Archiv. (6) Push und CI.
+- **Folge-Slices:** keine. Je Übernahme einer, **nach** der Antwort des Auftraggebers (§1).
+- **Release:** keiner; kein Bestandteil des Images ändert sich, keine `CHANGELOG`-Notiz.
+- **Push-Pflicht:** Alle ungepushten Commits dieser Welle gehören in **einen** Push (`git log --oneline
+  origin/main..HEAD`); der reine Move dieses Slice nach `done/` ist ohne den Link-Nachzug danach einzeln rot und darf
+  nicht Spitze eines Push werden. Nach dem Push die CI an der Spitze lesen.
+- **Risiken aus §6:** 1 *eingetreten*, 2 *eingetreten*, 3 *eingetreten*, 4 *entfallen*, 5 *eingetreten* — Begründung je
+  Risiko in §6; Carveout und Folge-Kennung tragen die eingetretenen nicht (Register, oben).
+- **Die drei Paarungen**, hier vorab geprüft (getragen von der Closure von wave-98): (a) Anker — kein Eintrag mit
+  `liegt in`-Feld, keine Paarung auszulösen; (b) Folge-Slice — keiner genannt; (c) Register — die acht berührten
+  Verzeichnisse und die zitierte `testfall-faehrt-seine-regel-nicht` bestehen mit nicht leerem `evidence/`.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
