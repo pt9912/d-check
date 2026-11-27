@@ -32,7 +32,7 @@
   [`slice-297`](../../docs/plan/planning/done/slice-297-spezifikation-heisst-specification.md)
   und [`slice-298`](../../docs/plan/planning/done/slice-298-neue-namen-wave-archive-anker.md),
   die Klassifikation mit Empfehlung zu allen übrigen
-  [`slice-296`](../../docs/plan/planning/in-progress/slice-296-baseline-v700-neuerungen-sichtung.md);
+  [`slice-296`](../../docs/plan/planning/done/slice-296-baseline-v700-neuerungen-sichtung.md);
   die Zahl hinter dem Pfad sind die Diff-Zeilen):
 
   1. **Dateinamen sind englisch** — `grundlagen-harness-dateien.md` (23;
@@ -89,7 +89,7 @@
      `templates/.harness/skills/reviewer.template.md` (15; Kontext-Eingang,
      Ausnahme beim Sicherheits-Anti-Pattern, MEDIUM-Fall) und
      `templates/README.md`. **Nicht übernommen**; Klassifikation und Empfehlung
-     in [`slice-296`](../../docs/plan/planning/in-progress/slice-296-baseline-v700-neuerungen-sichtung.md).
+     in [`slice-296`](../../docs/plan/planning/done/slice-296-baseline-v700-neuerungen-sichtung.md).
   3. **Umgebungs-Zusage, Tool-Pin und Tool-/Versions-Check** — `modul-14-docker-harness.md`
      (258; neu: *Die Umgebungs-Zusage — Anforderung vor Träger*, *Der zweite Träger:
      Tool-Pin und Tool-/Versions-Check* samt Prüfformen, Inventar, Ausführungsort und
@@ -107,7 +107,7 @@
      `templates/README.md` und dem **neuen**
      `templates/harness/sensors/environment-check.template.md` (74 Zeilen).
      **Nicht übernommen**; Klassifikation und Empfehlung in
-     [`slice-296`](../../docs/plan/planning/in-progress/slice-296-baseline-v700-neuerungen-sichtung.md).
+     [`slice-296`](../../docs/plan/planning/done/slice-296-baseline-v700-neuerungen-sichtung.md).
   4. **Paralleler Lauf: ein Zweig, ein Arbeitsbaum** (`git worktree`) —
      `modul-05-planning-harness.md` (drei neue Absätze unter §Lifecycle als State
      Machine, der WIP-Satz), `modul-08-agentenrollen.md` (der Rolleninhaber hängt
@@ -116,7 +116,7 @@
      (`Verantwortlich:` nennt Person und Zweig) und `templates/.d-check.yml`
      (`.claude/worktrees/**` im Scan-Ausschluss) sowie `templates/README.md` (die
      `.d-check.yml`-Zeile). **Nicht übernommen**; Klassifikation und Empfehlung in
-     [`slice-296`](../../docs/plan/planning/in-progress/slice-296-baseline-v700-neuerungen-sichtung.md).
+     [`slice-296`](../../docs/plan/planning/done/slice-296-baseline-v700-neuerungen-sichtung.md).
   5. **Welle-Vorlage: Slice-Tabelle mit Links** —
      `templates/docs/plan/planning/wave.template.md` (28; die Kennung in der
      Tabelle ist ein Link auf die Slice-Datei samt `<lifecycle>`-Verzeichnis).
@@ -277,7 +277,7 @@
 - **Begründung:** Der Nachtlauf `upstream-drift` meldete den neuen Release
   (`make baseline-freshness`); das Release `v7.0.0` lag vor. Die Hebung ist eine
   reine Fortschreibung; die inhaltlichen Bewegungen (oben) warten auf
-  [`slice-296`](../../docs/plan/planning/in-progress/slice-296-baseline-v700-neuerungen-sichtung.md)
+  [`slice-296`](../../docs/plan/planning/done/slice-296-baseline-v700-neuerungen-sichtung.md)
   und seine Folge-Slices, die Namensregel auf `slice-297` und `slice-298`.
 - **Auflösungs-Trigger:** die nächste Pin-Hebung.
 - **Löst auf:** [`MR-080`](../conventions.md#mr-080)

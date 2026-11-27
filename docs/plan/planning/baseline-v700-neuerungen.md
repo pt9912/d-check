@@ -2,7 +2,7 @@
 
 **Adressat:** der Auftraggeber. **Gegenstand:** was sich im Baseline-Bundle zwischen `v6.18.1` und `v7.0.0`
 bewegt hat. **Stand:** 2026-11-27, Repo bei `5a14fe90`. **Auftrag:**
-[slice-296](in-progress/slice-296-baseline-v700-neuerungen-sichtung.md) in
+[slice-296](done/slice-296-baseline-v700-neuerungen-sichtung.md) in
 [wave-98](wave-98-baseline-v700.md). **Übernommen ist hiermit nichts** — jede Zeile wartet auf Ihre Entscheidung.
 
 ## So lesen
